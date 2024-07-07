@@ -1,0 +1,35 @@
+CREATE USER 'Agora'@'%' IDENTIFIED VIA mysql_native_password USING '***';GRANT ALL PRIVILEGES ON *.* TO 'Agora'@'%' REQUIRE NONE WITH GRANT OPTION MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;
+CREATE DATABASE IF NOT EXISTS `Agora`;GRANT ALL PRIVILEGES ON `Agora`.* TO 'Agora'@'%';
+
+CREATE TABLE IF NOT EXISTS `agora`.`Tokens` (`tokToken` VARCHAR(500) NOT NULL ) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `agora`.`TipoUsuario` (`ttuTipoUsuario` CHAR(2) NOT NULL , `ttuDescripcion` VARCHAR(25) NOT NULL , PRIMARY KEY (`ttuTipoUsuario`(2))) ENGINE = InnoDB;
+
+INSERT INTO `tipousuario` (`ttuTipoUsuario`, `ttuDescripcion`) VALUES ('UG', 'Usuario General'), ('UT', 'Usuario Tasador'), ('UA', 'Usuario Anticuario'), ('ST', 'Soporte Tecnico'), ('SI', 'Seguridad Informatica')
+
+CREATE TABLE IF NOT EXISTS `agora`.`provincia` (`provId` SMALLINT NOT NULL AUTO_INCREMENT , `provDescripcion` VARCHAR(40) NOT NULL , PRIMARY KEY (`provId`)) ENGINE = InnoDB;
+
+INSERT INTO `provincia` (`provId`, `provDescripcion`) VALUES (NULL,'Ciudad Autónoma de Buenos Aires'),(NULL,'Buenos Aires'),(NULL,'Catamarca'),(NULL,'Chaco'),(NULL,'Chubut'),(NULL,'Córdoba'),(NULL,'Corrientes'),(NULL,'Entre Ríos'),(NULL,'Formosa'),(NULL,'Jujuy'),(NULL,'La Pampa'),(NULL,'La Rioja'),(NULL,'Mendoza'),(NULL,'Misiones'),(NULL,'Neuquén'),(NULL,'Río Negro'),(NULL,'Salta'),(NULL,'San Juan'),(NULL,'San Luis'),(NULL,'Santa Cruz'),(NULL,'Santa Fe'),(NULL,'Santiago del Estero'),(NULL,'Tierra del Fuego'),(NULL,'Tucumán')
+
+CREATE TABLE `agora`.`localidad` (`locId` INT UNSIGNED NOT NULL AUTO_INCREMENT , `locProvID` SMALLINT NOT NULL , `locDescripcion` VARCHAR(50) NOT NULL , PRIMARY KEY (`locId`)) ENGINE = InnoDB;
+
+ALTER TABLE `localidad` ADD CONSTRAINT `FK_localidadProv` FOREIGN KEY (`locProvID`) REFERENCES `provincia`(`provId`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+INSERT INTO `localidad` (`locId`, `locProvID`, `locDescripcion`) VALUES (NULL, '2', 'La Plata'), (NULL, '2', 'Mar del Plata'), (NULL, '2', 'Bahía Blanca'), (NULL, '2', 'San Nicolás de los Arroyos'), (NULL, '2', 'Pergamino'), (NULL, '6', 'Córdoba (capital provincial)'),(NULL, '6', 'Villa Carlos Paz'), (NULL, '6', 'Río Cuarto'),(NULL, '6', 'Alta Gracia'), (NULL, '6', 'Jesús María'),(NULL, '21', 'Rosario'), (NULL, '21', 'Santa Fe (capital provincial)'),(NULL, '21', 'Rafaela'), (NULL, '21', 'Venado Tuerto'),(NULL, '21', 'Reconquista'), (NULL, '13', 'Mendoza (capital provincial)'),(NULL, '13', 'San Rafael'), (NULL, '13', 'Godoy Cruz'),(NULL, '13', 'Maipú'), (NULL, '13', 'Luján de Cuyo'),(NULL, '24', 'San Miguel de Tucumán (capital provincial)'), (NULL, '24', 'Yerba Buena'),(NULL, '24', 'Tafí Viejo'), (NULL, '24', 'Concepción'),(NULL, '24', 'Banda del Río Salí'), (NULL, '1', 'Palermo'),(NULL, '1', 'Recoleta'), (NULL, '1', 'Belgrano'),(NULL, '1', 'San Telmo'), (NULL, '1', 'Parque Chacabuco'),(NULL, '8', 'Paraná'), (NULL, '8', 'Concordia'),(NULL, '8', 'Gualeguaychú'), (NULL, '8', 'Gualeguay'),(NULL, '8', 'Villa Paranacito');
+
+CREATE TABLE `agora`.`domicilio` (`domID` INT UNSIGNED NOT NULL AUTO_INCREMENT , `domLocalidad` INT UNSIGNED NOT NULL , `domCPA` CHAR(8) NOT NULL , `domCalleRuta` VARCHAR(50) NOT NULL , `domNroKm` INT UNSIGNED NOT NULL , `domPiso` VARCHAR(10) NULL , `domDepto` VARCHAR(10) NULL , PRIMARY KEY (`domID`)) ENGINE = InnoDB;
+
+ALTER TABLE `domicilio` ADD CONSTRAINT `FK_domicilioLocalidad` FOREIGN KEY (`domLocalidad`) REFERENCES `localidad`(`locId`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+INSERT INTO `domicilio` (`domID`, `domLocalidad`, `domCPA`, `domCalleRuta`, `domNroKm`, `domPiso`, `domDepto`) VALUES (NULL, '30', 'C1406DEH', 'Dávila', '926', '12', '175');
+
+CREATE TABLE `agora`.`usuario` (`usrId` INT UNSIGNED NOT NULL AUTO_INCREMENT , `usrDni` VARCHAR(8) NOT NULL , `usrApellido` VARCHAR(50) NOT NULL , `usrNombre` VARCHAR(50) NOT NULL , `usrRazonSocialFantasia` VARCHAR(100) NULL , `usrCuitCuil` VARCHAR(11) NULL , `usrTipoUsuario` CHAR(2) NOT NULL , `usrMatricula` VARCHAR(20) NULL , `usrDomicilio` INT UNSIGNED NOT NULL , `usrFechaNacimiento` DATE NOT NULL , `usrDescripcion` VARCHAR(500) NULL , `usrScoring` INT UNSIGNED NULL , `usrEmail` VARCHAR(100) NOT NULL , `usrPassword` VARCHAR(25) NOT NULL , `usrFechaInsert` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `usrFechaBaja` DATETIME NULL , PRIMARY KEY (`usrId`)) ENGINE = InnoDB;
+
+ALTER TABLE `usuario` ADD CONSTRAINT `FK_usuarioTipoUsuario` FOREIGN KEY (`usrTipoUsuario`) REFERENCES `tipousuario`(`ttuTipoUsuario`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE `usuario` ADD CONSTRAINT `FK_usuarioDomicilio` FOREIGN KEY (`usrDomicilio`) REFERENCES `domicilio`(`domID`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonSocialFantasia`, `usrCuitCuil`, `usrTipoUsuario`, `usrMatricula`, `usrDomicilio`, `usrFechaNacimiento`, `usrDescripcion`, `usrScoring`, `usrEmail`, `usrPassword`, `usrFechaInsert`, `usrFechaBaja`) VALUES (NULL, '33698895', 'Gómez Ivaldi', 'Nicolás Alejandro', NULL, NULL, 'ST', NULL, '1', '1988-03-29', 'Soy uno de los creadores de esta WebApi.', NULL, 'nicoivaldi@agora.com', 'Ag0raAdm1n&', current_timestamp(), NULL)
+
+
+
