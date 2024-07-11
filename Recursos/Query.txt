@@ -1,7 +1,9 @@
 CREATE USER 'Agora'@'%' IDENTIFIED VIA mysql_native_password USING '***';GRANT ALL PRIVILEGES ON *.* TO 'Agora'@'%' REQUIRE NONE WITH GRANT OPTION MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;
 CREATE DATABASE IF NOT EXISTS `Agora`;GRANT ALL PRIVILEGES ON `Agora`.* TO 'Agora'@'%';
 
-CREATE TABLE IF NOT EXISTS `agora`.`Tokens` (`tokToken` VARCHAR(500) NOT NULL ) ENGINE = InnoDB;
+CREATE TABLE IF NOT EXISTS `agora`.`Tokens` (`tokToken` VARCHAR(500) NOT NULL, `tokFechaInsert` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP) ENGINE = InnoDB;
+
+DROP TRIGGER IF EXISTS `DeleteTokensOff`;CREATE DEFINER=`root`@`localhost` TRIGGER `DeleteTokensOff` AFTER INSERT ON `tokens` FOR EACH ROW BEGIN DELETE FROM tokens where TIMESTAMPDIFF(SECOND, tokFechaInsert,NOW()) >= 3600; END
 
 CREATE TABLE IF NOT EXISTS `agora`.`TipoUsuario` (`ttuTipoUsuario` CHAR(2) NOT NULL , `ttuDescripcion` VARCHAR(25) NOT NULL , PRIMARY KEY (`ttuTipoUsuario`(2))) ENGINE = InnoDB;
 
@@ -11,19 +13,21 @@ CREATE TABLE IF NOT EXISTS `agora`.`provincia` (`provId` SMALLINT NOT NULL AUTO_
 
 INSERT INTO `provincia` (`provId`, `provDescripcion`) VALUES (NULL,'Ciudad Autónoma de Buenos Aires'),(NULL,'Buenos Aires'),(NULL,'Catamarca'),(NULL,'Chaco'),(NULL,'Chubut'),(NULL,'Córdoba'),(NULL,'Corrientes'),(NULL,'Entre Ríos'),(NULL,'Formosa'),(NULL,'Jujuy'),(NULL,'La Pampa'),(NULL,'La Rioja'),(NULL,'Mendoza'),(NULL,'Misiones'),(NULL,'Neuquén'),(NULL,'Río Negro'),(NULL,'Salta'),(NULL,'San Juan'),(NULL,'San Luis'),(NULL,'Santa Cruz'),(NULL,'Santa Fe'),(NULL,'Santiago del Estero'),(NULL,'Tierra del Fuego'),(NULL,'Tucumán')
 
-CREATE TABLE `agora`.`localidad` (`locId` INT UNSIGNED NOT NULL AUTO_INCREMENT , `locProvID` SMALLINT NOT NULL , `locDescripcion` VARCHAR(50) NOT NULL , PRIMARY KEY (`locId`)) ENGINE = InnoDB;
+CREATE TABLE IF NOT EXISTS `agora`.`localidad` (`locId` INT UNSIGNED NOT NULL AUTO_INCREMENT , `locProvID` SMALLINT NOT NULL , `locDescripcion` VARCHAR(50) NOT NULL , PRIMARY KEY (`locId`)) ENGINE = InnoDB;
 
 ALTER TABLE `localidad` ADD CONSTRAINT `FK_localidadProv` FOREIGN KEY (`locProvID`) REFERENCES `provincia`(`provId`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 INSERT INTO `localidad` (`locId`, `locProvID`, `locDescripcion`) VALUES (NULL, '2', 'La Plata'), (NULL, '2', 'Mar del Plata'), (NULL, '2', 'Bahía Blanca'), (NULL, '2', 'San Nicolás de los Arroyos'), (NULL, '2', 'Pergamino'), (NULL, '6', 'Córdoba (capital provincial)'),(NULL, '6', 'Villa Carlos Paz'), (NULL, '6', 'Río Cuarto'),(NULL, '6', 'Alta Gracia'), (NULL, '6', 'Jesús María'),(NULL, '21', 'Rosario'), (NULL, '21', 'Santa Fe (capital provincial)'),(NULL, '21', 'Rafaela'), (NULL, '21', 'Venado Tuerto'),(NULL, '21', 'Reconquista'), (NULL, '13', 'Mendoza (capital provincial)'),(NULL, '13', 'San Rafael'), (NULL, '13', 'Godoy Cruz'),(NULL, '13', 'Maipú'), (NULL, '13', 'Luján de Cuyo'),(NULL, '24', 'San Miguel de Tucumán (capital provincial)'), (NULL, '24', 'Yerba Buena'),(NULL, '24', 'Tafí Viejo'), (NULL, '24', 'Concepción'),(NULL, '24', 'Banda del Río Salí'), (NULL, '1', 'Palermo'),(NULL, '1', 'Recoleta'), (NULL, '1', 'Belgrano'),(NULL, '1', 'San Telmo'), (NULL, '1', 'Parque Chacabuco'),(NULL, '8', 'Paraná'), (NULL, '8', 'Concordia'),(NULL, '8', 'Gualeguaychú'), (NULL, '8', 'Gualeguay'),(NULL, '8', 'Villa Paranacito');
 
-CREATE TABLE `agora`.`domicilio` (`domID` INT UNSIGNED NOT NULL AUTO_INCREMENT , `domLocalidad` INT UNSIGNED NOT NULL , `domCPA` CHAR(8) NOT NULL , `domCalleRuta` VARCHAR(50) NOT NULL , `domNroKm` INT UNSIGNED NOT NULL , `domPiso` VARCHAR(10) NULL , `domDepto` VARCHAR(10) NULL , PRIMARY KEY (`domID`)) ENGINE = InnoDB;
+CREATE TABLE IF NOT EXISTS `agora`.`domicilio` (`domID` INT UNSIGNED NOT NULL AUTO_INCREMENT , `domLocalidad` INT UNSIGNED NOT NULL , `domCPA` CHAR(8) NOT NULL , `domCalleRuta` VARCHAR(50) NOT NULL , `domNroKm` INT UNSIGNED NOT NULL , `domPiso` VARCHAR(10) NULL , `domDepto` VARCHAR(10) NULL , PRIMARY KEY (`domID`)) ENGINE = InnoDB;
 
 ALTER TABLE `domicilio` ADD CONSTRAINT `FK_domicilioLocalidad` FOREIGN KEY (`domLocalidad`) REFERENCES `localidad`(`locId`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 INSERT INTO `domicilio` (`domID`, `domLocalidad`, `domCPA`, `domCalleRuta`, `domNroKm`, `domPiso`, `domDepto`) VALUES (NULL, '30', 'C1406DEH', 'Dávila', '926', '12', '175');
+INSERT INTO `domicilio` (`domID`, `domLocalidad`, `domCPA`, `domCalleRuta`, `domNroKm`, `domPiso`, `domDepto`) VALUES (NULL, '27', 'C1425DUR', 'Sánchez de Bustamante', '2173', '1', 'G')
+INSERT INTO `domicilio` (`domID`, `domLocalidad`, `domCPA`, `domCalleRuta`, `domNroKm`, `domPiso`, `domDepto`) VALUES (NULL, '1', 'B1900ALB', 'Calle 47', '1234', NULL, NULL), (NULL, '29', 'C1066AAW', 'Bolivar', '1131', NULL, NULL)
 
-CREATE TABLE `agora`.`usuario` (`usrId` INT UNSIGNED NOT NULL AUTO_INCREMENT , `usrDni` VARCHAR(8) NOT NULL , `usrApellido` VARCHAR(50) NOT NULL , `usrNombre` VARCHAR(50) NOT NULL , `usrRazonSocialFantasia` VARCHAR(100) NULL , `usrCuitCuil` VARCHAR(11) NULL , `usrTipoUsuario` CHAR(2) NOT NULL , `usrMatricula` VARCHAR(20) NULL , `usrDomicilio` INT UNSIGNED NOT NULL , `usrFechaNacimiento` DATE NOT NULL , `usrDescripcion` VARCHAR(500) NULL , `usrScoring` INT UNSIGNED NULL , `usrEmail` VARCHAR(100) NOT NULL , `usrPassword` VARCHAR(25) NOT NULL , `usrFechaInsert` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `usrFechaBaja` DATETIME NULL , PRIMARY KEY (`usrId`)) ENGINE = InnoDB;
+CREATE TABLE IF NOT EXISTS `agora`.`usuario` (`usrId` INT UNSIGNED NOT NULL AUTO_INCREMENT , `usrDni` VARCHAR(8) NOT NULL , `usrApellido` VARCHAR(50) NOT NULL , `usrNombre` VARCHAR(50) NOT NULL , `usrRazonSocialFantasia` VARCHAR(100) NULL , `usrCuitCuil` VARCHAR(11) NULL , `usrTipoUsuario` CHAR(2) NOT NULL , `usrMatricula` VARCHAR(20) NULL , `usrDomicilio` INT UNSIGNED NOT NULL , `usrFechaNacimiento` DATE NOT NULL , `usrDescripcion` VARCHAR(500) NULL , `usrScoring` INT UNSIGNED NULL , `usrEmail` VARCHAR(100) NOT NULL , `usrPassword` VARCHAR(25) NOT NULL , `usrFechaInsert` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `usrFechaBaja` DATETIME NULL , PRIMARY KEY (`usrId`)) ENGINE = InnoDB;
 
 ALTER TABLE `usuario` ADD CONSTRAINT `FK_usuarioTipoUsuario` FOREIGN KEY (`usrTipoUsuario`) REFERENCES `tipousuario`(`ttuTipoUsuario`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -31,5 +35,30 @@ ALTER TABLE `usuario` ADD CONSTRAINT `FK_usuarioDomicilio` FOREIGN KEY (`usrDomi
 
 INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonSocialFantasia`, `usrCuitCuil`, `usrTipoUsuario`, `usrMatricula`, `usrDomicilio`, `usrFechaNacimiento`, `usrDescripcion`, `usrScoring`, `usrEmail`, `usrPassword`, `usrFechaInsert`, `usrFechaBaja`) VALUES (NULL, '33698895', 'Gómez Ivaldi', 'Nicolás Alejandro', NULL, NULL, 'ST', NULL, '1', '1988-03-29', 'Soy uno de los creadores de esta WebApi.', NULL, 'nicoivaldi@agora.com', 'Ag0raAdm1n&', current_timestamp(), NULL)
 
+INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonSocialFantasia`, `usrCuitCuil`, `usrTipoUsuario`, `usrMatricula`, `usrDomicilio`, `usrFechaNacimiento`, `usrDescripcion`, `usrScoring`, `usrEmail`, `usrPassword`, `usrFechaInsert`, `usrFechaBaja`) VALUES (NULL, '33286958', 'Sosa Leonetti', 'Cristian Javier', NULL, NULL, 'UG', NULL, '2', '1988-02-08', NULL, NULL, 'sleonetti@gmail.com', 'L30n3tt1&', current_timestamp(), NULL)
+
+INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonSocialFantasia`, `usrCuitCuil`, `usrTipoUsuario`, `usrMatricula`, `usrDomicilio`, `usrFechaNacimiento`, `usrDescripcion`, `usrScoring`, `usrEmail`, `usrPassword`, `usrFechaInsert`, `usrFechaBaja`) VALUES (NULL, '29741295', 'Galíndez', 'Gustavo', 'Tasaciones Galíndez SH', '20297412951', 'UT', '123456', '3', '1984-01-01', 'Tasamos el valor de sus afectos al mejor precio de Mercado.', '50', 'gusgalindez@tasgalindez.com', 'LalalaGalindez1$', current_timestamp(), NULL), (NULL, '27965368', 'Rolón', 'Karina', 'Paraíso Antigüedades SA', '30123456785', 'UA', '95874L', '4', '1982-06-12', 'Compra y Venta de antigüedades. Tasamos.', '60', 'krolon@paraiso.com', 'Paraiso89%', current_timestamp(), NULL);
+
+CREATE TABLE IF NOT EXISTS `agora`.`periodo` (`perId` INT UNSIGNED NOT NULL AUTO_INCREMENT , `perDescripcion` VARCHAR(50) NOT NULL , `perFechaBaja` DATETIME NULL, PRIMARY KEY (`perId`)) ENGINE = InnoDB;
+
+INSERT INTO `periodo` (`perId`, `perDescripcion`, `perFechaBaja`) VALUES (NULL, 'Renacentista', NULL), (NULL, 'Barroco', NULL), (NULL, 'Pop Art', NULL)
+
+CREATE TABLE `agora`.`categoria` (`catId` INT UNSIGNED NOT NULL AUTO_INCREMENT , `catDescripcion` VARCHAR(50) NOT NULL , `catFechaBaja` DATETIME NULL , PRIMARY KEY (`catId`)) ENGINE = InnoDB;
+
+INSERT INTO `categoria` (`catId`, `catDescripcion`, `catFechaBaja`) VALUES (NULL, 'Pinturas', NULL), (NULL, 'Esculturas', NULL), (NULL, 'Muebles', NULL)
+
+CREATE TABLE IF NOT EXISTS `agora`.`subcategoria` (`scatId` INT UNSIGNED NOT NULL AUTO_INCREMENT , `scatCatId` INT UNSIGNED NOT NULL , `scatDescripcion` VARCHAR(50) NOT NULL , `scatFechaBaja` DATETIME NULL , PRIMARY KEY (`scatCatId`, `scatDescripcion`), UNIQUE (`scatId`)) ENGINE = InnoDB;
+
+ALTER TABLE `subcategoria` ADD CONSTRAINT `FK_SubcatCat` FOREIGN KEY (`scatCatId`) REFERENCES `categoria`(`catId`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+INSERT INTO `subcategoria` (`scatId`, `scatCatId`, `scatDescripcion`, `scatFechaBaja`) VALUES (NULL, '3', 'Sillas', NULL), (NULL, '3', 'Escritorios', NULL), (NULL, '2', 'Personas', NULL), (NULL, '2', 'Animales', NULL), (NULL, '1', 'Paisajes', NULL);
+
+CREATE TABLE IF NOT EXISTS `agora`.`usuariotasadorhabilidad` (`utsUsrId` INT UNSIGNED NOT NULL , `utsScatId` INT UNSIGNED NOT NULL , `utsPerId` INT UNSIGNED NOT NULL , `utsFechaInsert` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `utsFechaBaja` DATETIME NULL , PRIMARY KEY (`utsUsrId`, `utsScatId`, `utsPerId`)) ENGINE = InnoDB;
+
+ALTER TABLE `usuariotasadorhabilidad` ADD CONSTRAINT `FK_UsrTasHab_Usuario` FOREIGN KEY (`utsUsrId`) REFERENCES `usuario`(`usrId`) ON DELETE RESTRICT ON UPDATE CASCADE; ALTER TABLE `usuariotasadorhabilidad` ADD CONSTRAINT `FK_UsrTasHab_SubCat` FOREIGN KEY (`utsScatId`) REFERENCES `subcategoria`(`scatId`) ON DELETE RESTRICT ON UPDATE CASCADE; ALTER TABLE `usuariotasadorhabilidad` ADD CONSTRAINT `FK_UsrTasHab_Periodo` FOREIGN KEY (`utsPerId`) REFERENCES `periodo`(`perId`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+INSERT INTO `usuariotasadorhabilidad` (`utsUsrId`, `utsScatId`, `utsPerId`, `utsFechaInsert`, `utsFechaBaja`) VALUES ('3', '5', '1', current_timestamp(), NULL), ('3', '4', '2', current_timestamp(), NULL);
+
+INSERT INTO `usuariotasadorhabilidad` (`utsUsrId`, `utsScatId`, `utsPerId`, `utsFechaInsert`, `utsFechaBaja`) VALUES ('4', '1', '2', current_timestamp(), NULL), ('4', '2', '1', current_timestamp(), NULL);
 
 
