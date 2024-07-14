@@ -3,11 +3,9 @@ CREATE DATABASE IF NOT EXISTS `Agora`;GRANT ALL PRIVILEGES ON `Agora`.* TO 'Agor
 
 CREATE TABLE IF NOT EXISTS `agora`.`Tokens` (`tokToken` VARCHAR(500) NOT NULL, `tokFechaInsert` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP) ENGINE = InnoDB;
 
-DROP TRIGGER IF EXISTS `DeleteTokensOff`;CREATE DEFINER=`root`@`localhost` TRIGGER `DeleteTokensOff` AFTER INSERT ON `tokens` FOR EACH ROW BEGIN DELETE FROM tokens where TIMESTAMPDIFF(SECOND, tokFechaInsert,NOW()) >= 3600; END
+CREATE TABLE IF NOT EXISTS `agora`.`TipoUsuario` (`ttuTipoUsuario` CHAR(2) NOT NULL , `ttuDescripcion` VARCHAR(25) NOT NULL , `ttuRequiereMatricula` BOOLEAN NOT NULL DEFAULT FALSE, PRIMARY KEY (`ttuTipoUsuario`(2))) ENGINE = InnoDB;
 
-CREATE TABLE IF NOT EXISTS `agora`.`TipoUsuario` (`ttuTipoUsuario` CHAR(2) NOT NULL , `ttuDescripcion` VARCHAR(25) NOT NULL , PRIMARY KEY (`ttuTipoUsuario`(2))) ENGINE = InnoDB;
-
-INSERT INTO `tipousuario` (`ttuTipoUsuario`, `ttuDescripcion`) VALUES ('UG', 'Usuario General'), ('UT', 'Usuario Tasador'), ('UA', 'Usuario Anticuario'), ('ST', 'Soporte Tecnico'), ('SI', 'Seguridad Informatica')
+INSERT INTO `tipousuario` (`ttuTipoUsuario`, `ttuDescripcion`,`ttuRequiereMatricula`) VALUES ('UG', 'Usuario General', FALSE), ('UT', 'Usuario Tasador', TRUE), ('UA', 'Usuario Anticuario', TRUE), ('ST', 'Soporte Tecnico', FALSE), ('SI', 'Seguridad Informatica', FALSE)
 
 CREATE TABLE IF NOT EXISTS `agora`.`provincia` (`provId` SMALLINT NOT NULL AUTO_INCREMENT , `provDescripcion` VARCHAR(40) NOT NULL , PRIMARY KEY (`provId`)) ENGINE = InnoDB;
 
@@ -27,15 +25,15 @@ INSERT INTO `domicilio` (`domID`, `domLocalidad`, `domCPA`, `domCalleRuta`, `dom
 INSERT INTO `domicilio` (`domID`, `domLocalidad`, `domCPA`, `domCalleRuta`, `domNroKm`, `domPiso`, `domDepto`) VALUES (NULL, '27', 'C1425DUR', 'Sánchez de Bustamante', '2173', '1', 'G')
 INSERT INTO `domicilio` (`domID`, `domLocalidad`, `domCPA`, `domCalleRuta`, `domNroKm`, `domPiso`, `domDepto`) VALUES (NULL, '1', 'B1900ALB', 'Calle 47', '1234', NULL, NULL), (NULL, '29', 'C1066AAW', 'Bolivar', '1131', NULL, NULL)
 
-CREATE TABLE IF NOT EXISTS `agora`.`usuario` (`usrId` INT UNSIGNED NOT NULL AUTO_INCREMENT , `usrDni` VARCHAR(8) NOT NULL , `usrApellido` VARCHAR(50) NOT NULL , `usrNombre` VARCHAR(50) NOT NULL , `usrRazonSocialFantasia` VARCHAR(100) NULL , `usrCuitCuil` VARCHAR(11) NULL , `usrTipoUsuario` CHAR(2) NOT NULL , `usrMatricula` VARCHAR(20) NULL , `usrDomicilio` INT UNSIGNED NOT NULL , `usrFechaNacimiento` DATE NOT NULL , `usrDescripcion` VARCHAR(500) NULL , `usrScoring` INT UNSIGNED NULL , `usrEmail` VARCHAR(100) NOT NULL , `usrPassword` VARCHAR(25) NOT NULL , `usrFechaInsert` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `usrFechaBaja` DATETIME NULL , PRIMARY KEY (`usrId`)) ENGINE = InnoDB;
+CREATE TABLE IF NOT EXISTS `agora`.`usuario` (`usrId` INT UNSIGNED NOT NULL AUTO_INCREMENT , `usrDni` CHAR(8) NOT NULL , `usrApellido` VARCHAR(50) NOT NULL , `usrNombre` VARCHAR(50) NOT NULL , `usrRazonSocialFantasia` VARCHAR(100) NULL , `usrCuitCuil` CHAR(11) NULL , `usrTipoUsuario` CHAR(2) NOT NULL , `usrMatricula` VARCHAR(20) NULL , `usrDomicilio` INT UNSIGNED NOT NULL , `usrFechaNacimiento` DATE NOT NULL , `usrDescripcion` VARCHAR(500) NULL , `usrScoring` INT(10) NOT NULL DEFAULT 0, `usrEmail` VARCHAR(100) NOT NULL , `usrPassword` VARCHAR(25) NOT NULL , `usrFechaInsert` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `usrFechaBaja` DATETIME NULL , PRIMARY KEY (`usrId`)) ENGINE = InnoDB;
 
 ALTER TABLE `usuario` ADD CONSTRAINT `FK_usuarioTipoUsuario` FOREIGN KEY (`usrTipoUsuario`) REFERENCES `tipousuario`(`ttuTipoUsuario`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 ALTER TABLE `usuario` ADD CONSTRAINT `FK_usuarioDomicilio` FOREIGN KEY (`usrDomicilio`) REFERENCES `domicilio`(`domID`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
-INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonSocialFantasia`, `usrCuitCuil`, `usrTipoUsuario`, `usrMatricula`, `usrDomicilio`, `usrFechaNacimiento`, `usrDescripcion`, `usrScoring`, `usrEmail`, `usrPassword`, `usrFechaInsert`, `usrFechaBaja`) VALUES (NULL, '33698895', 'Gómez Ivaldi', 'Nicolás Alejandro', NULL, NULL, 'ST', NULL, '1', '1988-03-29', 'Soy uno de los creadores de esta WebApi.', NULL, 'nicoivaldi@agora.com', 'Ag0raAdm1n&', current_timestamp(), NULL)
+INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonSocialFantasia`, `usrCuitCuil`, `usrTipoUsuario`, `usrMatricula`, `usrDomicilio`, `usrFechaNacimiento`, `usrDescripcion`, `usrScoring`, `usrEmail`, `usrPassword`, `usrFechaInsert`, `usrFechaBaja`) VALUES (NULL, '33698895', 'Gómez Ivaldi', 'Nicolás Alejandro', NULL, NULL, 'ST', NULL, '1', '1988-03-29', 'Soy uno de los creadores de esta WebApi.', 0, 'nicoivaldi@agora.com', 'Ag0raAdm1n&', current_timestamp(), NULL)
 
-INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonSocialFantasia`, `usrCuitCuil`, `usrTipoUsuario`, `usrMatricula`, `usrDomicilio`, `usrFechaNacimiento`, `usrDescripcion`, `usrScoring`, `usrEmail`, `usrPassword`, `usrFechaInsert`, `usrFechaBaja`) VALUES (NULL, '33286958', 'Sosa Leonetti', 'Cristian Javier', NULL, NULL, 'UG', NULL, '2', '1988-02-08', NULL, NULL, 'sleonetti@gmail.com', 'L30n3tt1&', current_timestamp(), NULL)
+INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonSocialFantasia`, `usrCuitCuil`, `usrTipoUsuario`, `usrMatricula`, `usrDomicilio`, `usrFechaNacimiento`, `usrDescripcion`, `usrScoring`, `usrEmail`, `usrPassword`, `usrFechaInsert`, `usrFechaBaja`) VALUES (NULL, '33286958', 'Sosa Leonetti', 'Cristian Javier', NULL, NULL, 'UG', NULL, '2', '1988-02-08', NULL, 0, 'sleonetti@gmail.com', 'L30n3tt1&', current_timestamp(), NULL)
 
 INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonSocialFantasia`, `usrCuitCuil`, `usrTipoUsuario`, `usrMatricula`, `usrDomicilio`, `usrFechaNacimiento`, `usrDescripcion`, `usrScoring`, `usrEmail`, `usrPassword`, `usrFechaInsert`, `usrFechaBaja`) VALUES (NULL, '29741295', 'Galíndez', 'Gustavo', 'Tasaciones Galíndez SH', '20297412951', 'UT', '123456', '3', '1984-01-01', 'Tasamos el valor de sus afectos al mejor precio de Mercado.', '50', 'gusgalindez@tasgalindez.com', 'LalalaGalindez1$', current_timestamp(), NULL), (NULL, '27965368', 'Rolón', 'Karina', 'Paraíso Antigüedades SA', '30123456785', 'UA', '95874L', '4', '1982-06-12', 'Compra y Venta de antigüedades. Tasamos.', '60', 'krolon@paraiso.com', 'Paraiso89%', current_timestamp(), NULL);
 
