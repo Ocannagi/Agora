@@ -1,184 +1,142 @@
 <?php
 
-require_once(__DIR__ . '/dbConnection.php');
-require_once(__DIR__ . '/security.php');
-require_once(__DIR__ . '/validaciones.php');
-require_once(__DIR__ . '/output.php');
+require_once(__DIR__ . '/utilidades/Output.php');
+require_once(__DIR__ . '/persistencia.php');
+
+
+spl_autoload_register(function ($className) {
+    // Define la ruta base donde están tus clases e interfaces
+    $baseDir = __DIR__ . '/controllers/';
+    $file = $baseDir . str_replace('\\', '/', $className) . '.php';
+    if (file_exists($file)) {
+        require_once $file;
+    } else {
+        // Si no existe, intenta cargarlo desde la carpeta de servicios
+        $baseDir = __DIR__ . '/servicios/';
+        $file = $baseDir . str_replace('\\', '/', $className) . '.php';
+        if (file_exists($file)) {
+            require_once $file;
+        } else {
+            // Si no existe, intenta cargarlo desde la carpeta de DTOs
+            $baseDir = __DIR__ . '/DTOs/';
+            $file = $baseDir . str_replace('\\', '/', $className) . '.php';
+            if (file_exists($file)) {
+                require_once $file;
+            } else {
+                // Si no existe, intenta cargarlo desde la carpeta de utilidades
+                $baseDir = __DIR__ . '/utilidades/';
+                $file = $baseDir . str_replace('\\', '/', $className) . '.php';
+                if (file_exists($file)) {
+                    require_once $file;
+                }
+            }
+        }
+    }
+});
+
+use Utilidades\Output;
+
+
+/** Definir aquí las Dependencias de los Controller */
+define('DEPENDENCIAS', [
+    'DbConnection' => 'DbConnection',
+    'SecurityService' => 'SecurityService',
+    'ValidacionService' => 'ValidacionService']);
 
 
 /************* RUTEO *************/
 
 if (!isset($_GET['accion'])) {
-    outputError();
+    Output::outputError();
 }
 
 $metodo = strtolower($_SERVER['REQUEST_METHOD']);
 $accion = explode('/', strtolower($_GET['accion']));
+
+$controllerNombre = ucfirst($accion[0]) . 'Controller';
+
 $funcionNombre = $metodo . ucfirst($accion[0]);
 $parametros = array_slice($accion, 1);
 if (count($parametros) > 0 && $metodo == 'get') {
     $funcionNombre = $funcionNombre . 'ConParametros';
 }
-if (function_exists($funcionNombre)) {
-    call_user_func_array($funcionNombre, $parametros);
+
+$controller = null;
+
+if (class_exists($controllerNombre)) {
+    $controller = instanciarControllerSingleton($controllerNombre);
 } else {
-    outputError(400, "No existe " . $funcionNombre);
+    Output::outputError(400, "No existe el controlador " . $controllerNombre);
+}
+
+if(method_exists($controller, $funcionNombre)){
+    call_user_func_array([$controller, $funcionNombre], $parametros);
+} else {
+    Output::outputError(400, "No existe " . $funcionNombre . " en el controlador " . $controllerNombre);
 }
 
 /***************************** API ********************************/
 
 
-function postLogin()
+function instanciarControllerSingleton($controllerNombre) : object
 {
-    $link = conectarBD();
-    deleteTokensExpirados($link);
-    $loginData = json_decode(file_get_contents("php://input"), true);
-    $usrEmail = mysqli_real_escape_string($link, $loginData['usrEmail']);
-    $usrPassword = mysqli_real_escape_string($link, $loginData['usrPassword']);
-    $sql = "SELECT usrId, usrNombre FROM usuario WHERE usrEmail='$usrEmail' AND usrPassword='$usrPassword'";
-    $resultado = mysqli_query($link, $sql);
-    if ($resultado && mysqli_num_rows($resultado) == 1) {
-        $logged = mysqli_fetch_assoc($resultado);
-        $data = [
-            'usrId'       => $logged['usrId'],
-            'usrNombre'    => $logged['usrNombre'],
-            'exp'       => time() + JWT_EXP,
-        ];
-        $jwt = tokenGenerator($data);
-        $jwtSql = mysqli_real_escape_string($link, $jwt);
-        mysqli_query($link, "DELETE FROM tokens WHERE tokToken = '$jwtSql'");
-        if (mysqli_query($link, "INSERT INTO tokens (tokToken) VALUES ('$jwtSql')")) {
-            mysqli_close($link);
-            outputJson(['jwt' => $jwt]);
-        } else {
-            outputError(500, mysqli_error($link));
+    return $controllerNombre::getInstancia(...inyectarDependencias($controllerNombre));
+}
+
+/**
+ * Inyecta las dependencias necesarias en el constructor del controlador.
+ * @param string $controllerNombre Nombre del controlador.
+ * @return array Array de dependencias a inyectar.
+ * El constructor del controlador debe tener las dependencias en el mismo orden que se declaran aquí.
+ */
+function inyectarDependencias($controllerNombre): array
+{
+    $reflection = new ReflectionClass($controllerNombre);
+    $constructor = $reflection->getConstructor();
+    $dependencias = $constructor->getParameters();
+
+    $ret = [];
+    foreach ($dependencias as $dependencia) {
+        if (strtolower($dependencia->getName()) === strtolower('DbConnection')) {
+            $ret[] = DEPENDENCIAS['DbConnection']::getInstancia();
+        } else if (strtolower($dependencia->getName()) === strtolower('SecurityService')) {
+            $ret[] = DEPENDENCIAS['SecurityService']::getInstancia(DEPENDENCIAS['DbConnection']::getInstancia());
+        } else if (strtolower($dependencia->getName()) === strtolower('ValidacionService')) {
+            $ret[] = DEPENDENCIAS['ValidacionService']::getInstancia();
         }
     }
-    print_r("No está registrado el mail o la contraseña");
-    outputError(401);
-}
-
-function postLogout()
-{
-    requireLogin();
-    $link = conectarBD();
-    $authHeader = getallheaders();
-    list($jwt) = @sscanf($authHeader['Authorization'], 'Bearer %s');
-    if (!$jwt)
-        outputError(401, "El token de seguridad está vacío");
-    $jwtSql = mysqli_real_escape_string($link, $jwt);
-    if (!mysqli_query($link, "DELETE FROM tokens WHERE token = '$jwtSql'")) {
-        outputError(403);
-    }
-    mysqli_close($link);
-    outputJson([]);
+    return $ret;
 }
 
 
-function getUsuarios()
-{
-    requireLogin();
-    $link = conectarBD();
-    $sql = "SELECT usrId, usrNombre, usrApellido, usrEmail FROM usuario";
-    $resultado = mysqli_query($link, $sql);
-    if ($resultado === false) {
-        print_r(mysqli_error($link));
-        outputError(500);
-    }
-    $ret = [];
-    while ($fila = mysqli_fetch_assoc($resultado)) {
-        $ret[] = [
-            'usrId' => $fila['usrId'] + 0,
-            'usrApellido' => $fila['usrApellido'],
-            'usrNombre'   => $fila['usrNombre'],
-            'usrEmail'    => $fila['usrEmail']
-        ];
-    }
-    mysqli_free_result($resultado);
-    mysqli_close($link);
-    outputJson($ret);
-}
-
-function getUsuariosConParametros($id)
-{
-    requireLogin();
-    $id += 0;
-    $link = conectarBD();
-    $sql = "SELECT * FROM usuario WHERE usrId=$id";
-    $resultado = mysqli_query($link, $sql);
-    if ($resultado === false) {
-        outputError(500, "Falló la consulta al querer obtener un usuario por id: " . mysqli_error($link));
-        die;
-    }
-    if (mysqli_num_rows($resultado) == 0) {
-        outputError(404, "No se encontró un usuario con ese id");
-    }
-
-    $ret = mysqli_fetch_assoc($resultado);
-    settype($ret["usrId"], "integer");
-    settype($ret["usrDomicilio"], "integer");
-    mysqli_free_result($resultado);
-    mysqli_close($link);
-    $ret["usrPassword"] = "*****";
-    outputJson($ret);
-}
 
 
-function getTiposUsuario()
-{
-    requireLogin();
-    $link = conectarBD();
-
-    $sql = "SELECT * FROM tipousuario";
-    $resultado = mysqli_query($link, $sql);
-    if ($resultado === false) {
-        print_r(mysqli_error($link));
-        outputError(500);
-    }
-    $ret = [];
-    while ($fila = mysqli_fetch_assoc($resultado)) {
-        $ret[] = [
-            'ttuTipoUsuario' => $fila['ttuTipoUsuario'],
-            'ttuDescripcion' => $fila['ttuDescripcion'],
-        ];
-    }
-    mysqli_free_result($resultado);
-    mysqli_close($link);
-    outputJson($ret);
-}
 
 
 function postUsuario()
 {
-    requireLogin();
+    //requireLogin();
     $link = conectarBD();
     $dato = json_decode(file_get_contents('php://input'), true);
     if (json_last_error()) {
-        outputError(400, "El formato de datos es incorrecto");
+        Output::outputError(400, "El formato de datos es incorrecto");
     }
-
-    //Datos obligatorios
-    $usrDni = 'usrDni';
-    $usrApellido = 'usrApellido';
-    $usrNombre = 'usrNombre';
-    $usrTipoUsuario  = 'usrTipoUsuario';
-    $usrDomicilio = 'usrDomicilio';
-    $usrFechaNacimiento = 'usrFechaNacimiento';
-    $usrEmail  = 'usrEmail';
-    $usrPassword  = 'usrPassword';
-
-    //
 
     validarInputUsuario($link, $dato, false);
 
 
-
-
-
-
-    $usrRazonSocialFantasia = isset($dato['usrRazonSocialFantasia']) ? "'" . mysqli_real_escape_string($link, $dato['usrRazonSocialFantasia']) . "'" : "'NULL'";
-    $usrMatricula = isset($dato['usrMatricula']) ? "'" . mysqli_real_escape_string($link, $dato['usrMatricula']) . "'" : "'NULL'";
-    $usrDescripcion = isset($dato['usrDescripcion']) ? "'" . mysqli_real_escape_string($link, $dato['usrDescripcion']) . "'" : "'NULL'";
+    $usrDni = $dato['usrDni'];
+    $usrApellido = $dato['usrApellido'];
+    $usrNombre = $dato['usrNombre'];
+    $usrTipoUsuario  = $dato['usrTipoUsuario'];
+    $usrDomicilio = $dato['usrDomicilio'];
+    $usrFechaNacimiento = $dato['usrFechaNacimiento'];
+    $usrEmail  = $dato['usrEmail'];
+    $usrPassword  = $dato['usrPassword'];
+    $usrRazonSocialFantasia = $dato['usrRazonSocialFantasia'];
+    $usrCuitCuil = $dato['usrCuitCuil'];
+    $usrMatricula = $dato['usrMatricula'];
+    $usrDescripcion = $dato['usrDescripcion'];
 
     $sql = "INSERT INTO usuario (usrDni, usrApellido, usrNombre, usrRazonSocialFantasia , usrCuitCuil,
             usrTipoUsuario, usrMatricula, usrDomicilio, usrFechaNacimiento, usrDescripcion, usrEmail,
@@ -188,7 +146,7 @@ function postUsuario()
 
     $resultado = mysqli_query($link, $sql);
     if ($resultado === false) {
-        outputError(500, "Falló la consulta: " . mysqli_error($link));
+        Output::outputError(500, "Falló la consulta: " . mysqli_error($link));
     }
 
     $ret = [
@@ -196,5 +154,73 @@ function postUsuario()
     ];
 
     mysqli_close($link);
-    outputJson($ret, 201);
+    Output::outputJson($ret, 201);
 }
+
+
+function patchUsuario($id)
+{
+    requireLogin();
+    $id += 0;
+    $link = conectarBD();
+    $dato = json_decode(file_get_contents('php://input'), true);
+    if (json_last_error()) {
+        Output::outputError(400, "El formato de datos es incorrecto");
+    }
+
+    validarInputUsuario($link, $dato, true);
+
+    $usrDni = $dato['usrDni'];
+    $usrApellido = $dato['usrApellido'];
+    $usrNombre = $dato['usrNombre'];
+    $usrTipoUsuario  = $dato['usrTipoUsuario'];
+    $usrDomicilio = $dato['usrDomicilio'];
+    $usrFechaNacimiento = $dato['usrFechaNacimiento'];
+    $usrEmail  = $dato['usrEmail'];
+    $usrPassword  = $dato['usrPassword'];
+    $usrRazonSocialFantasia = $dato['usrRazonSocialFantasia'];
+    $usrCuitCuil = $dato['usrCuitCuil'];
+    $usrMatricula = $dato['usrMatricula'];
+    $usrDescripcion = $dato['usrDescripcion'];
+    $usrScoring = $dato['usrScoring'];
+
+    $sql = "UPDATE usuario SET usrDni = $usrDni, usrApellido = $usrApellido, usrNombre = $usrNombre, usrRazonSocialFantasia = $usrRazonSocialFantasia , usrCuitCuil = $usrCuitCuil,
+            usrTipoUsuario = $usrTipoUsuario, usrMatricula = $usrMatricula, usrDomicilio = $usrDomicilio, usrFechaNacimiento = $usrFechaNacimiento, usrDescripcion = $usrDescripcion,
+            usrScoring = $usrScoring, usrEmail = $usrEmail,
+            usrPassword = $usrPassword WHERE usrId = $id";
+
+    $resultado = mysqli_query($link, $sql);
+    if ($resultado === false) {
+        Output::outputError(500, "Falló la consulta: " . mysqli_error($link));
+    }
+
+    $ret = [];
+
+    mysqli_close($link);
+    Output::outputJson($ret, 201);
+}
+
+function deleteUsuario($id)
+{
+    requireLogin();
+    $id += 0;
+    $link = conectarBD();
+    $sql = "SELECT usrId FROM usuario WHERE id=$id";
+    $resultado = mysqli_query($link, $sql);
+    if ($resultado === false) {
+        Output::outputError(500, "Falló la consulta: " . mysqli_error($link));
+    }
+    if (mysqli_num_rows($resultado) == 0) {
+        Output::outputError(404);
+    }
+    mysqli_free_result($resultado);
+    $sql = "UPDATE SET usrFechaBaja = CURRENT_TIMESTAMP() WHERE id=$id";
+    $resultado = mysqli_query($link, $sql);
+    if ($resultado === false) {
+        Output::outputError(500, "Falló la consulta: " . mysqli_error($link));
+    }
+    mysqli_close($link);
+    Output::outputJson([]);
+}
+
+
