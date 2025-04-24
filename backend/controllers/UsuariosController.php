@@ -52,7 +52,7 @@ class UsuariosController extends BaseController
 
         $usuarioCreacionDTO = new UsuarioCreacionDTO($data);
 
-        $this->valdacionService->validarInputUsuario($mysqli, $usuarioCreacionDTO, false);
+        $this->valdacionService->validarInputUsuario($mysqli, $usuarioCreacionDTO);
 
     }
 

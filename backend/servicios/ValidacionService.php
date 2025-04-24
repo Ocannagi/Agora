@@ -22,23 +22,23 @@ class ValidacionService implements IValidar
 
 
     /**Si la validación falla, hay ouput con msg de error. Si la cumple, el array de datos pasado por referencia es escapado y se le agregan las comillas simples */
-    function validarInputUsuario(mysqli $linkExterno, UsuarioCreacionDTO $usuarioCreacionDTO, bool $soyModificacion)
+    function validarInputUsuario(mysqli $linkExterno, UsuarioCreacionDTO | UsuarioDTO $usuario)
     {
         
-        $this->validarDatosObligatorios(Usuario::getObligatorios(), get_object_vars($usuarioCreacionDTO));
-        $this->validarDni($usuarioCreacionDTO->usrDni);
-        $this->validarApellido($usuarioCreacionDTO->usrApellido);
-        $this->validarNombre($usuarioCreacionDTO->usrNombre);
-        $this->validarTipoUsuario($usuarioCreacionDTO->usrTipoUsuario, $linkExterno);
-        $this->validarDomicilio($usuarioCreacionDTO->usrDomicilio, $linkExterno);
-        $this->validarEmail($usuarioCreacionDTO->usrEmail);
+        $this->validarDatosObligatorios(Usuario::getObligatorios(), get_object_vars($usuario));
+        $this->validarDni($usuario->usrDni);
+        $this->validarApellido($usuario->usrApellido);
+        $this->validarNombre($usuario->usrNombre);
+        $this->validarTipoUsuario($usuario->usrTipoUsuario, $linkExterno);
+        $this->validarDomicilio($usuario->usrDomicilio, $linkExterno);
+        $this->validarEmail($usuario->usrEmail);
 
-        if ($soyModificacion) {
+        if ($usuario instanceof UsuarioDTO) {
             $usrScoring = "usrScoring";
-            $this->validarExisteUsuarioModificar($dato["usrId"]);
+            $this->validarExisteUsuarioModificar($usuario->usrId, $linkExterno);
             $this->validarScoring($dato, $usrScoring);
         } else
-            $this->validarSiYaFueRegistrado($dato[$usrEmail], $dato[$usrDni]);
+            $this->validarSiYaFueRegistrado($usuario->usrEmail, $usuario->usrDni, $linkExterno);
 
         $this->validarPassword($dato, $usrPassword);
         $this->validarFechaNacimiento($dato, $usrFechaNacimiento);

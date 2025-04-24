@@ -2,5 +2,5 @@
 
 interface IValidar
 {
-    public function validarInputUsuario(mysqli $linkExterno, UsuarioCreacionDTO $usuarioCreacionDTO, bool $soyModificacion);
+    public function validarInputUsuario(mysqli $linkExterno, UsuarioCreacionDTO | UsuarioDTO $usuario);
 }
