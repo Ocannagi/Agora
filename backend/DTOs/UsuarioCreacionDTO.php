@@ -20,15 +20,7 @@ class UsuarioCreacionDTO
     {
         foreach ($data as $key => $value) {
             if (property_exists($this, $key)) {
-                $this->$key = $value;
-            }
-        }
-    }
-
-    public function reSetear(array $data): void
-    {
-        foreach ($data as $key => $value) {
-            if (property_exists($this, $key)) {
+                settype($value, gettype($this->$key));
                 $this->$key = $value;
             }
         }

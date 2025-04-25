@@ -44,6 +44,13 @@ class UsuariosController extends BaseController
 
     public function postUsuarios()
     {
+        try {
+            //code...
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+        
+        
         $mysqli = $this->dbConnection->conectarBD();
         $data = json_decode(file_get_contents('php://input'), true);
         if (json_last_error()) {

@@ -53,6 +53,11 @@ class ValidacionService implements IValidar
         $this->escaparDatosYAgregarComillasSimples($dato, $linkExterno);
     }
 
+    public function validarType(string $className, array $datos)
+    {
+        $refClass = new ReflectionClass($className);
+    }
+
     public function escaparDatosYAgregarComillasSimples(array &$datos, mysqli $linkExterno)
     {
         foreach ($datos as $key => $value) {
@@ -136,11 +141,9 @@ class ValidacionService implements IValidar
             Output::outputError(409, "Ya se encuentra registrado el email o el dni del usuario a crear.");
     }
 
-    private function validarPassword(array &$dato, string $keyPassword, mysqli $linkExterno)
+    private function validarPassword(array &$dato, string $keyPassword)
     {
-        if ($this->_esStringLongitud($dato[$keyPassword], 8, 25) && $this->_esPasswordValido($dato[$keyPassword]))
-            $dato[$keyPassword] = "'" . mysqli_real_escape_string($linkExterno, $dato[$keyPassword]) . "'";
-        else
+        if (!$this->_esStringLongitud($dato[$keyPassword], 8, 25) || !$this->_esPasswordValido($dato[$keyPassword]))
             Output::outputError(400, ["El usrPassword no es válido: " => [
                 "Debe tener al menos 8 caracteres y máximo 25.",
                 "Debe tener al menos una mayúscula.",
