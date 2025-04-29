@@ -1,6 +1,7 @@
 <?php
 
 require_once(__DIR__ . '/utilidades/Output.php');
+require_once(__DIR__ . '/utilidades/Input.php');
 require_once(__DIR__ . '/persistencia.php');
 
 
@@ -113,50 +114,7 @@ function inyectarDependencias($controllerNombre): array
 
 
 
-function postUsuario()
-{
-    //requireLogin();
-    $link = conectarBD();
-    $dato = json_decode(file_get_contents('php://input'), true);
-    if (json_last_error()) {
-        Output::outputError(400, "El formato de datos es incorrecto");
-    }
-
-    validarInputUsuario($link, $dato, false);
-
-
-    $usrDni = $dato['usrDni'];
-    $usrApellido = $dato['usrApellido'];
-    $usrNombre = $dato['usrNombre'];
-    $usrTipoUsuario  = $dato['usrTipoUsuario'];
-    $usrDomicilio = $dato['usrDomicilio'];
-    $usrFechaNacimiento = $dato['usrFechaNacimiento'];
-    $usrEmail  = $dato['usrEmail'];
-    $usrPassword  = $dato['usrPassword'];
-    $usrRazonSocialFantasia = $dato['usrRazonSocialFantasia'];
-    $usrCuitCuil = $dato['usrCuitCuil'];
-    $usrMatricula = $dato['usrMatricula'];
-    $usrDescripcion = $dato['usrDescripcion'];
-
-    $sql = "INSERT INTO usuario (usrDni, usrApellido, usrNombre, usrRazonSocialFantasia , usrCuitCuil,
-            usrTipoUsuario, usrMatricula, usrDomicilio, usrFechaNacimiento, usrDescripcion, usrEmail,
-            usrPassword) VALUES ($usrDni, $usrApellido, $usrNombre, $usrRazonSocialFantasia, $usrCuitCuil,
-            $usrTipoUsuario, $usrMatricula, $usrDomicilio, $usrFechaNacimiento, $usrDescripcion, $usrEmail,
-            $usrPassword)";
-
-    $resultado = mysqli_query($link, $sql);
-    if ($resultado === false) {
-        Output::outputError(500, "Falló la consulta: " . mysqli_error($link));
-    }
-
-    $ret = [
-        'usrId' => mysqli_insert_id($link)
-    ];
-
-    mysqli_close($link);
-    Output::outputJson($ret, 201);
-}
-
+/*
 
 function patchUsuario($id)
 {
@@ -223,4 +181,4 @@ function deleteUsuario($id)
     Output::outputJson([]);
 }
 
-
+*/

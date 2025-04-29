@@ -1,7 +1,9 @@
 <?php
+
 use Utilidades\Obligatorio;
 
-class Usuario {
+class Usuario
+{
     private int $usrId; // Identificador único del usuario.
     #[Obligatorio]
     private string $usrDni; // DNI del usuario.
@@ -17,15 +19,15 @@ class Usuario {
     #[Obligatorio]
     private int $usrDomicilio; // Domicilio del usuario (referencia a otra tabla).
     #[Obligatorio]
-    private string $usrFechaNacimiento; // Fecha de nacimiento del usuario.
+    private DateTime $usrFechaNacimiento; // Fecha de nacimiento del usuario.
     private ?string $usrDescripcion; // Descripción del usuario (nullable).
     private int $usrScoring; // Puntuación del usuario (default 0).
     #[Obligatorio]
     private string $usrEmail; // Email del usuario.
     #[Obligatorio]
     private string $usrPassword; // Contraseña del usuario.
-    private string $usrFechaInsert; // Fecha de inserción (timestamp automático).
-    private ?string $usrFechaBaja; // Fecha de baja (nullable).
+    private DateTime $usrFechaInsert; // Fecha de inserción.
+    private ?DateTime $usrFechaBaja; // Fecha de baja (nullable).
 
     public static function fromCreacionDTO(UsuarioCreacionDTO $dto): self
     {
@@ -38,29 +40,61 @@ class Usuario {
         $instance->usrTipoUsuario = $dto->usrTipoUsuario;
         $instance->usrMatricula = $dto->usrMatricula;
         $instance->usrDomicilio = $dto->usrDomicilio;
-        $instance->usrFechaNacimiento = $dto->usrFechaNacimiento;
+        $instance->usrFechaNacimiento = DateTime::createFromFormat('Y-m-d', $dto->usrFechaNacimiento);
         $instance->usrDescripcion = $dto->usrDescripcion;
         $instance->usrEmail = $dto->usrEmail;
         $instance->usrPassword = password_hash($dto->usrPassword, PASSWORD_DEFAULT);
         return $instance;
     }
-    
+
     public static function fromArray(array $data): self
     {
         $instance = new self();
+        $refClass = new ReflectionClass(__CLASS__);
+        $properties = $refClass->getProperties();
+
         foreach ($data as $key => $value) {
             if (property_exists($instance, $key)) {
-                $instance->$key = $value;
+                foreach ($properties as $property) {
+                    if ($property->getName() === $key) {
+                        $type = $property->getType();
+
+                        if ($value === null || $value === "") {
+                            if ($type && $type->allowsNull()) {
+                                $instance->$key = null;
+                            } else {
+                                throw new InvalidArgumentException("La propiedad {$key} no puede ser nula.");
+                            }
+                        } elseif ($type && $type->getName() === 'DateTime') {
+                            $date = DateTime::createFromFormat('Y-m-d', $value);
+                            if ($date) {
+                                $instance->$key = $date;
+                            } else {
+                                throw new InvalidArgumentException("Formato de fecha inválido para {$key}.");
+                            }
+                        } elseif ($type) {
+                            settype($value, $type->getName());
+                            $instance->$key = $value;
+                        } else {
+                            $instance->$key = $value;
+                        }
+                    }
+                }
+            } else {
+                throw new InvalidArgumentException("La propiedad {$key} no existe en la clase Usuario.");
             }
         }
+
         return $instance;
     }
+
     public function toArray(): array
     {
         return get_object_vars($this);
     }
 
-    public static function getObligatorios(): array{
+    public static function getObligatorios(): array
+    {
         $refClass = new ReflectionClass(__CLASS__);
         $propiedades = $refClass->getProperties();
         $obligatorios = [];
@@ -71,7 +105,4 @@ class Usuario {
         }
         return $obligatorios;
     }
-
-
-    
 }
