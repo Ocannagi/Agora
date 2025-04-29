@@ -56,7 +56,7 @@ class UsuariosController extends BaseController
                 Output::outputError(400, "No se recibieron datos para crear el usuario");
             }
 
-           // $this->valdacionService->validarType(className: "UsuarioCreacionDTO", datos: $data);
+            $this->valdacionService->validarType(className: "UsuarioCreacionDTO", datos: $data);
 
             $usuarioCreacionDTO = new UsuarioCreacionDTO($data);
 

@@ -64,14 +64,31 @@ class ValidacionService implements IValidar
         foreach ($propiedades as $propiedad) {
             $tipo = $propiedad->getType()->getName();
             if (array_key_exists($propiedad->getName(), $datos)) {
-                if (gettype($datos[$propiedad->getName()]) !== $tipo && gettype($datos[$propiedad->getName()]) !== 'NULL') {
+
+                $estandarizarType = function (string $tipo): string {
+                    return match ($tipo) {
+                        'integer' => 'int',
+                        'boolean' => 'bool',
+                        'double' => 'float',
+                        default => $tipo,
+                    };
+                };
+
+                if ($estandarizarType(gettype($datos[$propiedad->getName()])) !== $tipo && gettype($datos[$propiedad->getName()]) !== 'NULL') {
+
+                    /*   var_dump($datos[$propiedad->getName()]);
+                    var_dump(gettype($datos[$propiedad->getName()]));
+                    var_dump($tipo); */
+
+
+
                     Output::outputError(400, "El campo " . $propiedad->getName() . " debe ser de tipo $tipo.");
                 }
             }
         }
     }
 
-    
+
 
     private function validarDatosObligatorios(array $keyDatos, array $datos)
     {
@@ -165,14 +182,15 @@ class ValidacionService implements IValidar
         $fn = new DateTime($stringFecha, $dateTimeZone); //date_create(str_replace("'", "", $dato[$keyFechaNacimiento]), timezone_open('America/Argentina/Buenos_Aires'));
         $hoy = new DateTime('now', $dateTimeZone); //date_create('', timezone_open('America/Argentina/Buenos_Aires'));
 
-        $hoyMenos130anios = $hoy->sub(new DateInterval('P130Y')); //date_create('', timezone_open('America/Argentina/Buenos_Aires'))->sub(new DateInterval('P130Y'));
-        $hoyMenos18anios = $hoy->sub(new DateInterval('P18Y')); //date_create('', timezone_open('America/Argentina/Buenos_Aires'))->sub(new DateInterval('P18Y'));
+        $hoyMenos130anios = (clone $hoy)->sub(new DateInterval('P130Y')); //date_create('', timezone_open('America/Argentina/Buenos_Aires'))->sub(new DateInterval('P130Y'));
+        $hoyMenos18anios = (clone $hoy)->sub(new DateInterval('P18Y')); //date_create('', timezone_open('America/Argentina/Buenos_Aires'))->sub(new DateInterval('P18Y'));
 
         if ($fn < $hoyMenos130anios)
             Output::outputError(400, 'La fecha de nacimiento declarada tiene más 130 años al día de la fecha. Por favor, comuníquese con soporte técnico en caso de que la fecha sea correcta.');
 
         if ($fn > $hoy)
             Output::outputError(400, 'La fecha de nacimiento no puede ser mayor a hoy');
+
 
         if ($fn > $hoyMenos18anios)
             Output::outputError(400, 'Debe tener 18 años o más para poder registrarte en esta web.');
@@ -203,13 +221,16 @@ class ValidacionService implements IValidar
     private function validarMatricula(string $matricula, string $tipoUsuario, mysqli $linkExterno)
     {
 
-        if (!$this->_requiereMatricula($linkExterno, $tipoUsuario))
-            Output::outputError(400, 'El tipo de usuario declarado no requiere matrícula.');
-        else {
-            if (!Input::esNotNullVacioBlanco($matricula))
+        if ($this->_requiereMatricula($linkExterno, $tipoUsuario)) {
+            if (!Input::esNotNullVacioBlanco($matricula)) {
                 Output::outputError(400, 'La matrícula es obligatoria para el tipoUsuario declarado.');
-            else if (!$this->_esStringLongitud($matricula, 1, 20))
+            } else if (!$this->_esStringLongitud($matricula, 1, 20)) {
                 Output::outputError(400, 'La Matrícula debe ser un string de al menos un caracter y un máximo de 20.');
+            }
+        } else{
+            if (Input::esNotNullVacioBlanco($matricula)) {
+                Output::outputError(400, 'El tipo de usuario declarado no requiere matrícula.');
+            }
         }
     }
 

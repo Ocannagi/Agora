@@ -29,6 +29,16 @@ spl_autoload_register(function ($className) {
                 $file = $baseDir . str_replace('\\', '/', $className) . '.php';
                 if (file_exists($file)) {
                     require_once $file;
+                } else {
+                    // Si no existe, intenta cargarlo desde la carpeta de modelos
+                    $baseDir = __DIR__ . '/model/';
+                    $file = $baseDir . str_replace('\\', '/', $className) . '.php';
+                    if (file_exists($file)) {
+                        require_once $file;
+                    } else {
+                        // Si no existe, lanza un error
+                        throw new Exception("No se pudo cargar la clase: " . $className);
+                    }
                 }
             }
         }
