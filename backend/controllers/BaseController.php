@@ -16,7 +16,7 @@ abstract class BaseController implements IBaseController
         $mysqli = $this->dbConnection->conectarBD();
         $resultado = $mysqli->query($query);
         if ($resultado === false) {
-            Output::outputError(500, "Falló la consulta: " . $mysqli->error);
+            Output::outputError(500, 'Falló la consulta: ' . $mysqli->error);
         }
         $ret = [];
         while ($fila = $resultado->fetch_assoc()) {
@@ -31,11 +31,11 @@ abstract class BaseController implements IBaseController
         $mysqli = $this->dbConnection->conectarBD();
         $resultado = $mysqli->query($query);
         if ($resultado === false) {
-            Output::outputError(500, "Falló la consulta al querer obtener un usuario por id: " . $mysqli->error);
+            Output::outputError(500, "Falló la consulta al querer obtener un $classDTO por id: " . $mysqli->error);
             die;
         }
         if ($resultado->num_rows == 0) {
-            Output::outputError(404, "No se encontró un usuario con ese id");
+            Output::outputError(404, "No se encontró un $classDTO con ese id");
         }
         $ret = new $classDTO(mysqli_fetch_assoc($resultado));
         $resultado->free_result();
@@ -46,7 +46,7 @@ abstract class BaseController implements IBaseController
     {
         $resultado = $link->query($query);
         if ($resultado === false) {
-            Output::outputError(500, "Falló la consulta: " . $link->error);
+            Output::outputError(500, 'Falló la consulta: ' . $link->error);
         }
         $ret = [
             'usrId' => $link->insert_id
@@ -54,12 +54,35 @@ abstract class BaseController implements IBaseController
         $link->close();
         Output::outputJson($ret, 201);
     }
-    public function patch($id)
+    public function patch(string $query, mysqli $link)
     {
-        // Implementación del método patch
+        $resultado = $link->query($query);
+        if ($resultado === false) {
+            Output::outputError(500, 'Falló la consulta: ' . $link->error);
+        }
+
+        $ret = [];
+
+        $link->close();
+        Output::outputJson($ret, 201);
     }
-    public function delete($id)
+    public function delete(string $queryBusqueda, string $queryBajaLogica)
     {
-        // Implementación del método delete
+        $mysqli = $this->dbConnection->conectarBD();
+        $resultado = $mysqli->query($queryBusqueda);
+        if ($resultado === false) {
+            Output::outputError(500, "Falló la consulta al querer comprobar la existencia de la entidad por id: " . $mysqli->error);
+            die;
+        }
+        if ($resultado->num_rows == 0) {
+            Output::outputError(404, 'No se encontró la entidad con ese id para ser eliminada');
+        }
+        $resultado->free_result();
+        $resultado = $mysqli->query($queryBajaLogica);
+        if ($resultado === false) {
+            Output::outputError(500, 'Falló la consulta: ' . $mysqli->error);
+        }
+        $mysqli->close();
+        Output::outputJson([]);
     }
 }

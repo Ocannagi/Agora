@@ -232,6 +232,8 @@ class ValidacionService implements IValidar
                 Output::outputError(400, 'El tipo de usuario declarado no requiere matrícula.');
             }
         }
+
+        Output::outputError(500,'Algo no te anda, chabón');
     }
 
     private function validarDescripcion(string $descripcion)

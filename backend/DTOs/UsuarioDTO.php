@@ -15,6 +15,7 @@ class UsuarioDTO
     public ?string $usrDescripcion = null; // Descripción del usuario (nullable).
     public int $usrScoring; // Puntuación del usuario (default 0).
     public string $usrEmail; // Email del usuario.
+    public string $usrPassword;
 
     public function __construct(array $data)
     {

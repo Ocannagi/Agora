@@ -40,7 +40,8 @@ class UsuariosController extends BaseController
 
     public function getUsuariosConParametros($id)
     {
-        $this->securityService->requireLogin(tipoUsurio: ['ST']);
+        settype($id, 'integer');
+        $this->securityService->requireLogin(tipoUsurio: null);
         return parent::getConParametros(query: "SELECT usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario FROM usuario WHERE usrId = $id AND usrFechaBaja is NULL", classDTO: "UsuarioDTO");
     }
 
@@ -71,11 +72,67 @@ class UsuariosController extends BaseController
                         '$usuarioCreacionDTO->usrPassword')";
 
             return parent::post(query: $query, link: $mysqli);
-
         } catch (\Throwable $th) {
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage());
+            }
+        }
+    }
+
+    public function patchUsuarios($id)
+    {
+
+        try {
+            $this->securityService->requireLogin(tipoUsurio: null);
+            settype($id, 'integer');
+            $mysqli = $this->dbConnection->conectarBD();
+            $data = json_decode(file_get_contents('php://input'), true);
+            if (json_last_error()) {
+                Output::outputError(400, "El formato de datos es incorrecto");
+            }
+            if (empty($data)) {
+                Output::outputError(400, "No se recibieron datos para crear el usuario");
+            }
+
+            $data['usrId'] = $id;
+
+            $this->valdacionService->validarType(className: "UsuarioDTO", datos: $data);
+            $usuarioDTO = new UsuarioDTO($data);
+
+            $this->valdacionService->validarInputUsuario($mysqli, $usuarioDTO);
+            Input::escaparDatos($usuarioDTO, $mysqli);
+            Input::convertNULLtoString($usuarioDTO);
+
+            $query = "UPDATE usuario SET usrDni = '$usuarioDTO->usrDni', usrApellido = '$usuarioDTO->usrApellido', usrNombre = '$usuarioDTO->usrNombre', usrRazonSocialFantasia = '$usuarioDTO->usrRazonSocialFantasia' , usrCuitCuil = '$usuarioDTO->usrCuitCuil',
+            usrTipoUsuario = '$usuarioDTO->usrTipoUsuario', usrMatricula = '$usuarioDTO->usrMatricula', usrDomicilio = $usuarioDTO->usrDomicilio, usrFechaNacimiento = '$usuarioDTO->usrFechaNacimiento', usrDescripcion = '$usuarioDTO->usrDescripcion',
+            usrScoring = $usuarioDTO->usrScoring, usrEmail = '$usuarioDTO->usrEmail',
+            usrPassword = '$usuarioDTO->usrPassword' WHERE usrId = $usuarioDTO->usrId";
+
+            return parent::patch($query, $mysqli);
+        } catch (\Throwable $th) {
+            if ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage());
+            }
+        }
+    }
+
+    public function deleteUsuarios($id)
+    {
+        try {
+            $this->securityService->requireLogin(tipoUsurio: ['ST']);
+            settype($id, 'integer');
+
+            return parent::delete(queryBusqueda: "SELECT usrId FROM usuario WHERE id=$id", queryBajaLogica: "UPDATE SET usrFechaBaja = CURRENT_TIMESTAMP() WHERE id=$id");
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage());
