@@ -17,4 +17,6 @@ interface ISecurity
     public function requireLogin(?array $tipoUsurio): ClaimDTO;
     public function tokenGenerator(array $data): string;
     public function deleteTokensExpirados(?mysqli $unLink = NULL): void;
+    public function hashPassword(string $password): string;
+    public function verifyPassword(string $password, string $hash): bool;
 }

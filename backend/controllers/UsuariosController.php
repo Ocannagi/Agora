@@ -65,11 +65,13 @@ class UsuariosController extends BaseController
             Input::escaparDatos($usuarioCreacionDTO, $mysqli);
             Input::convertNULLtoString($usuarioCreacionDTO);
 
+            $hashPassword = $this->securityService->hashPassword($usuarioCreacionDTO->usrPassword);
+
             $query =    "INSERT INTO usuario (usrDni, usrApellido, usrNombre, usrRazonSocialFantasia , usrCuitCuil,
                         usrTipoUsuario, usrMatricula, usrDomicilio, usrFechaNacimiento, usrDescripcion, usrEmail,
                         usrPassword) VALUES ('$usuarioCreacionDTO->usrDni', '$usuarioCreacionDTO->usrApellido', '$usuarioCreacionDTO->usrNombre', '$usuarioCreacionDTO->usrRazonSocialFantasia', '$usuarioCreacionDTO->usrCuitCuil',
                         '$usuarioCreacionDTO->usrTipoUsuario', '$usuarioCreacionDTO->usrMatricula', $usuarioCreacionDTO->usrDomicilio, '$usuarioCreacionDTO->usrFechaNacimiento', '$usuarioCreacionDTO->usrDescripcion', '$usuarioCreacionDTO->usrEmail',
-                        '$usuarioCreacionDTO->usrPassword')";
+                        '$hashPassword')";
 
             return parent::post(query: $query, link: $mysqli);
         } catch (\Throwable $th) {
