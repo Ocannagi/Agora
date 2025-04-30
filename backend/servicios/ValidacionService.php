@@ -196,17 +196,17 @@ class ValidacionService implements IValidar
             Output::outputError(400, 'Debe tener 18 años o más para poder registrarte en esta web.');
     }
 
-    private function validarCuitCuil(string $cuitCuil, string $tipoUsuario, mysqli $linkExterno)
+    private function validarCuitCuil(?string $cuitCuil, string $tipoUsuario, mysqli $linkExterno)
     {
         if (!Input::esNotNullVacioBlanco($cuitCuil) && $this->_requiereMatricula($linkExterno, $tipoUsuario))
             Output::outputError(400, 'Es obligatorio el CUIT/CUIL para el tipo de usuario declarado.');
-        else if (!$this->_esCuitCuilValido($cuitCuil))
+        else if (Input::esNotNullVacioBlanco($cuitCuil) && !$this->_esCuitCuilValido($cuitCuil))
             Output::outputError(400, 'El Cuit-Cuil no es válido.');
     }
 
-    private function validarRazonSocial(string $razonSocial, string $cuitCuil)
+    private function validarRazonSocial(?string $razonSocial, ?string $cuitCuil)
     {
-        if (!Input::esNotNullVacioBlanco($cuitCuil) && in_array((int)substr($cuitCuil, 0, 2), [30, 33, 34])) // si es un CUIT
+        if (Input::esNotNullVacioBlanco($cuitCuil) && in_array((int)substr($cuitCuil, 0, 2), [30, 33, 34])) // si es un CUIT
         {
             if (!Input::esNotNullVacioBlanco($razonSocial)) {
                 Output::outputError(400, 'Es obligatoria la Razón Social si se declara un CUIT.');
@@ -218,7 +218,7 @@ class ValidacionService implements IValidar
         }
     }
 
-    private function validarMatricula(string $matricula, string $tipoUsuario, mysqli $linkExterno)
+    private function validarMatricula(?string $matricula, string $tipoUsuario, mysqli $linkExterno)
     {
 
         if ($this->_requiereMatricula($linkExterno, $tipoUsuario)) {
@@ -232,8 +232,6 @@ class ValidacionService implements IValidar
                 Output::outputError(400, 'El tipo de usuario declarado no requiere matrícula.');
             }
         }
-
-        Output::outputError(500,'Algo no te anda, chabón');
     }
 
     private function validarDescripcion(string $descripcion)

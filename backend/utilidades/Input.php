@@ -35,7 +35,7 @@ class Input
         }
     }
 
-    public static function esNotNullVacioBlanco(string $str): bool
+    public static function esNotNullVacioBlanco(?string $str): bool
     {
         return isset($str) && trim($str) !== "";
     }

@@ -19,18 +19,16 @@ class UsuarioDTO
 
     public function __construct(array $data)
     {
-        $this->usrId = (int)$data['usrId'];
-        $this->usrDni = $data['usrDni'];
-        $this->usrApellido = $data['usrApellido'];
-        $this->usrNombre = $data['usrNombre'];
-        $this->usrRazonSocialFantasia = $data['usrRazonSocialFantasia'] ?? null;
-        $this->usrCuitCuil = $data['usrCuitCuil'] ?? null;
-        $this->usrTipoUsuario = $data['usrTipoUsuario'];
-        $this->usrMatricula = $data['usrMatricula'] ?? null;
-        $this->usrDomicilio = (int)$data['usrDomicilio'];
-        $this->usrFechaNacimiento = $data['usrFechaNacimiento'];
-        $this->usrDescripcion = $data['usrDescripcion'] ?? null;
-        $this->usrScoring = (int)$data['usrScoring'] ?? 0;
-        $this->usrEmail = $data['usrEmail'];
+        $refClass = new ReflectionClass(__CLASS__);
+        $properties = $refClass->getProperties();
+
+        foreach ($properties as $property) {
+            $propertyName = $property->getName();
+            if (array_key_exists($propertyName, $data)) {
+                $value = $data[$propertyName];
+                settype($value, $property->getType()->getName());
+                $this->$propertyName = $value;
+            }
+        }
     }
 }

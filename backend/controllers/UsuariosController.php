@@ -42,7 +42,7 @@ class UsuariosController extends BaseController
     {
         settype($id, 'integer');
         $this->securityService->requireLogin(tipoUsurio: null);
-        return parent::getConParametros(query: "SELECT usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario FROM usuario WHERE usrId = $id AND usrFechaBaja is NULL", classDTO: "UsuarioDTO");
+        return parent::getConParametros(query: "SELECT usrId, usrDni, usrNombre, usrApellido, usrEmail, usrTipoUsuario FROM usuario WHERE usrId = $id AND usrFechaBaja is NULL", classDTO: "UsuarioDTO");
     }
 
     public function postUsuarios()
