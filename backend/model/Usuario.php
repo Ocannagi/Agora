@@ -2,7 +2,7 @@
 
 use Utilidades\Obligatorio;
 
-class Usuario
+class Usuario extends ClassBase
 {
     private int $usrId; // Identificador único del usuario.
     #[Obligatorio]
@@ -91,18 +91,5 @@ class Usuario
     public function toArray(): array
     {
         return get_object_vars($this);
-    }
-
-    public static function getObligatorios(): array
-    {
-        $refClass = new ReflectionClass(__CLASS__);
-        $propiedades = $refClass->getProperties();
-        $obligatorios = [];
-        foreach ($propiedades as $propiedad) {
-            if ($propiedad->getAttributes(Obligatorio::class)) {
-                $obligatorios[] = $propiedad->getName();
-            }
-        }
-        return $obligatorios;
     }
 }

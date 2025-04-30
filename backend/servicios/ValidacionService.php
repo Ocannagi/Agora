@@ -27,7 +27,7 @@ class ValidacionService implements IValidar
     function validarInputUsuario(mysqli $linkExterno, UsuarioCreacionDTO | UsuarioDTO $usuario)
     {
 
-        $this->validarDatosObligatorios(Usuario::getObligatorios(), get_object_vars($usuario));
+        $this->validarDatosObligatorios(classModelName: 'Usuario', datos: get_object_vars($usuario));
         $this->validarDni($usuario->usrDni);
         $this->validarApellido($usuario->usrApellido);
         $this->validarNombre($usuario->usrNombre);
@@ -90,11 +90,15 @@ class ValidacionService implements IValidar
 
 
 
-    private function validarDatosObligatorios(array $keyDatos, array $datos)
+    private function validarDatosObligatorios(string $classModelName, array $datos)
     {
-        $msg = $this->_existenDatos($keyDatos, $datos);
-        if ($msg !== true)
-            Output::outputError(400, 'Los siguientes datos deben estar completos: ' . implode(", ", $msg) . ".");
+        if (is_subclass_of($classModelName, "ClassBase")) {
+            $msg = $this->_existenDatos($classModelName::getObligatorios(), $datos);
+            if ($msg !== true)
+                Output::outputError(400, 'Los siguientes datos deben estar completos: ' . implode(", ", $msg) . ".");
+        } else{
+            Output::outputError(500,"Error interno: la clase $classModelName no hereda de ClassBase");
+        }
     }
 
     private function
@@ -227,7 +231,7 @@ class ValidacionService implements IValidar
             } else if (!$this->_esStringLongitud($matricula, 1, 20)) {
                 Output::outputError(400, 'La Matrícula debe ser un string de al menos un caracter y un máximo de 20.');
             }
-        } else{
+        } else {
             if (Input::esNotNullVacioBlanco($matricula)) {
                 Output::outputError(400, 'El tipo de usuario declarado no requiere matrícula.');
             }
