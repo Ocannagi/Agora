@@ -29,8 +29,12 @@ class Usuario extends ClassBase
     private DateTime $usrFechaInsert; // Fecha de inserción.
     private ?DateTime $usrFechaBaja; // Fecha de baja (nullable).
 
-    public static function fromCreacionDTO(UsuarioCreacionDTO $dto): self
+    public static function fromCreacionDTO(ICreacionDTO $dto): self
     {
+        if(!$dto instanceof UsuarioCreacionDTO) {
+            throw new InvalidArgumentException("El DTO proporcionado no es del tipo correcto.");
+        }
+        
         $instance = new self();
         $instance->usrDni = $dto->usrDni;
         $instance->usrApellido = $dto->usrApellido;
@@ -47,49 +51,4 @@ class Usuario extends ClassBase
         return $instance;
     }
 
-    public static function fromArray(array $data): self
-    {
-        $instance = new self();
-        $refClass = new ReflectionClass(__CLASS__);
-        $properties = $refClass->getProperties();
-
-        foreach ($data as $key => $value) {
-            if (property_exists($instance, $key)) {
-                foreach ($properties as $property) {
-                    if ($property->getName() === $key) {
-                        $type = $property->getType();
-
-                        if ($value === null || $value === "") {
-                            if ($type && $type->allowsNull()) {
-                                $instance->$key = null;
-                            } else {
-                                throw new InvalidArgumentException("La propiedad {$key} no puede ser nula.");
-                            }
-                        } elseif ($type && $type->getName() === 'DateTime') {
-                            $date = DateTime::createFromFormat('Y-m-d', $value);
-                            if ($date) {
-                                $instance->$key = $date;
-                            } else {
-                                throw new InvalidArgumentException("Formato de fecha inválido para {$key}.");
-                            }
-                        } elseif ($type) {
-                            settype($value, $type->getName());
-                            $instance->$key = $value;
-                        } else {
-                            $instance->$key = $value;
-                        }
-                    }
-                }
-            } else {
-                throw new InvalidArgumentException("La propiedad {$key} no existe en la clase Usuario.");
-            }
-        }
-
-        return $instance;
-    }
-
-    public function toArray(): array
-    {
-        return get_object_vars($this);
-    }
 }

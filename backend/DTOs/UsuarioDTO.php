@@ -1,6 +1,6 @@
 <?php
 
-class UsuarioDTO
+class UsuarioDTO implements IDTO
 {
     public int $usrId; // Identificador único del usuario.
     public string $usrDni; // DNI del usuario.

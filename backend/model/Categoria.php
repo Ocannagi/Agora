@@ -1,23 +1,20 @@
 <?php
-
 use Utilidades\Obligatorio;
 
-class Periodo extends ClassBase {
-    private int $perId;
+class Categoria extends ClassBase {
+    private int $catId;
     #[Obligatorio]
-    private string $perDescripcion;
-    private ?DateTime $perFechaBaja;
+    private string $catDescripcion;
+    private ?DateTime $catFechaBaja;
 
     public static function fromCreacionDTO(ICreacionDTO $dto) : self
     {
-        if(!$dto instanceof PeriodoCreacionDTO) {
+        if(!$dto instanceof CategoriaCreacionDTO) {
             throw new InvalidArgumentException("El DTO proporcionado no es del tipo correcto.");
         }
         
         $instance = new self();
-        $instance->perDescripcion = $dto->perDescripcion;
+        $instance->catDescripcion = $dto->catDescripcion;
         return $instance;
     }
-
-    
 }

@@ -1,6 +1,7 @@
 <?php
 
 namespace Utilidades;
+
 use mysqli;
 use ReflectionClass;
 
@@ -15,30 +16,52 @@ class Input
                 $valor = $propiedad->getValue($instance);
                 if (is_string($valor) && self::esNotNullVacioBlanco($valor)) {
                     $valorEscapado = $linkExterno->real_escape_string($valor);
-                    $propiedad->setValue($instance,$valorEscapado);
+                    $propiedad->setValue($instance, $valorEscapado);
                 }
-            } 
+            }
         }
     }
 
-    public static function convertNULLtoString(object $instance)
+    public static function trimStringDatos(object $instance)
     {
         $refClass = new ReflectionClass($instance);
         $propiedades = $refClass->getProperties();
         foreach ($propiedades as $propiedad) {
             if ($propiedad->getType()->getName() === 'string') {
                 $valor = $propiedad->getValue($instance);
-                if (!self::esNotNullVacioBlanco($valor)) {
-                    $propiedad->setValue($instance, 'NULL');
+                if (self::esNotNullVacioBlanco($valor)) {
+                    $valorTrimeado = trim($valor);
+                    $propiedad->setValue($instance, $valorTrimeado);
                 }
-            } 
+            }
         }
     }
+
 
     public static function esNotNullVacioBlanco(?string $str): bool
     {
         return isset($str) && trim($str) !== "";
     }
 
+    public static function agregarComillas_ConvertNULLtoString(object $instance)
+    {
+        $refClass = new ReflectionClass($instance);
+        $propiedades = $refClass->getProperties();
+        foreach ($propiedades as $propiedad) {
+            if ($propiedad->getType()->getName() === 'string') {
+                $valor = $propiedad->getValue($instance);
+                if (self::esNotNullVacioBlanco($valor)) {
+                    $valorConComillas = "'$valor'";
+                    $propiedad->setValue($instance, $valorConComillas);
+                } else {
+                    $propiedad->setValue($instance, 'NULL');
+                }
+            }
+        }
+    }
 
+    public static function cadaPalabraMayuscula(string $str): string
+    {
+        return ucwords(strtolower($str));
+    }
 }

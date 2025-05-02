@@ -56,7 +56,7 @@ abstract class BaseController implements IBaseController
             Output::outputError(500, 'Falló la consulta: ' . $error);
         }
         $ret = [
-            'usrId' => $link->insert_id
+            'id' => $link->insert_id
         ];
         $link->close();
         Output::outputJson($ret, 201);

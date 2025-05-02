@@ -1,6 +1,6 @@
 <?php
 
-class UsuarioCreacionDTO
+class UsuarioCreacionDTO implements ICreacionDTO
 {
     public string $usrDni; // DNI del usuario.
     public string $usrApellido; // Apellido del usuario.
@@ -16,8 +16,11 @@ class UsuarioCreacionDTO
     public string $usrEmail; // Email del usuario.
     public string $usrPassword; // Contraseña del usuario.
 
-    public function __construct(array $data)
+    public function __construct(array | stdClass $data)
     {
+        if($data instanceof stdClass) {
+            $data = (array)$data;
+        }
         
         $refClass = new ReflectionClass(__CLASS__);
         $properties = $refClass->getProperties();
@@ -26,16 +29,8 @@ class UsuarioCreacionDTO
             $propertyName = $property->getName();
             if (array_key_exists($propertyName, $data)) {
                 $value = $data[$propertyName];
-                // if ($value === null || $value === "") {
-                //     if ($property->getType() && $property->getType()->allowsNull()) {
-                //         $this->$propertyName = null;
-                //     } else {
-                //         throw new InvalidArgumentException("El campo '$propertyName' no puede ser nulo o vacío.");
-                //     }
-                // } else {
                     settype($value, $property->getType()->getName());
                     $this->$propertyName = $value;
-                //}
             }
         }
     }

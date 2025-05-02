@@ -52,7 +52,9 @@ use Utilidades\Output;
 define('DEPENDENCIAS', [
     'DbConnection' => 'DbConnection',
     'SecurityService' => 'SecurityService',
-    'ValidacionService' => 'ValidacionService']);
+    'UsuariosValidacionService' => 'UsuariosValidacionService',
+    'PeriodosValidacionService' => 'PeriodosValidacionService',
+    'CategoriasValidacionService' => 'CategoriasValidacionService',]);
 
 
 /************* RUTEO *************/
@@ -105,6 +107,7 @@ function inyectarDependencias($controllerNombre): array
     $reflection = new ReflectionClass($controllerNombre);
     $constructor = $reflection->getConstructor();
     $dependencias = $constructor->getParameters();
+    $baseName = explode('Controller', $controllerNombre)[0];
 
     $ret = [];
     foreach ($dependencias as $dependencia) {
@@ -112,8 +115,8 @@ function inyectarDependencias($controllerNombre): array
             $ret[] = DEPENDENCIAS['DbConnection']::getInstancia();
         } else if (strtolower($dependencia->getName()) === strtolower('SecurityService')) {
             $ret[] = DEPENDENCIAS['SecurityService']::getInstancia(DEPENDENCIAS['DbConnection']::getInstancia());
-        } else if (strtolower($dependencia->getName()) === strtolower('ValidacionService')) {
-            $ret[] = DEPENDENCIAS['ValidacionService']::getInstancia();
+        } else if (strtolower($dependencia->getName()) === strtolower($baseName . 'ValidacionService')) {
+            $ret[] = DEPENDENCIAS[$baseName . 'ValidacionService']::getInstancia();
         }
     }
     return $ret;
