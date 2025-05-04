@@ -28,7 +28,7 @@ abstract class BaseController implements IBaseController
         $mysqli->close();
         Output::outputJson($ret);
     }
-    public function getConParametros(string $query, string $classDTO)
+    public function getById(string $query, string $classDTO)
     {
         $mysqli = $this->dbConnection->conectarBD();
         $resultado = $mysqli->query($query);

@@ -17,8 +17,12 @@ class UsuarioDTO implements IDTO
     public string $usrEmail; // Email del usuario.
     public string $usrPassword;
 
-    public function __construct(array $data)
+    public function __construct(array | stdClass $data)
     {
+        if ($data instanceof stdClass) {
+            $data = (array)$data;
+        }
+        
         $refClass = new ReflectionClass(__CLASS__);
         $properties = $refClass->getProperties();
 

@@ -50,11 +50,13 @@ use Utilidades\Output;
 
 /** Definir aquí las Dependencias de los Controller */
 define('DEPENDENCIAS', [
+    
     'DbConnection' => 'DbConnection',
     'SecurityService' => 'SecurityService',
     'UsuariosValidacionService' => 'UsuariosValidacionService',
     'PeriodosValidacionService' => 'PeriodosValidacionService',
-    'CategoriasValidacionService' => 'CategoriasValidacionService',]);
+    'CategoriasValidacionService' => 'CategoriasValidacionService',
+    'SubcategoriasValidacionService' => 'SubcategoriasValidacionService',]);
 
 
 /************* RUTEO *************/
@@ -71,7 +73,12 @@ $controllerNombre = ucfirst($accion[0]) . 'Controller';
 $funcionNombre = $metodo . ucfirst($accion[0]);
 $parametros = array_slice($accion, 1);
 if (count($parametros) > 0 && $metodo == 'get') {
-    $funcionNombre = $funcionNombre . 'ConParametros';
+    $funcionNombre = $funcionNombre . 'ById';
+} else if (isset($_GET['params']) && $metodo == 'get'){
+    $parametros = $_GET['params'];
+    var_dump($parametros);
+    $funcionNombre = $funcionNombre . 'ByParams';
+    print_r($funcionNombre);
 }
 
 $controller = null;

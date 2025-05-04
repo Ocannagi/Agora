@@ -38,11 +38,11 @@ class UsuariosController extends BaseController
         return parent::get(query: "SELECT usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario FROM usuario WHERE usrFechaBaja is NULL", classDTO: "UsuarioMinDTO");
     }
 
-    public function getUsuariosConParametros($id)
+    public function getUsuariosById($id)
     {
         settype($id, 'integer');
         $this->securityService->requireLogin(tipoUsurio: null);
-        return parent::getConParametros(query: "SELECT usrId, usrDni, usrNombre, usrApellido, usrEmail, usrTipoUsuario FROM usuario WHERE usrId = $id AND usrFechaBaja is NULL", classDTO: "UsuarioDTO");
+        return parent::getById(query: "SELECT usrId, usrDni, usrNombre, usrApellido, usrEmail, usrTipoUsuario FROM usuario WHERE usrId = $id AND usrFechaBaja is NULL", classDTO: "UsuarioDTO");
     }
 
     public function postUsuarios()
@@ -81,7 +81,7 @@ class UsuariosController extends BaseController
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
             } else {
-                Output::outputError(500, "Error inesperado: " . $th->getMessage());
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
         }
     }
@@ -119,7 +119,7 @@ class UsuariosController extends BaseController
             $query = "UPDATE usuario SET usrDni = $usuarioDTO->usrDni, usrApellido = $usuarioDTO->usrApellido, usrNombre = $usuarioDTO->usrNombre, usrRazonSocialFantasia = $usuarioDTO->usrRazonSocialFantasia , usrCuitCuil = $usuarioDTO->usrCuitCuil,
             usrTipoUsuario = $usuarioDTO->usrTipoUsuario, usrMatricula = $usuarioDTO->usrMatricula, usrDomicilio = $usuarioDTO->usrDomicilio, usrFechaNacimiento = $usuarioDTO->usrFechaNacimiento, usrDescripcion = $usuarioDTO->usrDescripcion,
             usrScoring = $usuarioDTO->usrScoring, usrEmail = $usuarioDTO->usrEmail,
-            usrPassword = $hashPassword WHERE usrId = $usuarioDTO->usrId";
+            usrPassword = $hashPassword WHERE usrId = $usuarioDTO->usrId AND usrFechaBaja IS NULL";
 
             return parent::patch($query, $mysqli);
         } catch (\Throwable $th) {
@@ -128,7 +128,7 @@ class UsuariosController extends BaseController
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
             } else {
-                Output::outputError(500, "Error inesperado: " . $th->getMessage());
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
         }
     }
@@ -179,7 +179,7 @@ class UsuariosController extends BaseController
             if ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
             } else {
-                Output::outputError(500, "Error inesperado: " . $th->getMessage());
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
         }
     }

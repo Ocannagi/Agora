@@ -36,11 +36,11 @@ class CategoriasController extends BaseController
         return parent::get(query: "SELECT catId, catDescripcion FROM categoria WHERE catFechaBaja is NULL", classDTO: "CategoriaDTO");
     }
 
-    public function getCategoriasConParametros($id)
+    public function getCategoriasById($id)
     {
         settype($id, 'integer');
         $this->securityService->requireLogin(null);
-        return parent::getConParametros(query: "SELECT catId, catDescripcion FROM categoria WHERE catId = $id AND catFechaBaja is NULL", classDTO: "CategoriaDTO");
+        return parent::getById(query: "SELECT catId, catDescripcion FROM categoria WHERE catId = $id AND catFechaBaja is NULL", classDTO: "CategoriaDTO");
     }
 
     public function postCategorias()
@@ -76,7 +76,7 @@ class CategoriasController extends BaseController
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
             } else {
-                Output::outputError(500, "Error inesperado: " . $th->getMessage());
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
         }
     }
@@ -101,7 +101,6 @@ class CategoriasController extends BaseController
 
 
             $categoriaDTO = new CategoriaDTO($data);
-
             Input::trimStringDatos($categoriaDTO);
 
             $this->categoriasValidacionService->validarInput($mysqli, $categoriaDTO);
@@ -111,7 +110,7 @@ class CategoriasController extends BaseController
             Input::escaparDatos($categoriaDTO, $mysqli);
             Input::agregarComillas_ConvertNULLtoString($categoriaDTO);
 
-            $query = "UPDATE categoria SET catDescripcion = $categoriaDTO->catDescripcion WHERE catId = $categoriaDTO->catId";
+            $query = "UPDATE categoria SET catDescripcion = $categoriaDTO->catDescripcion WHERE catId = $categoriaDTO->catId AND catFechaBaja IS NULL";
 
             return parent::patch(query: $query, link: $mysqli);
         } catch (\Throwable $th) {
@@ -120,7 +119,7 @@ class CategoriasController extends BaseController
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
             } else {
-                Output::outputError(500, "Error inesperado: " . $th->getMessage());
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
         }
     }
@@ -139,7 +138,7 @@ class CategoriasController extends BaseController
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
             } else {
-                Output::outputError(500, "Error inesperado: " . $th->getMessage());
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
         }
     }

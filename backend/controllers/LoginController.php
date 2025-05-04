@@ -76,7 +76,7 @@ class LoginController
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
             } else {
-                Output::outputError(500, "Error inesperado: " . $th->getMessage());
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
         }
     }
@@ -103,7 +103,7 @@ class LoginController
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
             } else {
-                Output::outputError(500, "Error inesperado: " . $th->getMessage());
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
         }
     }

@@ -36,11 +36,11 @@ class PeriodosController extends BaseController
         return parent::get(query: "SELECT perId, perDescripcion FROM periodo WHERE perFechaBaja is NULL", classDTO: "PeriodoDTO");
     }
 
-    public function getPeriodosConParametros($id)
+    public function getPeriodosById($id)
     {
         settype($id, 'integer');
         $this->securityService->requireLogin(null);
-        return parent::getConParametros(query: "SELECT perId, perDescripcion FROM periodo WHERE perId = $id AND perFechaBaja is NULL", classDTO: "PeriodoDTO");
+        return parent::getById(query: "SELECT perId, perDescripcion FROM periodo WHERE perId = $id AND perFechaBaja is NULL", classDTO: "PeriodoDTO");
     }
 
     public function postPeriodos()
@@ -77,7 +77,7 @@ class PeriodosController extends BaseController
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
             } else {
-                Output::outputError(500, "Error inesperado: " . $th->getMessage());
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
         }
     }
@@ -109,7 +109,7 @@ class PeriodosController extends BaseController
             Input::escaparDatos($periodoDTO, $mysqli);
             Input::agregarComillas_ConvertNULLtoString($periodoDTO);
 
-            $query = "UPDATE periodo SET perDescripcion = $periodoDTO->perDescripcion WHERE perId = $periodoDTO->perId";
+            $query = "UPDATE periodo SET perDescripcion = $periodoDTO->perDescripcion WHERE perId = $periodoDTO->perId AND perFechaBaja IS NULL";
 
             return parent::patch(query: $query, link: $mysqli);
 
@@ -119,7 +119,7 @@ class PeriodosController extends BaseController
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
             } else {
-                Output::outputError(500, "Error inesperado: " . $th->getMessage());
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
         }
     }
@@ -137,7 +137,7 @@ class PeriodosController extends BaseController
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
             } else {
-                Output::outputError(500, "Error inesperado: " . $th->getMessage());
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
         }
     }

@@ -6,7 +6,7 @@ use Utilidades\Input;
 abstract class ValidacionServiceBase
 {
 
-    abstract public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $usuario);
+    abstract public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $entidadDTO);
 
     
     /**
