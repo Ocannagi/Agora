@@ -34,14 +34,14 @@ class SubcategoriasController extends BaseController
     {
         $this->securityService->requireLogin(null);
 
-        $query =   "SELECT scatId, scatCatId, catDescripcion, scatDescripcion
+        $query =   "SELECT scatId, catId, catDescripcion, scatDescripcion
                     FROM subcategoria
                     INNER JOIN categoria ON scatCatId = catId
                     WHERE scatFechaBaja is NULL
                     ORDER BY scatId";
 
 
-        return parent::get(query: $query, classDTO: "SubcategoriaDetalleDTO");
+        return parent::get(query: $query, classDTO: "SubcategoriaDTO");
     }
 
     public function getSubcategoriasById($id)
@@ -49,12 +49,12 @@ class SubcategoriasController extends BaseController
         settype($id, 'integer');
         $this->securityService->requireLogin(null);
 
-        $query =   "SELECT scatId, scatCatId, catDescripcion, scatDescripcion
+        $query =   "SELECT scatId, catId, catDescripcion, scatDescripcion
                     FROM subcategoria
                     INNER JOIN categoria ON scatCatId = catId
                     WHERE scatId = $id AND scatFechaBaja is NULL";
 
-        return parent::getById(query: $query, classDTO: "SubcategoriaDetalleDTO");
+        return parent::getById(query: $query, classDTO: "SubcategoriaDTO");
     }
 
     public function postSubcategorias()
@@ -72,6 +72,10 @@ class SubcategoriasController extends BaseController
             }
 
             $this->subcategoriasValidacionService->validarType(className: "SubcategoriaCreacionDTO", datos: $data);
+            if(array_key_exists('categoria', $data)) {
+                $this->subcategoriasValidacionService->validarType(className: "CategoriaDTO", datos: $data['categoria']);
+            }
+
             $subcategoriaCreacionDTO = new SubcategoriaCreacionDTO($data);
             Input::trimStringDatos($subcategoriaCreacionDTO);
 
@@ -84,8 +88,10 @@ class SubcategoriasController extends BaseController
             Input::escaparDatos($subcategoriaCreacionDTO, $mysqli);
             Input::agregarComillas_ConvertNULLtoString($subcategoriaCreacionDTO);
 
+            $catId = $subcategoriaCreacionDTO->categoria->catId;
+
             $query =   "INSERT INTO subcategoria (scatCatId, scatDescripcion)
-                        VALUES ($subcategoriaCreacionDTO->scatCatId, $subcategoriaCreacionDTO->scatDescripcion)";
+                        VALUES ($catId, $subcategoriaCreacionDTO->scatDescripcion)";
             
             return parent::post(query: $query, link: $mysqli);
 
@@ -118,6 +124,10 @@ class SubcategoriasController extends BaseController
             $data['scatId'] = $id;
 
             $this->subcategoriasValidacionService->validarType(className: "SubcategoriaDTO", datos: $data);
+            if(array_key_exists('categoria', $data)) {
+                $this->subcategoriasValidacionService->validarType(className: "CategoriaDTO", datos: $data['categoria']);
+            }
+
             $subcategoriaDTO = new SubcategoriaDTO($data);
             Input::trimStringDatos($subcategoriaDTO);
 
@@ -128,8 +138,10 @@ class SubcategoriasController extends BaseController
             Input::escaparDatos($subcategoriaDTO, $mysqli);
             Input::agregarComillas_ConvertNULLtoString($subcategoriaDTO);
 
+            $catId = $subcategoriaDTO->categoria->catId;
+
             $query =   "UPDATE subcategoria
-                        SET scatCatId = $subcategoriaDTO->scatCatId,
+                        SET scatCatId = $catId,
                             scatDescripcion = $subcategoriaDTO->scatDescripcion
                         WHERE scatId = $id AND scatFechaBaja IS NULL";
 

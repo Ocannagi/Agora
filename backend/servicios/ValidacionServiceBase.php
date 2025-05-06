@@ -23,6 +23,10 @@ abstract class ValidacionServiceBase
             $tipo = $propiedad->getType()->getName();
             if (array_key_exists($propiedad->getName(), $datos)) {
 
+                if (!$propiedad->getType()->isBuiltin()) {
+                    continue; // Si no es un tipo primitivo, no se valida
+                }
+
                 $estandarizarType = function (string $tipo): string {
                     return match ($tipo) {
                         'integer' => 'int',
@@ -31,6 +35,7 @@ abstract class ValidacionServiceBase
                         default => $tipo,
                     };
                 };
+
 
                 if ($estandarizarType(gettype($datos[$propiedad->getName()])) !== $tipo && gettype($datos[$propiedad->getName()]) !== 'NULL') {
 
@@ -72,7 +77,11 @@ abstract class ValidacionServiceBase
         $faltantes = [];
 
         for ($i = 0; $i < count($arrayKeys); $i++) {
-            if (!isset($arrayAsociativo[$arrayKeys[$i]]) || !Input::esNotNullVacioBlanco($arrayAsociativo[$arrayKeys[$i]]) )
+            if (!isset($arrayAsociativo[$arrayKeys[$i]]))
+                $faltantes[] = $arrayKeys[$i];
+            else if (is_string($arrayAsociativo[$arrayKeys[$i]]) && !Input::esNotNullVacioBlanco($arrayAsociativo[$arrayKeys[$i]]))
+                $faltantes[] = $arrayKeys[$i];
+            else if (is_array($arrayAsociativo[$arrayKeys[$i]]) && count($arrayAsociativo[$arrayKeys[$i]]) === 0)
                 $faltantes[] = $arrayKeys[$i];
         }
 

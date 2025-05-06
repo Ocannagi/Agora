@@ -5,7 +5,7 @@ use Utilidades\Obligatorio;
 class Subcategoria extends ClassBase {
     private int $scatId;
     #[Obligatorio]
-    private int $scatCatId; // ID de la categoría a la que pertenece
+    private Categoria $categoria; // Relación con la categoría
     #[Obligatorio]
     private string $scatDescripcion;
     private ?DateTime $scatFechaBaja;
@@ -18,7 +18,7 @@ class Subcategoria extends ClassBase {
         }
 
         $instance = new self();
-        $instance->scatCatId = $dto->scatCatId; // Asignar el ID de la categoría
+        $instance->categoria = self::fromArray(get_object_vars($dto->categoria)); // Convertir el DTO de categoría a objeto
         $instance->scatDescripcion = $dto->scatDescripcion;
         return $instance;
     }

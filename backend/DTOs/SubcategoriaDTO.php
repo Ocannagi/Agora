@@ -3,7 +3,7 @@
 class SubcategoriaDTO implements IDTO
 {
     public int $scatId;
-    public int $scatCatId;
+    public CategoriaDTO $categoria; // Relación con la categoría
     public string $scatDescripcion;
 
 
@@ -15,9 +15,19 @@ class SubcategoriaDTO implements IDTO
         if (array_key_exists('scatId', $data)) {
             $this->scatId = (int)$data['scatId'];
         }
-        if (array_key_exists('scatCatId', $data)) {
-            $this->scatCatId = (int)$data['scatCatId'];
+        
+        if (array_key_exists('categoria', $data)) {
+            $this->categoria = new CategoriaDTO ($data['categoria']);
+        }else if (array_key_exists('catId', $data)) {
+
+            $arrayCat = ['catId' => (int)$data['catId']];
+            if (array_key_exists('catDescripcion', $data))
+                $arrayCat['catDescripcion'] = (string)$data['catDescripcion'];
+ 
+            $this->categoria = new CategoriaDTO ($arrayCat);  
         }
+
+
         if (array_key_exists('scatDescripcion', $data)) {
             $this->scatDescripcion = (string)$data['scatDescripcion'];
         }

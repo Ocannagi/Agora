@@ -25,14 +25,28 @@ class SubcategoriasValidacionService extends ValidacionServiceBase
         }
 
         $this->validarDatosObligatorios(classModelName: 'Subcategoria', datos: get_object_vars($subcategoria));
+        $this->validarDatoCategoria($subcategoria->categoria);
+
+
         $this->validarDescripcion($subcategoria->scatDescripcion);
 
         if ($subcategoria instanceof SubcategoriaDTO) {
             $this->validarExisteSubcategoriaModificar($subcategoria->scatId, $linkExterno);
-            $this->validarSiYaFueRegistrado(descripcion: $subcategoria->scatDescripcion, scatCatId: $subcategoria->scatCatId, linkExterno: $linkExterno, scatId: $subcategoria->scatId);
+            $this->validarSiYaFueRegistrado(descripcion: $subcategoria->scatDescripcion, scatCatId: $subcategoria->categoria->catId, linkExterno: $linkExterno, scatId: $subcategoria->scatId);
         } else {
-            $this->validarSiYaFueRegistrado(descripcion: $subcategoria->scatDescripcion, scatCatId: $subcategoria->scatCatId, linkExterno: $linkExterno);
+            $this->validarSiYaFueRegistrado(descripcion: $subcategoria->scatDescripcion, scatCatId: $subcategoria->categoria->catId, linkExterno: $linkExterno);
 
+        }
+    }
+
+    private function validarDatoCategoria(CategoriaDTO $categoriaDTO)
+    {
+        if (!($categoriaDTO instanceof CategoriaDTO)) {
+            Output::outputError(500, 'Error interno: el DTO de categoría no es del tipo correcto.');
+        }
+
+        if ($categoriaDTO->catId <= 0) {
+            Output::outputError(400, "El ID de la categoría no es válido: $categoriaDTO->catId.");
         }
     }
 
@@ -54,7 +68,6 @@ class SubcategoriasValidacionService extends ValidacionServiceBase
         $descripcion = $linkExterno->real_escape_string($descripcion);
 
         $query = $scatId ? "SELECT 1 FROM subcategoria WHERE scatId <> $scatId AND scatDescripcion='$descripcion' AND scatCatId = $scatCatId AND scatFechaBaja is NULL" : "SELECT 1 FROM subcategoria WHERE scatDescripcion='$descripcion' AND scatCatId = $scatCatId AND scatFechaBaja is NULL";
-
         if ($this->_existeEnBD(link: $linkExterno, query: $query, msg: 'obtener una subcategoría por descripción'))
             Output::outputError(409, $scatId ? "La descripción nueva que quiere registrar para el ID categoría $scatCatId ya existe declarada en otra subcategoría" : "Ya se encuentra registrada la descripción de la subcategoría a crear para el ID categoría $scatCatId.");
     }
