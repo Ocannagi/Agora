@@ -22,6 +22,10 @@ class SubcategoriaCreacionDTO implements ICreacionDTO
                 $arrayCat['catDescripcion'] = (string)$data['catDescripcion'];
 
             $this->categoria = new CategoriaDTO($arrayCat);
+        } else if (array_key_exists('scatCatId', $data)) {
+            $arrayCat = ['catId' => (int)$data['scatCatId']];
+
+            $this->categoria = new CategoriaDTO($arrayCat);
         }
     }
 }

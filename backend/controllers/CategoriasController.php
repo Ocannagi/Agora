@@ -133,9 +133,7 @@ class CategoriasController extends BaseController
             return parent::delete(queryBusqueda: "SELECT 1 FROM categoria WHERE catId=$id AND catFechaBaja IS NULL", queryBajaLogica: "UPDATE categoria SET catFechaBaja = CURRENT_TIMESTAMP() WHERE catId=$id");
         
         } catch (\Throwable $th) {
-            if ($th instanceof InvalidArgumentException) {
-                Output::outputError(400, $th->getMessage());
-            } elseif ($th instanceof mysqli_sql_exception) {
+            if ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());

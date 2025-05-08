@@ -21,7 +21,7 @@ abstract class ClassBase {
     public static function fromArray(array $data): self
     {
         $instance = new self();
-        $refClass = new ReflectionClass(__CLASS__);
+        $refClass = new ReflectionClass(get_called_class());
         $properties = $refClass->getProperties();
 
         foreach ($data as $key => $value) {

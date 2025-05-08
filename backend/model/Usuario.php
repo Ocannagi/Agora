@@ -4,30 +4,30 @@ use Utilidades\Obligatorio;
 
 class Usuario extends ClassBase
 {
-    private int $usrId; // Identificador único del usuario.
+    protected int $usrId; // Identificador único del usuario.
     #[Obligatorio]
-    private string $usrDni; // DNI del usuario.
+    protected string $usrDni; // DNI del usuario.
     #[Obligatorio]
-    private string $usrApellido; // Apellido del usuario.
+    protected string $usrApellido; // Apellido del usuario.
     #[Obligatorio]
-    private string $usrNombre; // Nombre del usuario.
-    private ?string $usrRazonSocialFantasia; // Razón social o nombre de fantasía (nullable).
-    private ?string $usrCuitCuil; // CUIT/CUIL del usuario (nullable).
+    protected string $usrNombre; // Nombre del usuario.
+    protected ?string $usrRazonSocialFantasia; // Razón social o nombre de fantasía (nullable).
+    protected ?string $usrCuitCuil; // CUIT/CUIL del usuario (nullable).
     #[Obligatorio]
-    private string $usrTipoUsuario; // Tipo de usuario.
-    private ?string $usrMatricula; // Matrícula (nullable).
+    protected string $usrTipoUsuario; // Tipo de usuario.
+    protected ?string $usrMatricula; // Matrícula (nullable).
     #[Obligatorio]
-    private int $usrDomicilio; // Domicilio del usuario (referencia a otra tabla).
+    protected Domicilio $domicilio; // Domicilio del usuario (referencia a otra tabla).
     #[Obligatorio]
-    private DateTime $usrFechaNacimiento; // Fecha de nacimiento del usuario.
-    private ?string $usrDescripcion; // Descripción del usuario (nullable).
-    private int $usrScoring; // Puntuación del usuario (default 0).
+    protected DateTime $usrFechaNacimiento; // Fecha de nacimiento del usuario.
+    protected ?string $usrDescripcion; // Descripción del usuario (nullable).
+    protected int $usrScoring; // Puntuación del usuario (default 0).
     #[Obligatorio]
-    private string $usrEmail; // Email del usuario.
+    protected string $usrEmail; // Email del usuario.
     #[Obligatorio]
-    private string $usrPassword; // Contraseña del usuario.
-    private DateTime $usrFechaInsert; // Fecha de inserción.
-    private ?DateTime $usrFechaBaja; // Fecha de baja (nullable).
+    protected string $usrPassword; // Contraseña del usuario.
+    protected DateTime $usrFechaInsert; // Fecha de inserción.
+    protected ?DateTime $usrFechaBaja; // Fecha de baja (nullable).
 
     public static function fromCreacionDTO(ICreacionDTO $dto): self
     {
@@ -43,7 +43,7 @@ class Usuario extends ClassBase
         $instance->usrCuitCuil = $dto->usrCuitCuil;
         $instance->usrTipoUsuario = $dto->usrTipoUsuario;
         $instance->usrMatricula = $dto->usrMatricula;
-        $instance->usrDomicilio = $dto->usrDomicilio;
+        $instance->domicilio = Domicilio::fromArray(get_object_vars($dto->domicilio));
         $instance->usrFechaNacimiento = DateTime::createFromFormat('Y-m-d', $dto->usrFechaNacimiento);
         $instance->usrDescripcion = $dto->usrDescripcion;
         $instance->usrEmail = $dto->usrEmail;

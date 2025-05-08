@@ -7,83 +7,61 @@
 	},
 	"item": [
 		{
-			"name": "postLogin",
-			"event": [
+			"name": "Login",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"if(pm.response.status == \"OK\")\r",
-							"{\r",
-							"    let jsonData = pm.response.json();\r",
-							"    if(jsonData)\r",
-							"        pm.environment.set(\"token\", jsonData.jwt);\r",
-							"\r",
-							"}\r",
-							"\r",
-							"let jsonData;\r",
-							"try{\r",
-							"    jsonData = pm.response.json();\r",
-							"}\r",
-							"catch(e){\r",
-							"    jsonData = pm.response.text();\r",
-							"}\r",
-							"\r",
-							"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]} - Status code is 200`, function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]} - Body is an object`, function () {\r",
-							"    pm.expect(jsonData).to.be.an('object');\r",
-							"});\r",
-							"\r",
-							"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]} - Body have a property \"jwt\" that is a \"string\"`, function () {\r",
-							"    pm.expect(jsonData).to.have.own.property('jwt').that.is.a('string');\r",
-							"});\r",
-							"\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				},
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"pm.environment.set(\"token\", '');"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"usrEmail\":\"nicoivaldi@agora.com\",\r\n    \"usrPassword\":\"Ag0raAdm1n&\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "postLogin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if(pm.response.status == \"OK\")\r",
+									"{\r",
+									"    let jsonData = pm.response.json();\r",
+									"    if(jsonData)\r",
+									"        pm.environment.set(\"token\", jsonData.jwt);\r",
+									"\r",
+									"}\r",
+									"\r",
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]} - Body is an object`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]} - Body have a property \"jwt\" that is a \"string\"`, function () {\r",
+									"    pm.expect(jsonData).to.have.own.property('jwt').that.is.a('string');\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"token\", '');"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "{{URL}}/Login",
-					"host": [
-						"{{URL}}"
 					],
-					"path": [
-						"Login"
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "Ok_AdminLogin",
-					"originalRequest": {
+					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -105,25 +83,206 @@
 							]
 						}
 					},
-					"_postman_previewlanguage": null,
-					"header": null,
-					"cookie": [],
-					"body": null
+					"response": [
+						{
+							"name": "Ok_AdminLogin",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrEmail\":\"nicoivaldi@agora.com\",\r\n    \"usrPassword\":\"Ag0raAdm1n&\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Login",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Login"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_BadLogin",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrEmail\":\"nobody@error.com\",\r\n    \"usrPassword\":\"N0b0dyErr0r%\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Login",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Login"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Ok_Leonetti",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrEmail\":\"sleonetti@gmail.com\",\r\n    \"usrPassword\":\"L30n3tt1&\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Login",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Login"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Ok_Galindez",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrEmail\":\"gusgalindez@tasgalindez.com\",\r\n    \"usrPassword\":\"LalalaGalindez1$\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Login",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Login"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Ok_Rolon",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrEmail\":\"krolon@paraiso.com\",\r\n    \"usrPassword\":\"Paraiso89%\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Login",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Login"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
 				},
 				{
-					"name": "Fail_BadLogin",
-					"originalRequest": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"usrEmail\":\"nobody@error.com\",\r\n    \"usrPassword\":\"N0b0dyErr0r%\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
+					"name": "deleteLogin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if(pm.response.status == \"OK\")\r",
+									"{\r",
+									"    let jsonData = pm.response.json();\r",
+									"    if(jsonData)\r",
+									"        pm.environment.set(\"token\", jsonData.jwt);\r",
+									"\r",
+									"}\r",
+									"\r",
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an object`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an object that have a property \"jwt\" that is a \"array that is empty\"`, function () {\r",
+									"    pm.expect(jsonData).to.have.own.property('jwt').that.is.a('array').that.is.empty;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
 							}
-						},
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{URL}}/Login",
 							"host": [
@@ -134,141 +293,52 @@
 							]
 						}
 					},
-					"_postman_previewlanguage": null,
-					"header": null,
-					"cookie": [],
-					"body": null
+					"response": []
 				}
 			]
 		},
 		{
-			"name": "getUsuarios",
-			"event": [
+			"name": "Usuarios",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"let jsonData;\r",
-							"try{\r",
-							"    jsonData = pm.response.json();\r",
-							"}\r",
-							"catch(e){\r",
-							"    jsonData = pm.response.text();\r",
-							"}\r",
-							"\r",
-							"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
-							"\r",
-							"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
-							"    pm.expect(jsonData).to.be.an('array');\r",
-							"});\r",
-							"\r",
-							"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an array with an object that have a property \"usrId\" that is a \"number\"`, function () {\r",
-							"    pm.expect(jsonData[0]).to.have.own.property('usrId').that.is.a('number');\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{URL}}/Usuarios",
-					"host": [
-						"{{URL}}"
-					],
-					"path": [
-						"Usuarios"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "getUsuariosConParametros",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"let jsonData;\r",
-							"try{\r",
-							"    jsonData = pm.response.json();\r",
-							"}\r",
-							"catch(e){\r",
-							"    jsonData = pm.response.text();\r",
-							"}\r",
-							"\r",
-							"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
-							"\r",
-							"\r",
-							"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an object`, function () {\r",
-							"    pm.expect(jsonData).to.be.an('object');\r",
-							"});\r",
-							"\r",
-							"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have a property \"usrId\" that is ${pm.request.url.path[3]}`, function () {\r",
-							"    pm.expect(jsonData).to.have.own.property('usrId').that.is.a('number').that.is.equal(parseInt(pm.request.url.path[3]));\r",
-							"});\r",
-							"\r",
-							"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have a property \"usrTipoUsuario\" that is a string`, function () {\r",
-							"    pm.expect(jsonData).to.have.own.property('usrTipoUsuario').that.is.a('string');\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{URL}}/Usuarios/:id",
-					"host": [
-						"{{URL}}"
-					],
-					"path": [
-						"Usuarios",
-						":id"
-					],
-					"variable": [
+					"name": "getUsuarios",
+					"event": [
 						{
-							"key": "id",
-							"value": "1"
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an array with an object that have a property \"usrId\" that is a \"number\"`, function () {\r",
+									"    pm.expect(jsonData[0]).to.have.own.property('usrId').that.is.a('number');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						}
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "Ok_1",
-					"originalRequest": {
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "GET",
 						"header": [
 							{
@@ -278,12 +348,72 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/usuarios/:id",
+							"raw": "{{URL}}/Usuarios",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"usuarios",
+								"Usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getUsuariosById",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an object`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have a property \"usrId\" that is ${pm.request.url.path[3]}`, function () {\r",
+									"    pm.expect(jsonData).to.have.own.property('usrId').that.is.a('number').that.is.equal(parseInt(pm.request.url.path[3]));\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have a property \"usrTipoUsuario\" that is a string`, function () {\r",
+									"    pm.expect(jsonData).to.have.own.property('usrTipoUsuario').that.is.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Usuarios/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Usuarios",
 								":id"
 							],
 							"variable": [
@@ -294,14 +424,874 @@
 							]
 						}
 					},
-					"_postman_previewlanguage": null,
-					"header": null,
-					"cookie": [],
-					"body": null
+					"response": [
+						{
+							"name": "Ok_1",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/usuarios/:id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"usuarios",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Ok_2",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/usuarios/:id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"usuarios",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_-1",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/usuarios/:id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"usuarios",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "-1"
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
 				},
 				{
-					"name": "Ok_2",
-					"originalRequest": {
+					"name": "postUsuarios",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"\r",
+									"if(!pm.environment.get('EjecutarExamples')){\r",
+									"    pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);});\r",
+									"} else{\r",
+									"    pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 400`, function () {\r",
+									"    pm.response.to.have.status(400);});\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/Usuarios",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Usuarios"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Fail_DniNoValido",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrDni\": 336988959,\r\n    \"usrApellido\": \"Gómez Ivaldi\",\r\n    \"usrNombre\": \"Nicolás Alejandro\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"nicoivaldi@agora.com\",\r\n    \"usrPassword\": \"*****\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Usuarios",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Usuarios"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_ApellidoNoValido",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrDni\": \"33698895\",\r\n    \"usrApellido\": \"gómez ivaldi?\",\r\n    \"usrNombre\": \"Nicolás Alejandro\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"nicoivaldi@agora.com\",\r\n    \"usrPassword\": \"*****\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Usuarios",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Usuarios"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_NombreNoValido",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrDni\": \"33698895\",\r\n    \"usrApellido\": \"Gómez Ivaldi\",\r\n    \"usrNombre\": \"nicolás alejandro\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"nicoivaldi@agora.com\",\r\n    \"usrPassword\": \"*****\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Usuarios",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Usuarios"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_TipoUsuarioNoValido",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrDni\": \"33698895\",\r\n    \"usrApellido\": \"Gómez Ivaldi\",\r\n    \"usrNombre\": \"Nicolás Alejandro\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"GG\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"nicoivaldi@agora.com\",\r\n    \"usrPassword\": \"*****\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Usuarios",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Usuarios"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_DomicilioNoValido",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrDni\": \"33698895\",\r\n    \"usrApellido\": \"Gómez Ivaldi\",\r\n    \"usrNombre\": \"Nicolás Alejandro\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": -33,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"nicoivaldi@agora.com\",\r\n    \"usrPassword\": \"*****\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Usuarios",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Usuarios"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_EmailNoValido",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrDni\": \"33698895\",\r\n    \"usrApellido\": \"Gómez Ivaldi\",\r\n    \"usrNombre\": \"Nicolás Alejandro\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"nicoivaldi@agora.com.ar??\",\r\n    \"usrPassword\": \"*****\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Usuarios",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Usuarios"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_UserYaExistente",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrDni\": \"33698895\",\r\n    \"usrApellido\": \"Gómez Ivaldi\",\r\n    \"usrNombre\": \"Nicolás Alejandro\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"nicoivaldi@agora.com\",\r\n    \"usrPassword\": \"*****\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Usuarios",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Usuarios"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_PasswordNoValido",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrDni\": \"12345678\",\r\n    \"usrApellido\": \"Fulanito\",\r\n    \"usrNombre\": \"Cosme\",\r\n    \"usrRazonSocialFantasia\": \"Lalala SA\",\r\n    \"usrCuitCuil\": \"20123456781\",\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"cosme@fulanito.com\",\r\n    \"usrPassword\": \"SoyCosme\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Usuarios",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Usuarios"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_FechaNacimientoNoValido",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrDni\": \"12345678\",\r\n    \"usrApellido\": \"Fulanito\",\r\n    \"usrNombre\": \"Cosme\",\r\n    \"usrRazonSocialFantasia\": \"Lalala SA\",\r\n    \"usrCuitCuil\": \"20336988951\",\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"2024-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"cosme@fulanito.com\",\r\n    \"usrPassword\": \"SoyCosme1%\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Usuarios",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Usuarios"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_CuilCuitNoValido",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrDni\": \"12345678\",\r\n    \"usrApellido\": \"Fulanito\",\r\n    \"usrNombre\": \"Cosme\",\r\n    \"usrRazonSocialFantasia\": \"Lalala SA\",\r\n    \"usrCuitCuil\": \"20123456781\",\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"cosme@fulanito.com\",\r\n    \"usrPassword\": \"SoyCosme1%\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Usuarios",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Usuarios"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_RazonSocialObligatoria",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrDni\": \"12345678\",\r\n    \"usrApellido\": \"Fulanito\",\r\n    \"usrNombre\": \"Cosme\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": \"30548083156\",\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"cosme@fulanito.com\",\r\n    \"usrPassword\": \"SoyCosme1%\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Usuarios",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Usuarios"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_MatriculaObligatoria",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrDni\": \"12345678\",\r\n    \"usrApellido\": \"Fulanito\",\r\n    \"usrNombre\": \"Cosme\",\r\n    \"usrRazonSocialFantasia\": \"Coto SA\",\r\n    \"usrCuitCuil\": \"30548083156\",\r\n    \"usrTipoUsuario\": \"UT\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"cosme@fulanito.com\",\r\n    \"usrPassword\": \"SoyCosme1%\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Usuarios",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Usuarios"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_DescripcionNoValida",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrDni\": \"12345678\",\r\n    \"usrApellido\": \"Fulanito\",\r\n    \"usrNombre\": \"Cosme\",\r\n    \"usrRazonSocialFantasia\": \"Coto SA\",\r\n    \"usrCuitCuil\": \"30548083156\",\r\n    \"usrTipoUsuario\": \"UT\",\r\n    \"usrMatricula\": \"123ABC\",\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna. Nunc viverra imperdiet enim. Fusce est. Vivamus a tellus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin pharetra nonummy pede. Mauris et orci. Aenean nec lorem. In porttitor. Donec laoreet nonummy augue. Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Mauris eget neque at sem venenatis eleifend. Ut nonummy. Fusce aliquet pede non pede. Suspendisse dapibus lorem pellentesque magna. Integer nulla.\",\r\n    \"usrEmail\": \"cosme@fulanito.com\",\r\n    \"usrPassword\": \"SoyCosme1%\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Usuarios",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Usuarios"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "patchUsuarios",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = pm.request.url.path[3] && pm.request.method == 'GET' ? \"ConParametros\" : '';\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an empty array\"`, function () {\r",
+									"    pm.expect(jsonData[0]).to.equal(undefined);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"usrDni\": \"33698895\",\r\n    \"usrApellido\": \"Gómez Ivaldi\",\r\n    \"usrNombre\": \"Nicolás Alejandro\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi AAABX.\",\r\n    \"usrScoring\": 10,\r\n    \"usrEmail\": \"nicoivaldi@agora.com\",\r\n    \"usrPassword\": \"Ag0raAdm1n&\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/Usuarios/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Usuarios",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteUsuarios",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = pm.request.url.path[3] && pm.request.method == 'GET' ? \"ConParametros\" : '';\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Usuarios/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Usuarios",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "TiposUsuario",
+			"item": [
+				{
+					"name": "getTiposUsuario",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an array with an object that have a property \"ttuTipoUsuario\" that is a \"string\"`, function () {\r",
+									"    pm.expect(jsonData[0]).to.have.own.property('ttuTipoUsuario').that.is.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "GET",
 						"header": [
 							{
@@ -311,12 +1301,157 @@
 							}
 						],
 						"url": {
-							"raw": "{{URL}}/usuarios/:id",
+							"raw": "{{URL}}/TiposUsuario",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"usuarios",
+								"TiposUsuario"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Periodos",
+			"item": [
+				{
+					"name": "getPeriodos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an array with an object that have a property \"perId\" that is a \"number\"`, function () {\r",
+									"    pm.expect(jsonData[0]).to.have.own.property('perId').that.is.a('number');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/Periodos",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Periodos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getPeriodosById",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an object`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have a property \"perId\" that is ${pm.request.url.path[3]}`, function () {\r",
+									"    pm.expect(jsonData).to.have.own.property('perId').that.is.a('number').that.is.equal(parseInt(pm.request.url.path[3]));\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have a property \"perDescripcion\" that is a string`, function () {\r",
+									"    pm.expect(jsonData).to.have.own.property('perDescripcion').that.is.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/Periodos/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Periodos",
 								":id"
 							],
 							"variable": [
@@ -327,14 +1462,329 @@
 							]
 						}
 					},
-					"_postman_previewlanguage": null,
-					"header": null,
-					"cookie": [],
-					"body": null
+					"response": []
 				},
 				{
-					"name": "Fail_-1",
-					"originalRequest": {
+					"name": "PostPeriodos",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"perDescripcion\" : \"PostIndustrial\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/Periodos",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Periodos"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Fail_DesccripcionYaExistente",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"perDescripcion\" : \"Renacentista\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Periodos",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Periodos"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_DescripcionMas50",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"perDescripcion\" : \"Soy una descripción muy, pero muy larga. Tan larga como un basto océano largo largo\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Periodos",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Periodos"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "PatchPeriodos",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/Periodos/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Periodos",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Fail_DesccripcionYaExistente",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"perDescripcion\" : \"Renacentista\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Periodos/:id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Periodos",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_DescripcionMas50",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"perDescripcion\" : \"Soy una descripción muy, pero muy larga. Tan larga como un basto océano largo largo\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Periodos/:id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Periodos",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "DeletePeriodos",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Periodos/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Periodos",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categorias",
+			"item": [
+				{
+					"name": "getCategorias",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an array with an object that have a property \"catId\" that is a \"number\"`, function () {\r",
+									"    pm.expect(jsonData[0]).to.have.own.property('catId').that.is.a('number');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
 						"method": "GET",
 						"header": [
 							{
@@ -343,145 +1793,666 @@
 								"type": "text"
 							}
 						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{URL}}/usuarios/:id",
+							"raw": "{{URL}}/Categorias",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"usuarios",
+								"Categorias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getCategoriasById",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an object`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have a property \"catId\" that is ${pm.request.url.path[3]}`, function () {\r",
+									"    pm.expect(jsonData).to.have.own.property('catId').that.is.a('number').that.is.equal(parseInt(pm.request.url.path[3]));\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have a property \"catDescripcion\" that is a string`, function () {\r",
+									"    pm.expect(jsonData).to.have.own.property('catDescripcion').that.is.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/Categorias/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Categorias",
 								":id"
 							],
 							"variable": [
 								{
 									"key": "id",
-									"value": "-1"
+									"value": "2"
 								}
 							]
 						}
 					},
-					"_postman_previewlanguage": null,
-					"header": null,
-					"cookie": [],
-					"body": null
+					"response": []
+				},
+				{
+					"name": "PostCategorias",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/Categorias",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Categorias"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Fail_DesccripcionYaExistente",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"catDescripcion\" : \"Pinturas\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Categorias",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Categorias"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_DescripcionMas50",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"catDescripcion\" : \"Soy una descripción muy, pero muy larga. Tan larga como un basto océano largo largo\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Categorias",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Categorias"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "PatchCategorias",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/Categorias/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Categorias",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Fail_DesccripcionYaExistente",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"catDescripcion\" : \"Pinturas\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Categorias/:id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Categorias",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_DescripcionMas50",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"catDescripcion\" : \"Soy una descripción muy, pero muy larga. Tan larga como un basto océano largo largo\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Categorias/:id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Categorias",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "DeleteCategorias",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Categorias/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Categorias",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
 		{
-			"name": "postUsuario",
-			"event": [
+			"name": "Subcategorias",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"let jsonData;\r",
-							"try{\r",
-							"    jsonData = pm.response.json();\r",
-							"}\r",
-							"catch(e){\r",
-							"    jsonData = pm.response.text();\r",
-							"}\r",
-							"\r",
-							"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
-							"\r",
-							"\r",
-							"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "getSubcategorias",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an array with an object that have a property \"scatId\" that is a \"number\"`, function () {\r",
+									"    pm.expect(jsonData[0]).to.have.own.property('scatId').that.is.a('number');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "{{URL}}/Usuario",
-					"host": [
-						"{{URL}}"
 					],
-					"path": [
-						"Usuario"
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/Subcategorias",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Subcategorias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getSubcategoriasById",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an object`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have a property \"scatId\" that is ${pm.request.url.path[3]}`, function () {\r",
+									"    pm.expect(jsonData).to.have.own.property('scatId').that.is.a('number').that.is.equal(parseInt(pm.request.url.path[3]));\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have a property \"catDescripcion\" that is a string`, function () {\r",
+									"    pm.expect(jsonData).to.have.own.property('catDescripcion').that.is.a('string');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have a property \"scatDescripcion\" that is a string`, function () {\r",
+									"    pm.expect(jsonData).to.have.own.property('scatDescripcion').that.is.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/Subcategorias/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Subcategorias",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostSubcategorias",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"categoria\" : {\r\n        \"catId\" : 3\r\n    },\r\n    \"scatDescripcion\" : \"Vitrina\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/Subcategorias",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Subcategorias"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Fail_DesccripcionYaExistente",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"categoria\": {\r\n        \"catId\" : 3\r\n    },\r\n    \"scatDescripcion\" : \"Armarios\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Subcategorias",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Subcategorias"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_DescripcionMas50",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"categoria\": {\r\n        \"catId\" : 1\r\n    },\r\n    \"scatDescripcion\" : \"Soy una descripción muy, pero muy larga. Tan larga como un basto océano largo largo\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Subcategorias",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Subcategorias"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
 					]
-				}
-			},
-			"response": [
-				{
-					"name": "Fail_DniNoValido",
-					"originalRequest": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"usrDni\": 336988959,\r\n    \"usrApellido\": \"Gómez Ivaldi\",\r\n    \"usrNombre\": \"Nicolás Alejandro\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"nicoivaldi@agora.com\",\r\n    \"usrPassword\": \"*****\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/Usuario",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"Usuario"
-							]
-						}
-					},
-					"_postman_previewlanguage": null,
-					"header": null,
-					"cookie": [],
-					"body": null
 				},
 				{
-					"name": "Fail_ApellidoNoValido",
-					"originalRequest": {
-						"method": "POST",
+					"name": "PatchSubcategorias",
+					"request": {
+						"method": "PATCH",
 						"header": [
 							{
 								"key": "Authorization",
 								"value": "Bearer {{token}}",
 								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"usrDni\": \"33698895\",\r\n    \"usrApellido\": \"gómez ivaldi?\",\r\n    \"usrNombre\": \"Nicolás Alejandro\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"nicoivaldi@agora.com\",\r\n    \"usrPassword\": \"*****\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
+							"raw": "{\r\n    \"categoria\": {\r\n        \"catId\": 3\r\n    },\r\n    \"scatDescripcion\" : \"Escritorios\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -489,400 +2460,150 @@
 							}
 						},
 						"url": {
-							"raw": "{{URL}}/Usuario",
+							"raw": "{{URL}}/Subcategorias/:id",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"Usuario"
+								"Subcategorias",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
 							]
 						}
 					},
-					"_postman_previewlanguage": null,
-					"header": null,
-					"cookie": [],
-					"body": null
+					"response": [
+						{
+							"name": "Fail_DesccripcionYaExistente",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"categoria\" : {\r\n        \"catId\" : 3\r\n    },\r\n    \"scatDescripcion\" : \"Sillas\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Subcategorias/:id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Subcategorias",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_DescripcionMas50",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"categoria\" : {\r\n        \"catId\" : 3\r\n    },\r\n    \"scatDescripcion\" : \"Soy una descripción muy, pero muy larga. Tan larga como un basto océano largo largo\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Subcategorias/:id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Subcategorias",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
 				},
 				{
-					"name": "Fail_NombreNoValido",
-					"originalRequest": {
-						"method": "POST",
+					"name": "DeleteSubcategorias",
+					"request": {
+						"method": "DELETE",
 						"header": [
 							{
 								"key": "Authorization",
 								"value": "Bearer {{token}}",
 								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"usrDni\": \"33698895\",\r\n    \"usrApellido\": \"Gómez Ivaldi\",\r\n    \"usrNombre\": \"nicolás alejandro\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"nicoivaldi@agora.com\",\r\n    \"usrPassword\": \"*****\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
-							"raw": "{{URL}}/Usuario",
+							"raw": "{{URL}}/Subcategorias/:id",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"Usuario"
-							]
-						}
-					},
-					"_postman_previewlanguage": null,
-					"header": null,
-					"cookie": [],
-					"body": null
-				},
-				{
-					"name": "Fail_TipoUsuarioNoValido",
-					"originalRequest": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"usrDni\": \"33698895\",\r\n    \"usrApellido\": \"Gómez Ivaldi\",\r\n    \"usrNombre\": \"Nicolás Alejandro\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"GG\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"nicoivaldi@agora.com\",\r\n    \"usrPassword\": \"*****\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/Usuario",
-							"host": [
-								"{{URL}}"
+								"Subcategorias",
+								":id"
 							],
-							"path": [
-								"Usuario"
-							]
-						}
-					},
-					"_postman_previewlanguage": null,
-					"header": null,
-					"cookie": [],
-					"body": null
-				},
-				{
-					"name": "Fail_DomicilioNoValido",
-					"originalRequest": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"usrDni\": \"33698895\",\r\n    \"usrApellido\": \"Gómez Ivaldi\",\r\n    \"usrNombre\": \"Nicolás Alejandro\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": -33,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"nicoivaldi@agora.com\",\r\n    \"usrPassword\": \"*****\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
 								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/Usuario",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"Usuario"
 							]
 						}
 					},
-					"_postman_previewlanguage": null,
-					"header": null,
-					"cookie": [],
-					"body": null
-				},
-				{
-					"name": "Fail_EmailNoValido",
-					"originalRequest": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"usrDni\": \"33698895\",\r\n    \"usrApellido\": \"Gómez Ivaldi\",\r\n    \"usrNombre\": \"Nicolás Alejandro\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"nicoivaldi@agora.com.ar??\",\r\n    \"usrPassword\": \"*****\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/Usuario",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"Usuario"
-							]
-						}
-					},
-					"_postman_previewlanguage": null,
-					"header": null,
-					"cookie": [],
-					"body": null
-				},
-				{
-					"name": "Fail_UserYaExistente",
-					"originalRequest": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"usrDni\": \"33698895\",\r\n    \"usrApellido\": \"Gómez Ivaldi\",\r\n    \"usrNombre\": \"Nicolás Alejandro\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"nicoivaldi@agora.com\",\r\n    \"usrPassword\": \"*****\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/Usuario",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"Usuario"
-							]
-						}
-					},
-					"_postman_previewlanguage": null,
-					"header": null,
-					"cookie": [],
-					"body": null
-				},
-				{
-					"name": "Fail_PasswordNoValido",
-					"originalRequest": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"usrDni\": \"12345678\",\r\n    \"usrApellido\": \"Fulanito\",\r\n    \"usrNombre\": \"Cosme\",\r\n    \"usrRazonSocialFantasia\": \"Lalala SA\",\r\n    \"usrCuitCuil\": \"20123456781\",\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"cosme@fulanito.com\",\r\n    \"usrPassword\": \"SoyCosme\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/Usuario",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"Usuario"
-							]
-						}
-					},
-					"_postman_previewlanguage": null,
-					"header": null,
-					"cookie": [],
-					"body": null
-				},
-				{
-					"name": "Fail_FechaNacimientoNoValido",
-					"originalRequest": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"usrDni\": \"12345678\",\r\n    \"usrApellido\": \"Fulanito\",\r\n    \"usrNombre\": \"Cosme\",\r\n    \"usrRazonSocialFantasia\": \"Lalala SA\",\r\n    \"usrCuitCuil\": \"20336988951\",\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"2007-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"cosme@fulanito.com\",\r\n    \"usrPassword\": \"SoyCosme1%\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/Usuario",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"Usuario"
-							]
-						}
-					},
-					"_postman_previewlanguage": null,
-					"header": null,
-					"cookie": [],
-					"body": null
-				},
-				{
-					"name": "Fail_CuilCuitNoValido",
-					"originalRequest": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{token}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"usrDni\": \"12345678\",\r\n    \"usrApellido\": \"Fulanito\",\r\n    \"usrNombre\": \"Cosme\",\r\n    \"usrRazonSocialFantasia\": \"Lalala SA\",\r\n    \"usrCuitCuil\": \"20123456781\",\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi.\",\r\n    \"usrEmail\": \"cosme@fulanito.com\",\r\n    \"usrPassword\": \"SoyCosme1%\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{URL}}/Usuario",
-							"host": [
-								"{{URL}}"
-							],
-							"path": [
-								"Usuario"
-							]
-						}
-					},
-					"_postman_previewlanguage": null,
-					"header": null,
-					"cookie": [],
-					"body": null
+					"response": []
 				}
 			]
-		},
-		{
-			"name": "getTiposUsuario",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"let jsonData;\r",
-							"try{\r",
-							"    jsonData = pm.response.json();\r",
-							"}\r",
-							"catch(e){\r",
-							"    jsonData = pm.response.text();\r",
-							"}\r",
-							"\r",
-							"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
-							"\r",
-							"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
-							"    pm.expect(jsonData).to.be.an('array');\r",
-							"});\r",
-							"\r",
-							"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an array with an object that have a property \"ttuTipoUsuario\" that is a \"string\"`, function () {\r",
-							"    pm.expect(jsonData[0]).to.have.own.property('ttuTipoUsuario').that.is.a('string');\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{token}}",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{URL}}/TiposUsuario",
-					"host": [
-						"{{URL}}"
-					],
-					"path": [
-						"TiposUsuario"
-					]
-				}
-			},
-			"response": []
 		}
 	]
 }

@@ -9,7 +9,9 @@ class Localidad extends ClassBase
     #[Obligatorio]
     private string $locDescripcion;
     #[Obligatorio]
-    private int $locProvId;
+    private Provincia $provincia;
+    private DateTime $locFechaInsert;
+    private ?DateTime $locFechaBaja;
 
     public static function fromCreacionDTO(ICreacionDTO $dto) : self
     {
@@ -19,7 +21,7 @@ class Localidad extends ClassBase
 
         $instance = new self();
         $instance->locDescripcion = $dto->locDescripcion;
-        $instance->locProvId = $dto->locProvId;
+        $instance->provincia = Provincia::fromArray(get_object_vars($dto->provincia));
         return $instance;
 
     }

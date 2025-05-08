@@ -30,7 +30,7 @@ class UsuariosValidacionService extends ValidacionServiceBase
         $this->validarApellido($usuario->usrApellido);
         $this->validarNombre($usuario->usrNombre);
         $this->validarTipoUsuario($usuario->usrTipoUsuario, $linkExterno);
-        $this->validarDomicilio($usuario->usrDomicilio, $linkExterno);
+        $this->validarDomicilio($usuario->domicilio, $linkExterno);
         $this->validarEmail($usuario->usrEmail);
 
         if ($usuario instanceof UsuarioDTO) {
@@ -81,13 +81,20 @@ class UsuariosValidacionService extends ValidacionServiceBase
             Output::outputError(400, 'El usrTipoUsuario debe tener 2 caracteres.');
     }
 
-    private function validarDomicilio(mixed $domicilio, mysqli $linkExterno)
+    private function validarDomicilio(DomicilioDTO $domicilio, mysqli $linkExterno)
     {
-        if (is_int($domicilio)) {
-            if (!$this->_existeDomicilio($linkExterno, $domicilio))
+        if (!($domicilio instanceof DomicilioDTO)) {
+            Output::outputError(500, 'Error interno: el DTO de domicilio no es del tipo correcto.');
+        }
+        if ($domicilio->domId <= 0) {
+            Output::outputError(400, 'El ID del domicilio no es válido: ' . $domicilio->domId);
+        }
+        
+        if (is_int($domicilio->domId)) {
+            if (!$this->_existeDomicilio($linkExterno, $domicilio->domId))
                 Output::outputError(409, 'No está registrado el domicilo enviado');
         } else
-            Output::outputError(400, 'El usrDomicilio debe ser un integer, no debe enviarse como string.');
+            Output::outputError(400, 'El usrDomicilio/domId debe ser un integer, no debe enviarse como string.');
     }
 
     private function validarEmail(string $email)

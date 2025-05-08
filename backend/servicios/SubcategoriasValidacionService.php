@@ -25,7 +25,7 @@ class SubcategoriasValidacionService extends ValidacionServiceBase
         }
 
         $this->validarDatosObligatorios(classModelName: 'Subcategoria', datos: get_object_vars($subcategoria));
-        $this->validarDatoCategoria($subcategoria->categoria);
+        $this->validarDatoIdCategoria($linkExterno, $subcategoria->categoria);
 
 
         $this->validarDescripcion($subcategoria->scatDescripcion);
@@ -39,7 +39,7 @@ class SubcategoriasValidacionService extends ValidacionServiceBase
         }
     }
 
-    private function validarDatoCategoria(CategoriaDTO $categoriaDTO)
+    private function validarDatoIdCategoria(mysqli $linkExterno, CategoriaDTO $categoriaDTO)
     {
         if (!($categoriaDTO instanceof CategoriaDTO)) {
             Output::outputError(500, 'Error interno: el DTO de categoría no es del tipo correcto.');
@@ -47,6 +47,10 @@ class SubcategoriasValidacionService extends ValidacionServiceBase
 
         if ($categoriaDTO->catId <= 0) {
             Output::outputError(400, "El ID de la categoría no es válido: $categoriaDTO->catId.");
+        }
+
+        if (!$this->existeCategoria($categoriaDTO->catId, $linkExterno)) {
+            Output::outputError(409, "La categoría con ID $categoriaDTO->catId no existe.");
         }
     }
 
@@ -70,6 +74,11 @@ class SubcategoriasValidacionService extends ValidacionServiceBase
         $query = $scatId ? "SELECT 1 FROM subcategoria WHERE scatId <> $scatId AND scatDescripcion='$descripcion' AND scatCatId = $scatCatId AND scatFechaBaja is NULL" : "SELECT 1 FROM subcategoria WHERE scatDescripcion='$descripcion' AND scatCatId = $scatCatId AND scatFechaBaja is NULL";
         if ($this->_existeEnBD(link: $linkExterno, query: $query, msg: 'obtener una subcategoría por descripción'))
             Output::outputError(409, $scatId ? "La descripción nueva que quiere registrar para el ID categoría $scatCatId ya existe declarada en otra subcategoría" : "Ya se encuentra registrada la descripción de la subcategoría a crear para el ID categoría $scatCatId.");
+    }
+
+    private function existeCategoria(int $catId, mysqli $linkExterno): bool
+    {
+        return $this->_existeEnBD(link: $linkExterno, query: "SELECT 1 FROM categoria WHERE catId='$catId' AND catFechaBaja IS NULL", msg: 'obtener una categoría por id');
     }
 
     

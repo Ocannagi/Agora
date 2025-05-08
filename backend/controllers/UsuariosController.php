@@ -68,10 +68,12 @@ class UsuariosController extends BaseController
 
             $hashPassword = "'" . $this->securityService->hashPassword($usuarioCreacionDTO->usrPassword) . "'";
 
+            $usrDomicilio = $usuarioCreacionDTO->domicilio->domId;
+
             $query =    "INSERT INTO usuario (usrDni, usrApellido, usrNombre, usrRazonSocialFantasia , usrCuitCuil,
                         usrTipoUsuario, usrMatricula, usrDomicilio, usrFechaNacimiento, usrDescripcion, usrEmail,
                         usrPassword) VALUES ($usuarioCreacionDTO->usrDni, $usuarioCreacionDTO->usrApellido, $usuarioCreacionDTO->usrNombre, $usuarioCreacionDTO->usrRazonSocialFantasia, $usuarioCreacionDTO->usrCuitCuil,
-                        $usuarioCreacionDTO->usrTipoUsuario, $usuarioCreacionDTO->usrMatricula, $usuarioCreacionDTO->usrDomicilio, $usuarioCreacionDTO->usrFechaNacimiento, $usuarioCreacionDTO->usrDescripcion, $usuarioCreacionDTO->usrEmail,
+                        $usuarioCreacionDTO->usrTipoUsuario, $usuarioCreacionDTO->usrMatricula, $usrDomicilio, $usuarioCreacionDTO->usrFechaNacimiento, $usuarioCreacionDTO->usrDescripcion, $usuarioCreacionDTO->usrEmail,
                         $hashPassword)";
 
             return parent::post(query: $query, link: $mysqli);
@@ -116,8 +118,10 @@ class UsuariosController extends BaseController
 
             Input::agregarComillas_ConvertNULLtoString($usuarioDTO); // cuidado con el password, no usar el de usuarioDTO, usar el de la variable anterior que ya fue escapada, hasheada y se le agregaron comillas simples.
 
+            $usrDomicilio = $usuarioDTO->domicilio->domId;
+            
             $query = "UPDATE usuario SET usrDni = $usuarioDTO->usrDni, usrApellido = $usuarioDTO->usrApellido, usrNombre = $usuarioDTO->usrNombre, usrRazonSocialFantasia = $usuarioDTO->usrRazonSocialFantasia , usrCuitCuil = $usuarioDTO->usrCuitCuil,
-            usrTipoUsuario = $usuarioDTO->usrTipoUsuario, usrMatricula = $usuarioDTO->usrMatricula, usrDomicilio = $usuarioDTO->usrDomicilio, usrFechaNacimiento = $usuarioDTO->usrFechaNacimiento, usrDescripcion = $usuarioDTO->usrDescripcion,
+            usrTipoUsuario = $usuarioDTO->usrTipoUsuario, usrMatricula = $usuarioDTO->usrMatricula, usrDomicilio = $usrDomicilio, usrFechaNacimiento = $usuarioDTO->usrFechaNacimiento, usrDescripcion = $usuarioDTO->usrDescripcion,
             usrScoring = $usuarioDTO->usrScoring, usrEmail = $usuarioDTO->usrEmail,
             usrPassword = $hashPassword WHERE usrId = $usuarioDTO->usrId AND usrFechaBaja IS NULL";
 

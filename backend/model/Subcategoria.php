@@ -18,7 +18,7 @@ class Subcategoria extends ClassBase {
         }
 
         $instance = new self();
-        $instance->categoria = self::fromArray(get_object_vars($dto->categoria)); // Convertir el DTO de categoría a objeto
+        $instance->categoria = Categoria::fromArray(get_object_vars($dto->categoria)); // Convertir el DTO de categoría a objeto
         $instance->scatDescripcion = $dto->scatDescripcion;
         return $instance;
     }
