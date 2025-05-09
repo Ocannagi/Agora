@@ -49,13 +49,7 @@ class PeriodosController extends BaseController
             $this->securityService->requireLogin(tipoUsurio: ['ST']);
 
             $mysqli = $this->dbConnection->conectarBD();
-            $data = json_decode(file_get_contents('php://input'), true);
-            if (json_last_error()) {
-                Output::outputError(400, "El formato de datos es incorrecto");
-            }
-            if (empty($data)) {
-                Output::outputError(400, "No se recibieron datos para crear el periodo");
-            }
+            $data = Input::getArrayBody(msgEntidad: "el periodo");
 
             $this->periodosValidacionService->validarType(className: "PeriodoCreacionDTO", datos: $data);
 
@@ -88,13 +82,7 @@ class PeriodosController extends BaseController
             $this->securityService->requireLogin(tipoUsurio: ['ST']);
             settype($id, 'integer');
             $mysqli = $this->dbConnection->conectarBD();
-            $data = json_decode(file_get_contents('php://input'), true);
-            if (json_last_error()) {
-                Output::outputError(400, "El formato de datos es incorrecto");
-            }
-            if (empty($data)) {
-                Output::outputError(400, "No se recibieron datos para modificar el periodo");
-            }
+            $data = Input::getArrayBody(msgEntidad: "el periodo");
 
             $data['perId'] = $id;
 

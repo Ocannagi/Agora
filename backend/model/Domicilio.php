@@ -11,8 +11,8 @@ class Domicilio extends ClassBase
     private string $domCalleRuta;
     #[Obligatorio]
     private int $domNroKm;
-    private string $domPiso;
-    private string $domDepto;
+    private ?string $domPiso;
+    private ?string $domDepto;
     #[Obligatorio]
     private Localidad $localidad;
 

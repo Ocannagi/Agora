@@ -41,7 +41,29 @@ class DomicilioDTO implements IDTO
             $arrayLoc = ['locId' => (int)$data['locId']];
             if (array_key_exists('locDescripcion', $data))
                 $arrayLoc['locDescripcion'] = (string)$data['locDescripcion'];
-
+            if(array_key_exists('provincia', $data)){
+                $arrayLoc['provincia'] = new ProvinciaDTO($data['provincia']);
+            } else if (array_key_exists('provId', $data)) {
+                $arrayLoc['provId'] = (int)$data['provId'];
+                if (array_key_exists('provDescripcion', $data))
+                    $arrayLoc['provDescripcion'] = (string)$data['provDescripcion'];
+            } else if (array_key_exists('locProvId', $data)) {
+                $arrayLoc['locProvId'] = (int)$data['locProvId'];
+            }
+            $this->localidad = new LocalidadDTO($arrayLoc);
+        } else if (array_key_exists('domLocId', $data)) {
+            $arrayLoc = ['locId' => (int)$data['domLocId']];
+            if (array_key_exists('locDescripcion', $data))
+                $arrayLoc['locDescripcion'] = (string)$data['locDescripcion'];
+            if(array_key_exists('provincia', $data)){
+                $arrayLoc['provincia'] = new ProvinciaDTO($data['provincia']);
+            } else if (array_key_exists('provId', $data)) {
+                $arrayLoc['provId'] = (int)$data['provId'];
+                if (array_key_exists('provDescripcion', $data))
+                    $arrayLoc['provDescripcion'] = (string)$data['provDescripcion'];
+            } else if (array_key_exists('locProvId', $data)) {
+                $arrayLoc['locProvId'] = (int)$data['locProvId'];
+            }
             $this->localidad = new LocalidadDTO($arrayLoc);
         }
     }

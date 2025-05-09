@@ -49,13 +49,7 @@ class CategoriasController extends BaseController
             $this->securityService->requireLogin(tipoUsurio: ['ST']);
 
             $mysqli = $this->dbConnection->conectarBD();
-            $data = json_decode(file_get_contents('php://input'), true);
-            if (json_last_error()) {
-                Output::outputError(400, "El formato de datos es incorrecto");
-            }
-            if (empty($data)) {
-                Output::outputError(400, "No se recibieron datos para crear la categoría");
-            }
+            $data = Input::getArrayBody(msgEntidad: "la categoría");
 
             $this->categoriasValidacionService->validarType(className: "CategoriaCreacionDTO", datos: $data);
 
@@ -87,13 +81,7 @@ class CategoriasController extends BaseController
             $this->securityService->requireLogin(tipoUsurio: ['ST']);
             settype($id, 'integer');
             $mysqli = $this->dbConnection->conectarBD();
-            $data = json_decode(file_get_contents('php://input'), true);
-            if (json_last_error()) {
-                Output::outputError(400, "El formato de datos es incorrecto");
-            }
-            if (empty($data)) {
-                Output::outputError(400, "No se recibieron datos para modificar la categoría");
-            }
+            $data = Input::getArrayBody(msgEntidad: "la categoría");
 
             $data['catId'] = $id;
 

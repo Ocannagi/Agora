@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-05-2025 a las 04:31:42
+-- Tiempo de generación: 09-05-2025 a las 03:55:55
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -38,6 +38,10 @@ CREATE TABLE IF NOT EXISTS `categoria` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- RELACIONES PARA LA TABLA `categoria`:
+--
+
+--
 -- Volcado de datos para la tabla `categoria`
 --
 
@@ -55,21 +59,27 @@ INSERT INTO `categoria` (`catId`, `catDescripcion`, `catFechaBaja`) VALUES
 DROP TABLE IF EXISTS `domicilio`;
 CREATE TABLE IF NOT EXISTS `domicilio` (
   `domID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `domLocalidad` int(10) UNSIGNED NOT NULL,
+  `domLocId` int(10) UNSIGNED NOT NULL,
   `domCPA` char(8) NOT NULL,
   `domCalleRuta` varchar(50) NOT NULL,
   `domNroKm` int(10) UNSIGNED NOT NULL,
   `domPiso` varchar(10) DEFAULT NULL,
   `domDepto` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`domID`),
-  KEY `FK_domicilioLocalidad` (`domLocalidad`)
+  KEY `FK_domicilioLocalidad` (`domLocId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `domicilio`:
+--   `domLocId`
+--       `localidad` -> `locId`
+--
 
 --
 -- Volcado de datos para la tabla `domicilio`
 --
 
-INSERT INTO `domicilio` (`domID`, `domLocalidad`, `domCPA`, `domCalleRuta`, `domNroKm`, `domPiso`, `domDepto`) VALUES
+INSERT INTO `domicilio` (`domID`, `domLocId`, `domCPA`, `domCalleRuta`, `domNroKm`, `domPiso`, `domDepto`) VALUES
 (1, 30, 'C1406DEH', 'Dávila', 926, '12', '175'),
 (2, 27, 'C1425DUR', 'Sánchez de Bustamante', 2173, '1', 'G'),
 (3, 1, 'B1900ALB', 'Calle 47', 1234, NULL, NULL),
@@ -91,6 +101,12 @@ CREATE TABLE IF NOT EXISTS `localidad` (
   PRIMARY KEY (`locId`),
   KEY `FK_localidadProv` (`locProvID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `localidad`:
+--   `locProvID`
+--       `provincia` -> `provId`
+--
 
 --
 -- Volcado de datos para la tabla `localidad`
@@ -148,6 +164,10 @@ CREATE TABLE IF NOT EXISTS `periodo` (
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- RELACIONES PARA LA TABLA `periodo`:
+--
+
+--
 -- Volcado de datos para la tabla `periodo`
 --
 
@@ -170,6 +190,10 @@ CREATE TABLE IF NOT EXISTS `provincia` (
   `provDescripcion` varchar(40) NOT NULL,
   PRIMARY KEY (`provId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `provincia`:
+--
 
 --
 -- Volcado de datos para la tabla `provincia`
@@ -218,6 +242,12 @@ CREATE TABLE IF NOT EXISTS `subcategoria` (
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- RELACIONES PARA LA TABLA `subcategoria`:
+--   `scatCatId`
+--       `categoria` -> `catId`
+--
+
+--
 -- Volcado de datos para la tabla `subcategoria`
 --
 
@@ -245,6 +275,10 @@ CREATE TABLE IF NOT EXISTS `tipousuario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- RELACIONES PARA LA TABLA `tipousuario`:
+--
+
+--
 -- Volcado de datos para la tabla `tipousuario`
 --
 
@@ -266,6 +300,10 @@ CREATE TABLE IF NOT EXISTS `tokens` (
   `tokToken` varchar(500) NOT NULL,
   `tokFechaInsert` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `tokens`:
+--
 
 --
 -- Volcado de datos para la tabla `tokens`
@@ -305,6 +343,14 @@ CREATE TABLE IF NOT EXISTS `usuario` (
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- RELACIONES PARA LA TABLA `usuario`:
+--   `usrDomicilio`
+--       `domicilio` -> `domID`
+--   `usrTipoUsuario`
+--       `tipousuario` -> `ttuTipoUsuario`
+--
+
+--
 -- Volcado de datos para la tabla `usuario`
 --
 
@@ -333,6 +379,16 @@ CREATE TABLE IF NOT EXISTS `usuariotasadorhabilidad` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- RELACIONES PARA LA TABLA `usuariotasadorhabilidad`:
+--   `utsPerId`
+--       `periodo` -> `perId`
+--   `utsScatId`
+--       `subcategoria` -> `scatId`
+--   `utsUsrId`
+--       `usuario` -> `usrId`
+--
+
+--
 -- Volcado de datos para la tabla `usuariotasadorhabilidad`
 --
 
@@ -350,7 +406,7 @@ INSERT INTO `usuariotasadorhabilidad` (`utsUsrId`, `utsScatId`, `utsPerId`, `uts
 -- Filtros para la tabla `domicilio`
 --
 ALTER TABLE `domicilio`
-  ADD CONSTRAINT `FK_domicilioLocalidad` FOREIGN KEY (`domLocalidad`) REFERENCES `localidad` (`locId`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `FK_domicilioLocalidad` FOREIGN KEY (`domLocId`) REFERENCES `localidad` (`locId`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `localidad`

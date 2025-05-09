@@ -62,13 +62,7 @@ class LocalidadesController extends BaseController
             $this->securityService->requireLogin(tipoUsurio: ['ST']);
 
             $mysqli = $this->dbConnection->conectarBD();
-            $data = json_decode(file_get_contents('php://input'), true);
-            if (json_last_error()) {
-                Output::outputError(400, "El formato de datos es incorrecto");
-            }
-            if (empty($data)) {
-                Output::outputError(400, "No se recibieron datos para crear la localidad");
-            }
+            $data = Input::getArrayBody(msgEntidad: "la localidad");
 
             $this->localidadesValidacionService->validarType(className: "LocalidadCreacionDTO", datos: $data);
             $localidadCreacionDTO = new LocalidadCreacionDTO($data);
@@ -104,13 +98,7 @@ class LocalidadesController extends BaseController
             $this->securityService->requireLogin(tipoUsurio: ['ST']);
             settype($id, 'integer');
             $mysqli = $this->dbConnection->conectarBD();
-            $data = json_decode(file_get_contents('php://input'), true);
-            if (json_last_error()) {
-                Output::outputError(400, "El formato de datos es incorrecto");
-            }
-            if (empty($data)) {
-                Output::outputError(400, "No se recibieron datos para modificar la localidad");
-            }
+            $data = Input::getArrayBody(msgEntidad: "la localidad");
 
             $data['locId'] = $id;
 

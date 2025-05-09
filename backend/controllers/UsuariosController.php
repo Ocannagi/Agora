@@ -49,13 +49,7 @@ class UsuariosController extends BaseController
     {
         try {
             $mysqli = $this->dbConnection->conectarBD();
-            $data = json_decode(file_get_contents('php://input'), true);
-            if (json_last_error()) {
-                Output::outputError(400, "El formato de datos es incorrecto");
-            }
-            if (empty($data)) {
-                Output::outputError(400, "No se recibieron datos para crear el usuario");
-            }
+            $data = Input::getArrayBody(msgEntidad: "el usuario");
 
             $this->usuariosValidacionService->validarType(className: "UsuarioCreacionDTO", datos: $data);
 
@@ -96,13 +90,7 @@ class UsuariosController extends BaseController
             $this->securityService->requireLogin(tipoUsurio: null);
             settype($id, 'integer');
             $mysqli = $this->dbConnection->conectarBD();
-            $data = json_decode(file_get_contents('php://input'), true);
-            if (json_last_error()) {
-                Output::outputError(400, "El formato de datos es incorrecto");
-            }
-            if (empty($data)) {
-                Output::outputError(400, "No se recibieron datos para crear el usuario");
-            }
+            $data = Input::getArrayBody(msgEntidad: "el usuario");
 
             $data['usrId'] = $id;
 

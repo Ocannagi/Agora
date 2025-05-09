@@ -33,10 +33,46 @@ class DomiciliosController extends BaseController
     public function getDomicilios() {
         $this->securityService->requireLogin(null);
 
-        $query = "SELECT domId, domCalleRuta, domNroKm, domPiso, domDepto, domCPA, 
-                  FROM domicilio"
+        $query =  "SELECT domId, domCPA, domCalleRuta, domNroKm, domPiso, domDepto,
+                    locId, locDescripcion, provId, provDescripcion
+                    FROM domicilio
+                    INNER JOIN localidad ON domLocId = locId
+                    INNER JOIN provincia ON locProvId = provId
+                    WHERE domFechaBaja is NULL
+                    ORDER BY domId";
 
+        return parent::get(query: $query, classDTO: "DomicilioDTO");
+    }
 
+    public function getDomiciliosById($id) {
+        settype($id, 'integer');
+        $this->securityService->requireLogin(null);
 
+        $query =  "SELECT domId, domCPA, domCalleRuta, domNroKm, domPiso, domDepto,
+                    locId, locDescripcion, provId, provDescripcion
+                    FROM domicilio
+                    INNER JOIN localidad ON domLocId = locId
+                    INNER JOIN provincia ON locProvId = provId
+                    WHERE domId = $id AND domFechaBaja is NULL";
+
+        return parent::getById(query: $query, classDTO: "DomicilioDTO");
+    }
+
+    public function postDomicilios() {
+        try {
+            $this->securityService->requireLogin(null);
+            $mysqli = $this->dbConnection->conectarBD();
+            $data = Input::getArrayBody(msgEntidad:'el domicilio');
+
+        } catch (\Throwable $th) {
+            if ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
+        
     }
 }

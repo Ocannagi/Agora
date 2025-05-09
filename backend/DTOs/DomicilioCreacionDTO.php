@@ -46,6 +46,26 @@ class DomicilioCreacionDTO implements ICreacionDTO
 
                 $arrayLoc['provincia']
                     = new ProvinciaDTO($arrayProv);
+            } else if (array_key_exists('locProvId', $data)) {
+                $arrayLoc['locProvId'] = (int)$data['locProvId'];
+            }
+            $this->localidad = new LocalidadDTO($arrayLoc);
+        } else if (array_key_exists('domLocId', $data)) {
+            $arrayLoc = ['locId' => (int)$data['domLocId']];
+            if (array_key_exists('locDescripcion', $data))
+                $arrayLoc['locDescripcion'] = (string)$data['locDescripcion'];
+
+            if (array_key_exists('provincia', $data)) {
+                $arrayLoc['provincia'] = new ProvinciaDTO($data['provincia']);
+            } else if (array_key_exists('provId', $data)) {
+                $arrayProv = ['provId' => (int)$data['provId']];
+                if (array_key_exists('provDescripcion', $data))
+                    $arrayProv['provDescripcion'] = (string)$data['provDescripcion'];
+
+                $arrayLoc['provincia']
+                    = new ProvinciaDTO($arrayProv);
+            } else if (array_key_exists('locProvId', $data)) {
+                $arrayLoc['locProvId'] = (int)$data['locProvId'];
             }
             $this->localidad = new LocalidadDTO($arrayLoc);
         }

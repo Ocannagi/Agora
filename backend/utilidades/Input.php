@@ -7,6 +7,19 @@ use ReflectionClass;
 
 class Input
 {
+    public static function getArrayBody(string $msgEntidad = "la entidad"): array
+    {
+        $array = json_decode(file_get_contents('php://input'), true);
+        if (json_last_error()) {
+            Output::outputError(400, 'El formato de datos es incorrecto');
+        }
+        if (empty($data)) {
+            Output::outputError(400, "No se recibieron datos para crear $msgEntidad");
+        }
+
+        return $array;
+    }
+
     public static function escaparDatos(object $instance, mysqli $linkExterno)
     {
         $refClass = new ReflectionClass($instance);

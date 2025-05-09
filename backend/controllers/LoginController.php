@@ -1,6 +1,7 @@
 <?php
 
 use Utilidades\Output;
+use Utilidades\Input;
 
 class LoginController
 {
@@ -32,7 +33,7 @@ class LoginController
         try {
             $link = $this->dbConnection->conectarBD();
             $this->securityService->deleteTokensExpirados($link);
-            $loginData = json_decode(file_get_contents("php://input"), true);
+            $loginData = Input::getArrayBody(msgEntidad: "el login");
             $usrEmail = $link->real_escape_string($loginData['usrEmail']);
             $query = "SELECT usrId, usrNombre, usrTipoUsuario, usrPassword FROM usuario WHERE usrEmail='$usrEmail'";
             $resultado = $link->query($query);

@@ -63,13 +63,7 @@ class SubcategoriasController extends BaseController
             $this->securityService->requireLogin(tipoUsurio: ['ST']);
 
             $mysqli = $this->dbConnection->conectarBD();
-            $data = json_decode(file_get_contents('php://input'), true);
-            if (json_last_error()) {
-                Output::outputError(400, "El formato de datos es incorrecto");
-            }
-            if (empty($data)) {
-                Output::outputError(400, "No se recibieron datos para crear la subcategoría");
-            }
+            $data = Input::getArrayBody(msgEntidad: "la subcategoría");
 
             $this->subcategoriasValidacionService->validarType(className: "SubcategoriaCreacionDTO", datos: $data);
             if(array_key_exists('categoria', $data)) {
@@ -113,13 +107,7 @@ class SubcategoriasController extends BaseController
             settype($id, 'integer');
 
             $mysqli = $this->dbConnection->conectarBD();
-            $data = json_decode(file_get_contents('php://input'), true);
-            if (json_last_error()) {
-                Output::outputError(400, "El formato de datos es incorrecto");
-            }
-            if (empty($data)) {
-                Output::outputError(400, "No se recibieron datos para modificar la subcategoría");
-            }
+            $data = Input::getArrayBody(msgEntidad: "la subcategoría");
 
             $data['scatId'] = $id;
 
