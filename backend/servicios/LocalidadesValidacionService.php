@@ -51,6 +51,10 @@ class LocalidadesValidacionService extends ValidacionServiceBase
             Output::outputError(500, 'Error interno: el DTO de provincia no es del tipo correcto.');
         }
 
+        if (!isset($provinciaDTO->provId)) {
+            Output::outputError(400, 'El id de la provincia no fue proporcionado.');
+        }
+        
         if ($provinciaDTO->provId <= 0) {
             Output::outputError(400, "El ID de la provincia no es válido: $provinciaDTO->provId.");
         }

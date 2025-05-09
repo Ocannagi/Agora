@@ -86,6 +86,11 @@ class UsuariosValidacionService extends ValidacionServiceBase
         if (!($domicilio instanceof DomicilioDTO)) {
             Output::outputError(500, 'Error interno: el DTO de domicilio no es del tipo correcto.');
         }
+        
+        if (!isset($domicilio->domId)) {
+            Output::outputError(400, 'El ID del domicilio no fue proporcionado.');
+        }
+        
         if ($domicilio->domId <= 0) {
             Output::outputError(400, 'El ID del domicilio no es válido: ' . $domicilio->domId);
         }

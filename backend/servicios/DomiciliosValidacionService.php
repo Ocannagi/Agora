@@ -33,10 +33,60 @@ class DomiciliosValidacionService extends ValidacionServiceBase
         $this->validarDepto($domicilio->domDepto);
 
         if ($domicilio instanceof DomicilioDTO) {
-            $this->validarExisrteDomicilioModificar($domicilio->domId, $linkExterno);
+            $this->validarExisteDomicilioModificar($domicilio->domId, $linkExterno);
             $this->validarSiYaFueRegistrado(descripcion: $domicilio->domCalleRuta, domLocId: $domicilio->localidad->locId, linkExterno: $linkExterno, domId: $domicilio->domId);
         } else {
             $this->validarSiYaFueRegistrado(descripcion: $domicilio->domCalleRuta, domLocId: $domicilio->localidad->locId, linkExterno: $linkExterno);
         }
     }
+
+    private function validarDatoIdLocalidad(mysqli $linkExterno, LocalidadDTO $localidad)
+    {
+        if (!isset($localidad->locId)) {
+            Output::outputError(400, 'El id de la localidad no fue proporcionado.');
+        }
+        
+        if ($localidad->locId <= 0) {
+            Output::outputError(400, 'El id de la localidad no es válido.');
+        }
+
+        if (!$this->existeLocalidad($localidad->locId, $linkExterno)) {
+            Output::outputError(409, 'La localidad con ID ' . $localidad->locId . ' no existe.');
+        }
+    }
+
+    private function existeLocalidad(int $locId, mysqli $linkExterno): bool
+    {
+        return $this->_existeEnBD(link: $linkExterno, query: "SELECT 1 FROM localidad WHERE locId = $locId AND locFechaBaja IS NULL", msg: 'obtener una localidad por id');
+    }
+
+    private function validarCalleRuta(string $calleRuta)
+    {
+        if (!$this->_esStringLongitud($calleRuta, 1, 50)) {
+            Output::outputError(400, 'La Calle/Ruta debe ser un string de al menos un caracter y un máximo de 50.');
+        }
+    }
+
+    private function validarNroKm(int $nroKm)
+    {
+        if ($nroKm < 0) {
+            Output::outputError(400, 'El número de km debe ser un valor positivo.');
+        }
+        if ($nroKm > 12000) {
+            Output::outputError(400, 'El número de NroKm no puede ser mayor a 12000.');
+        }
+    }
+
+    private function validarPiso(?string $piso)
+    {
+        if ($piso !== null){
+
+           
+
+        }
+        
+        
+    }
+
+
 }

@@ -41,6 +41,10 @@ class SubcategoriasValidacionService extends ValidacionServiceBase
 
     private function validarDatoIdCategoria(mysqli $linkExterno, CategoriaDTO $categoriaDTO)
     {
+        if (!isset($categoriaDTO->catId)) {
+            Output::outputError(400, 'El id de la categoría no fue proporcionado.');
+        }
+        
         if (!($categoriaDTO instanceof CategoriaDTO)) {
             Output::outputError(500, 'Error interno: el DTO de categoría no es del tipo correcto.');
         }
