@@ -54,7 +54,6 @@ class CategoriasController extends BaseController
             $this->categoriasValidacionService->validarType(className: "CategoriaCreacionDTO", datos: $data);
 
             $categoriaCreacionDTO = new CategoriaCreacionDTO($data);
-            Input::trimStringDatos($categoriaCreacionDTO);
 
             $this->categoriasValidacionService->validarInput($mysqli, $categoriaCreacionDTO);
 
@@ -87,9 +86,7 @@ class CategoriasController extends BaseController
 
             $this->categoriasValidacionService->validarType(className: "CategoriaDTO", datos: $data);
 
-
             $categoriaDTO = new CategoriaDTO($data);
-            Input::trimStringDatos($categoriaDTO);
 
             $this->categoriasValidacionService->validarInput($mysqli, $categoriaDTO);
 

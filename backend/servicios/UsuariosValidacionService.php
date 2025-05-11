@@ -26,6 +26,8 @@ class UsuariosValidacionService extends ValidacionServiceBase
         }
 
         $this->validarDatosObligatorios(classModelName: 'Usuario', datos: get_object_vars($usuario));
+        Input::trimStringDatos($usuario);
+        
         $this->validarDni($usuario->usrDni);
         $this->validarApellido($usuario->usrApellido);
         $this->validarNombre($usuario->usrNombre);

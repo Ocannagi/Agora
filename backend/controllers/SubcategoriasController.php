@@ -71,7 +71,6 @@ class SubcategoriasController extends BaseController
             }
 
             $subcategoriaCreacionDTO = new SubcategoriaCreacionDTO($data);
-            Input::trimStringDatos($subcategoriaCreacionDTO);
 
             $this->subcategoriasValidacionService->validarInput($mysqli,$subcategoriaCreacionDTO);
 
@@ -117,7 +116,6 @@ class SubcategoriasController extends BaseController
             }
 
             $subcategoriaDTO = new SubcategoriaDTO($data);
-            Input::trimStringDatos($subcategoriaDTO);
 
             $this->subcategoriasValidacionService->validarInput($mysqli,$subcategoriaDTO);
 

@@ -96,6 +96,23 @@ abstract class ValidacionServiceBase
         return preg_match("/^\d+$/", $strNum) === 1;
     }
 
+    protected function _esDigitoNegativoOPositivo(string $strNum): bool
+    {
+        return preg_match("/^-?\d+$/", $strNum) === 1;
+    }
+
+    protected function _esLetraSinTilde(string $str): bool
+    {
+        return preg_match("/^[a-zñA-ZÑ]+$/", $str) === 1;
+    }
+
+    protected function _esAlfaNumerico(string $str): bool
+    {
+        return preg_match("/^[a-zA-Z0-9ñÑ]+$/", $str) === 1;
+    }
+
+
+
     /**Evalúa si es string y si está dentro del min/max, ambos incluidos */
     protected function _esStringLongitud($val, int $min, int $max): bool
     {

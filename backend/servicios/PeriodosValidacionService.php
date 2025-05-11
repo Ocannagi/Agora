@@ -1,6 +1,7 @@
 <?php
 
 use Utilidades\Output;
+use Utilidades\Input;
 
 class PeriodosValidacionService extends ValidacionServiceBase
 {
@@ -25,6 +26,8 @@ class PeriodosValidacionService extends ValidacionServiceBase
         }
 
         $this->validarDatosObligatorios(classModelName: 'Periodo', datos: get_object_vars($periodo));
+        Input::trimStringDatos($periodo);
+        
         $this->validarDescripcion($periodo->perDescripcion);
 
         if ($periodo instanceof PeriodoDTO) {

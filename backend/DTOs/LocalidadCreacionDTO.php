@@ -5,6 +5,8 @@ class LocalidadCreacionDTO implements ICreacionDTO
     public string $locDescripcion;
     public ProvinciaDTO $provincia;
 
+    use TraitMapProvinciaDTO; // Trait para mapear ProvinciaDTO
+
     public function __construct(array | stdClass $data) {
         if($data instanceof stdClass) {
             $data = (array)$data;
@@ -13,14 +15,11 @@ class LocalidadCreacionDTO implements ICreacionDTO
         if (array_key_exists('locDescripcion', $data)) {
             $this->locDescripcion = (string)$data['locDescripcion'];
         }
-        if (array_key_exists('locProvId', $data)) {
-            $this->provincia = new ProvinciaDTO($data['provincia']);
-        } else if (array_key_exists('provId', $data)) {
-            $arrayProv = ['provId' => (int)$data['provId']];
-            if (array_key_exists('provDescripcion', $data))
-                $arrayProv['provDescripcion'] = (string)$data['provDescripcion'];
-
-            $this->provincia = new ProvinciaDTO($arrayProv);
+        
+        $provinciaDTO = $this->mapProvinciaDTO($data);
+        if ($provinciaDTO !== null) {
+            $this->provincia = $provinciaDTO;
         }
+        
     }
 }

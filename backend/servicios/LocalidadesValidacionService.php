@@ -26,23 +26,25 @@ class LocalidadesValidacionService extends ValidacionServiceBase
         }
 
         $this->validarDatosObligatorios(classModelName: 'Localidad', datos: get_object_vars($localidad));
+        Input::trimStringDatos($localidad);
+        
         $this->validarProvincia($localidad->provincia, $linkExterno);
 
 
         $this->validarDescripcion($localidad->locDescripcion);
 
         if ($localidad instanceof LocalidadDTO) {
-            $this->validarSiYaFueRegistrado($localidad->locDescripcion, $linkExterno, $localidad->locId);
+            $this->validarSiYaFueRegistrado($localidad->locDescripcion, $localidad->provincia->provId ,$linkExterno, $localidad->locId);
             $this->validarExisteLocalidadModificar($localidad->locId, $linkExterno);
         } else {
-            $this->validarSiYaFueRegistrado($localidad->locDescripcion, $linkExterno);
+            $this->validarSiYaFueRegistrado($localidad->locDescripcion, $localidad->provincia->provId, $linkExterno);
         }
     }
     
     private function validarDescripcion(string $descripcion)
     {
-        if (!$this->_esStringLongitud($descripcion, 1, 100))
-            Output::outputError(400, 'La Descripción de la localidad debe ser un string de al menos un caracter y un máximo de 100.');
+        if (!$this->_esStringLongitud($descripcion, 1, 50))
+            Output::outputError(400, 'La Descripción de la localidad debe ser un string de al menos un caracter y un máximo de 50.');
     }
 
     private function validarProvincia(ProvinciaDTO $provinciaDTO, mysqli $linkExterno)
@@ -66,15 +68,15 @@ class LocalidadesValidacionService extends ValidacionServiceBase
 
     private function existeProvincia(int $provId, mysqli $linkExterno): bool
     {
-        $query = "SELECT 1 FROM provincia WHERE provId='$provId' AND provFechaBaja IS NULL";
+        $query = "SELECT 1 FROM provincia WHERE provId='$provId'";
         return $this->_existeEnBD(link: $linkExterno, query: $query, msg: 'obtener una provincia por id');
     }
 
-    private function validarSiYaFueRegistrado(string $descripcion, mysqli $linkExterno, ?int $locId = null)
+    private function validarSiYaFueRegistrado(string $descripcion, int $provId, mysqli $linkExterno, ?int $locId = null)
     {
         $descripcion = $linkExterno->real_escape_string($descripcion);
 
-        $query = $locId ? "SELECT 1 FROM localidad WHERE locId <> $locId AND locDescripcion='$descripcion' AND locFechaBaja is NULL" : "SELECT 1 FROM localidad WHERE locDescripcion='$descripcion' AND locFechaBaja is NULL";
+        $query = $locId ? "SELECT 1 FROM localidad WHERE locId <> $locId AND locDescripcion='$descripcion' AND locProvId = $provId AND locFechaBaja is NULL" : "SELECT 1 FROM localidad WHERE locDescripcion='$descripcion' AND locProvId = $provId AND locFechaBaja is NULL";
 
         if ($this->_existeEnBD(link: $linkExterno, query: $query, msg: 'obtener una localidad por descripcion'))
             Output::outputError(409, $locId ? 'La descripción nueva que quiere registrar ya existe declarada en otro id' : 'Ya se encuentra registrada la descripción de la localidad a crear.');

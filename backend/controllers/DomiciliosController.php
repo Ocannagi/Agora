@@ -64,6 +64,21 @@ class DomiciliosController extends BaseController
             $mysqli = $this->dbConnection->conectarBD();
             $data = Input::getArrayBody(msgEntidad:'el domicilio');
 
+            $this->domiciliosValidacionService->validarType(className: "DomicilioCreacionDTO", datos: $data);
+            $domicilioCreacionDTO = new DomicilioCreacionDTO($data);
+            
+            $this->domiciliosValidacionService->validarInput($mysqli, $domicilioCreacionDTO);
+            Input::escaparDatos($domicilioCreacionDTO, $mysqli);
+            Input::agregarComillas_ConvertNULLtoString($domicilioCreacionDTO);
+
+            $domLocId = $domicilioCreacionDTO->localidad->locId;
+
+            $query = "INSERT INTO domicilio (domCPA, domCalleRuta, domNroKm, domPiso, domDepto, domLocId)
+                      VALUES ($domicilioCreacionDTO->domCPA, $domicilioCreacionDTO->domCalleRuta, $domicilioCreacionDTO->domNroKm,
+                              $domicilioCreacionDTO->domPiso, $domicilioCreacionDTO->domDepto, $domLocId)";
+            
+            return parent::post(query: $query, link: $mysqli);
+
         } catch (\Throwable $th) {
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
@@ -73,6 +88,70 @@ class DomiciliosController extends BaseController
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
         }
-        
+    }
+
+    public function patchDomicilios($id) {
+        try {
+            $this->securityService->requireLogin(null);
+            settype($id, 'integer');
+            $mysqli = $this->dbConnection->conectarBD();
+            $data = Input::getArrayBody(msgEntidad:'el domicilio');
+
+            $data['domId'] = $id;
+
+            $this->domiciliosValidacionService->validarType(className: "DomicilioCreacionDTO", datos: $data);
+            $domicilioDTO = new DomicilioDTO($data);
+            
+            $this->domiciliosValidacionService->validarInput($mysqli, $domicilioDTO);
+            Input::escaparDatos($domicilioDTO, $mysqli);
+            Input::agregarComillas_ConvertNULLtoString($domicilioDTO);
+
+            $domLocId = $domicilioDTO->localidad->locId;
+
+            $query = "UPDATE domicilio
+                      SET domCPA = $domicilioDTO->domCPA,
+                          domCalleRuta = $domicilioDTO->domCalleRuta,
+                          domNroKm = $domicilioDTO->domNroKm,
+                          domPiso = $domicilioDTO->domPiso,
+                          domDepto = $domicilioDTO->domDepto,
+                          domLocId = $domLocId
+                      WHERE domId = $domicilioDTO->domId
+                      AND domFechaBaja is NULL";
+
+            return parent::patch(query: $query, link: $mysqli);
+
+        } catch (\Throwable $th) {
+            if ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
+    }
+
+    public function deleteDomicilios($id) {
+        try {
+            $this->securityService->requireLogin(['ST']);
+            settype($id, 'integer');
+
+            $queryBusqueda = "SELECT 1
+                              FROM domicilio
+                              WHERE domId = $id AND domFechaBaja IS NULL";
+            
+            $queryBajaLogica = "UPDATE domicilio
+                                SET domFechaBaja = CURRENT_TIMESTAMP()
+                                WHERE domId = $id";
+
+            return parent::delete(queryBusqueda: $queryBusqueda, queryBajaLogica: $queryBajaLogica);
+
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
     }
 }

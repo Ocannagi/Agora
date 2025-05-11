@@ -26,6 +26,7 @@ class CategoriasValidacionService extends ValidacionServiceBase
         }
 
         $this->validarDatosObligatorios(classModelName: 'Categoria', datos: get_object_vars($categoria));
+        Input::trimStringDatos($categoria);
         $this->validarDescripcion($categoria->catDescripcion);
 
         if ($categoria instanceof CategoriaDTO) {

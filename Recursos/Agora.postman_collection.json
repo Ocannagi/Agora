@@ -254,7 +254,14 @@
 									"    jsonData = pm.response.text();\r",
 									"}\r",
 									"\r",
-									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
 									"\r",
 									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -315,7 +322,14 @@
 									"    jsonData = pm.response.text();\r",
 									"}\r",
 									"\r",
-									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
 									"\r",
 									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -374,7 +388,14 @@
 									"    jsonData = pm.response.text();\r",
 									"}\r",
 									"\r",
-									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
 									"\r",
 									"\r",
 									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
@@ -541,7 +562,14 @@
 									"    jsonData = pm.response.text();\r",
 									"}\r",
 									"\r",
-									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
 									"\r",
 									"if(!pm.environment.get('EjecutarExamples')){\r",
 									"    pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
@@ -1133,7 +1161,14 @@
 									"    jsonData = pm.response.text();\r",
 									"}\r",
 									"\r",
-									"let conParam = pm.request.url.path[3] && pm.request.method == 'GET' ? \"ConParametros\" : '';\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
 									"\r",
 									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -1167,7 +1202,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"usrDni\": \"33698895\",\r\n    \"usrApellido\": \"Gómez Ivaldi\",\r\n    \"usrNombre\": \"Nicolás Alejandro\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi AAABX.\",\r\n    \"usrScoring\": 10,\r\n    \"usrEmail\": \"nicoivaldi@agora.com\",\r\n    \"usrPassword\": \"Ag0raAdm1n&\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
+							"raw": "{\r\n    \"usrDni\": \"33698895\",\r\n    \"usrApellido\": \"Gómez Ivaldi\",\r\n    \"usrNombre\": \"Nicolás Alejandro\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi AAABF.\",\r\n    \"usrScoring\": 10,\r\n    \"usrEmail\": \"nicoivaldi@agora.com\",\r\n    \"usrPassword\": \"Ag0raAdm1n&\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1208,7 +1243,14 @@
 									"    jsonData = pm.response.text();\r",
 									"}\r",
 									"\r",
-									"let conParam = pm.request.url.path[3] && pm.request.method == 'GET' ? \"ConParametros\" : '';\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
 									"\r",
 									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -1268,7 +1310,14 @@
 									"    jsonData = pm.response.text();\r",
 									"}\r",
 									"\r",
-									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
 									"\r",
 									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -1332,7 +1381,14 @@
 									"    jsonData = pm.response.text();\r",
 									"}\r",
 									"\r",
-									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
 									"\r",
 									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -1400,7 +1456,14 @@
 									"    jsonData = pm.response.text();\r",
 									"}\r",
 									"\r",
-									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
 									"\r",
 									"\r",
 									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
@@ -1761,7 +1824,14 @@
 									"    jsonData = pm.response.text();\r",
 									"}\r",
 									"\r",
-									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
 									"\r",
 									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -1829,7 +1899,14 @@
 									"    jsonData = pm.response.text();\r",
 									"}\r",
 									"\r",
-									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
 									"\r",
 									"\r",
 									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
@@ -2190,7 +2267,14 @@
 									"    jsonData = pm.response.text();\r",
 									"}\r",
 									"\r",
-									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
 									"\r",
 									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -2258,7 +2342,14 @@
 									"    jsonData = pm.response.text();\r",
 									"}\r",
 									"\r",
-									"let conParam = pm.request.url.path[3] ? \"ConParametros\" : '';\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
 									"\r",
 									"\r",
 									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
@@ -2273,8 +2364,8 @@
 									"    pm.expect(jsonData).to.have.own.property('scatId').that.is.a('number').that.is.equal(parseInt(pm.request.url.path[3]));\r",
 									"});\r",
 									"\r",
-									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have a property \"catDescripcion\" that is a string`, function () {\r",
-									"    pm.expect(jsonData).to.have.own.property('catDescripcion').that.is.a('string');\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have a property \"categoria\" that is a object`, function () {\r",
+									"    pm.expect(jsonData).to.have.own.property('categoria').that.is.a('object');\r",
 									"});\r",
 									"\r",
 									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have a property \"scatDescripcion\" that is a string`, function () {\r",
@@ -2591,6 +2682,519 @@
 							],
 							"path": [
 								"Subcategorias",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Provincias",
+			"item": [
+				{
+					"name": "getProvincias",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an array with an object that have a property \"provId\" that is a \"number\"`, function () {\r",
+									"    pm.expect(jsonData[0]).to.have.own.property('provId').that.is.a('number');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Provincias",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Provincias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getProvinciasById",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an array with an object that have a property \"provId\" that is a \"number\"`, function () {\r",
+									"    pm.expect(jsonData[0]).to.have.own.property('provId').that.is.a('number');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Provincias/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Provincias",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Localidades",
+			"item": [
+				{
+					"name": "getLocalidades",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an array with an object that have a property \"scatId\" that is a \"number\"`, function () {\r",
+									"    pm.expect(jsonData[0]).to.have.own.property('scatId').that.is.a('number');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Localidades",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Localidades"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getLocalidadesById",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Localidades/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Localidades",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostLocalidades",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"locDescripcion\": \"Caballito\",\r\n    \"provincia\": {\r\n        \"provId\": 1\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/Localidades",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Localidades"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Fail_DesccripcionYaExistente",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"locDescripcion\": \"Caballito\",\r\n    \"provincia\": {\r\n        \"provId\": 1\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Localidades",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Localidades"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_DescripcionMas50",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"locDescripcion\": \"Soy una descripción muy, pero muy larga. Tan larga como un basto océano largo largo\",\r\n    \"provincia\": {\r\n        \"provId\": 1\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Localidades",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Localidades"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "PatchLocalidades",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"locDescripcion\": \"La Platas\",\r\n    \"provincia\": {\r\n        \"provId\": 2\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/Localidades/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Localidades",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Fail_DesccripcionYaExistente",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"locDescripcion\": \"Mar del Plata\",\r\n    \"provincia\": {\r\n        \"provId\": 2\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Localidades/:id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Localidades",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_DescripcionMas50",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"locDescripcion\": \"Soy una descripción muy, pero muy larga. Tan larga como un basto océano largo largo\",\r\n    \"provincia\": {\r\n        \"provId\": 1\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Localidades/:id",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Localidades",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "DeleteSubcategorias Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Localidades/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Localidades",
 								":id"
 							],
 							"variable": [

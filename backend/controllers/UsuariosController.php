@@ -54,7 +54,6 @@ class UsuariosController extends BaseController
             $this->usuariosValidacionService->validarType(className: "UsuarioCreacionDTO", datos: $data);
 
             $usuarioCreacionDTO = new UsuarioCreacionDTO($data);
-            Input::trimStringDatos($usuarioCreacionDTO);
 
             $this->usuariosValidacionService->validarInput($mysqli, $usuarioCreacionDTO);
             Input::escaparDatos($usuarioCreacionDTO, $mysqli);
@@ -96,7 +95,6 @@ class UsuariosController extends BaseController
 
             $this->usuariosValidacionService->validarType(className: "UsuarioDTO", datos: $data);
             $usuarioDTO = new UsuarioDTO($data);
-            Input::trimStringDatos($usuarioDTO);
 
             $this->usuariosValidacionService->validarInput($mysqli, $usuarioDTO);
 

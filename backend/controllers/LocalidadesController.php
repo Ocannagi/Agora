@@ -66,8 +66,6 @@ class LocalidadesController extends BaseController
 
             $this->localidadesValidacionService->validarType(className: "LocalidadCreacionDTO", datos: $data);
             $localidadCreacionDTO = new LocalidadCreacionDTO($data);
-            Input::trimStringDatos($localidadCreacionDTO);
-            
             
             $this->localidadesValidacionService->validarInput($mysqli, $localidadCreacionDTO);
             $localidadCreacionDTO->locDescripcion = Input::cadaPalabraMayuscula($localidadCreacionDTO->locDescripcion);
@@ -104,8 +102,7 @@ class LocalidadesController extends BaseController
 
             $this->localidadesValidacionService->validarType(className: "LocalidadDTO", datos: $data);
             $localidadDTO = new LocalidadDTO($data);
-            Input::trimStringDatos($localidadDTO);
-
+            
             $this->localidadesValidacionService->validarInput($mysqli, $localidadDTO);
 
             $localidadDTO->locDescripcion = Input::cadaPalabraMayuscula($localidadDTO->locDescripcion);

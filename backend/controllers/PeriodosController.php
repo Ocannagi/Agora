@@ -54,7 +54,6 @@ class PeriodosController extends BaseController
             $this->periodosValidacionService->validarType(className: "PeriodoCreacionDTO", datos: $data);
 
             $periodoCreacionDTO = new PeriodoCreacionDTO($data);
-            Input::trimStringDatos($periodoCreacionDTO);
 
             $this->periodosValidacionService->validarInput($mysqli, $periodoCreacionDTO);
 
@@ -88,7 +87,6 @@ class PeriodosController extends BaseController
 
             $this->periodosValidacionService->validarType(className: "PeriodoDTO", datos: $data);
             $periodoDTO = new PeriodoDTO($data);
-            Input::trimStringDatos($periodoDTO);
 
             $this->periodosValidacionService->validarInput($mysqli, $periodoDTO);
 

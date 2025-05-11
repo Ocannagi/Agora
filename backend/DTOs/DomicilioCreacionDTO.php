@@ -9,6 +9,8 @@ class DomicilioCreacionDTO implements ICreacionDTO
     public ?string $domDepto = null;
     public LocalidadDTO $localidad; // Relación con la localidad
 
+    use TraitMapLocalidadDTO; // Trait para mapear LocalidadDTO
+
     public function __construct(array | stdClass $data)
     {
         if($data instanceof stdClass) {
@@ -30,44 +32,11 @@ class DomicilioCreacionDTO implements ICreacionDTO
         if (array_key_exists('domDepto', $data)) {
             $this->domDepto = (string)$data['domDepto'];
         }
-        if (array_key_exists('localidad', $data)) {
-            $this->localidad = new LocalidadDTO($data['localidad']);
-        } else if (array_key_exists('locId', $data)) {
-            $arrayLoc = ['locId' => (int)$data['locId']];
-            if (array_key_exists('locDescripcion', $data))
-                $arrayLoc['locDescripcion'] = (string)$data['locDescripcion'];
 
-            if (array_key_exists('provincia', $data)) {
-                $arrayLoc['provincia'] = new ProvinciaDTO($data['provincia']);
-            } else if (array_key_exists('provId', $data)) {
-                $arrayProv = ['provId' => (int)$data['provId']];
-                if (array_key_exists('provDescripcion', $data))
-                    $arrayProv['provDescripcion'] = (string)$data['provDescripcion'];
-
-                $arrayLoc['provincia']
-                    = new ProvinciaDTO($arrayProv);
-            } else if (array_key_exists('locProvId', $data)) {
-                $arrayLoc['locProvId'] = (int)$data['locProvId'];
-            }
-            $this->localidad = new LocalidadDTO($arrayLoc);
-        } else if (array_key_exists('domLocId', $data)) {
-            $arrayLoc = ['locId' => (int)$data['domLocId']];
-            if (array_key_exists('locDescripcion', $data))
-                $arrayLoc['locDescripcion'] = (string)$data['locDescripcion'];
-
-            if (array_key_exists('provincia', $data)) {
-                $arrayLoc['provincia'] = new ProvinciaDTO($data['provincia']);
-            } else if (array_key_exists('provId', $data)) {
-                $arrayProv = ['provId' => (int)$data['provId']];
-                if (array_key_exists('provDescripcion', $data))
-                    $arrayProv['provDescripcion'] = (string)$data['provDescripcion'];
-
-                $arrayLoc['provincia']
-                    = new ProvinciaDTO($arrayProv);
-            } else if (array_key_exists('locProvId', $data)) {
-                $arrayLoc['locProvId'] = (int)$data['locProvId'];
-            }
-            $this->localidad = new LocalidadDTO($arrayLoc);
+        $localidadDTO = $this->mapLocalidadDTO($data);
+        if ($localidadDTO !== null) {
+            $this->localidad = $localidadDTO;
         }
+       
     }
 }

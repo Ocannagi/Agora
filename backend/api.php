@@ -4,6 +4,7 @@ require_once(__DIR__ . '/utilidades/Output.php');
 require_once(__DIR__ . '/utilidades/Input.php');
 require_once(__DIR__ . '/persistencia.php');
 
+use Utilidades\Output;
 
 spl_autoload_register(function ($className) {
     // Define la ruta base donde están tus clases e interfaces
@@ -36,8 +37,8 @@ spl_autoload_register(function ($className) {
                     if (file_exists($file)) {
                         require_once $file;
                     } else {
-                        // Si no existe, lanza un error
-                        throw new Exception("No se pudo cargar la clase: " . $className);
+                        // Si no existe, lanza el outputError
+                        Output::outputError(500, "No se encontró la clase $className");
                     }
                 }
             }
@@ -45,7 +46,7 @@ spl_autoload_register(function ($className) {
     }
 });
 
-use Utilidades\Output;
+//************* DEPENDENCIAS *************/
 
 
 /** Definir aquí las Dependencias de los Controller */

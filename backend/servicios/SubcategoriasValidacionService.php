@@ -1,6 +1,7 @@
 <?php
 
 use Utilidades\Output;
+use Utilidades\Input;
 
 class SubcategoriasValidacionService extends ValidacionServiceBase
 {
@@ -25,6 +26,8 @@ class SubcategoriasValidacionService extends ValidacionServiceBase
         }
 
         $this->validarDatosObligatorios(classModelName: 'Subcategoria', datos: get_object_vars($subcategoria));
+        Input::trimStringDatos($subcategoria);
+        
         $this->validarDatoIdCategoria($linkExterno, $subcategoria->categoria);
 
 
