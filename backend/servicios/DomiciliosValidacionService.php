@@ -80,7 +80,7 @@ class DomiciliosValidacionService extends ValidacionServiceBase
     private function validarCalleRuta(string $calleRuta)
     {
         if (!$this->_esStringLongitud($calleRuta, 1, 50)) {
-            Output::outputError(400, 'La Calle/Ruta debe ser un string de al menos un caracter y un máximo de 50.');
+            Output::outputError(400, 'La Calle-Ruta debe ser un string de al menos un caracter y un máximo de 50.');
         }
     }
 
@@ -96,13 +96,13 @@ class DomiciliosValidacionService extends ValidacionServiceBase
 
     private function validarPiso(?string $piso)
     {
-        if ($piso !== null) {
+        if (Input::esNotNullVacioBlanco($piso)) {
 
             if (!$this->_esStringLongitud($piso, 1, 10)) {
                 Output::outputError(400, 'El Piso debe ser un string de al menos un caracter y un máximo de 10.');
             }
 
-            if (!$this->_esDigitoNegativoOPositivo($piso) || !$this->_esLetraSinTilde($piso) || !$this->_esAlfaNumerico($piso)) {
+            if (!$this->_esDigitoNegativoOPositivo($piso) && !$this->_esLetraSinTilde($piso) && !$this->_esAlfaNumerico($piso)) {
                 Output::outputError(400, 'El Piso debe ser un número entero o un string alfanumérico sin espacios en blanco ni caracteres especiales.');
             }
         }
@@ -110,13 +110,13 @@ class DomiciliosValidacionService extends ValidacionServiceBase
 
     private function validarDepto(?string $depto)
     {
-        if ($depto !== null) {
+        if (Input::esNotNullVacioBlanco($depto)) {
 
             if (!$this->_esStringLongitud($depto, 1, 10)) {
                 Output::outputError(400, 'El Depto debe ser un string de al menos un caracter y un máximo de 10.');
             }
 
-            if (!$this->_esDigitoNegativoOPositivo($depto) || !$this->_esLetraSinTilde($depto) || !$this->_esAlfaNumerico($depto)) {
+            if (!$this->_esDigitoNegativoOPositivo($depto) && !$this->_esLetraSinTilde($depto) && !$this->_esAlfaNumerico($depto)) {
                 Output::outputError(400, 'El Depto debe ser un número entero o un string alfanumérico sin espacios en blanco ni caracteres especiales.');
             }
         }

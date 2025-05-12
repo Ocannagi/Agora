@@ -1202,7 +1202,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"usrDni\": \"33698895\",\r\n    \"usrApellido\": \"Gómez Ivaldi\",\r\n    \"usrNombre\": \"Nicolás Alejandro\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi AAABF.\",\r\n    \"usrScoring\": 10,\r\n    \"usrEmail\": \"nicoivaldi@agora.com\",\r\n    \"usrPassword\": \"Ag0raAdm1n&\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
+							"raw": "{\r\n    \"usrDni\": \"33698895\",\r\n    \"usrApellido\": \"Gómez Ivaldi\",\r\n    \"usrNombre\": \"Nicolás Alejandro\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"ST\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1988-03-29\",\r\n    \"usrDescripcion\": \"Soy uno de los creadores de esta WebApi AAABQ.\",\r\n    \"usrScoring\": 10,\r\n    \"usrEmail\": \"nicoivaldi@agora.com\",\r\n    \"usrPassword\": \"Ag0raAdm1n&\",\r\n    \"usrFechaInsert\": \"2024-07-07 18:38:07\",\r\n    \"usrFechaBaja\": null\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3056,7 +3056,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"locDescripcion\": \"La Platas\",\r\n    \"provincia\": {\r\n        \"provId\": 2\r\n    }\r\n}",
+							"raw": "{\r\n    \"locDescripcion\": \"La Plata\",\r\n    \"provincia\": {\r\n        \"provId\": 2\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3178,7 +3178,7 @@
 					]
 				},
 				{
-					"name": "DeleteSubcategorias Copy",
+					"name": "DeleteLocalidades",
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -3201,6 +3201,286 @@
 								{
 									"key": "id",
 									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Domicilios",
+			"item": [
+				{
+					"name": "getDomicilios",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an array with an object that have a property \"domId\" that is a \"number\"`, function () {\r",
+									"    pm.expect(jsonData[0]).to.have.own.property('domId').that.is.a('number');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Domicilios",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Domicilios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getDomiciliosById",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Domicilios/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Domicilios",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostDomicilios",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"domCPA\": \"M5602BAG\",\r\n    \"domCalleRuta\": \"Juan José Castelli\",\r\n    \"domNroKm\": 353,\r\n    \"domPiso\": \"\",\r\n    \"domDepto\": \"\",\r\n    \"localidad\": {\r\n        \"locId\": 17,\r\n        \"locDescripcion\": \"San Rafael\",\r\n        \"provincia\": {\r\n            \"provId\": 13,\r\n            \"provDescripcion\": \"Mendoza\"\r\n        }\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/Domicilios",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Domicilios"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Fail_DomicilioYaExistente",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"domCPA\": \"B1900ALB\",\r\n    \"domCalleRuta\": \"Calle 47\",\r\n    \"domNroKm\": 1234,\r\n    \"domPiso\": \"\",\r\n    \"domDepto\": \"\",\r\n    \"localidad\": {\r\n        \"locId\": 1,\r\n        \"locDescripcion\": \"La Plata\",\r\n        \"provincia\": {\r\n            \"provId\": 2,\r\n            \"provDescripcion\": \"Buenos Aires\"\r\n        }\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Domicilios",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Domicilios"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Fail_CalleMas50",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"domCPA\": \"B1900ALB\",\r\n    \"domCalleRuta\": \"Soy una calle de nombre largo, largo, largo como una jirafa alta o como un chicle que se estira más allá del infinito\",\r\n    \"domNroKm\": 1234,\r\n    \"domPiso\": \"\",\r\n    \"domDepto\": \"\",\r\n    \"localidad\": {\r\n        \"locId\": 1,\r\n        \"locDescripcion\": \"La Plata\",\r\n        \"provincia\": {\r\n            \"provId\": 2,\r\n            \"provDescripcion\": \"Buenos Aires\"\r\n        }\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Domicilios",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Domicilios"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "PatchDomicilios",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"domCPA\": \"M5602BAG\",\r\n    \"domCalleRuta\": \"Juan José Castelli\",\r\n    \"domNroKm\": 353,\r\n    \"domPiso\": \"1\",\r\n    \"domDepto\": \"A\",\r\n    \"localidad\": {\r\n        \"locId\": 17,\r\n        \"locDescripcion\": \"San Rafael\",\r\n        \"provincia\": {\r\n            \"provId\": 13,\r\n            \"provDescripcion\": \"Mendoza\"\r\n        }\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/Domicilios/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Domicilios",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteDomicilios",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Domicilios/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Domicilios",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
 								}
 							]
 						}

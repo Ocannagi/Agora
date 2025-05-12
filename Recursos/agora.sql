@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 09-05-2025 a las 03:55:55
+-- Tiempo de generación: 12-05-2025 a las 02:57:59
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -38,10 +38,6 @@ CREATE TABLE IF NOT EXISTS `categoria` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- RELACIONES PARA LA TABLA `categoria`:
---
-
---
 -- Volcado de datos para la tabla `categoria`
 --
 
@@ -58,32 +54,29 @@ INSERT INTO `categoria` (`catId`, `catDescripcion`, `catFechaBaja`) VALUES
 
 DROP TABLE IF EXISTS `domicilio`;
 CREATE TABLE IF NOT EXISTS `domicilio` (
-  `domID` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `domId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `domLocId` int(10) UNSIGNED NOT NULL,
   `domCPA` char(8) NOT NULL,
   `domCalleRuta` varchar(50) NOT NULL,
   `domNroKm` int(10) UNSIGNED NOT NULL,
   `domPiso` varchar(10) DEFAULT NULL,
   `domDepto` varchar(10) DEFAULT NULL,
-  PRIMARY KEY (`domID`),
+  `domFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
+  `domFechaBaja` datetime DEFAULT NULL,
+  PRIMARY KEY (`domId`),
   KEY `FK_domicilioLocalidad` (`domLocId`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `domicilio`:
---   `domLocId`
---       `localidad` -> `locId`
---
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `domicilio`
 --
 
-INSERT INTO `domicilio` (`domID`, `domLocId`, `domCPA`, `domCalleRuta`, `domNroKm`, `domPiso`, `domDepto`) VALUES
-(1, 30, 'C1406DEH', 'Dávila', 926, '12', '175'),
-(2, 27, 'C1425DUR', 'Sánchez de Bustamante', 2173, '1', 'G'),
-(3, 1, 'B1900ALB', 'Calle 47', 1234, NULL, NULL),
-(4, 29, 'C1066AAW', 'Bolivar', 1131, NULL, NULL);
+INSERT INTO `domicilio` (`domId`, `domLocId`, `domCPA`, `domCalleRuta`, `domNroKm`, `domPiso`, `domDepto`, `domFechaInsert`, `domFechaBaja`) VALUES
+(1, 30, 'C1406DEH', 'Dávila', 926, '12', '175', '2025-05-11 18:00:31', NULL),
+(2, 27, 'C1425DUR', 'Sánchez de Bustamante', 2173, '1', 'G', '2025-05-11 18:00:31', NULL),
+(3, 1, 'B1900ALB', 'Calle 47', 1234, NULL, NULL, '2025-05-11 18:00:31', NULL),
+(4, 29, 'C1066AAW', 'Bolivar', 1131, NULL, NULL, '2025-05-11 18:00:31', NULL),
+(5, 17, 'M5602BAG', 'Juan José Castelli', 353, '1', 'A', '2025-05-11 21:37:57', NULL);
 
 -- --------------------------------------------------------
 
@@ -94,25 +87,19 @@ INSERT INTO `domicilio` (`domID`, `domLocId`, `domCPA`, `domCalleRuta`, `domNroK
 DROP TABLE IF EXISTS `localidad`;
 CREATE TABLE IF NOT EXISTS `localidad` (
   `locId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `locProvID` smallint(6) NOT NULL,
+  `locProvId` smallint(6) NOT NULL,
   `locDescripcion` varchar(50) NOT NULL,
   `locFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
   `locFechaBaja` datetime DEFAULT NULL,
   PRIMARY KEY (`locId`),
-  KEY `FK_localidadProv` (`locProvID`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `localidad`:
---   `locProvID`
---       `provincia` -> `provId`
---
+  KEY `FK_localidadProv` (`locProvId`)
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `localidad`
 --
 
-INSERT INTO `localidad` (`locId`, `locProvID`, `locDescripcion`, `locFechaInsert`, `locFechaBaja`) VALUES
+INSERT INTO `localidad` (`locId`, `locProvId`, `locDescripcion`, `locFechaInsert`, `locFechaBaja`) VALUES
 (1, 2, 'La Plata', '2025-05-07 22:48:02', NULL),
 (2, 2, 'Mar del Plata', '2025-05-07 22:48:02', NULL),
 (3, 2, 'Bahía Blanca', '2025-05-07 22:48:02', NULL),
@@ -147,7 +134,8 @@ INSERT INTO `localidad` (`locId`, `locProvID`, `locDescripcion`, `locFechaInsert
 (32, 8, 'Concordia', '2025-05-07 22:48:02', NULL),
 (33, 8, 'Gualeguaychú', '2025-05-07 22:48:02', NULL),
 (34, 8, 'Gualeguay', '2025-05-07 22:48:02', NULL),
-(35, 8, 'Villa Paranacito', '2025-05-07 22:48:02', NULL);
+(35, 8, 'Villa Paranacito', '2025-05-07 22:48:02', NULL),
+(36, 1, 'Caballito', '2025-05-10 23:19:45', NULL);
 
 -- --------------------------------------------------------
 
@@ -162,10 +150,6 @@ CREATE TABLE IF NOT EXISTS `periodo` (
   `perFechaBaja` datetime DEFAULT NULL,
   PRIMARY KEY (`perId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `periodo`:
---
 
 --
 -- Volcado de datos para la tabla `periodo`
@@ -190,10 +174,6 @@ CREATE TABLE IF NOT EXISTS `provincia` (
   `provDescripcion` varchar(40) NOT NULL,
   PRIMARY KEY (`provId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `provincia`:
---
 
 --
 -- Volcado de datos para la tabla `provincia`
@@ -242,12 +222,6 @@ CREATE TABLE IF NOT EXISTS `subcategoria` (
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- RELACIONES PARA LA TABLA `subcategoria`:
---   `scatCatId`
---       `categoria` -> `catId`
---
-
---
 -- Volcado de datos para la tabla `subcategoria`
 --
 
@@ -275,10 +249,6 @@ CREATE TABLE IF NOT EXISTS `tipousuario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- RELACIONES PARA LA TABLA `tipousuario`:
---
-
---
 -- Volcado de datos para la tabla `tipousuario`
 --
 
@@ -302,16 +272,11 @@ CREATE TABLE IF NOT EXISTS `tokens` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- RELACIONES PARA LA TABLA `tokens`:
---
-
---
 -- Volcado de datos para la tabla `tokens`
 --
 
 INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NDY2NjgzMTd9.RgSotidU2KzNLvNiBbjqPEfQ0Oy-U9awftZjxvcRX371sMWR3Y-NTNQNH7R-R-zVVbzk3NSv0BIrajUXa5h73w', '2025-05-07 21:38:37'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NDY2Njk0OTd9.PoqamrV3pbChx1FYg7PtLO3xrXgRUMYb6UZdJK8vKEVhXwB_rU_aeN8p0XojZUxsa80byc0H8ZQC6OU-KkKr8Q', '2025-05-07 21:58:17');
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NDcwMTI5MTZ9.4PpTlxFj59XAsFsHG12G-DK8x3v43T6RO2RqeLF6qo_ZlFa7hmq_n2WvZdjkfLRVshBVW3Tkcb6CPwbPSqAIBw', '2025-05-11 21:21:56');
 
 -- --------------------------------------------------------
 
@@ -343,19 +308,11 @@ CREATE TABLE IF NOT EXISTS `usuario` (
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- RELACIONES PARA LA TABLA `usuario`:
---   `usrDomicilio`
---       `domicilio` -> `domID`
---   `usrTipoUsuario`
---       `tipousuario` -> `ttuTipoUsuario`
---
-
---
 -- Volcado de datos para la tabla `usuario`
 --
 
 INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonSocialFantasia`, `usrCuitCuil`, `usrTipoUsuario`, `usrMatricula`, `usrDomicilio`, `usrFechaNacimiento`, `usrDescripcion`, `usrScoring`, `usrEmail`, `usrPassword`, `usrFechaInsert`, `usrFechaBaja`) VALUES
-(1, '33698895', 'Gómez Ivaldi', 'Nicolás Alejandro', NULL, NULL, 'ST', NULL, 1, '1988-03-29', 'Soy uno de los creadores de esta WebApi AAABX.', 10, 'nicoivaldi@agora.com', '$2y$10$s7qgNXF4GgL7hItTQ6NyXuom1w9BHxv362pql/YJeYmN8qYwzEF0m', '2024-07-07 18:38:07', NULL),
+(1, '33698895', 'Gómez Ivaldi', 'Nicolás Alejandro', NULL, NULL, 'ST', NULL, 1, '1988-03-29', 'Soy uno de los creadores de esta WebApi AAABQ.', 10, 'nicoivaldi@agora.com', '$2y$10$lo551SYnW8GcnfIxIJK.zOoJlwMP4BuJr3dDJfctmv.SLC9LAmPCy', '2024-07-07 18:38:07', NULL),
 (2, '33286958', 'Sosa Leonetti', 'Cristian Javier', NULL, NULL, 'UG', NULL, 2, '1988-02-08', NULL, 0, 'sleonetti@gmail.com', '$2y$10$HjR2rlPfne0GyNXGJ41jU.EiCfvVpMpQ5cOvRbitoynkYeMaEGnM.', '2024-07-08 14:42:43', NULL),
 (3, '29741295', 'Galíndez', 'Gustavo', 'Tasaciones Galíndez Jumbo SH', '30708772964', 'UT', '123456', 3, '1984-01-01', 'Tasamos el valor de sus afectos al mejor precio de Mercado.', 50, 'gusgalindez@tasgalindez.com', '$2y$10$U9YS.OMtjMhnOzAUWovHv.uQo38bb3dva9qDUmq48w5fBZW0NVsyq', '2024-07-10 16:18:01', NULL),
 (4, '27965368', 'Rolón', 'Karina', 'Paraíso Antigüedades SA', '30123456781', 'UA', '95874L', 4, '1982-06-12', 'Compra y Venta de antigüedades. Tasamos.', 60, 'krolon@paraiso.com', '$2y$10$Os4S45NKUqrBnLYDqALpYewr8CBMbKx8n4dNm9FTLhg7ySVxgcTx2', '2024-07-10 16:18:01', NULL);
@@ -377,16 +334,6 @@ CREATE TABLE IF NOT EXISTS `usuariotasadorhabilidad` (
   KEY `FK_UsrTasHab_Periodo` (`utsPerId`),
   KEY `FK_UsrTasHab_SubCat` (`utsScatId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `usuariotasadorhabilidad`:
---   `utsPerId`
---       `periodo` -> `perId`
---   `utsScatId`
---       `subcategoria` -> `scatId`
---   `utsUsrId`
---       `usuario` -> `usrId`
---
 
 --
 -- Volcado de datos para la tabla `usuariotasadorhabilidad`

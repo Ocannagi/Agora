@@ -42,7 +42,19 @@ class UsuariosController extends BaseController
     {
         settype($id, 'integer');
         $this->securityService->requireLogin(tipoUsurio: null);
-        return parent::getById(query: "SELECT usrId, usrDni, usrNombre, usrApellido, usrEmail, usrTipoUsuario FROM usuario WHERE usrId = $id AND usrFechaBaja is NULL", classDTO: "UsuarioDTO");
+
+        $query = "  SELECT   usrId, usrDni, usrNombre, usrApellido
+                            , domId, domCPA, domCalleRuta, domNroKm, domPiso, domDepto, locId, locDescripcion, provId, provDescripcion
+                           , usrRazonSocialFantasia, usrCuitCuil, usrEmail
+                           , usrTipoUsuario , usrMatricula, usrFechaNacimiento, usrDescripcion, usrScoring
+                    FROM usuario
+                    LEFT JOIN domicilio ON usrDomicilio = domId
+                    LEFT JOIN localidad ON locId = domLocId
+                    LEFT JOIN provincia ON provId = locProvId
+                    WHERE usrId = $id
+                    AND usrFechaBaja is NULL";
+
+        return parent::getById(query: $query, classDTO: "UsuarioDTO");
     }
 
     public function postUsuarios()

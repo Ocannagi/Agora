@@ -50,7 +50,14 @@ class UsuarioDTO implements IDTO
             $this->usrMatricula = (string)$data['usrMatricula'];
         }
 
-        $this->domicilio = $this->mapDomicilioDTO($data);
+        if (array_key_exists('domicilio', $data) && $data['domicilio'] instanceof DomicilioDTO) {
+            $this->domicilio = $data['domicilio'];
+        } else {
+            $domicilioDTO = $this->mapDomicilioDTO($data);
+            if ($domicilioDTO !== null) {
+                $this->domicilio = $domicilioDTO;
+            }
+        }
 
         if (array_key_exists('usrFechaNacimiento', $data)) {
             $this->usrFechaNacimiento = (string)$data['usrFechaNacimiento'];

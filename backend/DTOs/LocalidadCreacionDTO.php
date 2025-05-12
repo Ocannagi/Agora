@@ -16,9 +16,13 @@ class LocalidadCreacionDTO implements ICreacionDTO
             $this->locDescripcion = (string)$data['locDescripcion'];
         }
         
-        $provinciaDTO = $this->mapProvinciaDTO($data);
-        if ($provinciaDTO !== null) {
-            $this->provincia = $provinciaDTO;
+        if (array_key_exists('provincia', $data) && $data['provincia'] instanceof ProvinciaDTO) {
+            $this->provincia = $data['provincia'];
+        } else {
+            $provinciaDTO = $this->mapProvinciaDTO($data);
+            if ($provinciaDTO !== null) {
+                $this->provincia = $provinciaDTO;
+            }
         }
         
     }

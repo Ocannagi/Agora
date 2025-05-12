@@ -38,9 +38,13 @@ class DomicilioDTO implements IDTO
             $this->domCPA = (string)$data['domCPA'];
         }
 
-        $localidadDTO = $this->mapLocalidadDTO($data);
-        if ($localidadDTO !== null) {
-            $this->localidad = $localidadDTO;
+        if (array_key_exists('localidad', $data) && $data['localidad'] instanceof LocalidadDTO) {
+            $this->localidad = $data['localidad'];
+        } else {
+            $localidadDTO = $this->mapLocalidadDTO($data);
+            if ($localidadDTO !== null) {
+                $this->localidad = $localidadDTO;
+            }
         }
         
     }
