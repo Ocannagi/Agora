@@ -51,7 +51,7 @@ ALTER TABLE `subcategoria` ADD CONSTRAINT `FK_SubcatCat` FOREIGN KEY (`scatCatId
 
 INSERT INTO `subcategoria` (`scatId`, `scatCatId`, `scatDescripcion`, `scatFechaBaja`) VALUES (NULL, '3', 'Sillas', NULL), (NULL, '3', 'Escritorios', NULL), (NULL, '2', 'Personas', NULL), (NULL, '2', 'Animales', NULL), (NULL, '1', 'Paisajes', NULL);
 
-CREATE TABLE IF NOT EXISTS `agora`.`usuariotasadorhabilidad` (`utsUsrId` INT UNSIGNED NOT NULL , `utsScatId` INT UNSIGNED NOT NULL , `utsPerId` INT UNSIGNED NOT NULL , `utsFechaInsert` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `utsFechaBaja` DATETIME NULL , PRIMARY KEY (`utsUsrId`, `utsScatId`, `utsPerId`)) ENGINE = InnoDB;
+CREATE TABLE IF NOT EXISTS `agora`.`usuariotasadorhabilidad` (`utsId` INT UNSIGNED NOT NULL AUTO_INCREMENT , `utsUsrId` INT UNSIGNED NOT NULL , `utsScatId` INT UNSIGNED NOT NULL , `utsPerId` INT UNSIGNED NOT NULL , `utsFechaInsert` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `utsFechaBaja` DATETIME NULL , PRIMARY KEY (`utsId`, `utsUsrId`, `utsScatId`, `utsPerId`)) ENGINE = InnoDB;
 
 ALTER TABLE `usuariotasadorhabilidad` ADD CONSTRAINT `FK_UsrTasHab_Usuario` FOREIGN KEY (`utsUsrId`) REFERENCES `usuario`(`usrId`) ON DELETE RESTRICT ON UPDATE CASCADE; ALTER TABLE `usuariotasadorhabilidad` ADD CONSTRAINT `FK_UsrTasHab_SubCat` FOREIGN KEY (`utsScatId`) REFERENCES `subcategoria`(`scatId`) ON DELETE RESTRICT ON UPDATE CASCADE; ALTER TABLE `usuariotasadorhabilidad` ADD CONSTRAINT `FK_UsrTasHab_Periodo` FOREIGN KEY (`utsPerId`) REFERENCES `periodo`(`perId`) ON DELETE RESTRICT ON UPDATE CASCADE;
 

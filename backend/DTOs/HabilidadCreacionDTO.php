@@ -1,9 +1,8 @@
 <?php
 
-class HabilidadDTO implements IDTO
+class HabilidadCreacionDTO implements ICreacionDTO
 {
-    public int $utsId;
-    public UsuarioDTO $usuario; // Relación con el usuario.
+    public int $usrId; // ID del usuario al que pertenece la habilidad.
     public PeriodoDTO $periodo; // Periodo de la habilidad.
     public SubcategoriaDTO $subcategoria; // Subcategoría de la habilidad.
 
@@ -13,18 +12,14 @@ class HabilidadDTO implements IDTO
             $data = (array)$data;
         }
 
-        if (array_key_exists('utsId', $data)) {
-            $this->utsId = (int)$data['utsId'];
+        if (array_key_exists('usrId', $data)) {
+            $this->usrId = (int)$data['usrId'];
+        } else if (array_key_exists('utsUsrId', $data)) {
+            $this->usrId = (int)$data['utsUsrId'];
         } else {
-            $this->utsId = 0;
+            $this->usrId = 0;
         }
         
-        if (array_key_exists('usuario', $data) && $data['usuario'] instanceof UsuarioDTO) {
-            $this->usuario = $data['usuario'];
-        } else {
-            $this->usuario = new UsuarioDTO($data);
-        }
-
         if (array_key_exists('periodo', $data) && $data['periodo'] instanceof PeriodoDTO) {
             $this->periodo = $data['periodo'];
         } else {
@@ -36,6 +31,6 @@ class HabilidadDTO implements IDTO
         } else {
             $this->subcategoria = new SubcategoriaDTO($data);
         }
-    }
 
+    }
 }

@@ -59,7 +59,8 @@ define('DEPENDENCIAS', [
     'CategoriasValidacionService' => 'CategoriasValidacionService',
     'SubcategoriasValidacionService' => 'SubcategoriasValidacionService',
     'LocalidadesValidacionService' => 'LocalidadesValidacionService',
-    'DomiciliosValidacionService' => 'DomiciliosValidacionService',]);
+    'DomiciliosValidacionService' => 'DomiciliosValidacionService',
+    'HabilidadesValidacionService' => 'HabilidadesValidacionService',]);
 
 
 /************* RUTEO *************/
@@ -78,10 +79,8 @@ $parametros = array_slice($accion, 1);
 if (count($parametros) > 0 && $metodo == 'get') {
     $funcionNombre = $funcionNombre . 'ById';
 } else if (isset($_GET['params']) && $metodo == 'get'){
-    $parametros = $_GET['params'];
-    var_dump($parametros);
+    $parametros = [$_GET['params']]; // debe ser un solo elemento
     $funcionNombre = $funcionNombre . 'ByParams';
-    print_r($funcionNombre);
 }
 
 $controller = null;
