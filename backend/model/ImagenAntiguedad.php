@@ -1,11 +1,15 @@
 <?php
 
+use Utilidades\Obligatorio;
+
 class ImagenAntiguedad extends ClassBase
 {
     private int $imaId;
+    #[Obligatorio]
     private int $antId;
+    #[Obligatorio]
     private string $imaUrl;
-    private string $imaDescripcion;
+    private ?string $imaDescripcion;
     private DateTime $imaFechaInsert;
     private ?DateTime $imaFechaBaja;
 
