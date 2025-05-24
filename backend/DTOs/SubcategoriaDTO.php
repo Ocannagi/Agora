@@ -6,6 +6,7 @@ class SubcategoriaDTO implements IDTO
     public CategoriaDTO $categoria; // Relación con la categoría
     public string $scatDescripcion;
 
+    use TraitMapCategoriaDTO; // Trait para mapear CategoriaDTO
 
     public function __construct(array | stdClass $data)
     {
@@ -17,21 +18,14 @@ class SubcategoriaDTO implements IDTO
             $this->scatId = (int)$data['scatId'];
         }
 
-        if (array_key_exists('categoria', $data)) {
-            $this->categoria = new CategoriaDTO($data['categoria']);
-        } else if (array_key_exists('catId', $data)) {
-
-            $arrayCat = ['catId' => (int)$data['catId']];
-            if (array_key_exists('catDescripcion', $data))
-                $arrayCat['catDescripcion'] = (string)$data['catDescripcion'];
-
-            $this->categoria = new CategoriaDTO($arrayCat);
-        } else if (array_key_exists('scatCatId', $data)) {
-            $arrayCat = ['catId' => (int)$data['scatCatId']];
-
-            $this->categoria = new CategoriaDTO($arrayCat);
+        if (array_key_exists('categoria', $data) && $data['categoria'] instanceof CategoriaDTO) {
+            $this->categoria = $data['categoria'];
+        } else {
+            $categoriaDTO = $this->mapCategoriaDTO($data);
+            if ($categoriaDTO !== null) {
+                $this->categoria = $categoriaDTO;
+            }
         }
-
 
         if (array_key_exists('scatDescripcion', $data)) {
             $this->scatDescripcion = (string)$data['scatDescripcion'];

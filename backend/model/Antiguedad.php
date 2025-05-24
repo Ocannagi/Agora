@@ -12,6 +12,8 @@ class Antiguedad extends ClassBase
     private string $antDescripcion;
     #[Obligatorio]
     private Usuario $usuario;
+    /** @var ?ImagenAntiguedad[] */
+    private ?array $imagenes = null;
     private DateTime $antFechaInsert;
     #[Obligatorio]
     private TipoEstadoEnum $tipoEstado;
@@ -28,7 +30,7 @@ class Antiguedad extends ClassBase
         $instance->subcategoria = Subcategoria::fromArray(get_object_vars($dto->subcategoria));
         $instance->antDescripcion = $dto->antDescripcion;
         $instance->usuario = Usuario::fromArray(get_object_vars($dto->usuario));
-        $instance->tipoEstado = TipoEstadoEnum::from($dto->tipoEstado);
+        $instance->tipoEstado = $dto->tipoEstado;
         return $instance;
     }
 }
