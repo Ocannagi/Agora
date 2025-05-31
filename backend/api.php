@@ -60,7 +60,8 @@ define('DEPENDENCIAS', [
     'SubcategoriasValidacionService' => 'SubcategoriasValidacionService',
     'LocalidadesValidacionService' => 'LocalidadesValidacionService',
     'DomiciliosValidacionService' => 'DomiciliosValidacionService',
-    'HabilidadesValidacionService' => 'HabilidadesValidacionService',]);
+    'HabilidadesValidacionService' => 'HabilidadesValidacionService',
+    'AntiguedadesValidacionService' => 'AntiguedadesValidacionService',]);
 
 
 /************* RUTEO *************/

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 12-05-2025 a las 02:57:59
+-- Tiempo de generación: 25-05-2025 a las 01:10:14
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -26,16 +26,57 @@ USE `agora`;
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `antiguedad`
+--
+
+DROP TABLE IF EXISTS `antiguedad`;
+CREATE TABLE `antiguedad` (
+  `antId` int(10) UNSIGNED NOT NULL,
+  `antScatId` int(10) UNSIGNED NOT NULL,
+  `antPerId` int(10) UNSIGNED NOT NULL,
+  `antDescripcion` varchar(500) NOT NULL,
+  `antUsrId` int(10) UNSIGNED NOT NULL,
+  `antFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
+  `antTipoEstado` char(2) NOT NULL DEFAULT 'RD',
+  `antFechaEstado` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `antiguedad`:
+--   `antPerId`
+--       `periodo` -> `perId`
+--   `antScatId`
+--       `subcategoria` -> `scatId`
+--   `antTipoEstado`
+--       `tipoestado` -> `tteTipoEstado`
+--   `antUsrId`
+--       `usuario` -> `usrId`
+--
+
+--
+-- Volcado de datos para la tabla `antiguedad`
+--
+
+INSERT INTO `antiguedad` (`antId`, `antScatId`, `antPerId`, `antDescripcion`, `antUsrId`, `antFechaInsert`, `antTipoEstado`, `antFechaEstado`) VALUES
+(1, 7, 2, 'Vitrina Barroca circa 1656. Hermosos detalles en oro. Madera maciza de ébano. Dos puertas.', 4, '2025-05-24 19:41:04', 'RD', '2025-05-24 19:41:04'),
+(2, 3, 1, 'Hermosa escultura renacentista de un ángel. Mármol. Circa 1486.', 3, '2025-05-24 19:51:02', 'RD', '2025-05-24 19:51:02');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `categoria`
 --
 
 DROP TABLE IF EXISTS `categoria`;
-CREATE TABLE IF NOT EXISTS `categoria` (
-  `catId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+CREATE TABLE `categoria` (
+  `catId` int(10) UNSIGNED NOT NULL,
   `catDescripcion` varchar(50) NOT NULL,
-  `catFechaBaja` datetime DEFAULT NULL,
-  PRIMARY KEY (`catId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `catFechaBaja` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `categoria`:
+--
 
 --
 -- Volcado de datos para la tabla `categoria`
@@ -53,8 +94,8 @@ INSERT INTO `categoria` (`catId`, `catDescripcion`, `catFechaBaja`) VALUES
 --
 
 DROP TABLE IF EXISTS `domicilio`;
-CREATE TABLE IF NOT EXISTS `domicilio` (
-  `domId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+CREATE TABLE `domicilio` (
+  `domId` int(10) UNSIGNED NOT NULL,
   `domLocId` int(10) UNSIGNED NOT NULL,
   `domCPA` char(8) NOT NULL,
   `domCalleRuta` varchar(50) NOT NULL,
@@ -62,10 +103,14 @@ CREATE TABLE IF NOT EXISTS `domicilio` (
   `domPiso` varchar(10) DEFAULT NULL,
   `domDepto` varchar(10) DEFAULT NULL,
   `domFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
-  `domFechaBaja` datetime DEFAULT NULL,
-  PRIMARY KEY (`domId`),
-  KEY `FK_domicilioLocalidad` (`domLocId`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `domFechaBaja` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `domicilio`:
+--   `domLocId`
+--       `localidad` -> `locId`
+--
 
 --
 -- Volcado de datos para la tabla `domicilio`
@@ -81,19 +126,45 @@ INSERT INTO `domicilio` (`domId`, `domLocId`, `domCPA`, `domCalleRuta`, `domNroK
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `imagenantiguedad`
+--
+
+DROP TABLE IF EXISTS `imagenantiguedad`;
+CREATE TABLE `imagenantiguedad` (
+  `imaId` int(10) UNSIGNED NOT NULL,
+  `imaAntId` int(10) UNSIGNED NOT NULL,
+  `imaUrl` varchar(150) NOT NULL,
+  `imaDescripcion` varchar(150) DEFAULT NULL,
+  `imaFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
+  `imaFechaBaja` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `imagenantiguedad`:
+--   `imaAntId`
+--       `antiguedad` -> `antId`
+--
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `localidad`
 --
 
 DROP TABLE IF EXISTS `localidad`;
-CREATE TABLE IF NOT EXISTS `localidad` (
-  `locId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+CREATE TABLE `localidad` (
+  `locId` int(10) UNSIGNED NOT NULL,
   `locProvId` smallint(6) NOT NULL,
   `locDescripcion` varchar(50) NOT NULL,
   `locFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
-  `locFechaBaja` datetime DEFAULT NULL,
-  PRIMARY KEY (`locId`),
-  KEY `FK_localidadProv` (`locProvId`)
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `locFechaBaja` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `localidad`:
+--   `locProvID`
+--       `provincia` -> `provId`
+--
 
 --
 -- Volcado de datos para la tabla `localidad`
@@ -144,12 +215,15 @@ INSERT INTO `localidad` (`locId`, `locProvId`, `locDescripcion`, `locFechaInsert
 --
 
 DROP TABLE IF EXISTS `periodo`;
-CREATE TABLE IF NOT EXISTS `periodo` (
-  `perId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+CREATE TABLE `periodo` (
+  `perId` int(10) UNSIGNED NOT NULL,
   `perDescripcion` varchar(50) NOT NULL,
-  `perFechaBaja` datetime DEFAULT NULL,
-  PRIMARY KEY (`perId`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `perFechaBaja` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `periodo`:
+--
 
 --
 -- Volcado de datos para la tabla `periodo`
@@ -169,11 +243,14 @@ INSERT INTO `periodo` (`perId`, `perDescripcion`, `perFechaBaja`) VALUES
 --
 
 DROP TABLE IF EXISTS `provincia`;
-CREATE TABLE IF NOT EXISTS `provincia` (
-  `provId` smallint(6) NOT NULL AUTO_INCREMENT,
-  `provDescripcion` varchar(40) NOT NULL,
-  PRIMARY KEY (`provId`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE `provincia` (
+  `provId` smallint(6) NOT NULL,
+  `provDescripcion` varchar(40) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `provincia`:
+--
 
 --
 -- Volcado de datos para la tabla `provincia`
@@ -212,14 +289,18 @@ INSERT INTO `provincia` (`provId`, `provDescripcion`) VALUES
 --
 
 DROP TABLE IF EXISTS `subcategoria`;
-CREATE TABLE IF NOT EXISTS `subcategoria` (
-  `scatId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+CREATE TABLE `subcategoria` (
+  `scatId` int(10) UNSIGNED NOT NULL,
   `scatCatId` int(10) UNSIGNED NOT NULL,
   `scatDescripcion` varchar(50) NOT NULL,
-  `scatFechaBaja` datetime DEFAULT NULL,
-  PRIMARY KEY (`scatCatId`,`scatDescripcion`),
-  UNIQUE KEY `scatId` (`scatId`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `scatFechaBaja` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `subcategoria`:
+--   `scatCatId`
+--       `categoria` -> `catId`
+--
 
 --
 -- Volcado de datos para la tabla `subcategoria`
@@ -237,16 +318,47 @@ INSERT INTO `subcategoria` (`scatId`, `scatCatId`, `scatDescripcion`, `scatFecha
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `tipoestado`
+--
+
+DROP TABLE IF EXISTS `tipoestado`;
+CREATE TABLE `tipoestado` (
+  `tteTipoEstado` char(2) NOT NULL,
+  `tteTipoEstadoDescripcion` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `tipoestado`:
+--
+
+--
+-- Volcado de datos para la tabla `tipoestado`
+--
+
+INSERT INTO `tipoestado` (`tteTipoEstado`, `tteTipoEstadoDescripcion`) VALUES
+('CO', 'Comprado'),
+('RD', 'Retirado Disponible'),
+('RN', 'Retirado No Disponible'),
+('TP', 'Tasado Provisorio'),
+('TS', 'Tasado In Situ'),
+('VE', 'A la Venta');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `tipousuario`
 --
 
 DROP TABLE IF EXISTS `tipousuario`;
-CREATE TABLE IF NOT EXISTS `tipousuario` (
+CREATE TABLE `tipousuario` (
   `ttuTipoUsuario` char(2) NOT NULL,
   `ttuDescripcion` varchar(25) NOT NULL,
-  `ttuRequiereMatricula` tinyint(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`ttuTipoUsuario`)
+  `ttuRequiereMatricula` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `tipousuario`:
+--
 
 --
 -- Volcado de datos para la tabla `tipousuario`
@@ -266,17 +378,21 @@ INSERT INTO `tipousuario` (`ttuTipoUsuario`, `ttuDescripcion`, `ttuRequiereMatri
 --
 
 DROP TABLE IF EXISTS `tokens`;
-CREATE TABLE IF NOT EXISTS `tokens` (
+CREATE TABLE `tokens` (
   `tokToken` varchar(500) NOT NULL,
   `tokFechaInsert` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `tokens`:
+--
 
 --
 -- Volcado de datos para la tabla `tokens`
 --
 
 INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NDcwMTI5MTZ9.4PpTlxFj59XAsFsHG12G-DK8x3v43T6RO2RqeLF6qo_ZlFa7hmq_n2WvZdjkfLRVshBVW3Tkcb6CPwbPSqAIBw', '2025-05-11 21:21:56');
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NDgxMTkzNDR9.Pcm6p_5beR36YFgAsS1eTJiLwFBCiA31MEd68jrC556wLkye8UZRP2j0XLCHtQDxYc0dOnUGpJ5celGrSibmag', '2025-05-24 16:42:24');
 
 -- --------------------------------------------------------
 
@@ -285,8 +401,8 @@ INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
 --
 
 DROP TABLE IF EXISTS `usuario`;
-CREATE TABLE IF NOT EXISTS `usuario` (
-  `usrId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+CREATE TABLE `usuario` (
+  `usrId` int(10) UNSIGNED NOT NULL,
   `usrDni` char(8) NOT NULL,
   `usrApellido` varchar(50) NOT NULL,
   `usrNombre` varchar(50) NOT NULL,
@@ -301,11 +417,16 @@ CREATE TABLE IF NOT EXISTS `usuario` (
   `usrEmail` varchar(100) NOT NULL,
   `usrPassword` varchar(255) NOT NULL,
   `usrFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
-  `usrFechaBaja` datetime DEFAULT NULL,
-  PRIMARY KEY (`usrId`),
-  KEY `FK_usuarioTipoUsuario` (`usrTipoUsuario`),
-  KEY `FK_usuarioDomicilio` (`usrDomicilio`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `usrFechaBaja` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `usuario`:
+--   `usrDomicilio`
+--       `domicilio` -> `domID`
+--   `usrTipoUsuario`
+--       `tipousuario` -> `ttuTipoUsuario`
+--
 
 --
 -- Volcado de datos para la tabla `usuario`
@@ -324,36 +445,212 @@ INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonS
 --
 
 DROP TABLE IF EXISTS `usuariotasadorhabilidad`;
-CREATE TABLE IF NOT EXISTS `usuariotasadorhabilidad` (
+CREATE TABLE `usuariotasadorhabilidad` (
+  `utsId` int(10) UNSIGNED NOT NULL,
   `utsUsrId` int(10) UNSIGNED NOT NULL,
   `utsScatId` int(10) UNSIGNED NOT NULL,
   `utsPerId` int(10) UNSIGNED NOT NULL,
   `utsFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
-  `utsFechaBaja` datetime DEFAULT NULL,
-  PRIMARY KEY (`utsUsrId`,`utsScatId`,`utsPerId`),
-  KEY `FK_UsrTasHab_Periodo` (`utsPerId`),
-  KEY `FK_UsrTasHab_SubCat` (`utsScatId`)
+  `utsFechaBaja` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `usuariotasadorhabilidad`:
+--   `utsPerId`
+--       `periodo` -> `perId`
+--   `utsScatId`
+--       `subcategoria` -> `scatId`
+--   `utsUsrId`
+--       `usuario` -> `usrId`
+--
 
 --
 -- Volcado de datos para la tabla `usuariotasadorhabilidad`
 --
 
-INSERT INTO `usuariotasadorhabilidad` (`utsUsrId`, `utsScatId`, `utsPerId`, `utsFechaInsert`, `utsFechaBaja`) VALUES
-(3, 4, 2, '2024-07-10 17:26:24', NULL),
-(3, 5, 1, '2024-07-10 17:26:24', NULL),
-(4, 1, 2, '2024-07-10 17:28:11', NULL),
-(4, 2, 1, '2024-07-10 17:28:11', NULL);
+INSERT INTO `usuariotasadorhabilidad` (`utsId`, `utsUsrId`, `utsScatId`, `utsPerId`, `utsFechaInsert`, `utsFechaBaja`) VALUES
+(1, 3, 5, 1, '2025-05-14 22:32:43', NULL),
+(2, 3, 4, 2, '2025-05-14 22:32:43', NULL),
+(3, 4, 1, 2, '2025-05-14 22:32:43', NULL),
+(4, 4, 2, 1, '2025-05-14 22:32:43', NULL);
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `antiguedad`
+--
+ALTER TABLE `antiguedad`
+  ADD PRIMARY KEY (`antId`),
+  ADD KEY `FK_antiguedadSubcategoria` (`antScatId`),
+  ADD KEY `FK_antiguedadPeriodo` (`antPerId`),
+  ADD KEY `FK_antiguedadUsuario` (`antUsrId`),
+  ADD KEY `FK_antiguedadTipoEstado` (`antTipoEstado`);
+
+--
+-- Indices de la tabla `categoria`
+--
+ALTER TABLE `categoria`
+  ADD PRIMARY KEY (`catId`);
+
+--
+-- Indices de la tabla `domicilio`
+--
+ALTER TABLE `domicilio`
+  ADD PRIMARY KEY (`domId`),
+  ADD KEY `FK_domicilioLocalidad` (`domLocId`);
+
+--
+-- Indices de la tabla `imagenantiguedad`
+--
+ALTER TABLE `imagenantiguedad`
+  ADD PRIMARY KEY (`imaId`),
+  ADD KEY `FK_imagenAntiguedad` (`imaAntId`);
+
+--
+-- Indices de la tabla `localidad`
+--
+ALTER TABLE `localidad`
+  ADD PRIMARY KEY (`locId`),
+  ADD KEY `FK_localidadProv` (`locProvId`);
+
+--
+-- Indices de la tabla `periodo`
+--
+ALTER TABLE `periodo`
+  ADD PRIMARY KEY (`perId`);
+
+--
+-- Indices de la tabla `provincia`
+--
+ALTER TABLE `provincia`
+  ADD PRIMARY KEY (`provId`);
+
+--
+-- Indices de la tabla `subcategoria`
+--
+ALTER TABLE `subcategoria`
+  ADD PRIMARY KEY (`scatCatId`,`scatDescripcion`),
+  ADD UNIQUE KEY `scatId` (`scatId`);
+
+--
+-- Indices de la tabla `tipoestado`
+--
+ALTER TABLE `tipoestado`
+  ADD PRIMARY KEY (`tteTipoEstado`);
+
+--
+-- Indices de la tabla `tipousuario`
+--
+ALTER TABLE `tipousuario`
+  ADD PRIMARY KEY (`ttuTipoUsuario`);
+
+--
+-- Indices de la tabla `usuario`
+--
+ALTER TABLE `usuario`
+  ADD PRIMARY KEY (`usrId`),
+  ADD KEY `FK_usuarioTipoUsuario` (`usrTipoUsuario`),
+  ADD KEY `FK_usuarioDomicilio` (`usrDomicilio`);
+
+--
+-- Indices de la tabla `usuariotasadorhabilidad`
+--
+ALTER TABLE `usuariotasadorhabilidad`
+  ADD PRIMARY KEY (`utsId`,`utsUsrId`,`utsScatId`,`utsPerId`),
+  ADD KEY `FK_UsrTasHab_Usuario` (`utsUsrId`),
+  ADD KEY `FK_UsrTasHab_SubCat` (`utsScatId`),
+  ADD KEY `FK_UsrTasHab_Periodo` (`utsPerId`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `antiguedad`
+--
+ALTER TABLE `antiguedad`
+  MODIFY `antId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `categoria`
+--
+ALTER TABLE `categoria`
+  MODIFY `catId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `domicilio`
+--
+ALTER TABLE `domicilio`
+  MODIFY `domId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT de la tabla `imagenantiguedad`
+--
+ALTER TABLE `imagenantiguedad`
+  MODIFY `imaId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `localidad`
+--
+ALTER TABLE `localidad`
+  MODIFY `locId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+
+--
+-- AUTO_INCREMENT de la tabla `periodo`
+--
+ALTER TABLE `periodo`
+  MODIFY `perId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT de la tabla `provincia`
+--
+ALTER TABLE `provincia`
+  MODIFY `provId` smallint(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+
+--
+-- AUTO_INCREMENT de la tabla `subcategoria`
+--
+ALTER TABLE `subcategoria`
+  MODIFY `scatId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT de la tabla `usuario`
+--
+ALTER TABLE `usuario`
+  MODIFY `usrId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT de la tabla `usuariotasadorhabilidad`
+--
+ALTER TABLE `usuariotasadorhabilidad`
+  MODIFY `utsId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Restricciones para tablas volcadas
 --
 
 --
+-- Filtros para la tabla `antiguedad`
+--
+ALTER TABLE `antiguedad`
+  ADD CONSTRAINT `FK_antiguedadPeriodo` FOREIGN KEY (`antPerId`) REFERENCES `periodo` (`perId`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_antiguedadSubcategoria` FOREIGN KEY (`antScatId`) REFERENCES `subcategoria` (`scatId`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_antiguedadTipoEstado` FOREIGN KEY (`antTipoEstado`) REFERENCES `tipoestado` (`tteTipoEstado`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_antiguedadUsuario` FOREIGN KEY (`antUsrId`) REFERENCES `usuario` (`usrId`) ON UPDATE CASCADE;
+
+--
 -- Filtros para la tabla `domicilio`
 --
 ALTER TABLE `domicilio`
   ADD CONSTRAINT `FK_domicilioLocalidad` FOREIGN KEY (`domLocId`) REFERENCES `localidad` (`locId`) ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `imagenantiguedad`
+--
+ALTER TABLE `imagenantiguedad`
+  ADD CONSTRAINT `FK_imagenAntiguedad` FOREIGN KEY (`imaAntId`) REFERENCES `antiguedad` (`antId`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `localidad`

@@ -1,5 +1,7 @@
 <?php
 
+use Utilidades\Output;
+
 class AntiguedadDTO implements IDTO
 {
     public int $antId;
@@ -12,6 +14,7 @@ class AntiguedadDTO implements IDTO
     public ?array $imagenes = null;
     public UsuarioDTO $usuario;
     public TipoEstadoEnum $tipoEstado;
+    public string $antFechaEstado;
 
     use TraitMapPeriodoDTO; // Trait para mapear PeriodoDTO
     use TraitMapSubcategoriaDTO; // Trait para mapear SubcategoriaDTO
@@ -73,12 +76,19 @@ class AntiguedadDTO implements IDTO
         if (array_key_exists('tipoEstado', $data) && $data['tipoEstado'] instanceof TipoEstadoEnum) {
             $this->tipoEstado = $data['tipoEstado'];
         } else {
-            if (array_key_exists('antTipoEstado', $data)) {
-                $this->tipoEstado = TipoEstadoEnum::from($data['antTipoEstado']);
-            } elseif (array_key_exists('tipoEstado', $data)) {
-                $this->tipoEstado = TipoEstadoEnum::from($data['tipoEstado']);
+            try {
+                if (array_key_exists('antTipoEstado', $data)) {
+                    $this->tipoEstado = TipoEstadoEnum::from($data['antTipoEstado']);
+                } elseif (array_key_exists('tipoEstado', $data)) {
+                    $this->tipoEstado = TipoEstadoEnum::from($data['tipoEstado']);
+                }
+            } catch (ValueError $th) {
+                Output::outputError(400, 'El tipo de estado no es válido.');
             }
+        }
+
+        if (array_key_exists('antFechaEstado', $data)) {
+            $this->antFechaEstado = (string)$data['antFechaEstado'];
         }
     }
 }
-            
