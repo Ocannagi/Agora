@@ -114,24 +114,24 @@ class HabilidadesController extends BaseController
             $mysqli = $this->dbConnection->conectarBD();
             $data = Input::getArrayBody(msgEntidad: "la habilidad");
 
+            $this->habilidadesValidacionService->validarType(className: "HabilidadCreacionDTO", datos: $data);
             $habilidadCreacionDTO = new HabilidadCreacionDTO($data);
 
-            // El usuario tasador y el usuario anticuario sólo pueden agregar habilidades a sí mismos.
-            if ($claimDTO->usrTipoUsuario == 'UT' || $claimDTO->usrTipoUsuario == 'UA') {
-                $habilidadCreacionDTO->usrId = $claimDTO->usrId;
-            }
-
-            // A modo de prueba, el usuario técnico puede agregar habilidades a cualquier usuario o a sí mismo.
-            if ($claimDTO->usrTipoUsuario == 'ST') {
-                if ($habilidadCreacionDTO->usrId == 0)
-                    $habilidadCreacionDTO->usrId = $claimDTO->usrId;
+            if (isset($habilidadCreacionDTO->usuario->usrId)) {
+                // El usuario tasador y el usuario anticuario sólo pueden agregar habilidades a sí mismos.
+                if ($claimDTO->usrTipoUsuario == 'UT' || $claimDTO->usrTipoUsuario == 'UA') {
+                    $habilidadCreacionDTO->usuario->usrId = $claimDTO->usrId;
+                }
+                // A modo de prueba, el usuario técnico puede agregar habilidades a cualquier usuario o a sí mismo.
+                if ($claimDTO->usrTipoUsuario == 'ST') {
+                    if ($habilidadCreacionDTO->usuario->usrId == 0)
+                        $habilidadCreacionDTO->usuario->usrId = $claimDTO->usrId;
+                }
             }
 
             $this->habilidadesValidacionService->validarInput($mysqli, $habilidadCreacionDTO);
-            $perId = $habilidadCreacionDTO->periodo->perId;
-            $scatId = $habilidadCreacionDTO->subcategoria->scatId;
 
-            $query = "INSERT INTO usuariotasadorhabilidad (utsUsrId, utsPerId, utsScatId) VALUES ($habilidadCreacionDTO->usrId, $perId, $scatId)";
+            $query = "INSERT INTO usuariotasadorhabilidad (utsUsrId, utsPerId, utsScatId) VALUES ({$habilidadCreacionDTO->usuario->usrId}, {$habilidadCreacionDTO->periodo->perId}, {$habilidadCreacionDTO->subcategoria->scatId})";
 
             return parent::post(query: $query, link: $mysqli);
         } catch (\Throwable $th) {
@@ -144,6 +144,8 @@ class HabilidadesController extends BaseController
             }
         }
     }
+
+    // No se puede modificar una habilidad, sólo se puede dar de baja.
 
     public function deleteHabilidades($id)
     {
@@ -161,7 +163,7 @@ class HabilidadesController extends BaseController
             $queryBajaLogica = "UPDATE usuariotasadorhabilidad SET utsFechaBaja = CURRENT_TIMESTAMP() WHERE utsId = $id";
 
             return parent::delete(queryBusqueda: $queryBusqueda, queryBajaLogica: $queryBajaLogica);
-            
+
         } catch (\Throwable $th) {
             if ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());

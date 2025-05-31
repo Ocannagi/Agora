@@ -25,16 +25,17 @@ class HabilidadesValidacionService extends ValidacionServiceBase
 
     public function validarInput(mysqli $linkExterno, ICreacionDTO|IDTO $habilidadCreacionDTO)
     {
+        // No se puede modificar una habilidad, sólo se puede dar de baja.
         if (!$habilidadCreacionDTO instanceof habilidadCreacionDTO) {
             Output::outputError(500, 'Error interno: el DTO proporcionado no es del tipo correcto.');
         }
         
         $this->validarDatosObligatorios(classModelName: 'Habilidad', datos: get_object_vars($habilidadCreacionDTO));
 
-        $this->validarDatoIdUsuario($habilidadCreacionDTO->usrId, $linkExterno);
+        $this->validarDatoIdUsuario($habilidadCreacionDTO->usuario->usrId, $linkExterno);
         $this->validarDatoIdPeriodo($habilidadCreacionDTO->periodo, $linkExterno);
         $this->validarDatoIdSubcategoria($habilidadCreacionDTO->subcategoria, $linkExterno);
-        $this->validarSiYaFueRegistrado($habilidadCreacionDTO->usrId, $habilidadCreacionDTO->periodo->perId, $habilidadCreacionDTO->subcategoria->scatId, $linkExterno);
+        $this->validarSiYaFueRegistrado($habilidadCreacionDTO->usuario->usrId, $habilidadCreacionDTO->periodo->perId, $habilidadCreacionDTO->subcategoria->scatId, $linkExterno);
     }
 
     private function validarDatoIdUsuario(int $usrId, mysqli $linkExterno)

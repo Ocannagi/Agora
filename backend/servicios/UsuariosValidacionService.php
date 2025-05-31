@@ -211,8 +211,11 @@ class UsuariosValidacionService extends ValidacionServiceBase
 
     private function validarDescripcion(string $descripcion)
     {
-        if (!$this->_esStringLongitud($descripcion, 1, 500))
+        if (Input::esNotNullVacioBlanco($descripcion)) {
+            if (!$this->_esStringLongitud($descripcion, 1, 500))
             Output::outputError(400, 'La Descripción del usuario debe ser un string de al menos un caracter y un máximo de 500.');
+        }
+        
     }
 
         /***************************** Funciones privadas que conectan a BD con link externo ********************************/

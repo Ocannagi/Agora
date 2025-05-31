@@ -2,6 +2,7 @@
 
 use Utilidades\Output;
 use Utilidades\Input;
+use Utilidades\Querys;
 
 class AntiguedadesController extends BaseController
 {
@@ -158,5 +159,110 @@ class AntiguedadesController extends BaseController
                   AND antId = $id";
 
         return parent::getById(query: $query, classDTO: "AntiguedadDTO");
+    }
+
+    public function postAntiguedades()
+    {
+        try {
+            $claimDTO = $this->securityService->requireLogin(tipoUsurio: ['ST', 'UG', 'UA']);
+            $mysqli = $this->dbConnection->conectarBD();
+            $data = Input::getArrayBody(msgEntidad: "la antigüedad");
+
+            $this->antiguedadesValidacionService->validarType(className: "AntiguedadCreacionDTO", datos: $data);
+            $antiguedadCreacionDTO = new AntiguedadCreacionDTO($data);
+
+            if (isset($antiguedadCreacionDTO->usuario->usrId)) {
+                if ($claimDTO->usrTipoUsuario == 'UT' || $claimDTO->usrTipoUsuario == 'UA') {
+                    $antiguedadCreacionDTO->usuario->usrId = $claimDTO->usrId;
+                }
+                // A modo de prueba, el usuario técnico puede agregar antigüedades a cualquier usuario o a sí mismo.
+                if ($claimDTO->usrTipoUsuario == 'ST') {
+                    if ($antiguedadCreacionDTO->usuario->usrId == 0)
+                        $antiguedadCreacionDTO->usuario->usrId = $claimDTO->usrId;
+                }
+            }
+
+
+            $this->antiguedadesValidacionService->validarInput($mysqli, $antiguedadCreacionDTO);
+            Input::escaparDatos($antiguedadCreacionDTO, $mysqli);
+            Input::agregarComillas_ConvertNULLtoString($antiguedadCreacionDTO);
+
+            $query = "INSERT INTO antiguedad (antDescripcion, antPerId, antScatId, antUsrId)
+                  VALUES ($antiguedadCreacionDTO->antDescripcion, {$antiguedadCreacionDTO->periodo->perId}, {$antiguedadCreacionDTO->subcategoria->scatId}, {$antiguedadCreacionDTO->usuario->usrId})";
+
+            return parent::post(query: $query, link: $mysqli);
+        } catch (\Throwable $th) {
+            if ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
+    }
+
+    public function patchAntiguedades($id)
+    {
+        try {
+            $claimDTO = $this->securityService->requireLogin(tipoUsurio: ['ST', 'UG', 'UA']);
+            settype($id, 'integer');
+            $mysqli = $this->dbConnection->conectarBD();
+            $data = Input::getArrayBody(msgEntidad: "la antigüedad");
+
+            $data['antId'] = $id;
+
+            // Actualizar la fecha de estado al momento de la modificación
+            $data['antFechaEstado'] = date('Y-m-d H:i:s'); 
+
+            $this->antiguedadesValidacionService->validarType(className: "AntiguedadDTO", datos: $data);
+            $antiguedadDTO = new AntiguedadDTO($data);
+
+            if (isset($antiguedadDTO->usuario->usrId)) {
+                if ($claimDTO->usrTipoUsuario == 'ST') {
+                    if ($antiguedadDTO->usuario->usrId == 0)
+                        $antiguedadDTO->usuario->usrId = $claimDTO->usrId;
+                } else {
+                    if ($claimDTO->usrId != $antiguedadDTO->usuario->usrId) {
+                        Output::outputError(403, "No tiene permiso para modificar esta antigüedad.");
+                    }
+                }
+            }
+
+            $this->antiguedadesValidacionService->validarInput($mysqli, $antiguedadDTO);
+            Input::escaparDatos($antiguedadDTO, $mysqli);
+            Input::agregarComillas_ConvertNULLtoString($antiguedadDTO);
+
+            $conservaMismoTipoEstado = Querys::existeEnBD(
+                link: $mysqli,
+                query: "SELECT 1 FROM antiguedad WHERE antId={$antiguedadDTO->antId} AND antTipoEstado='{$antiguedadDTO->tipoEstado->value}'",
+                msg: "verificar si la antigüedad conserva el mismo tipo de estado"
+            );
+
+            $query = "UPDATE antiguedad
+                  SET antDescripcion = $antiguedadDTO->antDescripcion,
+                      antPerId = {$antiguedadDTO->periodo->perId},
+                      antScatId = {$antiguedadDTO->subcategoria->scatId},
+                      antUsrId = {$antiguedadDTO->usuario->usrId},
+                      antTipoEstado = '{$antiguedadDTO->tipoEstado->value}'";
+            
+            // Si el tipo de estado ha cambiado, se actualiza la fecha de estado
+            if (!$conservaMismoTipoEstado) {
+                $query .= ", antFechaEstado = $antiguedadDTO->antFechaEstado";
+            }
+
+            $query .= " WHERE antId = $id";
+
+            return parent::patch(query: $query, link: $mysqli);
+
+        } catch (\Throwable $th) {
+            if ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
     }
 }

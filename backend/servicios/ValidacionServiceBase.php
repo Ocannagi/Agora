@@ -2,13 +2,14 @@
 
 use Utilidades\Output;
 use Utilidades\Input;
+use Utilidades\Querys;
 
 abstract class ValidacionServiceBase
 {
 
     abstract public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $entidadDTO);
 
-    
+
     /**
      * Valida que los tipos de datos de las propiedades de la clase coincidan con los tipos de los datos del array.
      * Si no coinciden, lanza un error.
@@ -57,8 +58,8 @@ abstract class ValidacionServiceBase
             $msg = $this->_existenDatos($classModelName::getObligatorios(), $datos);
             if ($msg !== true)
                 Output::outputError(400, 'Los siguientes datos deben estar completos: ' . implode(", ", $msg) . ".");
-        } else{
-            Output::outputError(500,"Error interno: la clase $classModelName no hereda de ClassBase");
+        } else {
+            Output::outputError(500, "Error interno: la clase $classModelName no hereda de ClassBase");
         }
     }
 
@@ -205,20 +206,18 @@ abstract class ValidacionServiceBase
         return preg_match("/^\d{4}-{1}\d{2}-{1}\d{2}$/", $fecha) === 1;
     }
 
-/***************************** Funciones privadas que conectan a BD con link externo ********************************/
+    /***************************** Funciones privadas que conectan a BD con link externo ********************************/
 
-    protected function _existeEnBD(mysqli $link, string $query, string $msg)
+    /**
+     * Verifica si existe un registro en la base de datos con el query pasado como parámetro.
+     * Si no existe, devuelve false, si existe, devuelve true.
+     * @param mysqli $link Conexión a la base de datos.
+     * @param string $query Consulta SQL a ejecutar.
+     * @param string $msg Mensaje descriptivo de la acción que se está realizando.
+     * @return bool
+     */
+    protected function _existeEnBD(mysqli $link, string $query, string $msg): bool
     {
-        $bool = true;
-        $resultado = $link->query($query);
-        if ($resultado === false) {
-            Output::outputError(500, "Falló la consulta al querer $msg: $link->error");
-            die;
-        }
-        if ($resultado->num_rows == 0) {
-            $bool = false;
-        }
-        $resultado->free_result();
-        return $bool;
+        return Querys::existeEnBD($link, $query, $msg);
     }
 }

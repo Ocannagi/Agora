@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/utilidades/Output.php');
-require_once(__DIR__ . '/utilidades/Input.php');
 require_once(__DIR__ . '/persistencia.php');
 
 use Utilidades\Output;
@@ -27,7 +25,7 @@ spl_autoload_register(function ($className) {
             } else {
                 // Si no existe, intenta cargarlo desde la carpeta de utilidades
                 $baseDir = __DIR__ . '/utilidades/';
-                $file = $baseDir . str_replace('\\', '/', $className) . '.php';
+                $file = $baseDir . str_replace('Utilidades','', str_replace('\\', '/', $className)) . '.php';
                 if (file_exists($file)) {
                     require_once $file;
                 } else {
@@ -63,6 +61,8 @@ define('DEPENDENCIAS', [
     'HabilidadesValidacionService' => 'HabilidadesValidacionService',
     'AntiguedadesValidacionService' => 'AntiguedadesValidacionService',]);
 
+/** Configuración Zona Horaria */
+date_default_timezone_set('America/Argentina/Buenos_Aires');
 
 /************* RUTEO *************/
 

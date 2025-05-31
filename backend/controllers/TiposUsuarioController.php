@@ -26,17 +26,13 @@ class TiposUsuarioController extends BaseController
      // Método para evitar la clonación del objeto
      private function __clone() {}
 
-     /**
-      * Devuelve los tipos de usuario disponibles en la base de datos.
-      * Si el usuario es de tipo ST o SI, devuelve todos los tipos de usuario.
-      * Si el usuario es de otro tipo, devuelve solo los tipos de usuario que no son ST o SI.
-      */
+
      /**
      * Devuelve los tipos de usuario disponibles en la base de datos.
      * Si el usuario es de tipo ST o SI, devuelve todos los tipos de usuario.
      * Si el usuario es de otro tipo, devuelve solo los tipos de usuario que no son ST o SI.
      */
-    public function getTiposUsuario() //TODO: Pasar método a un Controller de Tipos de Usuario
+    public function getTiposUsuario()
     {
         $tipoUsuario = $this->securityService->requireLogin(null)->usrTipoUsuario;
         $query = in_array($tipoUsuario, ['ST', 'SI']) ? "SELECT * FROM tipousuario" : "SELECT * FROM tipousuario WHERE ttuTipoUsuario NOT IN ('ST', 'SI')";

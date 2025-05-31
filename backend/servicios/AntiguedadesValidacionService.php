@@ -42,6 +42,8 @@ class AntiguedadesValidacionService extends ValidacionServiceBase
         if ($antiguedad instanceof AntiguedadDTO) {
             $this->validarTipoEstado($antiguedad->tipoEstado);
             $this->validarExisteAntiguedadModificar($antiguedad->antId, $linkExterno);
+        } else {
+            $this->validarSiYaFueRegistradoPorMismoUsuario($antiguedad, $linkExterno);
         }
     }
 
@@ -173,6 +175,25 @@ class AntiguedadesValidacionService extends ValidacionServiceBase
         return $this->_existeEnBD($linkExterno, $query, "obtener una antigüedad por id");
     }
 
+    private function validarSiYaFueRegistradoPorMismoUsuario(AntiguedadCreacionDTO $antiguedad, mysqli $linkExterno)
+    {
+        if (!($antiguedad instanceof AntiguedadCreacionDTO)) {
+            Output::outputError(500, 'Error interno: el DTO de antigüedad no es del tipo correcto.');
+        }
 
+        if ($this->_existeAntiguedadRegistradaPorUsuario($antiguedad, $linkExterno)) {
+            Output::outputError(409, "Ya cuenta con una antigüedad con el mismo periodo, subcategoría y descripción.");
+        }
+    }
+
+    private function _existeAntiguedadRegistradaPorUsuario(AntiguedadCreacionDTO $antiguedad, mysqli $linkExterno): bool
+    {
+         // Las antiguedades no pueden tener el mismo periodo, subcategoría y descripción para el mismo usuario
+         // Se asume que el usuario ya fue validado y existe en la base de datos
+         // Se asume que el periodo y la subcategoría ya fueron validados y existen en la base de datos
+         // Las antiguedades no pueden darse de baja, solo pueden pasar al estado RN
+        $query = "SELECT 1 FROM antiguedad WHERE antPerId={$antiguedad->periodo->perId} AND antScatId={$antiguedad->subcategoria->scatId} AND antDescripcion='{$antiguedad->antDescripcion}' AND antUsrId={$antiguedad->usuario->usrId}";
+        return $this->_existeEnBD($linkExterno, $query, "verificar si ya existe una antigüedad registrada por el usuario");
+    }
 
 }
