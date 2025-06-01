@@ -14,7 +14,7 @@ class AntiguedadDTO implements IDTO
     public ?array $imagenes = null;
     public UsuarioDTO $usuario;
     public TipoEstadoEnum $tipoEstado;
-    public string $antFechaEstado;
+    public ?string $antFechaEstado = null;
 
     use TraitMapPeriodoDTO; // Trait para mapear PeriodoDTO
     use TraitMapSubcategoriaDTO; // Trait para mapear SubcategoriaDTO

@@ -212,9 +212,6 @@ class AntiguedadesController extends BaseController
 
             $data['antId'] = $id;
 
-            // Actualizar la fecha de estado al momento de la modificación
-            $data['antFechaEstado'] = date('Y-m-d H:i:s'); 
-
             $this->antiguedadesValidacionService->validarType(className: "AntiguedadDTO", datos: $data);
             $antiguedadDTO = new AntiguedadDTO($data);
 
@@ -248,7 +245,7 @@ class AntiguedadesController extends BaseController
             
             // Si el tipo de estado ha cambiado, se actualiza la fecha de estado
             if (!$conservaMismoTipoEstado) {
-                $query .= ", antFechaEstado = $antiguedadDTO->antFechaEstado";
+                $query .= ", antFechaEstado = NOW()";
             }
 
             $query .= " WHERE antId = $id";
@@ -264,5 +261,17 @@ class AntiguedadesController extends BaseController
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
         }
+    }
+
+    public function deleteAntiguedades($id)
+    {
+        $this->securityService->requireLogin(tipoUsurio: ['ST', 'UG', 'UA']);
+        settype($id, 'integer');
+
+        $queryBusqueda = "SELECT antId FROM antiguedad WHERE antId = $id AND antTipoEstado <> 'RN'";
+
+        $queryBajaLogica = "UPDATE antiguedad SET antTipoEstado = 'RN', antFechaEstado = NOW() WHERE antId = $id";
+
+        return parent::delete(queryBusqueda: $queryBusqueda, queryBajaLogica: $queryBajaLogica);
     }
 }
