@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 25-05-2025 a las 01:10:14
+-- Tiempo de generación: 02-06-2025 a las 02:46:25
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -27,6 +27,9 @@ USE `agora`;
 
 --
 -- Estructura de tabla para la tabla `antiguedad`
+--
+-- Creación: 02-06-2025 a las 00:24:39
+-- Última actualización: 02-06-2025 a las 00:37:12
 --
 
 DROP TABLE IF EXISTS `antiguedad`;
@@ -59,12 +62,15 @@ CREATE TABLE `antiguedad` (
 
 INSERT INTO `antiguedad` (`antId`, `antScatId`, `antPerId`, `antDescripcion`, `antUsrId`, `antFechaInsert`, `antTipoEstado`, `antFechaEstado`) VALUES
 (1, 7, 2, 'Vitrina Barroca circa 1656. Hermosos detalles en oro. Madera maciza de ébano. Dos puertas.', 4, '2025-05-24 19:41:04', 'RD', '2025-05-24 19:41:04'),
-(2, 3, 1, 'Hermosa escultura renacentista de un ángel. Mármol. Circa 1486.', 3, '2025-05-24 19:51:02', 'RD', '2025-05-24 19:51:02');
+(2, 3, 1, 'Hermosa escultura renacentista de un ángel. Mármol. Circa 1486.', 3, '2025-05-24 19:51:02', 'RD', '2025-05-24 19:51:02'),
+(3, 8, 4, 'Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C.', 2, '2025-06-01 21:37:12', 'RD', '2025-06-01 21:37:12');
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `categoria`
+--
+-- Creación: 02-06-2025 a las 00:24:39
 --
 
 DROP TABLE IF EXISTS `categoria`;
@@ -91,6 +97,9 @@ INSERT INTO `categoria` (`catId`, `catDescripcion`, `catFechaBaja`) VALUES
 
 --
 -- Estructura de tabla para la tabla `domicilio`
+--
+-- Creación: 02-06-2025 a las 00:24:39
+-- Última actualización: 02-06-2025 a las 00:35:28
 --
 
 DROP TABLE IF EXISTS `domicilio`;
@@ -121,12 +130,15 @@ INSERT INTO `domicilio` (`domId`, `domLocId`, `domCPA`, `domCalleRuta`, `domNroK
 (2, 27, 'C1425DUR', 'Sánchez de Bustamante', 2173, '1', 'G', '2025-05-11 18:00:31', NULL),
 (3, 1, 'B1900ALB', 'Calle 47', 1234, NULL, NULL, '2025-05-11 18:00:31', NULL),
 (4, 29, 'C1066AAW', 'Bolivar', 1131, NULL, NULL, '2025-05-11 18:00:31', NULL),
-(5, 17, 'M5602BAG', 'Juan José Castelli', 353, '1', 'A', '2025-05-11 21:37:57', NULL);
+(5, 17, 'M5602BAG', 'Juan José Castelli', 353, '1', 'A', '2025-05-11 21:37:57', NULL),
+(7, 17, 'M5602BAG', 'Juan José Castelli', 353, NULL, NULL, '2025-06-01 21:35:28', NULL);
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `imagenantiguedad`
+--
+-- Creación: 02-06-2025 a las 00:24:39
 --
 
 DROP TABLE IF EXISTS `imagenantiguedad`;
@@ -150,6 +162,8 @@ CREATE TABLE `imagenantiguedad` (
 --
 -- Estructura de tabla para la tabla `localidad`
 --
+-- Creación: 02-06-2025 a las 00:24:39
+--
 
 DROP TABLE IF EXISTS `localidad`;
 CREATE TABLE `localidad` (
@@ -162,7 +176,7 @@ CREATE TABLE `localidad` (
 
 --
 -- RELACIONES PARA LA TABLA `localidad`:
---   `locProvID`
+--   `locProvId`
 --       `provincia` -> `provId`
 --
 
@@ -213,6 +227,9 @@ INSERT INTO `localidad` (`locId`, `locProvId`, `locDescripcion`, `locFechaInsert
 --
 -- Estructura de tabla para la tabla `periodo`
 --
+-- Creación: 02-06-2025 a las 00:24:39
+-- Última actualización: 02-06-2025 a las 00:36:26
+--
 
 DROP TABLE IF EXISTS `periodo`;
 CREATE TABLE `periodo` (
@@ -233,6 +250,7 @@ INSERT INTO `periodo` (`perId`, `perDescripcion`, `perFechaBaja`) VALUES
 (1, 'Renacentista', NULL),
 (2, 'Barroco', NULL),
 (3, 'Pop Art', NULL),
+(4, 'Medieval', NULL),
 (5, 'Colonial', NULL),
 (6, 'Postindustrial', NULL);
 
@@ -240,6 +258,8 @@ INSERT INTO `periodo` (`perId`, `perDescripcion`, `perFechaBaja`) VALUES
 
 --
 -- Estructura de tabla para la tabla `provincia`
+--
+-- Creación: 02-06-2025 a las 00:24:39
 --
 
 DROP TABLE IF EXISTS `provincia`;
@@ -287,6 +307,9 @@ INSERT INTO `provincia` (`provId`, `provDescripcion`) VALUES
 --
 -- Estructura de tabla para la tabla `subcategoria`
 --
+-- Creación: 02-06-2025 a las 00:24:39
+-- Última actualización: 02-06-2025 a las 00:34:12
+--
 
 DROP TABLE IF EXISTS `subcategoria`;
 CREATE TABLE `subcategoria` (
@@ -312,6 +335,7 @@ INSERT INTO `subcategoria` (`scatId`, `scatCatId`, `scatDescripcion`, `scatFecha
 (3, 2, 'Personas', NULL),
 (6, 3, 'Armarios', NULL),
 (2, 3, 'Escritorios', NULL),
+(8, 3, 'Mesas', NULL),
 (1, 3, 'Sillas', NULL),
 (7, 3, 'Vitrina', NULL);
 
@@ -319,6 +343,8 @@ INSERT INTO `subcategoria` (`scatId`, `scatCatId`, `scatDescripcion`, `scatFecha
 
 --
 -- Estructura de tabla para la tabla `tipoestado`
+--
+-- Creación: 02-06-2025 a las 00:24:39
 --
 
 DROP TABLE IF EXISTS `tipoestado`;
@@ -348,6 +374,8 @@ INSERT INTO `tipoestado` (`tteTipoEstado`, `tteTipoEstadoDescripcion`) VALUES
 --
 -- Estructura de tabla para la tabla `tipousuario`
 --
+-- Creación: 02-06-2025 a las 00:24:39
+--
 
 DROP TABLE IF EXISTS `tipousuario`;
 CREATE TABLE `tipousuario` (
@@ -376,6 +404,9 @@ INSERT INTO `tipousuario` (`ttuTipoUsuario`, `ttuDescripcion`, `ttuRequiereMatri
 --
 -- Estructura de tabla para la tabla `tokens`
 --
+-- Creación: 02-06-2025 a las 00:24:39
+-- Última actualización: 02-06-2025 a las 00:31:54
+--
 
 DROP TABLE IF EXISTS `tokens`;
 CREATE TABLE `tokens` (
@@ -392,12 +423,15 @@ CREATE TABLE `tokens` (
 --
 
 INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NDgxMTkzNDR9.Pcm6p_5beR36YFgAsS1eTJiLwFBCiA31MEd68jrC556wLkye8UZRP2j0XLCHtQDxYc0dOnUGpJ5celGrSibmag', '2025-05-24 16:42:24');
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NDg4Mjc5MTR9.UNLTt1r3rqUo6UCAykWIMB4AlaDZZeLAuo31S84JXzkcwTvPkV8_ez8tlUpfrENTsHjSY9DN1kyyS605jfhPtQ', '2025-06-01 21:31:54');
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `usuario`
+--
+-- Creación: 02-06-2025 a las 00:24:39
+-- Última actualización: 02-06-2025 a las 00:32:15
 --
 
 DROP TABLE IF EXISTS `usuario`;
@@ -423,7 +457,7 @@ CREATE TABLE `usuario` (
 --
 -- RELACIONES PARA LA TABLA `usuario`:
 --   `usrDomicilio`
---       `domicilio` -> `domID`
+--       `domicilio` -> `domId`
 --   `usrTipoUsuario`
 --       `tipousuario` -> `ttuTipoUsuario`
 --
@@ -436,12 +470,16 @@ INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonS
 (1, '33698895', 'Gómez Ivaldi', 'Nicolás Alejandro', NULL, NULL, 'ST', NULL, 1, '1988-03-29', 'Soy uno de los creadores de esta WebApi AAABQ.', 10, 'nicoivaldi@agora.com', '$2y$10$lo551SYnW8GcnfIxIJK.zOoJlwMP4BuJr3dDJfctmv.SLC9LAmPCy', '2024-07-07 18:38:07', NULL),
 (2, '33286958', 'Sosa Leonetti', 'Cristian Javier', NULL, NULL, 'UG', NULL, 2, '1988-02-08', NULL, 0, 'sleonetti@gmail.com', '$2y$10$HjR2rlPfne0GyNXGJ41jU.EiCfvVpMpQ5cOvRbitoynkYeMaEGnM.', '2024-07-08 14:42:43', NULL),
 (3, '29741295', 'Galíndez', 'Gustavo', 'Tasaciones Galíndez Jumbo SH', '30708772964', 'UT', '123456', 3, '1984-01-01', 'Tasamos el valor de sus afectos al mejor precio de Mercado.', 50, 'gusgalindez@tasgalindez.com', '$2y$10$U9YS.OMtjMhnOzAUWovHv.uQo38bb3dva9qDUmq48w5fBZW0NVsyq', '2024-07-10 16:18:01', NULL),
-(4, '27965368', 'Rolón', 'Karina', 'Paraíso Antigüedades SA', '30123456781', 'UA', '95874L', 4, '1982-06-12', 'Compra y Venta de antigüedades. Tasamos.', 60, 'krolon@paraiso.com', '$2y$10$Os4S45NKUqrBnLYDqALpYewr8CBMbKx8n4dNm9FTLhg7ySVxgcTx2', '2024-07-10 16:18:01', NULL);
+(4, '27965368', 'Rolón', 'Karina', 'Paraíso Antigüedades SA', '30123456781', 'UA', '95874L', 4, '1982-06-12', 'Compra y Venta de antigüedades. Tasamos.', 60, 'krolon@paraiso.com', '$2y$10$Os4S45NKUqrBnLYDqALpYewr8CBMbKx8n4dNm9FTLhg7ySVxgcTx2', '2024-07-10 16:18:01', NULL),
+(6, '13355922', 'Recondo', 'Adriana Mariel', NULL, NULL, 'UG', NULL, 1, '1959-07-09', NULL, 0, 'recondomariel@uol.com', '$2y$10$z0qsH.nfqgY3j1llxhfIvO8LoG54WT0r7637axiTq1ZPmShSNL.jq', '2025-06-01 21:32:15', NULL);
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `usuariotasadorhabilidad`
+--
+-- Creación: 02-06-2025 a las 00:24:39
+-- Última actualización: 02-06-2025 a las 00:35:46
 --
 
 DROP TABLE IF EXISTS `usuariotasadorhabilidad`;
@@ -472,7 +510,8 @@ INSERT INTO `usuariotasadorhabilidad` (`utsId`, `utsUsrId`, `utsScatId`, `utsPer
 (1, 3, 5, 1, '2025-05-14 22:32:43', NULL),
 (2, 3, 4, 2, '2025-05-14 22:32:43', NULL),
 (3, 4, 1, 2, '2025-05-14 22:32:43', NULL),
-(4, 4, 2, 1, '2025-05-14 22:32:43', NULL);
+(4, 4, 2, 1, '2025-05-14 22:32:43', NULL),
+(5, 3, 8, 3, '2025-06-01 21:35:46', NULL);
 
 --
 -- Índices para tablas volcadas
@@ -571,7 +610,7 @@ ALTER TABLE `usuariotasadorhabilidad`
 -- AUTO_INCREMENT de la tabla `antiguedad`
 --
 ALTER TABLE `antiguedad`
-  MODIFY `antId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `antId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `categoria`
@@ -583,7 +622,7 @@ ALTER TABLE `categoria`
 -- AUTO_INCREMENT de la tabla `domicilio`
 --
 ALTER TABLE `domicilio`
-  MODIFY `domId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `domId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `imagenantiguedad`
@@ -613,19 +652,19 @@ ALTER TABLE `provincia`
 -- AUTO_INCREMENT de la tabla `subcategoria`
 --
 ALTER TABLE `subcategoria`
-  MODIFY `scatId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `scatId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `usrId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `usrId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `usuariotasadorhabilidad`
 --
 ALTER TABLE `usuariotasadorhabilidad`
-  MODIFY `utsId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `utsId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Restricciones para tablas volcadas
@@ -656,7 +695,7 @@ ALTER TABLE `imagenantiguedad`
 -- Filtros para la tabla `localidad`
 --
 ALTER TABLE `localidad`
-  ADD CONSTRAINT `FK_localidadProv` FOREIGN KEY (`locProvID`) REFERENCES `provincia` (`provId`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `FK_localidadProv` FOREIGN KEY (`locProvId`) REFERENCES `provincia` (`provId`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `subcategoria`
@@ -668,7 +707,7 @@ ALTER TABLE `subcategoria`
 -- Filtros para la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  ADD CONSTRAINT `FK_usuarioDomicilio` FOREIGN KEY (`usrDomicilio`) REFERENCES `domicilio` (`domID`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_usuarioDomicilio` FOREIGN KEY (`usrDomicilio`) REFERENCES `domicilio` (`domId`) ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_usuarioTipoUsuario` FOREIGN KEY (`usrTipoUsuario`) REFERENCES `tipousuario` (`ttuTipoUsuario`) ON UPDATE CASCADE;
 
 --
