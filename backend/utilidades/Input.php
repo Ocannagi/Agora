@@ -4,6 +4,7 @@ namespace Utilidades;
 
 use mysqli;
 use ReflectionClass;
+use DTOs\PHP_FileDTO;
 
 class Input
 {
@@ -18,6 +19,61 @@ class Input
         }
 
         return $array;
+    }
+
+    public static function contieneSoloArraysAsociativos(array $array): bool
+    {
+        if (empty($array)) {
+            return false;
+        }
+
+        $bool = true;
+
+        foreach ($array as $elemento) {
+            if (is_array($elemento)) {
+                // Verificar si el array es asociativo
+                if (array_keys($elemento) === range(0, count($elemento) - 1)) {
+                    // Si las claves son numéricas y consecutivas, no es un array asociativo
+                    $bool = false;
+                    break;
+                }
+            } else {
+                // Si el elemento no es un array, no es un array asociativo
+                $bool = false;
+                break;
+            }
+        }
+
+        return $bool;
+    }
+    
+
+
+    public static function getArrayFiles(string $name) : array
+    {
+
+        if (!isset($_FILES[$name]) || !is_array($_FILES[$name]["error"]) || count($_FILES[$name]["error"]) === 0) {
+            Output::outputError(400, "No se recibieron archivos para subir.");
+        }
+
+        $arrayFiles = [];
+        foreach ($_FILES[$name]["error"] as $key => $error) {
+            if ($error === UPLOAD_ERR_OK) {
+                $tmpName = $_FILES[$name]["tmp_name"][$key];
+                $name = $_FILES[$name]["name"][$key];
+                $type = $_FILES[$name]["type"][$key];
+                $size = $_FILES[$name]["size"][$key];
+                $arrayFiles[] = new PHP_FileDTO([
+                    'tmp_name' => $tmpName,
+                    'name' => $name,
+                    'type' => $type,
+                    'size' => $size
+                ]);
+            } else {
+                Output::outputError(400, "Error al subir el archivo: " . $error);
+            }
+        }
+        return $arrayFiles;
     }
 
     public static function escaparDatos(object $instance, mysqli $linkExterno)
