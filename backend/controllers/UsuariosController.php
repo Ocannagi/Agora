@@ -81,11 +81,16 @@ class UsuariosController extends BaseController
 
             return parent::post(query: $query, link: $mysqli);
         } catch (\Throwable $th) {
+
+            if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
+                $mysqli->close(); // Cerrar la conexión a la base de datos
+            }
+
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
-            } else {
+            } else { 
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
         }
@@ -94,11 +99,11 @@ class UsuariosController extends BaseController
 
     public function patchUsuarios($id)
     {
-
         try {
             $this->securityService->requireLogin(tipoUsurio: null);
-            settype($id, 'integer');
             $mysqli = $this->dbConnection->conectarBD();
+            settype($id, 'integer');
+            
             $data = Input::getArrayBody(msgEntidad: "el usuario");
 
             $data['usrId'] = $id;
@@ -121,6 +126,10 @@ class UsuariosController extends BaseController
 
             return parent::patch($query, $mysqli);
         } catch (\Throwable $th) {
+            if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
+                $mysqli->close(); // Cerrar la conexión a la base de datos
+            }
+
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {

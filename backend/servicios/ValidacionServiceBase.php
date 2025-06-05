@@ -3,50 +3,11 @@
 use Utilidades\Output;
 use Utilidades\Input;
 use Utilidades\Querys;
-use DTOs\PHP_FileDTO;
 
 abstract class ValidacionServiceBase
 {
 
     abstract public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $entidadDTO);
-
-    
-    /**
-     * Valida que los archivos recibidos sean válidos según el tipo y tamaño especificados.
-     * Si algún archivo no es válido, lanza un error.
-     * @param array $files Array de archivos de clase PHP_FileDTO a validar.
-     * @param array $tipoArchivo Array de tipos de archivo permitidos.
-     * @param int $maxSize Tamaño máximo permitido para los archivos (en bytes).
-     */
-    public function validarFiles(array $files, array $tipoArchivo, int $maxSize = 0, int $maxFiles = 0)
-    {
-        if (empty($files)) {
-            Output::outputError(400, "No se recibieron archivos para subir.");
-        }
-
-        foreach ($files as $file) {
-            if (!$file instanceof PHP_FileDTO) {
-                Output::outputError(400, "El archivo no es válido.");
-            }
-
-            if ($file->size <= 0) {
-                Output::outputError(400, "El archivo {$file->name} está vacío.");
-            }
-
-            if ($maxSize > 0 && $file->size > $maxSize) {
-                Output::outputError(400, "El archivo {$file->name} excede el tamaño máximo permitido de {$maxSize} bytes.");
-            }
-
-            if (!in_array($file->type, $tipoArchivo)) {
-                Output::outputError(400, "El tipo de archivo {$file->name} no es válido. Debe ser uno de los siguientes: " . implode(", ", $tipoArchivo));
-            }
-
-            if ($maxFiles > 0 && count($files) > $maxFiles) {
-                Output::outputError(400, "Se ha superado el número máximo de archivos permitidos: $maxFiles.");
-            }
-        }
-    }
-
 
     /**
      * Valida que los tipos de datos de las propiedades de la clase coincidan con los tipos de los datos del array.

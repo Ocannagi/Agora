@@ -2,9 +2,9 @@
 
 
 use Utilidades\Output;
-use Utilidades\Input;
+use Utilidades\Querys;
 
-class ImagenesAntiguedadValidacionService extends ValidacionServiceBase
+class ImagenesAntiguedadValidacionService extends ValidacionFileServiceBase
 {
     private static $instancia = null;
 
@@ -20,20 +20,49 @@ class ImagenesAntiguedadValidacionService extends ValidacionServiceBase
 
     private function __clone() {}
 
-    public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $imagenAntiguedad)
+
+    public function validarFiles(array $files, int $FKid, mysqli $linkExterno): void
     {
-        if (!($imagenAntiguedad instanceof ImagenAntiguedadCreacionDTO) && !($imagenAntiguedad instanceof ImagenAntiguedadDTO)) {
-            Output::outputError(500, 'Error interno: el DTO proporcionado no es del tipo correcto.');
+        $this->validarFK(
+            antId: $FKid,
+            mysqli: $linkExterno
+        );
+        
+        $uploadedNumberFiles = Querys::obtenerCount(
+            link: $linkExterno,
+            base: 'imagenantiguedad',
+            where: "imaAntId = $FKid",
+            msg: 'obtener el número de imágenes de antigüedad'
+        );
+        
+        // Validar que los archivos sean imágenes y cumplan con las restricciones
+        $this->validarFilesProperties(
+            files: $files,
+            tipoArchivo: ['image/jpeg', 'image/png', 'image/gif'],
+            maxSize: 200000, // 200 KB
+            maxFiles: 5 - $uploadedNumberFiles // Permitir un máximo de 5 imágenes en total
+        );
+    }
+
+
+    /**
+     * Valida que el ID de la antigüedad sea válido y exista en la base de datos.
+     * @param int|null $antId ID de la antigüedad a validar.
+     * @param mysqli $mysqli Conexión a la base de datos.
+     */
+    private function validarFK(?int $antId, mysqli $mysqli){
+
+        if (!$antId || $antId <= 0) {
+            Output::outputError(400, 'El ID de la antigüedad es obligatorio.');
         }
 
-        $this->validarDatosObligatorios(classModelName: 'ImagenAntiguedad', datos: get_object_vars($imagenAntiguedad));
-        Input::trimStringDatos($imagenAntiguedad);
-        $this->validarDatoIdAntiguedad($linkExterno, $imagenAntiguedad->antId);
-
-        if ($imagenAntiguedad instanceof ImagenAntiguedadDTO) {
-            $this->validarSiYaFueRegistrado($imagenAntiguedad, $linkExterno);
-        } else {
-            $this->validarSiYaFueRegistrado($imagenAntiguedad, $linkExterno);
+        if(!Querys::existeEnBD(
+            link: $mysqli,
+            query: "SELECT antId FROM antiguedad WHERE antId = $antId",
+            msg: 'validar el ID de la antigüedad'
+        )) {
+            Output::outputError(404, 'La antigüedad con el ID proporcionado no existe.');
         }
     }
+
 }

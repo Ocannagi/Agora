@@ -9,9 +9,9 @@ class ImagenAntiguedad extends ClassBase
     private int $antId;
     #[Obligatorio]
     private string $imaUrl;
-    private ?string $imaDescripcion;
     private DateTime $imaFechaInsert;
-    private ?DateTime $imaFechaBaja;
+    #[Obligatorio]
+    private int $imaOrden;
 
     public static function fromCreacionDTO(ICreacionDTO $dto): self
     {
@@ -21,7 +21,6 @@ class ImagenAntiguedad extends ClassBase
 
         $instance = new self();
         $instance->imaUrl = $dto->imaUrl;
-        $instance->imaDescripcion = $dto->imaDescripcion;
         $instance->antId = $dto->antId;
         return $instance;
     }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 02-06-2025 a las 02:46:25
+-- Tiempo de generación: 05-06-2025 a las 04:39:50
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -29,7 +29,6 @@ USE `agora`;
 -- Estructura de tabla para la tabla `antiguedad`
 --
 -- Creación: 02-06-2025 a las 00:24:39
--- Última actualización: 02-06-2025 a las 00:37:12
 --
 
 DROP TABLE IF EXISTS `antiguedad`;
@@ -63,7 +62,7 @@ CREATE TABLE `antiguedad` (
 INSERT INTO `antiguedad` (`antId`, `antScatId`, `antPerId`, `antDescripcion`, `antUsrId`, `antFechaInsert`, `antTipoEstado`, `antFechaEstado`) VALUES
 (1, 7, 2, 'Vitrina Barroca circa 1656. Hermosos detalles en oro. Madera maciza de ébano. Dos puertas.', 4, '2025-05-24 19:41:04', 'RD', '2025-05-24 19:41:04'),
 (2, 3, 1, 'Hermosa escultura renacentista de un ángel. Mármol. Circa 1486.', 3, '2025-05-24 19:51:02', 'RD', '2025-05-24 19:51:02'),
-(3, 8, 4, 'Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C.', 2, '2025-06-01 21:37:12', 'RD', '2025-06-01 21:37:12');
+(3, 8, 4, 'Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C.', 2, '2025-06-01 21:37:12', 'RD', '2025-06-01 21:58:00');
 
 -- --------------------------------------------------------
 
@@ -99,7 +98,6 @@ INSERT INTO `categoria` (`catId`, `catDescripcion`, `catFechaBaja`) VALUES
 -- Estructura de tabla para la tabla `domicilio`
 --
 -- Creación: 02-06-2025 a las 00:24:39
--- Última actualización: 02-06-2025 a las 00:35:28
 --
 
 DROP TABLE IF EXISTS `domicilio`;
@@ -138,17 +136,17 @@ INSERT INTO `domicilio` (`domId`, `domLocId`, `domCPA`, `domCalleRuta`, `domNroK
 --
 -- Estructura de tabla para la tabla `imagenantiguedad`
 --
--- Creación: 02-06-2025 a las 00:24:39
+-- Creación: 04-06-2025 a las 22:27:01
+-- Última actualización: 04-06-2025 a las 20:45:23
 --
 
 DROP TABLE IF EXISTS `imagenantiguedad`;
 CREATE TABLE `imagenantiguedad` (
   `imaId` int(10) UNSIGNED NOT NULL,
   `imaAntId` int(10) UNSIGNED NOT NULL,
-  `imaUrl` varchar(150) NOT NULL,
-  `imaDescripcion` varchar(150) DEFAULT NULL,
+  `imaUrl` varchar(300) NOT NULL,
   `imaFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
-  `imaFechaBaja` datetime DEFAULT NULL
+  `imaOrden` tinyint(3) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -228,7 +226,6 @@ INSERT INTO `localidad` (`locId`, `locProvId`, `locDescripcion`, `locFechaInsert
 -- Estructura de tabla para la tabla `periodo`
 --
 -- Creación: 02-06-2025 a las 00:24:39
--- Última actualización: 02-06-2025 a las 00:36:26
 --
 
 DROP TABLE IF EXISTS `periodo`;
@@ -308,7 +305,6 @@ INSERT INTO `provincia` (`provId`, `provDescripcion`) VALUES
 -- Estructura de tabla para la tabla `subcategoria`
 --
 -- Creación: 02-06-2025 a las 00:24:39
--- Última actualización: 02-06-2025 a las 00:34:12
 --
 
 DROP TABLE IF EXISTS `subcategoria`;
@@ -405,7 +401,6 @@ INSERT INTO `tipousuario` (`ttuTipoUsuario`, `ttuDescripcion`, `ttuRequiereMatri
 -- Estructura de tabla para la tabla `tokens`
 --
 -- Creación: 02-06-2025 a las 00:24:39
--- Última actualización: 02-06-2025 a las 00:31:54
 --
 
 DROP TABLE IF EXISTS `tokens`;
@@ -423,7 +418,8 @@ CREATE TABLE `tokens` (
 --
 
 INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NDg4Mjc5MTR9.UNLTt1r3rqUo6UCAykWIMB4AlaDZZeLAuo31S84JXzkcwTvPkV8_ez8tlUpfrENTsHjSY9DN1kyyS605jfhPtQ', '2025-06-01 21:31:54');
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NDg4Mjc5MTR9.UNLTt1r3rqUo6UCAykWIMB4AlaDZZeLAuo31S84JXzkcwTvPkV8_ez8tlUpfrENTsHjSY9DN1kyyS605jfhPtQ', '2025-06-01 21:31:54'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NDg4MjkzODV9.P7H-NpJoYqeDLMHC1yW-gVSsY2q0RGdXODaZaX8_WdTa41lBiVOUK-4b_Eg3F4ElJ9HBXfUFIN3r8AnhHHWIMA', '2025-06-01 21:56:25');
 
 -- --------------------------------------------------------
 
@@ -431,7 +427,6 @@ INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
 -- Estructura de tabla para la tabla `usuario`
 --
 -- Creación: 02-06-2025 a las 00:24:39
--- Última actualización: 02-06-2025 a las 00:32:15
 --
 
 DROP TABLE IF EXISTS `usuario`;
@@ -479,7 +474,6 @@ INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonS
 -- Estructura de tabla para la tabla `usuariotasadorhabilidad`
 --
 -- Creación: 02-06-2025 a las 00:24:39
--- Última actualización: 02-06-2025 a las 00:35:46
 --
 
 DROP TABLE IF EXISTS `usuariotasadorhabilidad`;

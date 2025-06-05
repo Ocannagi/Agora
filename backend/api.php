@@ -59,7 +59,8 @@ define('DEPENDENCIAS', [
     'LocalidadesValidacionService' => 'LocalidadesValidacionService',
     'DomiciliosValidacionService' => 'DomiciliosValidacionService',
     'HabilidadesValidacionService' => 'HabilidadesValidacionService',
-    'AntiguedadesValidacionService' => 'AntiguedadesValidacionService',]);
+    'AntiguedadesValidacionService' => 'AntiguedadesValidacionService',
+    'ImagenesAntiguedadValidacionService' => 'ImagenesAntiguedadValidacionService',]);
 
 /** Configuración Zona Horaria */
 date_default_timezone_set('America/Argentina/Buenos_Aires');

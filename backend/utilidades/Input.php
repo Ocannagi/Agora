@@ -21,7 +21,7 @@ class Input
         return $array;
     }
 
-    public static function contieneSoloArraysAsociativos(array $array): bool
+    public static function contieneSoloArraysAsociativos(array $array): bool //Por ahora no la uso, pero la dejo por si acaso
     {
         if (empty($array)) {
             return false;
@@ -46,10 +46,47 @@ class Input
 
         return $bool;
     }
+
+    /**
+     * Guarda un archivo en el sistema de archivos. Lanza una excepción si hay un error al mover el archivo o si la carpeta de destino no existe.
+     * @param PHP_FileDTO $fileDTO El objeto que contiene la información del archivo.
+     * @param string $subcarpetaEnStorage La subcarpeta dentro de la carpeta de almacenamiento donde se guardará el archivo.
+     * @param string $id Un identificador único para el archivo, que se usará en el nombre del archivo.
+     * @return string La ruta completa del archivo guardado.
+     * @throws \Exception Si hay un error al mover el archivo o si la carpeta de destino no existe.
+     */
+    public static function saveFile(PHP_FileDTO $fileDTO, string $subcarpetaEnStorage, string $id): string
+    {
+        $dirBase = dirname(__DIR__, 2) . '/storage';
+
+        $path = $dirBase . '/' . $subcarpetaEnStorage;
+        if (!is_dir($path)) {
+            throw new \Model\CustomException("La carpeta de destino no existe: $path", 500);
+        }
+
+        $nombreArchivo = uniqid($id . '_') . '_' . time() . '_' . pathinfo($fileDTO->name, PATHINFO_FILENAME) . '.' . explode('/', $fileDTO->type)[1];
+
+        if (!move_uploaded_file($fileDTO->tmp_name, $path . '/' . $nombreArchivo)) {
+            throw new \Model\CustomException("Error al mover el archivo a la ubicación deseada: $path/$nombreArchivo", 500);
+        }
+
+        // Verificar si el archivo se movió correctamente
+        if (!file_exists($path . '/' . $nombreArchivo)) {
+            throw new \Model\CustomException("El archivo no se movió correctamente a la ubicación: $path/$nombreArchivo", 500);
+        }
+
+        // Retornar la ruta completa del archivo guardado
+        return $path . '/' . $nombreArchivo;
+    }
     
 
-
-    public static function getArrayFiles(string $name) : array
+    /**
+     * Obtiene un array de archivos subidos a través de un formulario HTML.
+     * @param string $name El nombre del campo de archivo en el formulario.
+     * @param mysqli $linkExterno Conexión a la base de datos para escapar los nombres de los archivos.
+     * @return PHP_FileDTO[] Un array de objetos PHP_FileDTO que representan los archivos subidos.
+     */
+    public static function getArrayFiles(string $name, mysqli $linkExterno) : array
     {
 
         if (!isset($_FILES[$name]) || !is_array($_FILES[$name]["error"]) || count($_FILES[$name]["error"]) === 0) {
@@ -60,7 +97,7 @@ class Input
         foreach ($_FILES[$name]["error"] as $key => $error) {
             if ($error === UPLOAD_ERR_OK) {
                 $tmpName = $_FILES[$name]["tmp_name"][$key];
-                $name = $_FILES[$name]["name"][$key];
+                $name = $linkExterno->real_escape_string($_FILES[$name]["name"][$key]);
                 $type = $_FILES[$name]["type"][$key];
                 $size = $_FILES[$name]["size"][$key];
                 $arrayFiles[] = new PHP_FileDTO([
