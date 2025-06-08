@@ -5,6 +5,8 @@ use Utilidades\Input;
 use Utilidades\Querys;
 use DTOs\PHP_FileDTO;
 
+define('MAX_LONG_NOMBRE_ARCHIVO', 50); // Longitud máxima del nombre del archivo
+
 abstract class ValidacionFileServiceBase
 {
 
@@ -14,8 +16,10 @@ abstract class ValidacionFileServiceBase
      * @param int $FKid ID de la entidad relacionada.
      * @param mysqli $linkExterno Conexión a la base de datos.
      */
-    public abstract function validarFiles(array $files, int $FKid, mysqli $linkExterno): void;
-    
+    public abstract function validarFiles(array $files, int $FKid, mysqli $linkExterno, mixed $extraParams = null): void;
+
+    abstract public function validarInputDTO(mysqli $linkExterno, IDTO $entidadDTO, ClaimDTO $claimDTO): void;
+
     /**
      * Valida que los archivos recibidos sean válidos según el tipo y tamaño especificados.
      * Si algún archivo no es válido, lanza un error.
@@ -29,10 +33,25 @@ abstract class ValidacionFileServiceBase
             Output::outputError(400, "No se recibieron archivos para subir.");
         }
 
+        // Verificar nombres duplicados
+        $nombres = [];
         foreach ($files as $file) {
             if (!$file instanceof PHP_FileDTO) {
                 Output::outputError(400, "El archivo no es válido.");
             }
+
+            if (!Input::esNotNullVacioBlanco($file->name)) {
+                Output::outputError(400, "El archivo no tiene un nombre válido.");
+            }
+
+            if (!Input::esStringLongitud($file->name, 1, MAX_LONG_NOMBRE_ARCHIVO)) {
+                Output::outputError(400, "La longitud del nombre del archivo {$file->name} no es válida.");
+            }
+
+            if (in_array($file->name, $nombres)) {
+                Output::outputError(400, "Hay archivos con el mismo nombre: {$file->name}");
+            }
+            $nombres[] = $file->name;
 
             if ($file->size <= 0) {
                 Output::outputError(400, "El archivo {$file->name} está vacío.");
@@ -47,7 +66,7 @@ abstract class ValidacionFileServiceBase
             }
 
             if ($maxFiles > 0 && count($files) > $maxFiles) {
-                Output::outputError(400, "Se ha superado el número máximo de archivos permitidos: $maxFiles.");
+                Output::outputError(400, "Se ha superado el número máximo de archivos permitidos restantes: $maxFiles.");
             }
         }
     }

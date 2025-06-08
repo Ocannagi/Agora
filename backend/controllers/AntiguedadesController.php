@@ -119,7 +119,7 @@ class AntiguedadesController extends BaseController
                         ,usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario, usrRazonSocialFantasia,usrDescripcion,usrScoring,usrCuitCuil,usrMatricula
                         ,domId, domCPA, domCalleRuta, domNroKm, domPiso, domDepto
                         ,locId, locDescripcion, provId, provDescripcion
-                        ,imaId, imaAntId, imaDescripcion, imaUrl
+                        ,imaId, imaAntId, imaUrl, imaOrden
                   FROM antiguedad
                     INNER JOIN periodo ON antPerId = perId
                     INNER JOIN subcategoria ON antScatId = scatId
@@ -145,7 +145,7 @@ class AntiguedadesController extends BaseController
                         ,usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario, usrRazonSocialFantasia,usrDescripcion,usrScoring,usrCuitCuil,usrMatricula
                         ,domId, domCPA, domCalleRuta, domNroKm, domPiso, domDepto
                         ,locId, locDescripcion, provId, provDescripcion
-                        ,imaId, imaAntId, imaDescripcion, imaUrl
+                        ,imaId, imaAntId, imaUrl, imaOrden
                   FROM antiguedad
                     INNER JOIN periodo ON antPerId = perId
                     INNER JOIN subcategoria ON antScatId = scatId

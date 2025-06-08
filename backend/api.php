@@ -23,20 +23,32 @@ spl_autoload_register(function ($className) {
             if (file_exists($file)) {
                 require_once $file;
             } else {
-                // Si no existe, intenta cargarlo desde la carpeta de utilidades
-                $baseDir = __DIR__ . '/utilidades/';
-                $file = $baseDir . str_replace('Utilidades','', str_replace('\\', '/', $className)) . '.php';
+                $baseDir = __DIR__ . '/DTOs/';
+                $file = $baseDir . str_replace('DTOs', '', str_replace('\\', '/', $className)) . '.php';
                 if (file_exists($file)) {
                     require_once $file;
                 } else {
-                    // Si no existe, intenta cargarlo desde la carpeta de modelos
-                    $baseDir = __DIR__ . '/model/';
-                    $file = $baseDir . str_replace('\\', '/', $className) . '.php';
+                    // Si no existe, intenta cargarlo desde la carpeta de utilidades
+                    $baseDir = __DIR__ . '/utilidades/';
+                    $file = $baseDir . str_replace('Utilidades', '', str_replace('\\', '/', $className)) . '.php';
                     if (file_exists($file)) {
                         require_once $file;
                     } else {
-                        // Si no existe, lanza el outputError
-                        Output::outputError(500, "No se encontró la clase $className");
+                        // Si no existe, intenta cargarlo desde la carpeta de modelos
+                        $baseDir = __DIR__ . '/model/';
+                        $file = $baseDir . str_replace('\\', '/', $className) . '.php';
+                        if (file_exists($file)) {
+                            require_once $file;
+                        } else {
+                            $baseDir = __DIR__;
+                            $file = $baseDir . str_replace('\\', '/', $className) . '.php';
+                            if (file_exists($file)) {
+                                require_once $file;
+                            } else {
+                                // Si no existe, lanza el outputError
+                                Output::outputError(500, "No se encontró la clase $className");
+                            }
+                        }
                     }
                 }
             }
@@ -49,7 +61,7 @@ spl_autoload_register(function ($className) {
 
 /** Definir aquí las Dependencias de los Controller */
 define('DEPENDENCIAS', [
-    
+
     'DbConnection' => 'DbConnection',
     'SecurityService' => 'SecurityService',
     'UsuariosValidacionService' => 'UsuariosValidacionService',
@@ -60,7 +72,8 @@ define('DEPENDENCIAS', [
     'DomiciliosValidacionService' => 'DomiciliosValidacionService',
     'HabilidadesValidacionService' => 'HabilidadesValidacionService',
     'AntiguedadesValidacionService' => 'AntiguedadesValidacionService',
-    'ImagenesAntiguedadValidacionService' => 'ImagenesAntiguedadValidacionService',]);
+    'ImagenesantiguedadValidacionService' => 'ImagenesAntiguedadValidacionService',
+]); // es necesario que en caso de clases con nombre compuesto, la key del array sea el nombre de la clase solo con mayúscula inicial
 
 /** Configuración Zona Horaria */
 date_default_timezone_set('America/Argentina/Buenos_Aires');
@@ -80,7 +93,7 @@ $funcionNombre = $metodo . ucfirst($accion[0]);
 $parametros = array_slice($accion, 1);
 if (count($parametros) > 0 && $metodo == 'get') {
     $funcionNombre = $funcionNombre . 'ById';
-} else if (isset($_GET['params']) && $metodo == 'get'){
+} else if (isset($_GET['params']) && $metodo == 'get') {
     $parametros = [$_GET['params']]; // debe ser un solo elemento
     $funcionNombre = $funcionNombre . 'ByParams';
 }
@@ -93,7 +106,7 @@ if (class_exists($controllerNombre)) {
     Output::outputError(400, "No existe el controlador " . $controllerNombre);
 }
 
-if(method_exists($controller, $funcionNombre)){
+if (method_exists($controller, $funcionNombre)) {
     call_user_func_array([$controller, $funcionNombre], $parametros);
 } else {
     Output::outputError(400, "No existe " . $funcionNombre . " en el controlador " . $controllerNombre);
@@ -102,7 +115,7 @@ if(method_exists($controller, $funcionNombre)){
 /***************************** API ********************************/
 
 
-function instanciarControllerSingleton($controllerNombre) : object
+function instanciarControllerSingleton($controllerNombre): object
 {
     return $controllerNombre::getInstancia(...inyectarDependencias($controllerNombre));
 }
@@ -119,6 +132,7 @@ function inyectarDependencias($controllerNombre): array
     $constructor = $reflection->getConstructor();
     $dependencias = $constructor->getParameters();
     $baseName = explode('Controller', $controllerNombre)[0];
+
 
     $ret = [];
     foreach ($dependencias as $dependencia) {

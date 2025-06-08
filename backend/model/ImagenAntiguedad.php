@@ -9,6 +9,8 @@ class ImagenAntiguedad extends ClassBase
     private int $antId;
     #[Obligatorio]
     private string $imaUrl;
+    #[Obligatorio]
+    private string $imaNombreArchivo;
     private DateTime $imaFechaInsert;
     #[Obligatorio]
     private int $imaOrden;
@@ -22,6 +24,7 @@ class ImagenAntiguedad extends ClassBase
         $instance = new self();
         $instance->imaUrl = $dto->imaUrl;
         $instance->antId = $dto->antId;
+        $instance->imaNombreArchivo = $dto->imaNombreArchivo;
         return $instance;
     }
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 05-06-2025 a las 04:39:50
+-- Tiempo de generación: 07-06-2025 a las 21:43:58
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -136,15 +136,16 @@ INSERT INTO `domicilio` (`domId`, `domLocId`, `domCPA`, `domCalleRuta`, `domNroK
 --
 -- Estructura de tabla para la tabla `imagenantiguedad`
 --
--- Creación: 04-06-2025 a las 22:27:01
--- Última actualización: 04-06-2025 a las 20:45:23
+-- Creación: 07-06-2025 a las 19:40:26
+-- Última actualización: 07-06-2025 a las 19:40:11
 --
 
 DROP TABLE IF EXISTS `imagenantiguedad`;
 CREATE TABLE `imagenantiguedad` (
   `imaId` int(10) UNSIGNED NOT NULL,
   `imaAntId` int(10) UNSIGNED NOT NULL,
-  `imaUrl` varchar(300) NOT NULL,
+  `imaUrl` varchar(350) NOT NULL,
+  `imaNombreArchivo` varchar(50) NOT NULL,
   `imaFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
   `imaOrden` tinyint(3) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -401,6 +402,7 @@ INSERT INTO `tipousuario` (`ttuTipoUsuario`, `ttuDescripcion`, `ttuRequiereMatri
 -- Estructura de tabla para la tabla `tokens`
 --
 -- Creación: 02-06-2025 a las 00:24:39
+-- Última actualización: 07-06-2025 a las 18:58:39
 --
 
 DROP TABLE IF EXISTS `tokens`;
@@ -418,8 +420,7 @@ CREATE TABLE `tokens` (
 --
 
 INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NDg4Mjc5MTR9.UNLTt1r3rqUo6UCAykWIMB4AlaDZZeLAuo31S84JXzkcwTvPkV8_ez8tlUpfrENTsHjSY9DN1kyyS605jfhPtQ', '2025-06-01 21:31:54'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NDg4MjkzODV9.P7H-NpJoYqeDLMHC1yW-gVSsY2q0RGdXODaZaX8_WdTa41lBiVOUK-4b_Eg3F4ElJ9HBXfUFIN3r8AnhHHWIMA', '2025-06-01 21:56:25');
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NDkzMjYzMTl9.yIlVIh63xXPVgwv8x7TTIvHT1GYvu80KaiDlpZMOUJc58zv7owWR_-LPzBYc2YH-UW8LGMqiv0RqOQ6A92UIeA', '2025-06-07 15:58:39');
 
 -- --------------------------------------------------------
 
@@ -622,7 +623,7 @@ ALTER TABLE `domicilio`
 -- AUTO_INCREMENT de la tabla `imagenantiguedad`
 --
 ALTER TABLE `imagenantiguedad`
-  MODIFY `imaId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `imaId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `localidad`

@@ -58,13 +58,12 @@ class Input
     public static function saveFile(PHP_FileDTO $fileDTO, string $subcarpetaEnStorage, string $id): string
     {
         $dirBase = dirname(__DIR__, 2) . '/storage';
-
         $path = $dirBase . '/' . $subcarpetaEnStorage;
         if (!is_dir($path)) {
             throw new \Model\CustomException("La carpeta de destino no existe: $path", 500);
         }
 
-        $nombreArchivo = uniqid($id . '_') . '_' . time() . '_' . pathinfo($fileDTO->name, PATHINFO_FILENAME) . '.' . explode('/', $fileDTO->type)[1];
+        $nombreArchivo = $id . '_' . time() . '_' . pathinfo($fileDTO->name, PATHINFO_FILENAME) . '.' . explode('/', $fileDTO->type)[1];
 
         if (!move_uploaded_file($fileDTO->tmp_name, $path . '/' . $nombreArchivo)) {
             throw new \Model\CustomException("Error al mover el archivo a la ubicación deseada: $path/$nombreArchivo", 500);
@@ -75,8 +74,8 @@ class Input
             throw new \Model\CustomException("El archivo no se movió correctamente a la ubicación: $path/$nombreArchivo", 500);
         }
 
-        // Retornar la ruta completa del archivo guardado
-        return $path . '/' . $nombreArchivo;
+        // Retornar la URL relativa
+        return '/storage/' . $subcarpetaEnStorage . '/' . $nombreArchivo;
     }
     
 
@@ -95,14 +94,15 @@ class Input
 
         $arrayFiles = [];
         foreach ($_FILES[$name]["error"] as $key => $error) {
+
             if ($error === UPLOAD_ERR_OK) {
                 $tmpName = $_FILES[$name]["tmp_name"][$key];
-                $name = $linkExterno->real_escape_string($_FILES[$name]["name"][$key]);
+                $nameArchivo = $linkExterno->real_escape_string($_FILES[$name]["name"][$key]);
                 $type = $_FILES[$name]["type"][$key];
                 $size = $_FILES[$name]["size"][$key];
                 $arrayFiles[] = new PHP_FileDTO([
                     'tmp_name' => $tmpName,
-                    'name' => $name,
+                    'name' => $nameArchivo,
                     'type' => $type,
                     'size' => $size
                 ]);
@@ -169,5 +169,18 @@ class Input
     public static function cadaPalabraMayuscula(string $str): string
     {
         return ucwords(strtolower($str));
+    }
+
+    /**Evalúa si es string y si está dentro del min/max, ambos incluidos */
+    public static function esStringLongitud($val, int $min, int $max): bool
+    {
+        $bool = false;
+        if (is_string($val)) {
+            $len = strlen($val);
+            if ($len === strlen(trim($val))) // Si no tiene espacios en blanco al principio o al final
+                $bool = ($len >= $min) && ($len <= $max);
+        }
+
+        return $bool;
     }
 }

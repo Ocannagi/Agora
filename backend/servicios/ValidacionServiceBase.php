@@ -116,14 +116,7 @@ abstract class ValidacionServiceBase
     /**Evalúa si es string y si está dentro del min/max, ambos incluidos */
     protected function _esStringLongitud($val, int $min, int $max): bool
     {
-        $bool = false;
-        if (is_string($val)) {
-            $len = strlen($val);
-            if ($len === strlen(trim($val))) // Si no tiene espacios en blanco al principio o al final
-                $bool = ($len >= $min) && ($len <= $max);
-        }
-
-        return $bool;
+       return Input::esStringLongitud($val, $min, $max);
     }
 
     protected function _esApellidoNombreValido(string $apellido): bool
