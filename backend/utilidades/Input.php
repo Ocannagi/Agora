@@ -52,7 +52,7 @@ class Input
      * @param PHP_FileDTO $fileDTO El objeto que contiene la información del archivo.
      * @param string $subcarpetaEnStorage La subcarpeta dentro de la carpeta de almacenamiento donde se guardará el archivo.
      * @param string $id Un identificador único para el archivo, que se usará en el nombre del archivo.
-     * @return string La ruta completa del archivo guardado.
+     * @return string La ruta relativa del archivo guardado.
      * @throws \Exception Si hay un error al mover el archivo o si la carpeta de destino no existe.
      */
     public static function saveFile(PHP_FileDTO $fileDTO, string $subcarpetaEnStorage, string $id): string

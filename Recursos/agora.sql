@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 07-06-2025 a las 21:43:58
+-- Tiempo de generación: 09-06-2025 a las 03:20:24
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -137,7 +137,7 @@ INSERT INTO `domicilio` (`domId`, `domLocId`, `domCPA`, `domCalleRuta`, `domNroK
 -- Estructura de tabla para la tabla `imagenantiguedad`
 --
 -- Creación: 07-06-2025 a las 19:40:26
--- Última actualización: 07-06-2025 a las 19:40:11
+-- Última actualización: 08-06-2025 a las 23:46:29
 --
 
 DROP TABLE IF EXISTS `imagenantiguedad`;
@@ -155,6 +155,14 @@ CREATE TABLE `imagenantiguedad` (
 --   `imaAntId`
 --       `antiguedad` -> `antId`
 --
+
+--
+-- Volcado de datos para la tabla `imagenantiguedad`
+--
+
+INSERT INTO `imagenantiguedad` (`imaId`, `imaAntId`, `imaUrl`, `imaNombreArchivo`, `imaFechaInsert`, `imaOrden`) VALUES
+(1, 3, '/storage/imagenesAntiguedad/antId3_1749426389_detalle-mesa-redonda-medieval.jpeg', 'detalle-mesa-redonda-medieval.jpg', '2025-06-08 20:46:29', 1),
+(2, 3, '/storage/imagenesAntiguedad/antId3_1749426389_tablaredonda.jpeg', 'tablaredonda.jpg', '2025-06-08 20:46:29', 2);
 
 -- --------------------------------------------------------
 
@@ -402,7 +410,7 @@ INSERT INTO `tipousuario` (`ttuTipoUsuario`, `ttuDescripcion`, `ttuRequiereMatri
 -- Estructura de tabla para la tabla `tokens`
 --
 -- Creación: 02-06-2025 a las 00:24:39
--- Última actualización: 07-06-2025 a las 18:58:39
+-- Última actualización: 08-06-2025 a las 23:08:17
 --
 
 DROP TABLE IF EXISTS `tokens`;
@@ -420,7 +428,7 @@ CREATE TABLE `tokens` (
 --
 
 INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NDkzMjYzMTl9.yIlVIh63xXPVgwv8x7TTIvHT1GYvu80KaiDlpZMOUJc58zv7owWR_-LPzBYc2YH-UW8LGMqiv0RqOQ6A92UIeA', '2025-06-07 15:58:39');
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NDk0Mjc2OTd9.5f3y7G-TKmIwxmh-rW_6GVrv09Z7L6VfGennDoWpy43x_PQuSBuC1lN0S4ghSe-B3BjpyGjQ9YEFeYXjXFxJ3g', '2025-06-08 20:08:17');
 
 -- --------------------------------------------------------
 

@@ -63,7 +63,7 @@ class ImagenesAntiguedadController extends BaseController
                 $mysqli->close(); // Cerrar la conexión a la base de datos
             }
             if ($th instanceof Model\CustomException) {
-                Output::outputError($th->getHttpStatusCode(), "Error al obtener las imágenes de antigüedad: " . $th->getMessage() . " - " . $th->getFile() . ":" . $th->getLine());
+                Output::outputError($th->getCode(), "Error al obtener las imágenes de antigüedad: " . $th->getMessage() . " - " . $th->getFile() . ":" . $th->getLine());
             } elseif ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             }
@@ -138,8 +138,9 @@ class ImagenesAntiguedadController extends BaseController
 
             if (!empty($imagenesAntiguedadDTOs) && count($imagenesAntiguedadDTOs) > 0) {
                 foreach ($imagenesAntiguedadDTOs as $imagen) {
-                    if (file_exists($imagen->imaUrl)) {
-                        unlink($imagen->imaUrl); // Eliminar el archivo si existe
+                    $absolutePath = dirname(__DIR__, 2) . $imagen->imaUrl;
+                    if (file_exists($absolutePath)) {
+                        unlink($absolutePath); // Eliminar el archivo si existe
                     }
                 }
             }
@@ -149,7 +150,7 @@ class ImagenesAntiguedadController extends BaseController
             }
 
             if ($th instanceof Model\CustomException) {
-                Output::outputError($th->getHttpStatusCode(), "Error al guardar las imágenes de antigüedad: " . $th->getMessage() . " - " . $th->getFile() . ":" . $th->getLine());
+                Output::outputError($th->getCode(), "Error al guardar las imágenes de antigüedad: " . $th->getMessage() . " - " . $th->getFile() . ":" . $th->getLine());
             } elseif ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
@@ -188,7 +189,6 @@ class ImagenesAntiguedadController extends BaseController
             }
 
             return parent::patch($query, $mysqli);
-
         } catch (\Throwable $th) {
             if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
                 $mysqli->close(); // Cerrar la conexión a la base de datos
@@ -202,5 +202,114 @@ class ImagenesAntiguedadController extends BaseController
             }
         }
     }
+
+    public function deleteImagenesAntiguedad($id)
+    {
+        $mysqli = $this->dbConnection->conectarBD();
+        try {
+            $mysqli->begin_transaction(); // Iniciar transacción
+
+            settype($id, 'int');
+            $claimDTO = $this->securityService->requireLogin(['ST', 'UG', 'UA']);
+
+            $imagenAntiguedadDTO = $this->_obtenerImagenAntiguedadDTO(imaId:$id, claimDTO:$claimDTO, mysqli:$mysqli);
+
+            if(Querys::obtenerCount(
+                link: $mysqli,
+                base: 'imagenantiguedad',
+                where: "imaAntId = {$imagenAntiguedadDTO->antId}",
+                msg: 'obtener el número de imágenes de antigüedad'
+            ) <= 1) {
+                throw new Model\CustomException(httpStatusCode:404, message:"No se puede eliminar la última imagen de antigüedad. Debe haber al menos una imagen asociada a la antigüedad.");
+            }
+
+            $this->_eliminarImagenAntiguedadBD($imagenAntiguedadDTO, $mysqli); // Eliminar la imagen de la base de datos
+
+            $this->_reordenarImagenesAntiguedad($imagenAntiguedadDTO, $mysqli); // Reordenar las imágenes restantes
+
+            $this->_eliminarArchivoStorage($imagenAntiguedadDTO->imaUrl); // Eliminar el archivo del sistema de archivos
+
+            $mysqli->commit(); // Confirmar transacción
+
+            $mysqli->close(); // Cerrar la conexión a la base de datos
+
+            Output::outputJson([], 204); // Retornar 204 No Content si la eliminación fue exitosa
+
+        } catch (\Throwable $th) {
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                $mysqli->rollback(); // Revertir transacción si hay error
+                $mysqli->close(); // Cerrar la conexión a la base de datos
+            }
+            // Manejo de excepciones
+            if ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof Model\CustomException) {
+                Output::outputError($th->getCode(), $th->getMessage());
+            } elseif ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
+    }
+
+    private function _obtenerImagenAntiguedadDTO(int $imaId, ClaimDTO $claimDTO, mysqli $mysqli): ImagenAntiguedadDTO
+    {
+        $query = "SELECT imaId, imaUrl, imaAntId, imaOrden, imaNombreArchivo FROM imagenantiguedad WHERE imaId = $imaId";
+
+        if ($claimDTO->usrTipoUsuario !== 'ST') {
+            $query .= " AND EXISTS (SELECT 1 FROM antiguedad WHERE antId = imaAntId AND antUsrId = {$claimDTO->usrId})";
+        }
+
+        $resultado = $mysqli->query($query);
+        if (!$resultado) {
+            throw new mysqli_sql_exception("Error al buscar la imagen de antigüedad: " . $mysqli->error);
+        }
+
+        if ($resultado->num_rows === 0) {
+            $msg = "No se encontró una imagen de antigüedad con ID: $imaId.";
+            if ($claimDTO->usrTipoUsuario !== 'ST') {
+                $msg .= " Asegúrese de que la imagen pertenece a una antigüedad del usuario con ID: {$claimDTO->usrId}.";
+            }
+            throw new Model\CustomException($msg, 404);
+        }
+
+        $imagenAntiguedadDTO = new ImagenAntiguedadDTO(mysqli_fetch_assoc($resultado));
+        $resultado->free_result();
+        return $imagenAntiguedadDTO;
+    }
+
+    private function _eliminarArchivoStorage(string $filePath): void
+    {
+        $absolutePath = dirname(__DIR__, 2) . $filePath;
+
+        if (file_exists($absolutePath)) {
+            if (!unlink($absolutePath)) {
+                throw new Model\CustomException("Error al eliminar el archivo: $filePath", 500);
+            }
+        } else {
+            throw new Model\CustomException("El archivo no existe: $filePath", 404);
+        }
+    }
+
+    private function _eliminarImagenAntiguedadBD(ImagenAntiguedadDTO $imagenAntiguedadDTO, mysqli $mysqli): void
+    {
+        $query = "DELETE FROM imagenantiguedad WHERE imaId = {$imagenAntiguedadDTO->imaId}";
+        if (!$mysqli->query($query)) {
+            throw new mysqli_sql_exception("Error al eliminar la imagen de antigüedad: " . $mysqli->error);
+        }
+        if ($mysqli->affected_rows === 0) {
+            throw new Model\CustomException(404, "No se encontró la imagen de antigüedad con ID: {$imagenAntiguedadDTO->imaId}");
+        }
+    }
+
+    private function _reordenarImagenesAntiguedad(ImagenAntiguedadDTO $imagenAntiguedadDTO, mysqli $mysqli): void
+    {
+        if ($this->imagenesAntiguedadValidacionService::MAX_FILES != $imagenAntiguedadDTO->imaOrden) {
+            $query = "UPDATE imagenantiguedad SET imaOrden = imaOrden - 1 WHERE imaOrden > {$imagenAntiguedadDTO->imaOrden} AND imaAntId = {$imagenAntiguedadDTO->antId}";
+            if (!$mysqli->query($query)) {
+                throw new mysqli_sql_exception("Error al actualizar el orden de las imágenes de antigüedad: " . $mysqli->error);
+            }
+        }
+    }
 }
-            

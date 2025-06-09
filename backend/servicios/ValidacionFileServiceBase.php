@@ -9,6 +9,8 @@ define('MAX_LONG_NOMBRE_ARCHIVO', 50); // Longitud máxima del nombre del archiv
 
 abstract class ValidacionFileServiceBase
 {
+    public const MAX_FILE_SIZE = 0;
+    public const MAX_FILES = 0;
 
     /**
      * Valida los archivos y que el ID de la entidad relacionada exista en la base de datos.

@@ -265,10 +265,14 @@ class AntiguedadesController extends BaseController
 
     public function deleteAntiguedades($id)
     {
-        $this->securityService->requireLogin(tipoUsurio: ['ST', 'UG', 'UA']);
+        $claimDTO = $this->securityService->requireLogin(tipoUsurio: ['ST', 'UG', 'UA']);
         settype($id, 'integer');
 
         $queryBusqueda = "SELECT antId FROM antiguedad WHERE antId = $id AND antTipoEstado <> 'RN'";
+        
+        if ($claimDTO->usrTipoUsuario !== 'ST') {
+            $queryBusqueda .= " AND antUsrId = {$claimDTO->usrId}";
+        }
 
         $queryBajaLogica = "UPDATE antiguedad SET antTipoEstado = 'RN', antFechaEstado = NOW() WHERE antId = $id";
 

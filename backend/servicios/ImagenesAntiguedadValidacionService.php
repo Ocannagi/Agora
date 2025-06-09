@@ -13,9 +13,12 @@ class ImagenesAntiguedadValidacionService extends ValidacionFileServiceBase
 {
     private static $instancia = null;
 
+    public const MAX_FILE_SIZE = MAX_FILE_SIZE;
+    public const MAX_FILES = MAX_FILES;
+
     private function __construct() {}
 
-    public static function getInstancia()
+    public static function getInstancia(): ImagenesAntiguedadValidacionService
     {
         if (self::$instancia === null) {
             self::$instancia = new self();

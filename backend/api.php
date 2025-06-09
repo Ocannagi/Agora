@@ -40,13 +40,19 @@ spl_autoload_register(function ($className) {
                         if (file_exists($file)) {
                             require_once $file;
                         } else {
-                            $baseDir = __DIR__;
-                            $file = $baseDir . str_replace('\\', '/', $className) . '.php';
+                            $baseDir = __DIR__ . '/model/';
+                            $file = $baseDir . str_replace('Model', '', str_replace('\\', '/', $className)) . '.php';
                             if (file_exists($file)) {
                                 require_once $file;
                             } else {
-                                // Si no existe, lanza el outputError
-                                Output::outputError(500, "No se encontró la clase $className");
+                                $baseDir = __DIR__;
+                                $file = $baseDir . str_replace('\\', '/', $className) . '.php';
+                                if (file_exists($file)) {
+                                    require_once $file;
+                                } else {
+                                    // Si no existe, lanza el outputError
+                                    Output::outputError(500, "No se encontró la clase $className");
+                                }
                             }
                         }
                     }
