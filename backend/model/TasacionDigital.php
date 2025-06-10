@@ -2,7 +2,7 @@
 
 use Utilidades\Obligatorio;
 
-class Tasacion extends ClassBase
+class TasacionDigital extends ClassBase
 {
     private int $tasId;
     #[Obligatorio]
@@ -21,7 +21,7 @@ class Tasacion extends ClassBase
 
     public static function fromCreacionDTO(ICreacionDTO $dto): self
     {
-        if (!$dto instanceof TasacionCreacionDTO) {
+        if (!$dto instanceof TasacionDigitalCreacionDTO) {
             throw new InvalidArgumentException("El DTO proporcionado no es del tipo correcto.");
         }
 
