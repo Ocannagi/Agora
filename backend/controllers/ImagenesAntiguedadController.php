@@ -36,38 +36,35 @@ class ImagenesAntiguedadController extends BaseController
 
     public function getImagenesAntiguedadByParams(array $params)
     {
-        if (is_array($params)) {
-            if (array_key_exists('antId', $params) && is_numeric($params['antId'])) {
-                $antId = (int)$params['antId'];
-                return $this->getImagenesAntiguedadByAntId($antId);
+        try {
+            if (is_array($params)) {
+                if (array_key_exists('antId', $params) && is_numeric($params['antId'])) {
+                    $antId = (int)$params['antId'];
+                    return $this->getImagenesAntiguedadByAntId($antId);
+                } else {
+                    throw new InvalidArgumentException(code: 400, message: 'El parámetro antId es obligatorio y debe ser un número entero.');
+                }
             } else {
-                Output::outputError(400, 'El parámetro antId es obligatorio y debe ser un número entero.');
+                throw new InvalidArgumentException(code: 400, message: 'Parámetros inválidos. Se esperaba un array con el parámetro "antId".');
             }
-        } else {
-            Output::outputError(400, 'Parámetros inválidos. Se esperaba un array con el parámetro "antId".');
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof Model\CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
         }
     }
 
-
     private function getImagenesAntiguedadByAntId(int $antId)
     {
-        $mysqli = $this->dbConnection->conectarBD();
-        try {
-            $this->securityService->requireLogin(tipoUsurio: null);
-
-            $query = "SELECT imaId, imaUrl, imaAntId, imaOrden, imaNombreArchivo FROM imagenantiguedad WHERE imaAntId = $antId ORDER BY imaOrden";
-
-            return parent::get($query, ImagenAntiguedadDTO::class);
-        } catch (\Throwable $th) {
-            if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
-                $mysqli->close(); // Cerrar la conexión a la base de datos
-            }
-            if ($th instanceof Model\CustomException) {
-                Output::outputError($th->getCode(), "Error al obtener las imágenes de antigüedad: " . $th->getMessage() . " - " . $th->getFile() . ":" . $th->getLine());
-            } elseif ($th instanceof InvalidArgumentException) {
-                Output::outputError(400, $th->getMessage());
-            }
-        }
+        $this->securityService->requireLogin(tipoUsurio: null);
+        $query = "SELECT imaId, imaUrl, imaAntId, imaOrden, imaNombreArchivo FROM imagenantiguedad WHERE imaAntId = $antId ORDER BY imaOrden";
+        return parent::get($query, ImagenAntiguedadDTO::class);
     }
 
     /** FIN DE SECCION */
@@ -75,11 +72,23 @@ class ImagenesAntiguedadController extends BaseController
 
     public function getImagenesAntiguedadById($id)
     {
-        settype($id, 'int');
-        $this->securityService->requireLogin(tipoUsurio: null);
+        try {
+            settype($id, 'int');
+            $this->securityService->requireLogin(tipoUsurio: null);
 
-        $query = "SELECT imaId, imaUrl, imaAntId, imaOrden, imaNombreArchivo FROM imagenantiguedad WHERE imaId = $id ORDER BY imaOrden";
-        return parent::getById($query, ImagenAntiguedadDTO::class);
+            $query = "SELECT imaId, imaUrl, imaAntId, imaOrden, imaNombreArchivo FROM imagenantiguedad WHERE imaId = $id ORDER BY imaOrden";
+            return parent::getById($query, ImagenAntiguedadDTO::class);
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof Model\CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
     }
 
     public function postImagenesAntiguedad()
@@ -145,10 +154,6 @@ class ImagenesAntiguedadController extends BaseController
                 }
             }
 
-            if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
-                $mysqli->close(); // Cerrar la conexión a la base de datos
-            }
-
             if ($th instanceof Model\CustomException) {
                 Output::outputError($th->getCode(), "Error al guardar las imágenes de antigüedad: " . $th->getMessage() . " - " . $th->getFile() . ":" . $th->getLine());
             } elseif ($th instanceof InvalidArgumentException) {
@@ -157,6 +162,10 @@ class ImagenesAntiguedadController extends BaseController
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
+                $mysqli->close(); // Cerrar la conexión a la base de datos
             }
         }
     }
@@ -190,15 +199,18 @@ class ImagenesAntiguedadController extends BaseController
 
             return parent::patch($query, $mysqli);
         } catch (\Throwable $th) {
-            if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
-                $mysqli->close(); // Cerrar la conexión a la base de datos
-            }
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } elseif ($th instanceof Model\CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
+                $mysqli->close(); // Cerrar la conexión a la base de datos
             }
         }
     }
@@ -212,15 +224,15 @@ class ImagenesAntiguedadController extends BaseController
             settype($id, 'int');
             $claimDTO = $this->securityService->requireLogin(['ST', 'UG', 'UA']);
 
-            $imagenAntiguedadDTO = $this->_obtenerImagenAntiguedadDTO(imaId:$id, claimDTO:$claimDTO, mysqli:$mysqli);
+            $imagenAntiguedadDTO = $this->_obtenerImagenAntiguedadDTO(imaId: $id, claimDTO: $claimDTO, mysqli: $mysqli);
 
-            if(Querys::obtenerCount(
+            if (Querys::obtenerCount(
                 link: $mysqli,
                 base: 'imagenantiguedad',
                 where: "imaAntId = {$imagenAntiguedadDTO->antId}",
                 msg: 'obtener el número de imágenes de antigüedad'
             ) <= 1) {
-                throw new Model\CustomException(httpStatusCode:404, message:"No se puede eliminar la última imagen de antigüedad. Debe haber al menos una imagen asociada a la antigüedad.");
+                throw new Model\CustomException(code: 404, message: "No se puede eliminar la última imagen de antigüedad. Debe haber al menos una imagen asociada a la antigüedad.");
             }
 
             $this->_eliminarImagenAntiguedadBD($imagenAntiguedadDTO, $mysqli); // Eliminar la imagen de la base de datos
@@ -231,14 +243,11 @@ class ImagenesAntiguedadController extends BaseController
 
             $mysqli->commit(); // Confirmar transacción
 
-            $mysqli->close(); // Cerrar la conexión a la base de datos
-
             Output::outputJson([], 204); // Retornar 204 No Content si la eliminación fue exitosa
 
         } catch (\Throwable $th) {
             if (isset($mysqli) && $mysqli instanceof mysqli) {
                 $mysqli->rollback(); // Revertir transacción si hay error
-                $mysqli->close(); // Cerrar la conexión a la base de datos
             }
             // Manejo de excepciones
             if ($th instanceof InvalidArgumentException) {
@@ -249,6 +258,10 @@ class ImagenesAntiguedadController extends BaseController
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
+                $mysqli->close(); // Cerrar la conexión a la base de datos
             }
         }
     }

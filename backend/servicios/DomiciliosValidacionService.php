@@ -1,6 +1,6 @@
 <?php
 
-use Utilidades\Output;
+use Model\CustomException;
 use Utilidades\Input;
 
 class DomiciliosValidacionService extends ValidacionServiceBase
@@ -22,7 +22,7 @@ class DomiciliosValidacionService extends ValidacionServiceBase
     public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $domicilio)
     {
         if (!($domicilio instanceof DomicilioCreacionDTO) && !($domicilio instanceof DomicilioDTO)) {
-            Output::outputError(500, 'Error interno: el DTO proporcionado no es del tipo correcto.');
+            throw new CustomException(code: 500, message: 'Error interno: el DTO proporcionado no es del tipo correcto.');
         }
 
         $this->validarDatosObligatorios(classModelName: 'Domicilio', datos: get_object_vars($domicilio));
@@ -46,15 +46,15 @@ class DomiciliosValidacionService extends ValidacionServiceBase
     private function validarDatoIdLocalidad(mysqli $linkExterno, LocalidadDTO $localidad)
     {
         if (!isset($localidad->locId)) {
-            Output::outputError(400, 'El id de la localidad no fue proporcionado.');
+            throw new InvalidArgumentException(message: 'El id de la localidad no fue proporcionado.');
         }
 
         if ($localidad->locId <= 0) {
-            Output::outputError(400, 'El id de la localidad no es válido.');
+            throw new InvalidArgumentException(message: 'El id de la localidad no es válido.');
         }
 
         if (!$this->existeLocalidad($localidad->locId, $linkExterno)) {
-            Output::outputError(409, 'La localidad con ID ' . $localidad->locId . ' no existe.');
+            throw new CustomException(code: 409, message: 'La localidad con ID ' . $localidad->locId . ' no existe.');
         }
     }
 
@@ -66,10 +66,10 @@ class DomiciliosValidacionService extends ValidacionServiceBase
     private function validarCPA(string $CPA)
     {
         if (!$this->_esStringLongitud($CPA, 8, 8))
-            Output::outputError(400, 'El CPA debe ser un string de 8 caracteres');
+            throw new InvalidArgumentException(message: 'El CPA debe ser un string de 8 caracteres');
 
         if(!$this->validarFormatoCPA($CPA))
-            Output::outputError(400, 'El CPA no tiene el formato correcto. Debe ser una letra mayúscula seguida de 4 dígitos y 3 letras mayúsculas.');
+            throw new InvalidArgumentException(message: 'El CPA no tiene el formato correcto. Debe ser una letra mayúscula seguida de 4 dígitos y 3 letras mayúsculas.');
     }
 
     private function validarFormatoCPA(string $CPA) : bool
@@ -80,17 +80,17 @@ class DomiciliosValidacionService extends ValidacionServiceBase
     private function validarCalleRuta(string $calleRuta)
     {
         if (!$this->_esStringLongitud($calleRuta, 1, 50)) {
-            Output::outputError(400, 'La Calle-Ruta debe ser un string de al menos un caracter y un máximo de 50.');
+            throw new InvalidArgumentException(message: 'La Calle-Ruta debe ser un string de al menos un caracter y un máximo de 50.');
         }
     }
 
     private function validarNroKm(int $nroKm)
     {
         if ($nroKm < 0) {
-            Output::outputError(400, 'El número de km debe ser un valor positivo.');
+            throw new InvalidArgumentException(message: 'El número de km debe ser un valor positivo.');
         }
         if ($nroKm > 12000) {
-            Output::outputError(400, 'El número de NroKm no puede ser mayor a 12000.');
+            throw new InvalidArgumentException(message: 'El número de NroKm no puede ser mayor a 12000.');
         }
     }
 
@@ -99,11 +99,11 @@ class DomiciliosValidacionService extends ValidacionServiceBase
         if (Input::esNotNullVacioBlanco($piso)) {
 
             if (!$this->_esStringLongitud($piso, 1, 10)) {
-                Output::outputError(400, 'El Piso debe ser un string de al menos un caracter y un máximo de 10.');
+                throw new InvalidArgumentException(message: 'El Piso debe ser un string de al menos un caracter y un máximo de 10.');
             }
 
             if (!$this->_esDigitoNegativoOPositivo($piso) && !$this->_esLetraSinTilde($piso) && !$this->_esAlfaNumerico($piso)) {
-                Output::outputError(400, 'El Piso debe ser un número entero o un string alfanumérico sin espacios en blanco ni caracteres especiales.');
+                throw new InvalidArgumentException(message: 'El Piso debe ser un número entero o un string alfanumérico sin espacios en blanco ni caracteres especiales.');
             }
         }
     }
@@ -113,11 +113,11 @@ class DomiciliosValidacionService extends ValidacionServiceBase
         if (Input::esNotNullVacioBlanco($depto)) {
 
             if (!$this->_esStringLongitud($depto, 1, 10)) {
-                Output::outputError(400, 'El Depto debe ser un string de al menos un caracter y un máximo de 10.');
+                throw new InvalidArgumentException(message: 'El Depto debe ser un string de al menos un caracter y un máximo de 10.');
             }
 
             if (!$this->_esDigitoNegativoOPositivo($depto) && !$this->_esLetraSinTilde($depto) && !$this->_esAlfaNumerico($depto)) {
-                Output::outputError(400, 'El Depto debe ser un número entero o un string alfanumérico sin espacios en blanco ni caracteres especiales.');
+                throw new InvalidArgumentException(message: 'El Depto debe ser un número entero o un string alfanumérico sin espacios en blanco ni caracteres especiales.');
             }
         }
     }
@@ -125,7 +125,7 @@ class DomiciliosValidacionService extends ValidacionServiceBase
     private function validarExisteDomicilioModificar(int $domId, mysqli $linkExterno)
     {
         if (!$this->_existeEnBD(link: $linkExterno, query: "SELECT 1 FROM domicilio WHERE domId = $domId AND domFechaBaja IS NULL", msg: 'obtener un domicilio por id para modificar')) {
-            Output::outputError(409, 'El domicilio a modificar no existe.');
+            throw new CustomException(code: 409, message: 'El domicilio a modificar no existe.');
         }
     }
 
@@ -141,7 +141,7 @@ class DomiciliosValidacionService extends ValidacionServiceBase
         }
 
         if ($this->_existeEnBD(link: $linkExterno, query: $query, msg: 'verificar si el domicilio ya fue registrado')) {
-            Output::outputError(409, 'El domicilio ya fue registrado.');
+            throw new CustomException(code: 409, message: 'El domicilio ya fue registrado.');
         }
     }
 }

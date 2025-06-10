@@ -606,7 +606,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\r\n}",
+							"raw": "{\r\n    \"usrDni\": \"13355922\",\r\n    \"usrApellido\": \"Recondo\",\r\n    \"usrNombre\": \"Adriana Mariel\",\r\n    \"usrRazonSocialFantasia\": null,\r\n    \"usrCuitCuil\": null,\r\n    \"usrTipoUsuario\": \"UG\",\r\n    \"usrMatricula\": null,\r\n    \"usrDomicilio\": 1,\r\n    \"usrFechaNacimiento\": \"1959-07-09\",\r\n    \"usrDescripcion\": \"\",\r\n    \"usrScoring\": 0,\r\n    \"usrEmail\": \"recondomariel@uol.com\",\r\n    \"usrPassword\": \"R3c0nd0&\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1528,7 +1528,7 @@
 					"response": []
 				},
 				{
-					"name": "PostPeriodos",
+					"name": "postPeriodos",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -1641,7 +1641,7 @@
 					]
 				},
 				{
-					"name": "PatchPeriodos",
+					"name": "patchPeriodos",
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -1775,7 +1775,7 @@
 					]
 				},
 				{
-					"name": "DeletePeriodos",
+					"name": "deletePeriodos",
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -1971,7 +1971,7 @@
 					"response": []
 				},
 				{
-					"name": "PostCategorias",
+					"name": "postCategorias",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -2084,7 +2084,7 @@
 					]
 				},
 				{
-					"name": "PatchCategorias",
+					"name": "patchCategorias",
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -2218,7 +2218,7 @@
 					]
 				},
 				{
-					"name": "DeleteCategorias",
+					"name": "deleteCategorias",
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -2418,7 +2418,7 @@
 					"response": []
 				},
 				{
-					"name": "PostSubcategorias",
+					"name": "postSubcategorias",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -2430,7 +2430,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"categoria\" : {\r\n        \"catId\" : 3\r\n    },\r\n    \"scatDescripcion\" : \"Vitrina\"\r\n}",
+							"raw": "{\r\n    \"categoria\" : {\r\n        \"catId\" : 3\r\n    },\r\n    \"scatDescripcion\" : \"Mesas\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2531,7 +2531,7 @@
 					]
 				},
 				{
-					"name": "PatchSubcategorias",
+					"name": "patchSubcategorias",
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -2665,7 +2665,7 @@
 					]
 				},
 				{
-					"name": "DeleteSubcategorias",
+					"name": "deleteSubcategorias",
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -2931,7 +2931,7 @@
 					"response": []
 				},
 				{
-					"name": "PostLocalidades",
+					"name": "postLocalidades",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -3044,7 +3044,7 @@
 					]
 				},
 				{
-					"name": "PatchLocalidades",
+					"name": "patchLocalidades",
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -3178,7 +3178,7 @@
 					]
 				},
 				{
-					"name": "DeleteLocalidades",
+					"name": "deleteLocalidades",
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -3306,7 +3306,7 @@
 					"response": []
 				},
 				{
-					"name": "PostDomicilios",
+					"name": "postDomicilios",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -3419,7 +3419,7 @@
 					]
 				},
 				{
-					"name": "PatchDomicilios",
+					"name": "patchDomicilios",
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -3458,7 +3458,7 @@
 					"response": []
 				},
 				{
-					"name": "DeleteDomicilios",
+					"name": "deleteDomicilios",
 					"request": {
 						"method": "DELETE",
 						"header": [
@@ -3481,6 +3481,639 @@
 								{
 									"key": "id",
 									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Habilidades",
+			"item": [
+				{
+					"name": "habilidadesByUserId",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Habilidades&params[usrId]=4",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Habilidades&params[usrId]=4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "habilidadesById",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Habilidades/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Habilidades",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "postHabilidades",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"usrId\" : 3,\r\n    \"perId\" : 3,\r\n    \"scatId\" : 8\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/Habilidades",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Habilidades"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Fail_HabilidadYaExistente",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrId\" : 3,\r\n    \"perId\" : 3,\r\n    \"scatId\" : 8\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Habilidades",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Habilidades"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "deleteHabilidades",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Habilidades/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Habilidades",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Antiguedades",
+			"item": [
+				{
+					"name": "getAntiguedades",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an array with an object that have a property \"antId\" that is a \"number\"`, function () {\r",
+									"    pm.expect(jsonData[0]).to.have.own.property('antId').that.is.a('number');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Antiguedades",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Antiguedades"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAntiguedadesById",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Antiguedades/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Antiguedades",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAntiguedadesByUserId",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Antiguedades&params[usrId]=4",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Antiguedades&params[usrId]=4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAntiguedadesByCatId",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Antiguedades&params[catId]=3",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Antiguedades&params[catId]=3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAntiguedadesByDescripcion",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Antiguedades&params[antDescripcion]=circa",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Antiguedades&params[antDescripcion]=circa"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "postAntiguedades",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"perId\": 4,\r\n    \"scatId\": 8,\r\n    \"antDescripcion\": \"Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C.\",\r\n    \"usrId\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/Antiguedades",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Antiguedades"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "AntiguedadYaExistenteMismoUsuario",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"perId\": 4,\r\n    \"scatId\": 8,\r\n    \"antDescripcion\": \"Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C.\",\r\n    \"usrId\": 2\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Antiguedades",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Antiguedades"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "patchAntiguedades",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"perId\": 4,\r\n    \"scatId\": 8,\r\n    \"antDescripcion\": \"Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C.\",\r\n    \"usrId\": 2,\r\n    \"tipoEstado\": \"RD\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/Antiguedades/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Antiguedades",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteAntiguedades",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Antiguedades/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Antiguedades",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ImagenesAntiguedad",
+			"item": [
+				{
+					"name": "getImagenesAntiguedadById",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/ImagenesAntiguedad/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"ImagenesAntiguedad",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getImagenesAntiguedadByAntId",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/ImagenesAntiguedad&params[antId]=3",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"ImagenesAntiguedad&params[antId]=3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "postImagenesAntiguedad",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "antId",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "imagenesAntiguedad[]",
+									"type": "file",
+									"src": "/C:/Users/nicoi/OneDrive/Escritorio/AuxAgora/detalle-mesa-redonda-medieval.jpg"
+								},
+								{
+									"key": "imagenesAntiguedad[]",
+									"type": "file",
+									"src": "/C:/Users/nicoi/OneDrive/Escritorio/AuxAgora/tablaredonda.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/ImagenesAntiguedad",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"ImagenesAntiguedad"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patchImagenesAntiguedad",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"antId\": 3,\r\n    \"imagenesAntiguedadOrden\": [\r\n        {\r\n            \"imaId\": 1,\r\n            \"imaOrden\": 1\r\n\r\n        },\r\n        {\r\n            \"imaId\": 2,\r\n            \"imaOrden\": 2\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/ImagenesAntiguedad",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"ImagenesAntiguedad"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteImagenesAntiguedad",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/ImagenesAntiguedad/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"ImagenesAntiguedad",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
 								}
 							]
 						}

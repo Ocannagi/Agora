@@ -2,6 +2,7 @@
 
 use Utilidades\Output;
 use Utilidades\Input;
+use Model\CustomException;
 
 class SubcategoriasController extends BaseController
 {
@@ -32,49 +33,71 @@ class SubcategoriasController extends BaseController
 
     public function getSubcategorias()
     {
-        $this->securityService->requireLogin(null);
+        try {
+            $this->securityService->requireLogin(null);
 
-        $query =   "SELECT scatId, catId, catDescripcion, scatDescripcion
+            $query =   "SELECT scatId, catId, catDescripcion, scatDescripcion
                     FROM subcategoria
                     INNER JOIN categoria ON scatCatId = catId
                     WHERE scatFechaBaja is NULL
                     ORDER BY scatId";
 
 
-        return parent::get(query: $query, classDTO: "SubcategoriaDTO");
+            return parent::get(query: $query, classDTO: "SubcategoriaDTO");
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
     }
 
     public function getSubcategoriasById($id)
     {
-        settype($id, 'integer');
-        $this->securityService->requireLogin(null);
+        try {
+            settype($id, 'integer');
+            $this->securityService->requireLogin(null);
 
-        $query =   "SELECT scatId, catId, catDescripcion, scatDescripcion
+            $query =   "SELECT scatId, catId, catDescripcion, scatDescripcion
                     FROM subcategoria
                     INNER JOIN categoria ON scatCatId = catId
                     WHERE scatId = $id AND scatFechaBaja is NULL";
 
-        return parent::getById(query: $query, classDTO: "SubcategoriaDTO");
+            return parent::getById(query: $query, classDTO: "SubcategoriaDTO");
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
     }
 
     public function postSubcategorias()
     {
+        $mysqli = $this->dbConnection->conectarBD();
         try {
             $this->securityService->requireLogin(tipoUsurio: ['ST']);
 
-            $mysqli = $this->dbConnection->conectarBD();
             $data = Input::getArrayBody(msgEntidad: "la subcategoría");
 
             $this->subcategoriasValidacionService->validarType(className: "SubcategoriaCreacionDTO", datos: $data);
-            if(array_key_exists('categoria', $data)) {
+            if (array_key_exists('categoria', $data)) {
                 $this->subcategoriasValidacionService->validarType(className: "CategoriaDTO", datos: $data['categoria']);
             }
 
             $subcategoriaCreacionDTO = new SubcategoriaCreacionDTO($data);
 
-            $this->subcategoriasValidacionService->validarInput($mysqli,$subcategoriaCreacionDTO);
-
-
+            $this->subcategoriasValidacionService->validarInput($mysqli, $subcategoriaCreacionDTO);
 
             $subcategoriaCreacionDTO->scatDescripcion = Input::cadaPalabraMayuscula($subcategoriaCreacionDTO->scatDescripcion);
 
@@ -85,39 +108,44 @@ class SubcategoriasController extends BaseController
 
             $query =   "INSERT INTO subcategoria (scatCatId, scatDescripcion)
                         VALUES ($catId, $subcategoriaCreacionDTO->scatDescripcion)";
-            
-            return parent::post(query: $query, link: $mysqli);
 
+            return parent::post(query: $query, link: $mysqli);
         } catch (\Throwable $th) {
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                $mysqli->close();
             }
         }
     }
 
     public function patchSubcategorias($id)
     {
+        $mysqli = $this->dbConnection->conectarBD();
         try {
             $this->securityService->requireLogin(tipoUsurio: ['ST']);
             settype($id, 'integer');
 
-            $mysqli = $this->dbConnection->conectarBD();
             $data = Input::getArrayBody(msgEntidad: "la subcategoría");
 
             $data['scatId'] = $id;
 
             $this->subcategoriasValidacionService->validarType(className: "SubcategoriaDTO", datos: $data);
-            if(array_key_exists('categoria', $data)) {
+            if (array_key_exists('categoria', $data)) {
                 $this->subcategoriasValidacionService->validarType(className: "CategoriaDTO", datos: $data['categoria']);
             }
 
             $subcategoriaDTO = new SubcategoriaDTO($data);
 
-            $this->subcategoriasValidacionService->validarInput($mysqli,$subcategoriaDTO);
+            $this->subcategoriasValidacionService->validarInput($mysqli, $subcategoriaDTO);
 
             $subcategoriaDTO->scatDescripcion = Input::cadaPalabraMayuscula($subcategoriaDTO->scatDescripcion);
 
@@ -132,14 +160,19 @@ class SubcategoriasController extends BaseController
                         WHERE scatId = $id AND scatFechaBaja IS NULL";
 
             return parent::patch(query: $query, link: $mysqli);
-
         } catch (\Throwable $th) {
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                $mysqli->close();
             }
         }
     }
@@ -150,22 +183,21 @@ class SubcategoriasController extends BaseController
             $this->securityService->requireLogin(tipoUsurio: ['ST']);
             settype($id, 'integer');
 
-            $mysqli = $this->dbConnection->conectarBD();
-
             $queryBusqueda =   "SELECT 1 FROM subcategoria
                                 WHERE scatId = $id AND scatFechaBaja IS NULL";
-            
+
             $queryBajaLogica =   "UPDATE subcategoria
                                   SET scatFechaBaja = CURRENT_TIMESTAMP()
                                   WHERE scatId = $id";
 
             return parent::delete(queryBusqueda: $queryBusqueda, queryBajaLogica: $queryBajaLogica);
-
         } catch (\Throwable $th) {
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }

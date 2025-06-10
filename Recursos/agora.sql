@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 09-06-2025 a las 03:20:24
+-- Tiempo de generación: 09-06-2025 a las 23:37:53
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -137,7 +137,6 @@ INSERT INTO `domicilio` (`domId`, `domLocId`, `domCPA`, `domCalleRuta`, `domNroK
 -- Estructura de tabla para la tabla `imagenantiguedad`
 --
 -- Creación: 07-06-2025 a las 19:40:26
--- Última actualización: 08-06-2025 a las 23:46:29
 --
 
 DROP TABLE IF EXISTS `imagenantiguedad`;
@@ -347,6 +346,63 @@ INSERT INTO `subcategoria` (`scatId`, `scatCatId`, `scatDescripcion`, `scatFecha
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `tasacion`
+--
+-- Creación: 09-06-2025 a las 03:15:11
+--
+
+DROP TABLE IF EXISTS `tasacion`;
+CREATE TABLE `tasacion` (
+  `tasId` int(10) UNSIGNED NOT NULL,
+  `tasUsrTasador` int(10) UNSIGNED NOT NULL,
+  `tasUsrPropietario` int(10) UNSIGNED NOT NULL,
+  `tasAntId` int(10) UNSIGNED NOT NULL,
+  `tasFechaSolicitud` datetime NOT NULL DEFAULT current_timestamp(),
+  `tasFechaTasProviRealizada` datetime DEFAULT NULL,
+  `tasObservacionesProv` varchar(500) DEFAULT NULL,
+  `tasPrecioProvisoria` decimal(15,2) UNSIGNED DEFAULT NULL,
+  `tasTisId` int(10) UNSIGNED DEFAULT NULL,
+  `tasFechaBaja` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `tasacion`:
+--   `tasUsrPropietario`
+--       `usuario` -> `usrId`
+--   `tasAntId`
+--       `antiguedad` -> `antId`
+--   `tasTisId`
+--       `tasacioninsitu` -> `tisId`
+--   `tasUsrTasador`
+--       `usuario` -> `usrId`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tasacioninsitu`
+--
+-- Creación: 09-06-2025 a las 02:23:19
+--
+
+DROP TABLE IF EXISTS `tasacioninsitu`;
+CREATE TABLE `tasacioninsitu` (
+  `tisId` int(10) UNSIGNED NOT NULL,
+  `tisDomicilioTasacion` int(10) UNSIGNED NOT NULL,
+  `tisFechaTasInSitu` datetime NOT NULL DEFAULT current_timestamp(),
+  `tisPrecioInSitu` decimal(15,2) NOT NULL,
+  `tisFechaBaja` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `tasacioninsitu`:
+--   `tisDomicilioTasacion`
+--       `domicilio` -> `domId`
+--
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `tipoestado`
 --
 -- Creación: 02-06-2025 a las 00:24:39
@@ -410,7 +466,6 @@ INSERT INTO `tipousuario` (`ttuTipoUsuario`, `ttuDescripcion`, `ttuRequiereMatri
 -- Estructura de tabla para la tabla `tokens`
 --
 -- Creación: 02-06-2025 a las 00:24:39
--- Última actualización: 08-06-2025 a las 23:08:17
 --
 
 DROP TABLE IF EXISTS `tokens`;
@@ -577,6 +632,23 @@ ALTER TABLE `subcategoria`
   ADD UNIQUE KEY `scatId` (`scatId`);
 
 --
+-- Indices de la tabla `tasacion`
+--
+ALTER TABLE `tasacion`
+  ADD PRIMARY KEY (`tasId`),
+  ADD KEY `FK_TasadorUsuario` (`tasUsrTasador`),
+  ADD KEY `FK_TasAntAntiguedad` (`tasAntId`),
+  ADD KEY `FK_TasPrevTasInSitu` (`tasTisId`),
+  ADD KEY `FK_PropietarioUsuario` (`tasUsrPropietario`);
+
+--
+-- Indices de la tabla `tasacioninsitu`
+--
+ALTER TABLE `tasacioninsitu`
+  ADD PRIMARY KEY (`tisId`),
+  ADD KEY `FK_InSituDomicilio` (`tisDomicilioTasacion`);
+
+--
 -- Indices de la tabla `tipoestado`
 --
 ALTER TABLE `tipoestado`
@@ -658,6 +730,18 @@ ALTER TABLE `subcategoria`
   MODIFY `scatId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
+-- AUTO_INCREMENT de la tabla `tasacion`
+--
+ALTER TABLE `tasacion`
+  MODIFY `tasId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tasacioninsitu`
+--
+ALTER TABLE `tasacioninsitu`
+  MODIFY `tisId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
@@ -705,6 +789,21 @@ ALTER TABLE `localidad`
 --
 ALTER TABLE `subcategoria`
   ADD CONSTRAINT `FK_SubcatCat` FOREIGN KEY (`scatCatId`) REFERENCES `categoria` (`catId`) ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `tasacion`
+--
+ALTER TABLE `tasacion`
+  ADD CONSTRAINT `FK_PropietarioUsuario` FOREIGN KEY (`tasUsrPropietario`) REFERENCES `usuario` (`usrId`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_TasAntAntiguedad` FOREIGN KEY (`tasAntId`) REFERENCES `antiguedad` (`antId`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_TasPrevTasInSitu` FOREIGN KEY (`tasTisId`) REFERENCES `tasacioninsitu` (`tisId`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_TasadorUsuario` FOREIGN KEY (`tasUsrTasador`) REFERENCES `usuario` (`usrId`) ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `tasacioninsitu`
+--
+ALTER TABLE `tasacioninsitu`
+  ADD CONSTRAINT `FK_InSituDomicilio` FOREIGN KEY (`tisDomicilioTasacion`) REFERENCES `domicilio` (`domId`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `usuario`

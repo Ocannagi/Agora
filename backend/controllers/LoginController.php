@@ -30,8 +30,8 @@ class LoginController
 
     public function postLogin()
     {
+        $link = $this->dbConnection->conectarBD();
         try {
-            $link = $this->dbConnection->conectarBD();
             $this->securityService->deleteTokensExpirados($link);
             $loginData = Input::getArrayBody(msgEntidad: "el login");
             $usrEmail = $link->real_escape_string($loginData['usrEmail']);
@@ -40,21 +40,17 @@ class LoginController
 
             if ($resultado === false) {
                 $error = $link->error;
-                $link->close();
-                Output::outputError(500, $error);
+                throw new mysqli_sql_exception(code: 500, message: $error);
             } else if ($resultado->num_rows != 1) {
                 $resultado->free();
-                $link->close();
-                Output::outputError(401, 'No está registrado el mail');
+                throw new InvalidArgumentException(code: 401, message: 'No está registrado el mail');
             } else {
                 $registro = $resultado->fetch_assoc();
                 $resultado->free();
-
                 $usrPassword = $link->real_escape_string($loginData['usrPassword']);
 
                 if (!$this->securityService->verifyPassword(password: $usrPassword, hash: $registro['usrPassword'])) {
-                    $link->close();
-                    Output::outputError(401, 'La contraseña es incorrecta');
+                    throw new InvalidArgumentException(code: 401, message: 'La contraseña es incorrecta');
                 } else {
                     unset($registro["usrPassword"]);
                     $data = get_object_vars(new ClaimDTO($registro));
@@ -62,12 +58,10 @@ class LoginController
                     $jwtSql = $link->real_escape_string($jwt);
                     $link->query("DELETE FROM tokens WHERE tokToken = '$jwtSql'");
                     if ($link->query("INSERT INTO tokens (tokToken) VALUES ('$jwtSql')")) {
-                        $link->close();
                         Output::outputJson(['jwt' => $jwt]);
                     } else {
                         $error = $link->error;
-                        $link->close();
-                        Output::outputError(500, $error);
+                        throw new mysqli_sql_exception(code: 500, message: $error);
                     }
                 }
             }
@@ -79,24 +73,27 @@ class LoginController
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
+        } finally {
+            if (isset($link) && $link instanceof mysqli) {
+                $link->close();
+            }
         }
     }
 
     public function deleteLogin() // Logout
     {
+        $link = $this->dbConnection->conectarBD();
         try {
             $this->securityService->requireLogin(null);
             $authHeader = getallheaders();
             list($jwt) = @sscanf($authHeader['Authorization'], 'Bearer %s');
             if (!$jwt)
-                Output::outputError(401, "El token de seguridad está vacío");
-            $link = $this->dbConnection->conectarBD();
+                throw new InvalidArgumentException(code: 401, message: "El token de seguridad está vacío");
+
             $jwtSql = $link->real_escape_string($jwt);
             if (!$link->query("DELETE FROM tokens WHERE tokToken = '$jwtSql'")) {
-                $link->close();
-                Output::outputError(403);
+                throw new mysqli_sql_exception(code: 403, message: $link->error);
             }
-            $link->close();
             Output::outputJson(['jwt' => []]);
         } catch (\Throwable $th) {
             if ($th instanceof InvalidArgumentException) {
@@ -105,6 +102,10 @@ class LoginController
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($link) && $link instanceof mysqli) {
+                $link->close();
             }
         }
     }

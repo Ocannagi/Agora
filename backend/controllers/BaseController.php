@@ -1,5 +1,6 @@
 <?php
 
+use Model\CustomException;
 use Utilidades\Output;
 
 abstract class BaseController implements IBaseController
@@ -17,8 +18,8 @@ abstract class BaseController implements IBaseController
         $resultado = $mysqli->query($query);
         if ($resultado === false) {
             $error= $mysqli->error;
-            $mysqli->close();            
-            Output::outputError(500, 'Falló la consulta: ' . $error);
+            $mysqli->close();
+            throw new mysqli_sql_exception(code:500, message:'Falló la consulta: ' . $error);
         }
         $ret = [];
         while ($fila = $resultado->fetch_assoc()) {
@@ -35,12 +36,11 @@ abstract class BaseController implements IBaseController
         if ($resultado === false) {
             $error= $mysqli->error;
             $mysqli->close();
-            Output::outputError(500, "Falló la consulta al querer obtener un $classDTO por id: " . $error);
-            die;
+            throw new mysqli_sql_exception(code:500, message:"Falló la consulta al querer obtener un $classDTO por id: " . $error);
         }
         if ($resultado->num_rows == 0) {
             $mysqli->close();
-            Output::outputError(404, "No se encontró un $classDTO con ese id");
+            throw new CustomException(code:404, message:"No se encontró un $classDTO con ese id");
         }
         $ret = new $classDTO(mysqli_fetch_assoc($resultado));
         $resultado->free_result();
@@ -52,13 +52,11 @@ abstract class BaseController implements IBaseController
         $resultado = $link->query($query);
         if ($resultado === false) {
             $error= $link->error;
-            $link->close();
-            Output::outputError(500, 'Falló la consulta: ' . $error);
+            throw new mysqli_sql_exception(code:500, message:'Falló la consulta: ' . $error);
         }
         $ret = [
             'id' => $link->insert_id
         ];
-        $link->close();
         Output::outputJson($ret, 201);
     }
     public function patch(string $query, mysqli $link)
@@ -66,13 +64,10 @@ abstract class BaseController implements IBaseController
         $resultado = $link->query($query);
         if ($resultado === false) {
             $error= $link->error;
-            $link->close();
-            Output::outputError(500, 'Falló la consulta: ' . $error);
+            throw new mysqli_sql_exception(code:500, message:'Falló la consulta: ' . $error);
         }
 
         $ret = [];
-
-        $link->close();
         Output::outputJson($ret, 201);
     }
     public function delete(string $queryBusqueda, string $queryBajaLogica)
@@ -82,19 +77,18 @@ abstract class BaseController implements IBaseController
         if ($resultado === false) {
             $error = $mysqli->error;
             $mysqli->close();
-            Output::outputError(500, "Falló la consulta al querer comprobar la existencia de la entidad por id: " . $error);
-            die;
+            throw new mysqli_sql_exception(code:500, message:"Falló la consulta al querer comprobar la existencia de la entidad por id: " . $error);
         }
         if ($resultado->num_rows == 0) {
             $mysqli->close();
-            Output::outputError(404, 'No se encontró la entidad con ese id para ser eliminada');
+            throw new CustomException(code:404, message:'No se encontró la entidad con ese id para ser eliminada');
         }
         $resultado->free_result();
         $resultado = $mysqli->query($queryBajaLogica);
         if ($resultado === false) {
             $error= $mysqli->error;
             $mysqli->close();
-            Output::outputError(500, 'Falló la consulta: ' . $error);
+            throw new mysqli_sql_exception(code:500, message:'Falló la consulta: ' . $error);
         }
         $mysqli->close();
         Output::outputJson([]);

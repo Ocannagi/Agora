@@ -2,6 +2,7 @@
 
 use Utilidades\Output;
 use Utilidades\Input;
+use Model\CustomException;
 
 class LocalidadesController extends BaseController
 {
@@ -32,41 +33,65 @@ class LocalidadesController extends BaseController
 
     public function getLocalidades()
     {
-        $this->securityService->requireLogin(null);
+        try {
+            $this->securityService->requireLogin(null);
 
-        $query =   "SELECT locId, locDescripcion, provId, provDescripcion
+            $query =   "SELECT locId, locDescripcion, provId, provDescripcion
                     FROM localidad
                     INNER JOIN provincia ON locProvId = provId
                     WHERE locFechaBaja is NULL
                     ORDER BY locId";
 
-        return parent::get(query: $query, classDTO: "LocalidadDTO");
+            return parent::get(query: $query, classDTO: "LocalidadDTO");
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
     }
 
     public function getLocalidadesById($id)
     {
-        settype($id, 'integer');
-        $this->securityService->requireLogin(null);
+        try {
+            settype($id, 'integer');
+            $this->securityService->requireLogin(null);
 
-        $query =   "SELECT locId, locDescripcion, provId, provDescripcion
+            $query =   "SELECT locId, locDescripcion, provId, provDescripcion
                     FROM localidad
                     INNER JOIN provincia ON locProvId = provId
                     WHERE locId = $id AND locFechaBaja is NULL";
 
-        return parent::getById(query: $query, classDTO: "LocalidadDTO");
+            return parent::getById(query: $query, classDTO: "LocalidadDTO");
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
     }
 
     public function postLocalidades()
     {
+        $mysqli = $this->dbConnection->conectarBD();
         try {
             $this->securityService->requireLogin(tipoUsurio: ['ST']);
 
-            $mysqli = $this->dbConnection->conectarBD();
             $data = Input::getArrayBody(msgEntidad: "la localidad");
 
             $this->localidadesValidacionService->validarType(className: "LocalidadCreacionDTO", datos: $data);
             $localidadCreacionDTO = new LocalidadCreacionDTO($data);
-            
+
             $this->localidadesValidacionService->validarInput($mysqli, $localidadCreacionDTO);
             $localidadCreacionDTO->locDescripcion = Input::cadaPalabraMayuscula($localidadCreacionDTO->locDescripcion);
             Input::escaparDatos($localidadCreacionDTO, $mysqli);
@@ -78,31 +103,37 @@ class LocalidadesController extends BaseController
                         VALUES ($localidadCreacionDTO->locDescripcion, $locProvId)";
 
             return parent::post(query: $query, link: $mysqli);
-
         } catch (\Throwable $th) {
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                $mysqli->close();
             }
         }
     }
 
     public function patchLocalidades($id)
     {
+        $mysqli = $this->dbConnection->conectarBD();
         try {
             $this->securityService->requireLogin(tipoUsurio: ['ST']);
             settype($id, 'integer');
-            $mysqli = $this->dbConnection->conectarBD();
+            
             $data = Input::getArrayBody(msgEntidad: "la localidad");
 
             $data['locId'] = $id;
 
             $this->localidadesValidacionService->validarType(className: "LocalidadDTO", datos: $data);
             $localidadDTO = new LocalidadDTO($data);
-            
+
             $this->localidadesValidacionService->validarInput($mysqli, $localidadDTO);
 
             $localidadDTO->locDescripcion = Input::cadaPalabraMayuscula($localidadDTO->locDescripcion);
@@ -119,17 +150,21 @@ class LocalidadesController extends BaseController
                         AND locFechaBaja IS NULL";
 
             return parent::patch(query: $query, link: $mysqli);
-
         } catch (\Throwable $th) {
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                $mysqli->close();
+            }
         }
-
     }
 
     public function deleteLocalidades($id)
@@ -142,11 +177,13 @@ class LocalidadesController extends BaseController
         } catch (\Throwable $th) {
             if ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
         }
     }
-
-
 }

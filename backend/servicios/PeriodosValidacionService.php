@@ -1,6 +1,6 @@
 <?php
 
-use Utilidades\Output;
+use Model\CustomException;
 use Utilidades\Input;
 
 class PeriodosValidacionService extends ValidacionServiceBase
@@ -22,7 +22,7 @@ class PeriodosValidacionService extends ValidacionServiceBase
     public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $periodo)
     {
         if (!($periodo instanceof PeriodoCreacionDTO) && !($periodo instanceof PeriodoDTO)) {
-            Output::outputError(500, 'Error interno: el DTO proporcionado no es del tipo correcto.');
+            throw new CustomException(code: 500, message: 'Error interno: el DTO proporcionado no es del tipo correcto.');
         }
 
         $this->validarDatosObligatorios(classModelName: 'Periodo', datos: get_object_vars($periodo));
@@ -41,13 +41,13 @@ class PeriodosValidacionService extends ValidacionServiceBase
     private function validarDescripcion(string $descripcion)
     {
         if (!$this->_esStringLongitud($descripcion, 1, 50))
-            Output::outputError(400, 'La Descripción del periodo debe ser un string de al menos un caracter y un máximo de 50.');
+            throw new InvalidArgumentException(message: 'La Descripción del periodo debe ser un string de al menos un caracter y un máximo de 50.');
     }
 
     private function validarExistePeriodoModificar(int $perId, mysqli $linkExterno)
     {
         if (!$this->_existeEnBD(link: $linkExterno, query:"SELECT 1 FROM periodo WHERE perId='$perId' AND perFechaBaja IS NULL", msg: 'obtener un periodo por id para modificar'))
-            Output::outputError(409, 'El periodo a modificar no existe.');
+            throw new CustomException(code: 409, message: 'El periodo a modificar no existe.');
     }
 
     private function validarSiYaFueRegistrado(string $descripcion, mysqli $linkExterno, ?int $perId = null)
@@ -57,7 +57,7 @@ class PeriodosValidacionService extends ValidacionServiceBase
         $query = $perId ? "SELECT 1 FROM periodo WHERE perId <> $perId AND perDescripcion='$descripcion' AND perFechaBaja is NULL" : "SELECT 1 FROM periodo WHERE perDescripcion='$descripcion' AND perFechaBaja is NULL";
 
         if ($this->_existeEnBD(link: $linkExterno, query: $query, msg: 'obtener un periodo por descripcion'))
-            Output::outputError(409, $perId ? 'La descripción nueva que quiere registrar ya existe declarada en otro id' : 'Ya se encuentra registrada la descripción del periodo a crear.');
+            throw new CustomException(code: 409, message: $perId ? 'La descripción nueva que quiere registrar ya existe declarada en otro id' : 'Ya se encuentra registrada la descripción del periodo a crear.');
     }
 
 }

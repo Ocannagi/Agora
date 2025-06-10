@@ -2,6 +2,7 @@
 
 use Utilidades\Output;
 use Utilidades\Input;
+use Model\CustomException;
 
 class UsuariosController extends BaseController
 {
@@ -34,16 +35,29 @@ class UsuariosController extends BaseController
 
     public function getUsuarios()
     {
-        $this->securityService->requireLogin(tipoUsurio: ['ST']);
-        return parent::get(query: "SELECT usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario FROM usuario WHERE usrFechaBaja is NULL", classDTO: "UsuarioMinDTO");
+        try {
+            $this->securityService->requireLogin(tipoUsurio: ['ST']);
+            return parent::get(query: "SELECT usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario FROM usuario WHERE usrFechaBaja is NULL", classDTO: "UsuarioMinDTO");
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
     }
 
     public function getUsuariosById($id)
     {
-        settype($id, 'integer');
-        $this->securityService->requireLogin(tipoUsurio: null);
+        try {
+            settype($id, 'integer');
+            $this->securityService->requireLogin(tipoUsurio: null);
 
-        $query = "  SELECT   usrId, usrDni, usrNombre, usrApellido
+            $query = "  SELECT   usrId, usrDni, usrNombre, usrApellido
                             , domId, domCPA, domCalleRuta, domNroKm, domPiso, domDepto, locId, locDescripcion, provId, provDescripcion
                            , usrRazonSocialFantasia, usrCuitCuil, usrEmail
                            , usrTipoUsuario , usrMatricula, usrFechaNacimiento, usrDescripcion, usrScoring
@@ -54,13 +68,24 @@ class UsuariosController extends BaseController
                     WHERE usrId = $id
                     AND usrFechaBaja is NULL";
 
-        return parent::getById(query: $query, classDTO: "UsuarioDTO");
+            return parent::getById(query: $query, classDTO: "UsuarioDTO");
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
     }
 
     public function postUsuarios()
     {
+        $mysqli = $this->dbConnection->conectarBD();
         try {
-            $mysqli = $this->dbConnection->conectarBD();
             $data = Input::getArrayBody(msgEntidad: "el usuario");
 
             $this->usuariosValidacionService->validarType(className: "UsuarioCreacionDTO", datos: $data);
@@ -81,17 +106,18 @@ class UsuariosController extends BaseController
 
             return parent::post(query: $query, link: $mysqli);
         } catch (\Throwable $th) {
-
-            if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
-                $mysqli->close(); // Cerrar la conexión a la base de datos
-            }
-
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
-            } else { 
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
+                $mysqli->close(); // Cerrar la conexión a la base de datos
             }
         }
     }
@@ -99,11 +125,11 @@ class UsuariosController extends BaseController
 
     public function patchUsuarios($id)
     {
+        $mysqli = $this->dbConnection->conectarBD();
         try {
             $this->securityService->requireLogin(tipoUsurio: null);
-            $mysqli = $this->dbConnection->conectarBD();
             settype($id, 'integer');
-            
+
             $data = Input::getArrayBody(msgEntidad: "el usuario");
 
             $data['usrId'] = $id;
@@ -118,7 +144,7 @@ class UsuariosController extends BaseController
             $hashPassword = "'" . $this->securityService->hashPassword($usuarioDTO->usrPassword) . "'"; // Se escapa la contraseña antes de hashearla y se le agregan comillas simples para que sea un string en la consulta SQL.
 
             Input::agregarComillas_ConvertNULLtoString($usuarioDTO); // cuidado con el password, no usar el de usuarioDTO, usar el de la variable anterior que ya fue escapada, hasheada y se le agregaron comillas simples.
-            
+
             $query = "UPDATE usuario SET usrDni = $usuarioDTO->usrDni, usrApellido = $usuarioDTO->usrApellido, usrNombre = $usuarioDTO->usrNombre, usrRazonSocialFantasia = $usuarioDTO->usrRazonSocialFantasia , usrCuitCuil = $usuarioDTO->usrCuitCuil,
             usrTipoUsuario = $usuarioDTO->usrTipoUsuario, usrMatricula = $usuarioDTO->usrMatricula, usrDomicilio = {$usuarioDTO->domicilio->domId}, usrFechaNacimiento = $usuarioDTO->usrFechaNacimiento, usrDescripcion = $usuarioDTO->usrDescripcion,
             usrScoring = $usuarioDTO->usrScoring, usrEmail = $usuarioDTO->usrEmail,
@@ -126,16 +152,18 @@ class UsuariosController extends BaseController
 
             return parent::patch($query, $mysqli);
         } catch (\Throwable $th) {
-            if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
-                $mysqli->close(); // Cerrar la conexión a la base de datos
-            }
-
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
+                $mysqli->close(); // Cerrar la conexión a la base de datos
             }
         }
     }
@@ -185,6 +213,10 @@ class UsuariosController extends BaseController
         } catch (\Throwable $th) {
             if ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }

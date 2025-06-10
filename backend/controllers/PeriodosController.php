@@ -2,6 +2,7 @@
 
 use Utilidades\Output;
 use Utilidades\Input;
+use Model\CustomException;
 
 class PeriodosController extends BaseController
 {
@@ -32,23 +33,47 @@ class PeriodosController extends BaseController
 
     public function getPeriodos()
     {
-        $this->securityService->requireLogin(null);
-        return parent::get(query: "SELECT perId, perDescripcion FROM periodo WHERE perFechaBaja is NULL", classDTO: "PeriodoDTO");
+        try {
+            $this->securityService->requireLogin(null);
+            return parent::get(query: "SELECT perId, perDescripcion FROM periodo WHERE perFechaBaja is NULL", classDTO: "PeriodoDTO");
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
     }
 
     public function getPeriodosById($id)
     {
-        settype($id, 'integer');
-        $this->securityService->requireLogin(null);
-        return parent::getById(query: "SELECT perId, perDescripcion FROM periodo WHERE perId = $id AND perFechaBaja is NULL", classDTO: "PeriodoDTO");
+        try {
+            settype($id, 'integer');
+            $this->securityService->requireLogin(null);
+            return parent::getById(query: "SELECT perId, perDescripcion FROM periodo WHERE perId = $id AND perFechaBaja is NULL", classDTO: "PeriodoDTO");
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
     }
 
     public function postPeriodos()
     {
+        $mysqli = $this->dbConnection->conectarBD();
         try {
             $this->securityService->requireLogin(tipoUsurio: ['ST']);
 
-            $mysqli = $this->dbConnection->conectarBD();
             $data = Input::getArrayBody(msgEntidad: "el periodo");
 
             $this->periodosValidacionService->validarType(className: "PeriodoCreacionDTO", datos: $data);
@@ -63,24 +88,30 @@ class PeriodosController extends BaseController
             Input::agregarComillas_ConvertNULLtoString($periodoCreacionDTO);
 
             return parent::post(query: "INSERT INTO periodo (perDescripcion) VALUES ($periodoCreacionDTO->perDescripcion)", link: $mysqli);
-
         } catch (\Throwable $th) {
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                $mysqli->close();
             }
         }
     }
 
     public function patchPeriodos($id)
     {
+        $mysqli = $this->dbConnection->conectarBD();
         try {
             $this->securityService->requireLogin(tipoUsurio: ['ST']);
             settype($id, 'integer');
-            $mysqli = $this->dbConnection->conectarBD();
+            
             $data = Input::getArrayBody(msgEntidad: "el periodo");
 
             $data['perId'] = $id;
@@ -98,14 +129,19 @@ class PeriodosController extends BaseController
             $query = "UPDATE periodo SET perDescripcion = $periodoDTO->perDescripcion WHERE perId = $periodoDTO->perId AND perFechaBaja IS NULL";
 
             return parent::patch(query: $query, link: $mysqli);
-
         } catch (\Throwable $th) {
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                $mysqli->close();
             }
         }
     }
@@ -116,16 +152,16 @@ class PeriodosController extends BaseController
             $this->securityService->requireLogin(tipoUsurio: ['ST']);
             settype($id, 'integer');
             return parent::delete(queryBusqueda: "SELECT 1 FROM periodo WHERE perId=$id AND perFechaBaja IS NULL", queryBajaLogica: "UPDATE periodo SET perFechaBaja = CURRENT_TIMESTAMP() WHERE perId=$id");
-
         } catch (\Throwable $th) {
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
         }
     }
-
 }

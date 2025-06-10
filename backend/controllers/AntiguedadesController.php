@@ -3,9 +3,13 @@
 use Utilidades\Output;
 use Utilidades\Input;
 use Utilidades\Querys;
+use Model\CustomException;
 
 class AntiguedadesController extends BaseController
 {
+    use TraitGetInterno; // Trait para métodos internos de obtención
+    use TraitGetByIdInterno; // Trait para métodos internos de obtención por ID
+
     private ValidacionServiceBase $antiguedadesValidacionService;
     private ISecurity $securityService;
 
@@ -35,35 +39,47 @@ class AntiguedadesController extends BaseController
 
     public function getAntiguedadesByParams($params)
     {
-        if (is_array($params)) {
+        try {
+            if (is_array($params)) {
 
-            if (array_key_exists('scatId', $params) || array_key_exists('catId', $params) || array_key_exists('perId', $params) || array_key_exists('usrId', $params) || array_key_exists('antDescripcion', $params)) {
-                $scatId = null;
-                $catId = null;
-                $perId = null;
-                $usrId = null;
-                $antDescripcion = null;
-                if (array_key_exists('scatId', $params)) {
-                    $scatId = (int)$params['scatId'];
+                if (array_key_exists('scatId', $params) || array_key_exists('catId', $params) || array_key_exists('perId', $params) || array_key_exists('usrId', $params) || array_key_exists('antDescripcion', $params)) {
+                    $scatId = null;
+                    $catId = null;
+                    $perId = null;
+                    $usrId = null;
+                    $antDescripcion = null;
+                    if (array_key_exists('scatId', $params)) {
+                        $scatId = (int)$params['scatId'];
+                    }
+                    if (array_key_exists('catId', $params)) {
+                        $catId = (int)$params['catId'];
+                    }
+                    if (array_key_exists('perId', $params)) {
+                        $perId = (int)$params['perId'];
+                    }
+                    if (array_key_exists('usrId', $params)) {
+                        $usrId = (int)$params['usrId'];
+                    }
+                    if (array_key_exists('antDescripcion', $params)) {
+                        $antDescripcion = (string)$params['antDescripcion'];
+                    }
+                    return $this->getAntiguedadesByFiltros($scatId, $catId, $perId, $usrId, $antDescripcion);
+                } else {
+                    throw new InvalidArgumentException(code: 400, message: "No se recibieron parámetros válidos.");
                 }
-                if (array_key_exists('catId', $params)) {
-                    $catId = (int)$params['catId'];
-                }
-                if (array_key_exists('perId', $params)) {
-                    $perId = (int)$params['perId'];
-                }
-                if (array_key_exists('usrId', $params)) {
-                    $usrId = (int)$params['usrId'];
-                }
-                if (array_key_exists('antDescripcion', $params)) {
-                    $antDescripcion = (string)$params['antDescripcion'];
-                }
-                return $this->getAntiguedadesByFiltros($scatId, $catId, $perId, $usrId, $antDescripcion);
             } else {
-                Output::outputError(400, "No se recibieron parámetros válidos.");
+                throw new InvalidArgumentException(code: 400, message: "No se recibieron parámetros válidos.");
             }
-        } else {
-            Output::outputError(400, "No se recibieron parámetros válidos.");
+        } catch (\Throwable $th) {
+            if ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
         }
     }
 
@@ -77,7 +93,6 @@ class AntiguedadesController extends BaseController
                         ,usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario, usrRazonSocialFantasia,usrDescripcion,usrScoring,usrCuitCuil,usrMatricula
                         ,domId, domCPA, domCalleRuta, domNroKm, domPiso, domDepto
                         ,locId, locDescripcion, provId, provDescripcion
-                        ,imaId, imaAntId, imaDescripcion, imaUrl
                   FROM antiguedad
                     INNER JOIN periodo ON antPerId = perId
                     INNER JOIN subcategoria ON antScatId = scatId
@@ -86,7 +101,6 @@ class AntiguedadesController extends BaseController
                     INNER JOIN domicilio ON usrDomicilio = domId
                     INNER JOIN localidad ON locId = domLocId
                     INNER JOIN provincia ON provId = locProvId
-                    LEFT JOIN imagenantiguedad ON antId = imaAntId
                   WHERE antTipoEstado <>'RN'";
         if ($scatId != null) {
             $query .= " AND scatId = $scatId";
@@ -104,22 +118,27 @@ class AntiguedadesController extends BaseController
             $query .= " AND antDescripcion LIKE '%$antDescripcion%'";
         }
 
-        return parent::get(query: $query, classDTO: "AntiguedadDTO");
+        $arrayAntiguedadesDTO = $this->getInterno(query: $query, classDTO: "AntiguedadDTO");
+        foreach ($arrayAntiguedadesDTO as $antiguedadDTO) {
+            $query = "SELECT imaId, imaUrl, imaAntId, imaOrden, imaNombreArchivo FROM imagenantiguedad WHERE imaAntId = {$antiguedadDTO->antId} ORDER BY imaOrden";
+            $antiguedadDTO->imagenes = $this->getInterno(query: $query, classDTO: "ImagenAntiguedadDTO");
+        }
+        Output::outputJson($arrayAntiguedadesDTO);
     }
 
     /** FIN DE SECCION */
 
     public function getAntiguedades()
     {
-        $this->securityService->requireLogin(tipoUsurio: null);
+        try {
+            $this->securityService->requireLogin(tipoUsurio: null);
 
-        $query = "SELECT antId, antDescripcion, antFechaEstado, antTipoEstado
+            $query = "SELECT antId, antDescripcion, antFechaEstado, antTipoEstado
                         ,perId, perDescripcion
                         ,scatId, catId, catDescripcion, scatDescripcion
                         ,usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario, usrRazonSocialFantasia,usrDescripcion,usrScoring,usrCuitCuil,usrMatricula
                         ,domId, domCPA, domCalleRuta, domNroKm, domPiso, domDepto
                         ,locId, locDescripcion, provId, provDescripcion
-                        ,imaId, imaAntId, imaUrl, imaOrden
                   FROM antiguedad
                     INNER JOIN periodo ON antPerId = perId
                     INNER JOIN subcategoria ON antScatId = scatId
@@ -128,24 +147,43 @@ class AntiguedadesController extends BaseController
                     INNER JOIN domicilio ON usrDomicilio = domId
                     INNER JOIN localidad ON locId = domLocId
                     INNER JOIN provincia ON provId = locProvId
-                    LEFT JOIN imagenantiguedad ON antId = imaAntId
                   WHERE antTipoEstado <>'RN'";
 
-        return parent::get(query: $query, classDTO: "AntiguedadDTO");
+            // Se eliminó la unión con imagenantiguedad para evitar duplicados en caso de que una antigüedad tenga varias imágenes.
+
+            $arrayAntiguedadesDTO = $this->getInterno(query: $query, classDTO: "AntiguedadDTO");
+
+            foreach ($arrayAntiguedadesDTO as $antiguedadDTO) {
+                $query = "SELECT imaId, imaUrl, imaAntId, imaOrden, imaNombreArchivo FROM imagenantiguedad WHERE imaAntId = {$antiguedadDTO->antId} ORDER BY imaOrden";
+                $antiguedadDTO->imagenes = $this->getInterno(query: $query, classDTO: "ImagenAntiguedadDTO");
+            }
+
+            Output::outputJson($arrayAntiguedadesDTO);
+        } catch (\Throwable $th) {
+            if ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
     }
 
     public function getAntiguedadesById($id)
     {
-        settype($id, 'integer');
-        $this->securityService->requireLogin(tipoUsurio: null);
+        try {
+            settype($id, 'integer');
+            $this->securityService->requireLogin(tipoUsurio: null);
 
-        $query = "SELECT antId, antDescripcion, antFechaEstado, antTipoEstado
+            $query = "SELECT antId, antDescripcion, antFechaEstado, antTipoEstado
                         ,perId, perDescripcion
                         ,scatId, catId, catDescripcion, scatDescripcion
                         ,usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario, usrRazonSocialFantasia,usrDescripcion,usrScoring,usrCuitCuil,usrMatricula
                         ,domId, domCPA, domCalleRuta, domNroKm, domPiso, domDepto
                         ,locId, locDescripcion, provId, provDescripcion
-                        ,imaId, imaAntId, imaUrl, imaOrden
                   FROM antiguedad
                     INNER JOIN periodo ON antPerId = perId
                     INNER JOIN subcategoria ON antScatId = scatId
@@ -154,18 +192,31 @@ class AntiguedadesController extends BaseController
                     INNER JOIN domicilio ON usrDomicilio = domId
                     INNER JOIN localidad ON locId = domLocId
                     INNER JOIN provincia ON provId = locProvId
-                    LEFT JOIN imagenantiguedad ON antId = imaAntId
                   WHERE antTipoEstado <>'RN'
                   AND antId = $id";
 
-        return parent::getById(query: $query, classDTO: "AntiguedadDTO");
+            $antiguedadDTO = $this->getByIdInterno(query: $query, classDTO: "AntiguedadDTO");
+            $antiguedadDTO->imagenes = $this->getInterno(query: "SELECT imaId, imaUrl, imaAntId, imaOrden, imaNombreArchivo FROM imagenantiguedad WHERE imaAntId = $id ORDER BY imaOrden", classDTO: "ImagenAntiguedadDTO");
+
+            Output::outputJson($antiguedadDTO);
+        } catch (\Throwable $th) {
+            if ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
     }
 
     public function postAntiguedades()
     {
+        $mysqli = $this->dbConnection->conectarBD();
         try {
             $claimDTO = $this->securityService->requireLogin(tipoUsurio: ['ST', 'UG', 'UA']);
-            $mysqli = $this->dbConnection->conectarBD();
             $data = Input::getArrayBody(msgEntidad: "la antigüedad");
 
             $this->antiguedadesValidacionService->validarType(className: "AntiguedadCreacionDTO", datos: $data);
@@ -196,18 +247,25 @@ class AntiguedadesController extends BaseController
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if(isset($mysqli) && $mysqli instanceof mysqli) {
+                // Cierra la conexión a la base de datos si se creó en este método.
+                $mysqli->close();
             }
         }
     }
 
     public function patchAntiguedades($id)
     {
+        $mysqli = $this->dbConnection->conectarBD();
         try {
             $claimDTO = $this->securityService->requireLogin(tipoUsurio: ['ST', 'UG', 'UA']);
             settype($id, 'integer');
-            $mysqli = $this->dbConnection->conectarBD();
             $data = Input::getArrayBody(msgEntidad: "la antigüedad");
 
             $data['antId'] = $id;
@@ -221,7 +279,7 @@ class AntiguedadesController extends BaseController
                         $antiguedadDTO->usuario->usrId = $claimDTO->usrId;
                 } else {
                     if ($claimDTO->usrId != $antiguedadDTO->usuario->usrId) {
-                        Output::outputError(403, "No tiene permiso para modificar esta antigüedad.");
+                        throw new CustomException(code: 403, message: "No tiene permiso para modificar esta antigüedad.");
                     }
                 }
             }
@@ -242,7 +300,7 @@ class AntiguedadesController extends BaseController
                       antScatId = {$antiguedadDTO->subcategoria->scatId},
                       antUsrId = {$antiguedadDTO->usuario->usrId},
                       antTipoEstado = '{$antiguedadDTO->tipoEstado->value}'";
-            
+
             // Si el tipo de estado ha cambiado, se actualiza la fecha de estado
             if (!$conservaMismoTipoEstado) {
                 $query .= ", antFechaEstado = NOW()";
@@ -251,31 +309,47 @@ class AntiguedadesController extends BaseController
             $query .= " WHERE antId = $id";
 
             return parent::patch(query: $query, link: $mysqli);
-
         } catch (\Throwable $th) {
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if(isset($mysqli) && $mysqli instanceof mysqli) {
+                // Cierra la conexión a la base de datos si se creó en este método.
+                $mysqli->close();
             }
         }
     }
 
     public function deleteAntiguedades($id)
     {
-        $claimDTO = $this->securityService->requireLogin(tipoUsurio: ['ST', 'UG', 'UA']);
-        settype($id, 'integer');
+        try {
+            $claimDTO = $this->securityService->requireLogin(tipoUsurio: ['ST', 'UG', 'UA']);
+            settype($id, 'integer');
 
-        $queryBusqueda = "SELECT antId FROM antiguedad WHERE antId = $id AND antTipoEstado <> 'RN'";
-        
-        if ($claimDTO->usrTipoUsuario !== 'ST') {
-            $queryBusqueda .= " AND antUsrId = {$claimDTO->usrId}";
+            $queryBusqueda = "SELECT antId FROM antiguedad WHERE antId = $id AND antTipoEstado <> 'RN'";
+
+            if ($claimDTO->usrTipoUsuario !== 'ST') {
+                $queryBusqueda .= " AND antUsrId = {$claimDTO->usrId}";
+            }
+
+            $queryBajaLogica = "UPDATE antiguedad SET antTipoEstado = 'RN', antFechaEstado = NOW() WHERE antId = $id";
+
+            return parent::delete(queryBusqueda: $queryBusqueda, queryBajaLogica: $queryBajaLogica);
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage());
+            }
         }
-
-        $queryBajaLogica = "UPDATE antiguedad SET antTipoEstado = 'RN', antFechaEstado = NOW() WHERE antId = $id";
-
-        return parent::delete(queryBusqueda: $queryBusqueda, queryBajaLogica: $queryBajaLogica);
     }
 }

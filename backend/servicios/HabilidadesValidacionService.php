@@ -1,7 +1,6 @@
 <?php
 
-use Utilidades\Output;
-use Utilidades\Input;
+use Model\CustomException;
 
 
 class HabilidadesValidacionService extends ValidacionServiceBase
@@ -27,7 +26,7 @@ class HabilidadesValidacionService extends ValidacionServiceBase
     {
         // No se puede modificar una habilidad, sólo se puede dar de baja.
         if (!$habilidadCreacionDTO instanceof habilidadCreacionDTO) {
-            Output::outputError(500, 'Error interno: el DTO proporcionado no es del tipo correcto.');
+            throw new CustomException(code: 500, message: 'Error interno: el DTO proporcionado no es del tipo correcto.');
         }
         
         $this->validarDatosObligatorios(classModelName: 'Habilidad', datos: get_object_vars($habilidadCreacionDTO));
@@ -41,15 +40,15 @@ class HabilidadesValidacionService extends ValidacionServiceBase
     private function validarDatoIdUsuario(int $usrId, mysqli $linkExterno)
     {
         if(!isset($usrId)) {
-            Output::outputError(400, 'El id del usuario no fue proporcionado.');
+            throw new InvalidArgumentException(message: 'El id del usuario no fue proporcionado.');
         }
         
         if ($usrId <= 0) {
-            Output::outputError(400, "El ID del usuario no es válido: $usrId.");
+            throw new InvalidArgumentException(message: "El ID del usuario no es válido: $usrId.");
         }
 
         if (!$this->existeUsuario($usrId, $linkExterno)) {
-            Output::outputError(409, "El usuario con ID $usrId no existe.");
+            throw new CustomException(code: 409, message: "El usuario con ID $usrId no existe.");
         }
     }
 
@@ -61,15 +60,15 @@ class HabilidadesValidacionService extends ValidacionServiceBase
     private function validarDatoIdPeriodo(PeriodoDTO $periodoDTO, mysqli $linkExterno)
     {
         if (!isset($periodoDTO->perId)) {
-            Output::outputError(400, 'El id del periodo no fue proporcionado.');
+            throw new InvalidArgumentException(message: 'El id del periodo no fue proporcionado.');
         }
         
         if ($periodoDTO->perId <= 0) {
-            Output::outputError(400, "El ID del periodo no es válido: $periodoDTO->perId.");
+            throw new InvalidArgumentException(message: "El ID del periodo no es válido: $periodoDTO->perId.");
         }
 
         if (!$this->existePeriodo($periodoDTO->perId, $linkExterno)) {
-            Output::outputError(409, "El periodo con ID $periodoDTO->perId no existe.");
+            throw new CustomException(code: 409, message: "El periodo con ID $periodoDTO->perId no existe.");
         }
     }
 
@@ -81,15 +80,15 @@ class HabilidadesValidacionService extends ValidacionServiceBase
     private function validarDatoIdSubcategoria(SubcategoriaDTO $subcategoriaDTO, mysqli $linkExterno)
     {
         if (!isset($subcategoriaDTO->scatId)) {
-            Output::outputError(400, 'El id de la subcategoría no fue proporcionado.');
+            throw new InvalidArgumentException(message: 'El id de la subcategoría no fue proporcionado.');
         }
         
         if ($subcategoriaDTO->scatId <= 0) {
-            Output::outputError(400, "El ID de la subcategoría no es válido: $subcategoriaDTO->scatId.");
+            throw new InvalidArgumentException(message: "El ID de la subcategoría no es válido: $subcategoriaDTO->scatId.");
         }
 
         if (!$this->existeSubcategoria($subcategoriaDTO->scatId, $linkExterno)) {
-            Output::outputError(409, "La subcategoría con ID $subcategoriaDTO->scatId no existe.");
+            throw new CustomException(code: 409, message: "La subcategoría con ID $subcategoriaDTO->scatId no existe.");
         }
     }
 
@@ -101,7 +100,7 @@ class HabilidadesValidacionService extends ValidacionServiceBase
     private function validarSiYaFueRegistrado(int $usrId, int $perId, int $scatId, mysqli $linkExterno)
     {
         if ($this->_existeEnBD(link: $linkExterno, query: "SELECT 1 FROM usuariotasadorhabilidad WHERE utsUsrId = $usrId AND utsPerId = $perId AND utsScatId = $scatId AND utsFechaBaja IS NULL", msg: 'obtener una habilidad por id')) {
-            Output::outputError(409, "La habilidad ya fue registrada para el usuario con ID $usrId para el periodo con ID $perId y la subcategoría con ID $scatId.");
+            throw new CustomException(code: 409, message: "La habilidad ya fue registrada para el usuario con ID $usrId para el periodo con ID $perId y la subcategoría con ID $scatId.");
         }
     }
 

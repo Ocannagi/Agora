@@ -1,85 +1,86 @@
 <?php
 use Model\CustomException;
 
-class AntiguedadDTO implements IDTO
+trait TraitMapAntiguedadDTO
 {
-    public int $antId;
-    public PeriodoDTO $periodo;
-    public SubcategoriaDTO $subcategoria;
-    public string $antDescripcion;
-    /**
-     * @var ?ImagenAntiguedadDTO[]
-     */
-    public ?array $imagenes = null;
-    public UsuarioDTO $usuario;
-    public TipoEstadoEnum $tipoEstado;
-    public ?string $antFechaEstado = null;
-
     use TraitMapPeriodoDTO; // Trait para mapear PeriodoDTO
     use TraitMapSubcategoriaDTO; // Trait para mapear SubcategoriaDTO
     use TraitMapUsuarioDTO; // Trait para mapear UsuarioDTO
 
-    public function __construct(array | stdClass $data)
+    
+    
+    private function mapAntiguedadDTO(array | stdClass $data, bool $returnArray = false): AntiguedadDTO | array | null
     {
         if ($data instanceof stdClass) {
             $data = (array)$data;
         }
 
+        $arrayAnt = [];
+
+        if (array_key_exists('antiguedad', $data)) {
+            return $returnArray ? get_object_vars(new AntiguedadDTO($data['antiguedad'])) : new AntiguedadDTO($data['antiguedad']);
+        }
+
         if (array_key_exists('antId', $data)) {
-            $this->antId = (int)$data['antId'];
+            $arrayAnt['antId'] = (int)$data['antId'];
+        }  
+        else if (array_key_exists('tasAntId', $data)) {
+            $arrayAnt['antId'] = (int)$data['tasAntId'];
+        } else {
+            return null; // No se puede mapear sin antId
         }
 
         if (array_key_exists('periodo', $data) && $data['periodo'] instanceof PeriodoDTO) {
-            $this->periodo = $data['periodo'];
+           $arrayAnt['periodo'] = $data['periodo'];
         } else {
-            $periodoDTO = $this->mapPeriodoDTO($data);
+            $periodoDTO = $this->mapPeriodoDTO($data, $returnArray);
             if ($periodoDTO !== null) {
-                $this->periodo = $periodoDTO;
+                $arrayAnt['periodo'] = $periodoDTO;
             }
         }
 
         if (array_key_exists('subcategoria', $data) && $data['subcategoria'] instanceof SubcategoriaDTO) {
-            $this->subcategoria = $data['subcategoria'];
+            $arrayAnt['subcategoria'] = $data['subcategoria'];
         } else {
-            $subcategoriaDTO = $this->mapSubcategoriaDTO($data);
+            $subcategoriaDTO = $this->mapSubcategoriaDTO($data, $returnArray);
             if ($subcategoriaDTO !== null) {
-                $this->subcategoria = $subcategoriaDTO;
+                $arrayAnt['subcategoria'] = $subcategoriaDTO;
             }
         }
 
         if (array_key_exists('antDescripcion', $data)) {
-            $this->antDescripcion = (string)$data['antDescripcion'];
+            $arrayAnt['antDescripcion'] = (string)$data['antDescripcion'];
         }
 
         if (array_key_exists('imagenes', $data) && is_array($data['imagenes'])) {
-            $this->imagenes = [];
+            $arrayAnt['imagenes'] = [];
             foreach ($data['imagenes'] as $imagen) {
                 if ($imagen instanceof ImagenAntiguedadDTO) {
-                    $this->imagenes[] = $imagen;
+                    $arrayAnt['imagenes'][] = $imagen;
                 } else {
                     $imagenDTO = new ImagenAntiguedadDTO($imagen);
-                    $this->imagenes[] = $imagenDTO;
+                    $arrayAnt['imagenes'][] = $imagenDTO;
                 }
             }
         }
 
         if (array_key_exists('usuario', $data) && $data['usuario'] instanceof UsuarioDTO) {
-            $this->usuario = $data['usuario'];
+            $arrayAnt['usuario'] = $data['usuario'];
         } else {
-            $usuarioDTO = $this->mapUsuarioDTO($data);
+            $usuarioDTO = $this->mapUsuarioDTO($data, $returnArray);
             if ($usuarioDTO !== null) {
-                $this->usuario = $usuarioDTO;
+                $arrayAnt['usuario'] = $usuarioDTO;
             }
         }
 
         if (array_key_exists('tipoEstado', $data) && $data['tipoEstado'] instanceof TipoEstadoEnum) {
-            $this->tipoEstado = $data['tipoEstado'];
+            $arrayAnt['tipoEstado'] = $data['tipoEstado'];
         } else {
             try {
                 if (array_key_exists('antTipoEstado', $data)) {
-                    $this->tipoEstado = TipoEstadoEnum::from($data['antTipoEstado']);
+                    $arrayAnt['tipoEstado'] = TipoEstadoEnum::from($data['antTipoEstado']);
                 } elseif (array_key_exists('tipoEstado', $data)) {
-                    $this->tipoEstado = TipoEstadoEnum::from($data['tipoEstado']);
+                    $arrayAnt['tipoEstado'] = TipoEstadoEnum::from($data['tipoEstado']);
                 }
             } catch (ValueError $th) {
                 throw new CustomException(code:400, message:'El tipo de estado no es válido.');
@@ -87,7 +88,9 @@ class AntiguedadDTO implements IDTO
         }
 
         if (array_key_exists('antFechaEstado', $data)) {
-            $this->antFechaEstado = (string)$data['antFechaEstado'];
+            $arrayAnt['antFechaEstado'] = (string)$data['antFechaEstado'];
         }
+
+        return $returnArray ? $arrayAnt : new AntiguedadDTO($arrayAnt);
     }
 }

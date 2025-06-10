@@ -5,6 +5,7 @@ namespace Utilidades;
 use mysqli;
 use ReflectionClass;
 use DTOs\PHP_FileDTO;
+use InvalidArgumentException;
 
 class Input
 {
@@ -12,10 +13,10 @@ class Input
     {        
         $array = json_decode(file_get_contents('php://input'), true);
         if (json_last_error()) {
-            Output::outputError(400, 'El formato de datos es incorrecto');
+            throw new InvalidArgumentException(message: 'El formato de datos es incorrecto');
         }
         if (empty($array)) {
-            Output::outputError(400, "No se recibieron datos para crear $msgEntidad");
+            throw new InvalidArgumentException(message: "No se recibieron datos para crear $msgEntidad");
         }
 
         return $array;
@@ -89,7 +90,7 @@ class Input
     {
 
         if (!isset($_FILES[$name]) || !is_array($_FILES[$name]["error"]) || count($_FILES[$name]["error"]) === 0) {
-            Output::outputError(400, "No se recibieron archivos para subir.");
+            throw new InvalidArgumentException(message: "No se recibieron archivos para subir.");
         }
 
         $arrayFiles = [];
@@ -107,7 +108,7 @@ class Input
                     'size' => $size
                 ]);
             } else {
-                Output::outputError(400, "Error al subir el archivo: " . $error);
+                throw new InvalidArgumentException(message: "Error al subir el archivo: " . $error);
             }
         }
         return $arrayFiles;

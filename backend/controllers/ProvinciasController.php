@@ -1,5 +1,8 @@
 <?php
 
+use Model\CustomException;
+use Utilidades\Output;
+
 class ProvinciasController extends BaseController
 {
     private ISecurity $securityService;
@@ -24,19 +27,42 @@ class ProvinciasController extends BaseController
 
     // Método para evitar la clonación del objeto
     private function __clone() {}
-   
+
     public function getProvincias()
     {
-        $this->securityService->requireLogin(null);
-        $query = "SELECT * FROM provincia";
-        return parent::get(query: $query, classDTO: "ProvinciaDTO");
+        try {
+            $this->securityService->requireLogin(null);
+            $query = "SELECT * FROM provincia";
+            return parent::get(query: $query, classDTO: "ProvinciaDTO");
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
     }
 
     public function getProvinciasById(int $id)
     {
-        $this->securityService->requireLogin(null);
-        $query = "SELECT * FROM provincia WHERE provId = $id";
-        return parent::get(query: $query, classDTO: "ProvinciaDTO");
+        try {
+            $this->securityService->requireLogin(null);
+            $query = "SELECT * FROM provincia WHERE provId = $id";
+            return parent::get(query: $query, classDTO: "ProvinciaDTO");
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
     }
-
 }

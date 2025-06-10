@@ -1,6 +1,6 @@
 <?php
 
-use Utilidades\Output;
+use Model\CustomException;
 use Utilidades\Input;
 use Utilidades\Querys;
 use DTOs\PHP_FileDTO;
@@ -32,43 +32,43 @@ abstract class ValidacionFileServiceBase
     protected function validarFilesProperties(array $files, array $tipoArchivo, int $maxSize = 0, int $maxFiles = 0)
     {
         if (empty($files)) {
-            Output::outputError(400, "No se recibieron archivos para subir.");
+            throw new InvalidArgumentException(message: "No se recibieron archivos para subir.");
         }
 
         // Verificar nombres duplicados
         $nombres = [];
         foreach ($files as $file) {
             if (!$file instanceof PHP_FileDTO) {
-                Output::outputError(400, "El archivo no es válido.");
+                throw new InvalidArgumentException(message: "El archivo no es válido.");
             }
 
             if (!Input::esNotNullVacioBlanco($file->name)) {
-                Output::outputError(400, "El archivo no tiene un nombre válido.");
+                throw new InvalidArgumentException(message: "El archivo no tiene un nombre válido.");
             }
 
             if (!Input::esStringLongitud($file->name, 1, MAX_LONG_NOMBRE_ARCHIVO)) {
-                Output::outputError(400, "La longitud del nombre del archivo {$file->name} no es válida.");
+                throw new InvalidArgumentException(message: "La longitud del nombre del archivo {$file->name} no es válida.");
             }
 
             if (in_array($file->name, $nombres)) {
-                Output::outputError(400, "Hay archivos con el mismo nombre: {$file->name}");
+                throw new InvalidArgumentException(message: "Hay archivos con el mismo nombre: {$file->name}");
             }
             $nombres[] = $file->name;
 
             if ($file->size <= 0) {
-                Output::outputError(400, "El archivo {$file->name} está vacío.");
+                throw new InvalidArgumentException(message: "El archivo {$file->name} está vacío.");
             }
 
             if ($maxSize > 0 && $file->size > $maxSize) {
-                Output::outputError(400, "El archivo {$file->name} excede el tamaño máximo permitido de {$maxSize} bytes.");
+                throw new InvalidArgumentException(message: "El archivo {$file->name} excede el tamaño máximo permitido de {$maxSize} bytes.");
             }
 
             if (!in_array($file->type, $tipoArchivo)) {
-                Output::outputError(400, "El tipo de archivo {$file->name} no es válido. Debe ser uno de los siguientes: " . implode(", ", $tipoArchivo));
+                throw new InvalidArgumentException(message: "El tipo de archivo {$file->name} no es válido. Debe ser uno de los siguientes: " . implode(", ", $tipoArchivo));
             }
 
             if ($maxFiles > 0 && count($files) > $maxFiles) {
-                Output::outputError(400, "Se ha superado el número máximo de archivos permitidos restantes: $maxFiles.");
+                throw new InvalidArgumentException(message: "Se ha superado el número máximo de archivos permitidos restantes: $maxFiles.");
             }
         }
     }

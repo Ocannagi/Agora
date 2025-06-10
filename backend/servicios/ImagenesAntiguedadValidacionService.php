@@ -1,7 +1,7 @@
 <?php
 
 
-use Utilidades\Output;
+use Model\CustomException;
 use Utilidades\Querys;
 use DTOs\PHP_FileDTO;
 
@@ -32,7 +32,7 @@ class ImagenesAntiguedadValidacionService extends ValidacionFileServiceBase
     public function validarFiles(array $files, int $FKid, mysqli $linkExterno, mixed $extraParams = null): void
     {
         if(!isset($extraParams) || !$extraParams instanceof ClaimDTO) {
-            Output::outputError(500, 'Error interno: se requiere ClaimDTO para validar la antigüedad.');
+            throw new CustomException(code: 500, message: 'Error interno: se requiere ClaimDTO para validar la antigüedad.');
         }
         
         $this->validarFK(
@@ -74,7 +74,7 @@ class ImagenesAntiguedadValidacionService extends ValidacionFileServiceBase
     private function validarFK(?int $antId, mysqli $mysqli, ClaimDTO $claimDTO): void{
 
         if (!$antId || $antId <= 0) {
-            Output::outputError(400, 'El ID de la antigüedad es obligatorio.');
+            throw new InvalidArgumentException(message: 'El ID de la antigüedad es obligatorio.');
         }
 
         $query = "SELECT antId FROM antiguedad WHERE antId = $antId";
@@ -90,7 +90,7 @@ class ImagenesAntiguedadValidacionService extends ValidacionFileServiceBase
             $msgError = $claimDTO->usrTipoUsuario === 'ST' ? 
                 "La antigüedad con el ID $antId no existe." : 
                 "La antigüedad con el ID $antId no existe o no tienes permiso para acceder a ella.";
-            Output::outputError(404, $msgError);
+            throw new CustomException(code: 404, message: $msgError);
         }
 
     }
@@ -99,7 +99,7 @@ class ImagenesAntiguedadValidacionService extends ValidacionFileServiceBase
     {
         foreach ($files as $file) {
             if (!$file instanceof PHP_FileDTO) {
-                Output::outputError(500, "Error interno: El DTO de archivo no es válido.");
+                throw new CustomException(code: 500, message: "Error interno: El DTO de archivo no es válido.");
             }
             
             if(Querys::existeEnBD(
@@ -107,7 +107,7 @@ class ImagenesAntiguedadValidacionService extends ValidacionFileServiceBase
                 query: "SELECT imaNombreArchivo FROM imagenantiguedad WHERE imaNombreArchivo = '{$file->name}' AND imaAntId = $antId",
                 msg: "validar el nombre del archivo {$file->name}"
             )) {
-                Output::outputError(400, "El archivo {$file->name} ya existe en la base de datos para la antigüedad con ID $antId.");
+                throw new InvalidArgumentException(message: "El archivo {$file->name} ya existe en la base de datos para la antigüedad con ID $antId.");
             }
         }
     }
@@ -115,7 +115,7 @@ class ImagenesAntiguedadValidacionService extends ValidacionFileServiceBase
     public function validarInputDTO(mysqli $linkExterno, IDTO $entidadDTO, ClaimDTO $claimDTO): void
     {
         if(!($entidadDTO instanceof ImagenesAntiguedadReordenarDTO)) {
-            Output::outputError(500, 'Error interno: El DTO de imagen de antigüedad no es del tipo correcto.');
+            throw new CustomException(code: 500, message: 'Error interno: El DTO de imagen de antigüedad no es del tipo correcto.');
         }
 
         $this->validarFK(
@@ -138,7 +138,7 @@ class ImagenesAntiguedadValidacionService extends ValidacionFileServiceBase
             where: "imaAntId = {$entidadDTO->antId}",
             msg: 'obtener el número de imágenes de antigüedad'
         ) !== count($entidadDTO->imagenesAntiguedadOrden)) {
-            Output::outputError(400, 'El número de imágenes a reordenar no coincide con el número de imágenes en la base de datos.');
+            throw new InvalidArgumentException(message: 'El número de imágenes a reordenar no coincide con el número de imágenes en la base de datos.');
         }
 
         foreach ($entidadDTO->imagenesAntiguedadOrden as $imagenDTO) {
@@ -147,7 +147,7 @@ class ImagenesAntiguedadValidacionService extends ValidacionFileServiceBase
                 query: "SELECT 1 FROM imagenantiguedad WHERE imaId = {$imagenDTO->imaId} AND imaAntId = {$entidadDTO->antId}",
                 msg: 'validar la existencia de la imagen de antigüedad'
             ) === false) {
-                Output::outputError(404, "La imagen con ID {$imagenDTO->imaId} no existe para la antigüedad con ID {$entidadDTO->antId}.");
+                throw new CustomException(code: 404, message: "La imagen con ID {$imagenDTO->imaId} no existe para la antigüedad con ID {$entidadDTO->antId}.");
             }
         }
 
@@ -156,12 +156,12 @@ class ImagenesAntiguedadValidacionService extends ValidacionFileServiceBase
     private function _validarTipoDato(ImagenesAntiguedadReordenarDTO $imagenesAntiguedadReordenarDTO): void
     {
         if (!is_array($imagenesAntiguedadReordenarDTO->imagenesAntiguedadOrden) || empty($imagenesAntiguedadReordenarDTO->imagenesAntiguedadOrden)) {
-            Output::outputError(400, 'El campo "imagenesAntiguedadOrden" debe ser un array no vacío.');
+            throw new InvalidArgumentException(message: 'El campo "imagenesAntiguedadOrden" debe ser un array no vacío.');
         }
 
         foreach ($imagenesAntiguedadReordenarDTO->imagenesAntiguedadOrden as $imagenDTO) {
             if (!($imagenDTO instanceof ImagenAntiguedadOrdenDTO)) {
-                Output::outputError(500, 'Error interno: El DTO de imagen de antigüedad no es del tipo correcto.');
+                throw new CustomException(code: 500, message: 'Error interno: El DTO de imagen de antigüedad no es del tipo correcto.');
             }
         }
     }
@@ -169,11 +169,11 @@ class ImagenesAntiguedadValidacionService extends ValidacionFileServiceBase
     private function _validarMinMaxImagenes(ImagenesAntiguedadReordenarDTO $imagenesAntiguedadReordenarDTO): void
     {
         if (count($imagenesAntiguedadReordenarDTO->imagenesAntiguedadOrden) < 2) {
-            Output::outputError(400, 'Se requiere al menos dos imágenes para reordenar.');
+            throw new InvalidArgumentException(message: 'Se requiere al menos dos imágenes para reordenar.');
         }
 
         if (count($imagenesAntiguedadReordenarDTO->imagenesAntiguedadOrden) > MAX_FILES) {
-            Output::outputError(400, 'El número máximo de imágenes para reordenar es ' . MAX_FILES . '.');
+            throw new InvalidArgumentException(message: 'El número máximo de imágenes para reordenar es ' . MAX_FILES . '.');
         }
     }
 
@@ -181,12 +181,12 @@ class ImagenesAntiguedadValidacionService extends ValidacionFileServiceBase
     {
         $ids = array_map(fn($img) => $img->imaId, $imagenesAntiguedadReordenarDTO->imagenesAntiguedadOrden);
         if (count($ids) !== count(array_unique($ids))) {
-            Output::outputError(400, 'Los IDs de las imágenes deben ser únicos.');
+            throw new InvalidArgumentException(message: 'Los IDs de las imágenes deben ser únicos.');
         }
 
         $ordenes = array_map(fn($img) => $img->imaOrden, $imagenesAntiguedadReordenarDTO->imagenesAntiguedadOrden);
         if (count($ordenes) !== count(array_unique($ordenes))) {
-            Output::outputError(400, 'Los órdenes de las imágenes deben ser únicos.');
+            throw new InvalidArgumentException(message: 'Los órdenes de las imágenes deben ser únicos.');
         }
     }
 
@@ -196,7 +196,7 @@ class ImagenesAntiguedadValidacionService extends ValidacionFileServiceBase
         $cantidadImagenes = count($imagenesAntiguedadReordenarDTO->imagenesAntiguedadOrden);
         foreach ($ordenes as $orden) {
             if ($orden < 1 || $orden > $cantidadImagenes) {
-                Output::outputError(400, 'El orden de la imagen debe estar entre 1 y ' . $cantidadImagenes . '.');
+                throw new InvalidArgumentException(message: 'El orden de la imagen debe estar entre 1 y ' . $cantidadImagenes . '.');
             }
         }
     }

@@ -1,6 +1,6 @@
 <?php
 
-use Utilidades\Output;
+use Model\CustomException;
 use Utilidades\Input;
 
 class CategoriasValidacionService extends ValidacionServiceBase
@@ -22,7 +22,7 @@ class CategoriasValidacionService extends ValidacionServiceBase
     public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $categoria)
     {
         if (!($categoria instanceof CategoriaCreacionDTO) && !($categoria instanceof CategoriaDTO)) {
-            Output::outputError(500, 'Error interno: el DTO proporcionado no es del tipo correcto.');
+            throw new CustomException(code: 500, message: 'Error interno: el DTO proporcionado no es del tipo correcto.');
         }
 
         $this->validarDatosObligatorios(classModelName: 'Categoria', datos: get_object_vars($categoria));
@@ -41,13 +41,13 @@ class CategoriasValidacionService extends ValidacionServiceBase
     private function validarDescripcion(string $descripcion)
     {
         if (!$this->_esStringLongitud($descripcion, 1, 50))
-            Output::outputError(400, 'La Descripción de la categoría debe ser un string de al menos un caracter y un máximo de 50.');
+            throw new InvalidArgumentException(message: 'La Descripción de la categoría debe ser un string de al menos un caracter y un máximo de 50.');
     }
 
     private function validarExisteCategoriaModificar(int $catId, mysqli $linkExterno)
     {
         if (!$this->_existeEnBD(link: $linkExterno, query:"SELECT 1 FROM categoria WHERE catId='$catId' AND catFechaBaja IS NULL", msg: 'obtener una categoría por id para modificar'))
-            Output::outputError(409, 'La categoría a modificar no existe.');
+            throw new CustomException(code: 409, message: 'La categoría a modificar no existe.');
     }
 
     private function validarSiYaFueRegistrado(string $descripcion, mysqli $linkExterno, ?int $catId = null)
@@ -57,7 +57,7 @@ class CategoriasValidacionService extends ValidacionServiceBase
         $query = $catId ? "SELECT 1 FROM categoria WHERE catId <> $catId AND catDescripcion='$descripcion' AND catFechaBaja is NULL" : "SELECT 1 FROM categoria WHERE catDescripcion='$descripcion' AND catFechaBaja is NULL";
 
         if ($this->_existeEnBD(link: $linkExterno, query: $query, msg: 'obtener una categoría por descripcion'))
-            Output::outputError(409, $catId ? 'La descripción nueva que quiere registrar ya existe declarada en otro id' : 'Ya se encuentra registrada la descripción de la categoría a crear.');
+            throw new CustomException(code: 409, message: $catId ? 'La descripción nueva que quiere registrar ya existe declarada en otro id' : 'Ya se encuentra registrada la descripción de la categoría a crear.');
     }
 
 }

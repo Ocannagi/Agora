@@ -2,7 +2,8 @@
 
 namespace Utilidades;
 use mysqli;
-use Utilidades\Output;
+use Model\CustomException;
+use InvalidArgumentException;
 
 class Querys
 {
@@ -17,7 +18,7 @@ class Querys
     {
         $result = $link->query($query);
         if (!$result) {
-            Output::outputError(500, "Error interno al querer $msg: " . $link->error);
+            throw new CustomException(code: 500, message: "Error interno al querer $msg: " . $link->error);
         }
         $bool = $result->num_rows > 0;
         $result->free_result();
@@ -30,9 +31,9 @@ class Querys
         $query = "SELECT COUNT(*) AS count FROM $base WHERE $where";
         $result = $link->query($query);
         if (!$result) {
-            Output::outputError(500, "Error interno al querer $msg: " . $link->error);
+            throw new CustomException(code: 500, message: "Error interno al querer $msg: " . $link->error);
         } else if ($result->num_rows === 0) {
-            Output::outputError(404, "No se encontraron resultados al querer $msg.");
+            throw new InvalidArgumentException(message: "No se encontraron resultados al querer $msg.");
         }
         
         $count = (int)$result->fetch_assoc()['count'];
@@ -51,7 +52,7 @@ class Querys
         $query = "SELECT LAST_INSERT_ID() AS last_id";
         $result = $link->query($query);
         if (!$result) {
-            Output::outputError(500, "Error interno al obtener el último ID: " . $link->error);
+            throw new CustomException(code: 500, message: "Error interno al obtener el último ID: " . $link->error);
         }
         $row = $result->fetch_assoc();
         $result->free_result();

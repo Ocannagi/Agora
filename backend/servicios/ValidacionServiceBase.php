@@ -1,6 +1,6 @@
 <?php
 
-use Utilidades\Output;
+use Model\CustomException;
 use Utilidades\Input;
 use Utilidades\Querys;
 
@@ -45,7 +45,7 @@ abstract class ValidacionServiceBase
 
 
 
-                    Output::outputError(400, "El campo " . $propiedad->getName() . " debe ser de tipo $tipo.");
+                    throw new InvalidArgumentException(message: "El campo " . $propiedad->getName() . " debe ser de tipo $tipo.");
                 }
             }
         }
@@ -56,9 +56,9 @@ abstract class ValidacionServiceBase
         if (is_subclass_of($classModelName, "ClassBase")) {
             $msg = $this->_existenDatos($classModelName::getObligatorios(), $datos);
             if ($msg !== true)
-                Output::outputError(400, 'Los siguientes datos deben estar completos: ' . implode(", ", $msg) . ".");
+                throw new InvalidArgumentException(message: 'Los siguientes datos deben estar completos: ' . implode(", ", $msg) . ".");
         } else {
-            Output::outputError(500, "Error interno: la clase $classModelName no hereda de ClassBase");
+            throw new CustomException(code: 500, message: "Error interno: la clase $classModelName no hereda de ClassBase");
         }
     }
 
@@ -72,7 +72,7 @@ abstract class ValidacionServiceBase
     protected function _existenDatos(array $arrayKeys, array $arrayAsociativo): bool|array
     {
         if (!is_array($arrayKeys) || !is_array($arrayAsociativo))
-            Output::outputError(400, 'No se enviaron los datos necesarios para la operación.');
+            throw new InvalidArgumentException(message: 'No se enviaron los datos necesarios para la operación.');
 
         $faltantes = [];
 

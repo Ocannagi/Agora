@@ -2,6 +2,7 @@
 
 use Utilidades\Output;
 use Utilidades\Input;
+use Model\CustomException;
 
 
 class HabilidadesController extends BaseController
@@ -35,17 +36,29 @@ class HabilidadesController extends BaseController
 
     public function getHabilidadesByParams($params)
     {
-        if (is_array($params)) {
+        try {
+            if (is_array($params)) {
 
-            if (count($params) == 1 && array_key_exists('usrId', $params)) {
-                $id = $params['usrId'];
-                settype($id, 'integer');
-                return $this->getHabilidadesByUserId($id);
+                if (count($params) == 1 && array_key_exists('usrId', $params)) {
+                    $id = $params['usrId'];
+                    settype($id, 'integer');
+                    return $this->getHabilidadesByUserId($id);
+                } else {
+                    Output::outputError(400, "No se recibieron parámetros válidos.");
+                }
             } else {
                 Output::outputError(400, "No se recibieron parámetros válidos.");
             }
-        } else {
-            Output::outputError(400, "No se recibieron parámetros válidos.");
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
         }
     }
 
@@ -78,10 +91,11 @@ class HabilidadesController extends BaseController
 
     public function getHabilidadesById($id)
     {
-        $this->securityService->requireLogin(tipoUsurio: null);
-        settype($id, 'integer');
+        try {
+            $this->securityService->requireLogin(tipoUsurio: null);
+            settype($id, 'integer');
 
-        $query = "SELECT 
+            $query = "SELECT 
                         utsId,
                         
                         usrId, usrDni, usrNombre, usrApellido
@@ -104,14 +118,26 @@ class HabilidadesController extends BaseController
                   INNER JOIN categoria ON scatCatId = catId
                   WHERE utsId = $id";
 
-        return parent::getById(query: $query, classDTO: "HabilidadDTO");
+            return parent::getById(query: $query, classDTO: "HabilidadDTO");
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
     }
 
     public function postHabilidades()
     {
+        $mysqli = $this->dbConnection->conectarBD();
         try {
             $claimDTO = $this->securityService->requireLogin(['ST', 'UT', 'UA']);
-            $mysqli = $this->dbConnection->conectarBD();
+            
             $data = Input::getArrayBody(msgEntidad: "la habilidad");
 
             $this->habilidadesValidacionService->validarType(className: "HabilidadCreacionDTO", datos: $data);
@@ -139,8 +165,14 @@ class HabilidadesController extends BaseController
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                $mysqli->close();
             }
         }
     }
@@ -163,10 +195,13 @@ class HabilidadesController extends BaseController
             $queryBajaLogica = "UPDATE usuariotasadorhabilidad SET utsFechaBaja = CURRENT_TIMESTAMP() WHERE utsId = $id";
 
             return parent::delete(queryBusqueda: $queryBusqueda, queryBajaLogica: $queryBajaLogica);
-
         } catch (\Throwable $th) {
             if ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
