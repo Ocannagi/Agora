@@ -86,7 +86,7 @@ class SubcategoriasController extends BaseController
     {
         $mysqli = $this->dbConnection->conectarBD();
         try {
-            $this->securityService->requireLogin(tipoUsurio: ['ST']);
+            $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::soporteTecnicoToArray());
 
             $data = Input::getArrayBody(msgEntidad: "la subcategoría");
 
@@ -131,7 +131,7 @@ class SubcategoriasController extends BaseController
     {
         $mysqli = $this->dbConnection->conectarBD();
         try {
-            $this->securityService->requireLogin(tipoUsurio: ['ST']);
+            $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::soporteTecnicoToArray());
             settype($id, 'integer');
 
             $data = Input::getArrayBody(msgEntidad: "la subcategoría");
@@ -180,7 +180,7 @@ class SubcategoriasController extends BaseController
     public function deleteSubcategorias($id)
     {
         try {
-            $this->securityService->requireLogin(tipoUsurio: ['ST']);
+            $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::soporteTecnicoToArray());
             settype($id, 'integer');
 
             $queryBusqueda =   "SELECT 1 FROM subcategoria

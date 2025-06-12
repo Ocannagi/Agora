@@ -41,7 +41,7 @@ class AntiguedadesValidacionService extends ValidacionServiceBase
 
         if ($antiguedad instanceof AntiguedadDTO) {
             $this->validarTipoEstado($antiguedad->tipoEstado);
-            $this->validarExisteAntiguedadModificar($antiguedad->antId, $linkExterno);
+            $this->validarExisteAntiguedadModificar($antiguedad->antId, $antiguedad->usuario->usrId, $linkExterno);
         } else {
             $this->validarSiYaFueRegistradoPorMismoUsuario($antiguedad, $linkExterno);
         }
@@ -131,13 +131,13 @@ class AntiguedadesValidacionService extends ValidacionServiceBase
         }
 
         if (!$this->_existeUsuario($usuarioDTO->usrId, $linkExterno)) {
-            throw new CustomException(code: 409, message: "El usuario con id $usuarioDTO->usrId no existe.");
+            throw new CustomException(code: 409, message: "El usuario con id $usuarioDTO->usrId no existe con el tipo de usuario requerido.");
         }
     }
 
     private function _existeUsuario(int $usrId, mysqli $linkExterno): bool
     {
-        $query = "SELECT 1 FROM usuario WHERE usrId=$usrId";
+        $query = "SELECT 1 FROM usuario WHERE usrId=$usrId AND usrFechaBaja IS NULL AND " . TipoUsuarioEnum::compradorVendedorToQuery();
         return $this->_existeEnBD($linkExterno, $query, "obtener un usuario por id");
     }
 
@@ -150,7 +150,7 @@ class AntiguedadesValidacionService extends ValidacionServiceBase
         // El tipo de estado se valida en el DTO de antigüedad, no es necesario validar aquí
     }
 
-    private function validarExisteAntiguedadModificar(int $antId, mysqli $linkExterno)
+    private function validarExisteAntiguedadModificar(int $antId, int $usrId, mysqli $linkExterno)
     {
         if (!isset($antId)) {
             throw new InvalidArgumentException(message: 'El id de la antigüedad no fue proporcionado.');
@@ -164,14 +164,14 @@ class AntiguedadesValidacionService extends ValidacionServiceBase
             throw new InvalidArgumentException(message: "El id de la antigüedad no es válido: $antId");
         }
 
-        if (!$this->_existeAntiguedad($antId, $linkExterno)) {
-            throw new CustomException(code: 409, message: "La antigüedad con id $antId no existe.");
+        if (!$this->_existeAntiguedad($antId, $usrId, $linkExterno)) {
+            throw new CustomException(code: 409, message: "La antigüedad con id $antId no existe para el usuario con id $usrId.");
         }
     }
 
-    private function _existeAntiguedad(int $antId, mysqli $linkExterno): bool
+    private function _existeAntiguedad(int $antId, int $usrId, mysqli $linkExterno): bool
     {
-        $query = "SELECT 1 FROM antiguedad WHERE antId=$antId";
+        $query = "SELECT 1 FROM antiguedad WHERE antId=$antId AND antUsrId=$usrId";
         return $this->_existeEnBD($linkExterno, $query, "obtener una antigüedad por id");
     }
 

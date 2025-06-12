@@ -36,7 +36,7 @@ class UsuariosController extends BaseController
     public function getUsuarios()
     {
         try {
-            $this->securityService->requireLogin(tipoUsurio: ['ST']);
+            $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::soporteTecnicoToArray());
             return parent::get(query: "SELECT usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario FROM usuario WHERE usrFechaBaja is NULL", classDTO: "UsuarioMinDTO");
         } catch (\Throwable $th) {
             if ($th instanceof mysqli_sql_exception) {
@@ -206,7 +206,7 @@ class UsuariosController extends BaseController
     public function deleteUsuarios($id)
     {
         try {
-            $this->securityService->requireLogin(tipoUsurio: ['ST']);
+            $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::soporteTecnicoToArray());
             settype($id, 'integer');
 
             return parent::delete(queryBusqueda: "SELECT usrId FROM usuario WHERE usrId=$id AND usrFechaBaja IS NULL", queryBajaLogica: "UPDATE usuario SET usrFechaBaja = CURRENT_TIMESTAMP() WHERE usrId=$id");

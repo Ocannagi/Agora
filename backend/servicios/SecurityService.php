@@ -7,6 +7,7 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Utilidades\Output;
 use Model\CustomException;
+use Firebase\JWT\ExpiredException;
 
 class SecurityService implements ISecurity
 {
@@ -66,8 +67,18 @@ class SecurityService implements ISecurity
             }
             $mysqli->close();
             return new ClaimDTO($datos);
-        } catch (Exception $e) {
-            throw new CustomException(code: 401, message: "El token puede estar vencido. Vuelva a loguearse por favor.");
+        } catch (\Throwable $e) {
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                $mysqli->close();
+            }
+
+            if($e instanceof ExpiredException) {
+                throw new CustomException(code: 401, message: "El token está vencido. Vuelva a loguearse por favor.");
+            } else if (!($e instanceof CustomException) && !($e instanceof mysqli_sql_exception)) {
+                throw new CustomException(code: 401, message: "El token de seguridad no es válido: " . $e->getMessage());
+            } else {
+                throw $e; // Re-lanzar la excepción si es CustomException o mysqli_sql_exception
+            }
         }
     }
 
@@ -91,11 +102,15 @@ class SecurityService implements ISecurity
                 $mysqli->close();
                 Output::outputJson([]);
             }
-        } catch (mysqli_sql_exception $e) {
+        } catch (\Throwable $th) {
             if ($unLink === NULL) {
                 $mysqli->close();
             }
-            throw new CustomException(code: 500, message: "Error al eliminar tokens expirados: " . $e->getMessage());
+            if($th instanceof mysqli_sql_exception) {
+                throw $th; // Re-lanzar la excepción si es mysqli_sql_exception
+            } else {
+                throw new CustomException(code: 500, message: "Error al eliminar tokens expirados: " . $th->getMessage());
+            }
         }
     }
 

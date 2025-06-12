@@ -96,7 +96,7 @@ class ImagenesAntiguedadController extends BaseController
         $mysqli = $this->dbConnection->conectarBD();
         $imagenesAntiguedadDTOs = [];
         try {
-            $claimDTO = $this->securityService->requireLogin(['ST', 'UG', 'UA']);
+            $claimDTO = $this->securityService->requireLogin(TipoUsuarioEnum::compradorVendedorToArray());
 
 
             $antId = (int)$_POST['antId'] ?? null;
@@ -174,7 +174,7 @@ class ImagenesAntiguedadController extends BaseController
     { //Solo se permite modificar el orden de las imágenes
         $mysqli = $this->dbConnection->conectarBD();
         try {
-            $claimDTO = $this->securityService->requireLogin(['ST', 'UG', 'UA']);
+            $claimDTO = $this->securityService->requireLogin(TipoUsuarioEnum::compradorVendedorToArray());
             $data = Input::getArrayBody("el DTO ImagenesAntiguedadReordenarDTO");
 
             $imagenesAntiguedadReordenarDTO = new ImagenesAntiguedadReordenarDTO($data);
@@ -222,7 +222,7 @@ class ImagenesAntiguedadController extends BaseController
             $mysqli->begin_transaction(); // Iniciar transacción
 
             settype($id, 'int');
-            $claimDTO = $this->securityService->requireLogin(['ST', 'UG', 'UA']);
+            $claimDTO = $this->securityService->requireLogin(TipoUsuarioEnum::compradorVendedorToArray());
 
             $imagenAntiguedadDTO = $this->_obtenerImagenAntiguedadDTO(imaId: $id, claimDTO: $claimDTO, mysqli: $mysqli);
 

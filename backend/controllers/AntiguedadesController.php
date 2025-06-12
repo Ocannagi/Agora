@@ -216,7 +216,7 @@ class AntiguedadesController extends BaseController
     {
         $mysqli = $this->dbConnection->conectarBD();
         try {
-            $claimDTO = $this->securityService->requireLogin(tipoUsurio: ['ST', 'UG', 'UA']);
+            $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
             $data = Input::getArrayBody(msgEntidad: "la antigüedad");
 
             $this->antiguedadesValidacionService->validarType(className: "AntiguedadCreacionDTO", datos: $data);
@@ -264,7 +264,7 @@ class AntiguedadesController extends BaseController
     {
         $mysqli = $this->dbConnection->conectarBD();
         try {
-            $claimDTO = $this->securityService->requireLogin(tipoUsurio: ['ST', 'UG', 'UA']);
+            $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
             settype($id, 'integer');
             $data = Input::getArrayBody(msgEntidad: "la antigüedad");
 
@@ -330,7 +330,7 @@ class AntiguedadesController extends BaseController
     public function deleteAntiguedades($id)
     {
         try {
-            $claimDTO = $this->securityService->requireLogin(tipoUsurio: ['ST', 'UG', 'UA']);
+            $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
             settype($id, 'integer');
 
             $queryBusqueda = "SELECT antId FROM antiguedad WHERE antId = $id AND antTipoEstado <> 'RN'";

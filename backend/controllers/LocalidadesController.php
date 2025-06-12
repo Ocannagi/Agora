@@ -85,7 +85,7 @@ class LocalidadesController extends BaseController
     {
         $mysqli = $this->dbConnection->conectarBD();
         try {
-            $this->securityService->requireLogin(tipoUsurio: ['ST']);
+            $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::soporteTecnicoToArray());
 
             $data = Input::getArrayBody(msgEntidad: "la localidad");
 
@@ -124,7 +124,7 @@ class LocalidadesController extends BaseController
     {
         $mysqli = $this->dbConnection->conectarBD();
         try {
-            $this->securityService->requireLogin(tipoUsurio: ['ST']);
+            $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::soporteTecnicoToArray());
             settype($id, 'integer');
             
             $data = Input::getArrayBody(msgEntidad: "la localidad");
@@ -170,7 +170,7 @@ class LocalidadesController extends BaseController
     public function deleteLocalidades($id)
     {
         try {
-            $this->securityService->requireLogin(tipoUsurio: ['ST']);
+            $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::soporteTecnicoToArray());
             settype($id, 'integer');
 
             return parent::delete(queryBusqueda: "SELECT 1 FROM localidad WHERE locId=$id AND locFechaBaja IS NULL", queryBajaLogica: "UPDATE localidad SET locFechaBaja = CURRENT_TIMESTAMP() WHERE locId=$id");

@@ -136,7 +136,7 @@ class HabilidadesController extends BaseController
     {
         $mysqli = $this->dbConnection->conectarBD();
         try {
-            $claimDTO = $this->securityService->requireLogin(['ST', 'UT', 'UA']);
+            $claimDTO = $this->securityService->requireLogin(TipoUsuarioEnum::tasadorToArray());
             
             $data = Input::getArrayBody(msgEntidad: "la habilidad");
 
@@ -182,7 +182,7 @@ class HabilidadesController extends BaseController
     public function deleteHabilidades($id)
     {
         try {
-            $claimDTO = $this->securityService->requireLogin(tipoUsurio: ['ST', 'UT', 'UA']);
+            $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::tasadorToArray());
             settype($id, 'integer');
 
             if ($claimDTO->usrTipoUsuario == 'UT' || $claimDTO->usrTipoUsuario == 'UA') {

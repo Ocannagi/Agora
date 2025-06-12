@@ -4,16 +4,16 @@ use Utilidades\Input;
 
 class TasacionDigitalDTO implements IDTO
 {
-    public int $tasId; // Identificador de la tasación.
+    public int $tadId; // Identificador de la tasación.
     public UsuarioDTO $tasador; // Identificador del usuario tasador.
     public UsuarioDTO $propietario; // Identificador del usuario propietario.
     public AntiguedadDTO $antiguedad; // Identificador del inmueble a tasar.
-    public string $tasFechaSolicitud; // Fecha de solicitud de la tasación.
-    public ?string $tasFechaTasProviRealizada = null; // Fecha de la tasación.
-    public ?string $tasFechaTasProviRechazada = null; // Fecha de la tasación rechazada.
-    public ?string $tasObservacionesProv = null; // Observaciones de la tasación.
-    public ?float $tasPrecioProvisoria = null; // Precio de la tasación provisoria.
-    public ?int $tasTisId = null;
+    public string $tadFechaSolicitud; // Fecha de solicitud de la tasación.
+    public ?string $tadFechaTasDigitalRealizada = null; // Fecha de la tasación.
+    public ?string $tadFechaTasDigitalRechazada = null; // Fecha de la tasación rechazada.
+    public ?string $tadObservacionesDigital = null; // Observaciones de la tasación.
+    public ?float $tadPrecioDigital = null; // Precio de la tasación digital.
+    public ?int $tadTisId = null;
 
 
     use TraitMapUsuarioDTO; // Trait para mapear UsuarioDTO
@@ -26,8 +26,8 @@ class TasacionDigitalDTO implements IDTO
             $data = (array)$data;
         }
 
-        if (array_key_exists('tasId', $data)) {
-            $this->tasId = (int)$data['tasId'];
+        if (array_key_exists('tadId', $data)) {
+            $this->tadId = (int)$data['tadId'];
         }
 
         if (array_key_exists('tasador', $data)) {
@@ -63,24 +63,24 @@ class TasacionDigitalDTO implements IDTO
             }
         }
 
-        if (array_key_exists('tasFechaSolicitud', $data)) {
-            $this->tasFechaSolicitud = (string)$data['tasFechaSolicitud'];
+        if (array_key_exists('tadFechaSolicitud', $data)) {
+            $this->tadFechaSolicitud = (string)$data['tadFechaSolicitud'];
         }
 
-        if (array_key_exists('tasFechaTasProviRealizada', $data)) {
-            $this->tasFechaTasProviRealizada = (string)$data['tasFechaTasProviRealizada'];
+        if (array_key_exists('tadFechaTasDigitalRealizada', $data)) {
+            $this->tadFechaTasDigitalRealizada = (string)$data['tadFechaTasDigitalRealizada'];
         }
 
-        if (array_key_exists('tasFechaTasProviRechazada', $data)) {
-            $this->tasFechaTasProviRechazada = (string)$data['tasFechaTasProviRechazada'];
+        if (array_key_exists('tadFechaTasDigitalRechazada', $data)) {
+            $this->tadFechaTasDigitalRechazada = (string)$data['tadFechaTasDigitalRechazada'];
         }
 
-        if (array_key_exists('tasObservacionesProv', $data)) {
-            $this->tasObservacionesProv = (string)$data['tasObservacionesProv'];
+        if (array_key_exists('tadObservacionesDigital', $data)) {
+            $this->tadObservacionesDigital = (string)$data['tadObservacionesDigital'];
         }
 
-        if (array_key_exists('tasPrecioProvisoria', $data)) {
-            $this->tasPrecioProvisoria = Input::esNotNullVacioBlanco($data['tasPrecioProvisoria']) ? (float)$data['tasPrecioProvisoria'] : null;
+        if (array_key_exists('tadPrecioDigital', $data)) {
+            $this->tadPrecioDigital = Input::esNotNullVacioBlanco($data['tadPrecioDigital']) ? (float)$data['tadPrecioDigital'] : null;
         }
     }
 }

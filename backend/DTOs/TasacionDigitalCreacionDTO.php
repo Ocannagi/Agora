@@ -5,7 +5,6 @@ class TasacionDigitalCreacionDTO implements ICreacionDTO
     public UsuarioDTO $tasador; // Identificador del usuario tasador.
     public UsuarioDTO $propietario; // Identificador del usuario propietario.
     public AntiguedadDTO $antiguedad; // Identificador del inmueble a tasar.
-    public string $tasFechaSolicitud; // Fecha de solicitud de la tasación.
 
     use TraitMapUsuarioDTO; // Trait para mapear UsuarioDTO
     use TraitMapAntiguedadDTO; // Trait para mapear AntiguedadDTO
@@ -48,10 +47,6 @@ class TasacionDigitalCreacionDTO implements ICreacionDTO
                     $this->antiguedad = $antiguedadDTO;
                 } 
             }
-        }
-
-        if (array_key_exists('tasFechaSolicitud', $data)) {
-            $this->tasFechaSolicitud = (string)$data['tasFechaSolicitud'];
         }
     }
 }

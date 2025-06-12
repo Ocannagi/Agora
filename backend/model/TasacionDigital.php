@@ -4,20 +4,20 @@ use Utilidades\Obligatorio;
 
 class TasacionDigital extends ClassBase
 {
-    private int $tasId;
+    private int $tadId;
     #[Obligatorio]
     private Usuario $tasador;
     #[Obligatorio]
     private Usuario $propietario;
     #[Obligatorio]
     private Antiguedad $antiguedad;
-    #[Obligatorio]
-    private DateTime $tasFechaSolicitud;
-    private ?DateTime $tasFechaTasProviRealizada;
-    private ?string $tasObservacionesProv = null;
-    private ?float $tasPrecioProvisoria = null;
-    private ?int $tasTisId = null; 
-    private ?DateTime $tasFechaBaja = null;
+    private DateTime $tadFechaSolicitud;
+    private ?DateTime $tadFechaTasDigitalRealizada;
+    private ?DateTime $tadFechaTasDigitalRechazada = null;
+    private ?string $tadObservacionesDigital = null;
+    private ?float $tadPrecioDigital = null;
+    private ?int $tadTisId = null;
+    private ?DateTime $tadFechaBaja = null;
 
     public static function fromCreacionDTO(ICreacionDTO $dto): self
     {
@@ -29,7 +29,7 @@ class TasacionDigital extends ClassBase
         $instance->tasador = Usuario::fromArray(get_object_vars($dto->tasador));
         $instance->propietario = Usuario::fromArray(get_object_vars($dto->propietario));
         $instance->antiguedad = Antiguedad::fromArray(get_object_vars($dto->antiguedad));
-        $instance->tasFechaSolicitud = DateTime::createFromFormat('Y-m-d', $dto->tasFechaSolicitud);
+        $instance->tadFechaSolicitud = new DateTime();
         return $instance;
     }
 

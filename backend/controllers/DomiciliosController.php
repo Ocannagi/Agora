@@ -176,7 +176,7 @@ class DomiciliosController extends BaseController
     public function deleteDomicilios($id)
     {
         try {
-            $this->securityService->requireLogin(['ST']);
+            $this->securityService->requireLogin(TipoUsuarioEnum::soporteTecnicoToArray());
             settype($id, 'integer');
 
             $queryBusqueda = "SELECT 1
