@@ -72,7 +72,7 @@ class AntiguedadesValidacionService extends ValidacionServiceBase
 
     private function _existePeriodo(int $perId, mysqli $linkExterno): bool
     {
-        $query = "SELECT 1 FROM periodo WHERE perId=$perId";
+        $query = "SELECT 1 FROM periodo WHERE perId=$perId AND perFechaBaja IS NULL";
         return $this->_existeEnBD($linkExterno, $query, "obtener un periodo por id");
     }
 
@@ -101,7 +101,7 @@ class AntiguedadesValidacionService extends ValidacionServiceBase
 
     private function _existeSubcategoria(int $scatId, mysqli $linkExterno): bool
     {
-        $query = "SELECT 1 FROM subcategoria WHERE scatId=$scatId";
+        $query = "SELECT 1 FROM subcategoria WHERE scatId=$scatId AND scatFechaBaja IS NULL";
         return $this->_existeEnBD($linkExterno, $query, "obtener una subcategoría por id");
     }
 
@@ -130,14 +130,22 @@ class AntiguedadesValidacionService extends ValidacionServiceBase
             throw new InvalidArgumentException(message: "El id del usuario no es válido: $usuarioDTO->usrId");
         }
 
-        if (!$this->_existeUsuario($usuarioDTO->usrId, $linkExterno)) {
+        if (!isset($usuarioDTO->usrTipoUsuario)) {
+            throw new InvalidArgumentException(message: 'El tipo de usuario del usuario no fue proporcionado.');
+        }
+
+        if (!in_array($usuarioDTO->usrTipoUsuario, TipoUsuarioEnum::compradorVendedorToArray(), true)) {
+            throw new InvalidArgumentException(message: 'El usuario debe ser de tipo Usuario General o Anticuario.');
+        }
+
+        if (!$this->_existeUsuario($usuarioDTO, $linkExterno)) {
             throw new CustomException(code: 409, message: "El usuario con id $usuarioDTO->usrId no existe con el tipo de usuario requerido.");
         }
     }
 
-    private function _existeUsuario(int $usrId, mysqli $linkExterno): bool
+    private function _existeUsuario(UsuarioDTO $usuario, mysqli $linkExterno): bool
     {
-        $query = "SELECT 1 FROM usuario WHERE usrId=$usrId AND usrFechaBaja IS NULL AND " . TipoUsuarioEnum::compradorVendedorToQuery();
+        $query = "SELECT 1 FROM usuario WHERE usrId=$usuario->usrId AND usrFechaBaja IS NULL AND usrTipoUsuario = $usuario->usrTipoUsuario";
         return $this->_existeEnBD($linkExterno, $query, "obtener un usuario por id");
     }
 
