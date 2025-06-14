@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 11-06-2025 a las 23:33:23
+-- Tiempo de generación: 14-06-2025 a las 21:13:15
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -28,7 +28,7 @@ USE `agora`;
 --
 -- Estructura de tabla para la tabla `antiguedad`
 --
--- Creación: 02-06-2025 a las 00:24:39
+-- Creación: 14-06-2025 a las 14:37:52
 --
 
 DROP TABLE IF EXISTS `antiguedad`;
@@ -69,7 +69,7 @@ INSERT INTO `antiguedad` (`antId`, `antScatId`, `antPerId`, `antDescripcion`, `a
 --
 -- Estructura de tabla para la tabla `categoria`
 --
--- Creación: 02-06-2025 a las 00:24:39
+-- Creación: 14-06-2025 a las 14:37:52
 --
 
 DROP TABLE IF EXISTS `categoria`;
@@ -97,7 +97,7 @@ INSERT INTO `categoria` (`catId`, `catDescripcion`, `catFechaBaja`) VALUES
 --
 -- Estructura de tabla para la tabla `domicilio`
 --
--- Creación: 02-06-2025 a las 00:24:39
+-- Creación: 14-06-2025 a las 14:37:52
 --
 
 DROP TABLE IF EXISTS `domicilio`;
@@ -136,7 +136,7 @@ INSERT INTO `domicilio` (`domId`, `domLocId`, `domCPA`, `domCalleRuta`, `domNroK
 --
 -- Estructura de tabla para la tabla `imagenantiguedad`
 --
--- Creación: 07-06-2025 a las 19:40:26
+-- Creación: 14-06-2025 a las 14:37:52
 --
 
 DROP TABLE IF EXISTS `imagenantiguedad`;
@@ -168,7 +168,7 @@ INSERT INTO `imagenantiguedad` (`imaId`, `imaAntId`, `imaUrl`, `imaNombreArchivo
 --
 -- Estructura de tabla para la tabla `localidad`
 --
--- Creación: 02-06-2025 a las 00:24:39
+-- Creación: 14-06-2025 a las 14:37:52
 --
 
 DROP TABLE IF EXISTS `localidad`;
@@ -233,7 +233,7 @@ INSERT INTO `localidad` (`locId`, `locProvId`, `locDescripcion`, `locFechaInsert
 --
 -- Estructura de tabla para la tabla `periodo`
 --
--- Creación: 02-06-2025 a las 00:24:39
+-- Creación: 14-06-2025 a las 14:37:52
 --
 
 DROP TABLE IF EXISTS `periodo`;
@@ -264,7 +264,7 @@ INSERT INTO `periodo` (`perId`, `perDescripcion`, `perFechaBaja`) VALUES
 --
 -- Estructura de tabla para la tabla `provincia`
 --
--- Creación: 02-06-2025 a las 00:24:39
+-- Creación: 14-06-2025 a las 14:37:52
 --
 
 DROP TABLE IF EXISTS `provincia`;
@@ -312,7 +312,7 @@ INSERT INTO `provincia` (`provId`, `provDescripcion`) VALUES
 --
 -- Estructura de tabla para la tabla `subcategoria`
 --
--- Creación: 02-06-2025 a las 00:24:39
+-- Creación: 14-06-2025 a las 14:37:52
 --
 
 DROP TABLE IF EXISTS `subcategoria`;
@@ -348,19 +348,18 @@ INSERT INTO `subcategoria` (`scatId`, `scatCatId`, `scatDescripcion`, `scatFecha
 --
 -- Estructura de tabla para la tabla `tasaciondigital`
 --
--- Creación: 11-06-2025 a las 21:30:01
--- Última actualización: 11-06-2025 a las 21:28:13
+-- Creación: 14-06-2025 a las 16:01:26
 --
 
 DROP TABLE IF EXISTS `tasaciondigital`;
 CREATE TABLE `tasaciondigital` (
   `tadId` int(10) UNSIGNED NOT NULL,
-  `tadUsrTasador` int(10) UNSIGNED NOT NULL,
-  `tadUsrPropietario` int(10) UNSIGNED NOT NULL,
+  `tadUsrTasId` int(10) UNSIGNED NOT NULL,
+  `tadUsrPropId` int(10) UNSIGNED NOT NULL,
   `tadAntId` int(10) UNSIGNED NOT NULL,
-  `tadFechaSolicitud` datetime NOT NULL DEFAULT current_timestamp(),
-  `tadFechaTasDigitalRealizada` datetime DEFAULT NULL,
-  `tadFechaTasDigitalRechazada` datetime DEFAULT NULL,
+  `tadFechaSolicitud` date NOT NULL DEFAULT current_timestamp(),
+  `tadFechaTasDigitalRealizada` date DEFAULT NULL,
+  `tadFechaTasDigitalRechazada` date DEFAULT NULL,
   `tadObservacionesDigital` varchar(500) DEFAULT NULL,
   `tadPrecioDigital` decimal(15,2) UNSIGNED DEFAULT NULL,
   `tadTisId` int(10) UNSIGNED DEFAULT NULL,
@@ -369,13 +368,13 @@ CREATE TABLE `tasaciondigital` (
 
 --
 -- RELACIONES PARA LA TABLA `tasaciondigital`:
---   `tadUsrPropietario`
+--   `tadUsrPropId`
 --       `usuario` -> `usrId`
 --   `tadAntId`
 --       `antiguedad` -> `antId`
 --   `tadTisId`
 --       `tasacioninsitu` -> `tisId`
---   `tadUsrTasador`
+--   `tadUsrTasId`
 --       `usuario` -> `usrId`
 --
 
@@ -384,16 +383,21 @@ CREATE TABLE `tasaciondigital` (
 --
 -- Estructura de tabla para la tabla `tasacioninsitu`
 --
--- Creación: 09-06-2025 a las 02:23:19
+-- Creación: 14-06-2025 a las 17:58:38
 --
 
 DROP TABLE IF EXISTS `tasacioninsitu`;
 CREATE TABLE `tasacioninsitu` (
   `tisId` int(10) UNSIGNED NOT NULL,
   `tisDomicilioTasacion` int(10) UNSIGNED NOT NULL,
-  `tisFechaTasInSitu` datetime NOT NULL DEFAULT current_timestamp(),
-  `tisPrecioInSitu` decimal(15,2) NOT NULL,
-  `tisFechaBaja` datetime DEFAULT NULL
+  `tisFechaTasInSituSolicitada` date NOT NULL DEFAULT current_timestamp(),
+  `tisFechaTasInSituAcordada` date NOT NULL,
+  `tisFechaTasInSituRealizada` date DEFAULT NULL,
+  `tisFechaTasInSituRechazada` date DEFAULT NULL,
+  `tisObservaciones` varchar(500) DEFAULT NULL,
+  `tisPrecioInSitu` decimal(15,2) DEFAULT NULL,
+  `tisFechaBaja` datetime DEFAULT NULL,
+  `tisActivo` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -407,8 +411,7 @@ CREATE TABLE `tasacioninsitu` (
 --
 -- Estructura de tabla para la tabla `tipoestado`
 --
--- Creación: 02-06-2025 a las 00:24:39
--- Última actualización: 11-06-2025 a las 20:47:21
+-- Creación: 14-06-2025 a las 14:37:52
 --
 
 DROP TABLE IF EXISTS `tipoestado`;
@@ -438,7 +441,7 @@ INSERT INTO `tipoestado` (`tteTipoEstado`, `tteTipoEstadoDescripcion`) VALUES
 --
 -- Estructura de tabla para la tabla `tipousuario`
 --
--- Creación: 02-06-2025 a las 00:24:39
+-- Creación: 14-06-2025 a las 14:37:52
 --
 
 DROP TABLE IF EXISTS `tipousuario`;
@@ -468,7 +471,8 @@ INSERT INTO `tipousuario` (`ttuTipoUsuario`, `ttuDescripcion`, `ttuRequiereMatri
 --
 -- Estructura de tabla para la tabla `tokens`
 --
--- Creación: 02-06-2025 a las 00:24:39
+-- Creación: 14-06-2025 a las 14:37:52
+-- Última actualización: 14-06-2025 a las 14:45:45
 --
 
 DROP TABLE IF EXISTS `tokens`;
@@ -486,15 +490,14 @@ CREATE TABLE `tokens` (
 --
 
 INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NDk1MjcwMzF9.0nqaYIWUXxkOUd4eKvj5kck5G9oDBonECdosrl-P67vH7V6gExqp5FC2oHC1L7ri_qR4DKiUb_Con2PydAyYKg', '2025-06-09 23:43:51'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NDk1MjkxMDd9.axYdPG-siMLVxDFS6kLGhZjjUrtkx7gtxJBlgrCJmbeUwuxzgOevLQ4PYJ4s6toKRvbfIOaUIrEogQNZVf2DzA', '2025-06-10 00:18:27');
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NDk5MTU5NDV9.-SXOivn1RDsWhJK-9dblzzQuXcjmh3ZMm6C4xPNFYgvcTCXT90POAzvSLzCzOOg3vcy8KmyXV280n_j188adOQ', '2025-06-14 11:45:45');
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `usuario`
 --
--- Creación: 02-06-2025 a las 00:24:39
+-- Creación: 14-06-2025 a las 14:37:52
 --
 
 DROP TABLE IF EXISTS `usuario`;
@@ -541,7 +544,7 @@ INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonS
 --
 -- Estructura de tabla para la tabla `usuariotasadorhabilidad`
 --
--- Creación: 02-06-2025 a las 00:24:39
+-- Creación: 14-06-2025 a las 14:37:52
 --
 
 DROP TABLE IF EXISTS `usuariotasadorhabilidad`;
@@ -640,10 +643,10 @@ ALTER TABLE `subcategoria`
 --
 ALTER TABLE `tasaciondigital`
   ADD PRIMARY KEY (`tadId`),
-  ADD KEY `FK_TasadorUsuario` (`tadUsrTasador`),
+  ADD KEY `FK_TasadorUsuario` (`tadUsrTasId`),
   ADD KEY `FK_TasAntAntiguedad` (`tadAntId`),
   ADD KEY `FK_TasPrevTasInSitu` (`tadTisId`),
-  ADD KEY `FK_PropietarioUsuario` (`tadUsrPropietario`);
+  ADD KEY `FK_PropietarioUsuario` (`tadUsrPropId`);
 
 --
 -- Indices de la tabla `tasacioninsitu`
@@ -798,10 +801,10 @@ ALTER TABLE `subcategoria`
 -- Filtros para la tabla `tasaciondigital`
 --
 ALTER TABLE `tasaciondigital`
-  ADD CONSTRAINT `FK_PropietarioUsuario` FOREIGN KEY (`tadUsrPropietario`) REFERENCES `usuario` (`usrId`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_PropietarioUsuario` FOREIGN KEY (`tadUsrPropId`) REFERENCES `usuario` (`usrId`) ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_TasAntAntiguedad` FOREIGN KEY (`tadAntId`) REFERENCES `antiguedad` (`antId`) ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_TasPrevTasInSitu` FOREIGN KEY (`tadTisId`) REFERENCES `tasacioninsitu` (`tisId`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `FK_TasadorUsuario` FOREIGN KEY (`tadUsrTasador`) REFERENCES `usuario` (`usrId`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `FK_TasadorUsuario` FOREIGN KEY (`tadUsrTasId`) REFERENCES `usuario` (`usrId`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `tasacioninsitu`

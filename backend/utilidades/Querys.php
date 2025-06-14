@@ -39,7 +39,7 @@ class Querys
         $count = (int)$result->fetch_assoc()['count'];
         $result->free_result();
         return $count;
-    }   
+    }
 
     /**
      * Recomendado por la Copilot, usar con precaución.

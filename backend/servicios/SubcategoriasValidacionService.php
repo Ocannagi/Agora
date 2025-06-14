@@ -78,7 +78,18 @@ class SubcategoriasValidacionService extends ValidacionServiceBase
     {
         $descripcion = $linkExterno->real_escape_string($descripcion);
 
-        $query = $scatId ? "SELECT 1 FROM subcategoria WHERE scatId <> $scatId AND scatDescripcion='$descripcion' AND scatCatId = $scatCatId AND scatFechaBaja is NULL" : "SELECT 1 FROM subcategoria WHERE scatDescripcion='$descripcion' AND scatCatId = $scatCatId AND scatFechaBaja is NULL";
+        $query = $scatId ? "SELECT 1
+                            FROM subcategoria
+                            WHERE scatId <> $scatId
+                            AND scatDescripcion='$descripcion'
+                            AND scatCatId = $scatCatId
+                            AND scatFechaBaja is NULL" : 
+                            
+                            "SELECT 1 FROM subcategoria
+                            WHERE scatDescripcion='$descripcion'
+                            AND scatCatId = $scatCatId
+                            AND scatFechaBaja is NULL";
+                            
         if ($this->_existeEnBD(link: $linkExterno, query: $query, msg: 'obtener una subcategoría por descripción'))
             throw new CustomException(code: 409, message: $scatId ? "La descripción nueva que quiere registrar para el ID categoría $scatCatId ya existe declarada en otra subcategoría" : "Ya se encuentra registrada la descripción de la subcategoría a crear para el ID categoría $scatCatId.");
     }

@@ -184,4 +184,25 @@ class Input
 
         return $bool;
     }
+
+    /**
+     *  Verifica si una fecha es válida en el formato AAAA-MM-DD.
+     *  Lanza una excepción si el formato es incorrecto o si la fecha no es válida.
+     *  @param string $stringFecha La fecha en formato AAAA-MM-DD.
+     *  @throws InvalidArgumentException Si el formato de la fecha es incorrecto o si la fecha no es válida.
+     */
+    public static function esFechaValida(string $stringFecha) : void
+    {
+        if (!self::_esFormatoFecha($stringFecha))
+            throw new InvalidArgumentException(message: 'El formato de la fecha debe ser AAAA-MM-DD');
+        list($anio, $mes, $dia) = explode('-', $stringFecha); //Revisar
+        if (!checkdate($mes, $dia, $anio)) {
+            throw new InvalidArgumentException(message: 'La fecha no es válida');
+        }
+    }
+
+    private function _esFormatoFecha(string $fecha): bool
+    {
+        return preg_match("/^\d{4}-{1}\d{2}-{1}\d{2}$/", $fecha) === 1;
+    }
 }

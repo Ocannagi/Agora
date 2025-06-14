@@ -146,12 +146,7 @@ class UsuariosValidacionService extends ValidacionServiceBase
 
     private function validarFechaNacimiento(string $stringFecha)
     {
-        if (!$this->_esFormatoFecha($stringFecha))
-            throw new InvalidArgumentException(message: 'El formato de la fecha debe ser AAAA-MM-DD');
-        list($anio, $mes, $dia) = explode('-', $stringFecha); //Revisar
-        if (!checkdate($mes, $dia, $anio)) {
-            throw new InvalidArgumentException(message: 'La fecha no es válida');
-        }
+        Input::esFechaValida($stringFecha);
 
         $dateTimeZone = new DateTimeZone('America/Argentina/Buenos_Aires');
 

@@ -40,4 +40,11 @@ trait TraitGetInterno
         }
         return $ret;
     }
+
+
+    public function getInternoById(string $query, string $classDTO, ?mysqli $linkExterno = null): ?IDTO
+    {
+        $resultados = $this->getInterno($query, $classDTO, $linkExterno);
+        return count($resultados) > 0 ? $resultados[0] : null;
+    }
 }

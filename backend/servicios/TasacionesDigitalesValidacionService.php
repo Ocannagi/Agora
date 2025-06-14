@@ -6,7 +6,7 @@ use Utilidades\Input;
 class TasacionesDigitalesValidacionService extends ValidacionServiceBase
 {
     use TraitValidarTasacion;
-    
+
     private static $instancia = null;
 
     private function __construct()
@@ -36,18 +36,49 @@ class TasacionesDigitalesValidacionService extends ValidacionServiceBase
         $this->validarDatosObligatorios(classModelName: 'TasacionDigital', datos: get_object_vars($tasacionDigital));
         Input::trimStringDatos($tasacionDigital);
 
-        $this->validarTasacionDigital($tasacionDigital, $linkExterno);
-
-
-
         if ($tasacionDigital instanceof TasacionDigitalDTO) {
-           
+            $this->validarSiYafueRegistradoModificar($tasacionDigital, $linkExterno);
+            $this->validarTasacionDigitalDTO($tasacionDigital, $linkExterno);
         } else {
-            
+            $this->validarTasacionDigitalCreacionDTO($tasacionDigital, $linkExterno);
+            $this->validarSiYaFueRegistrado($tasacionDigital, $linkExterno);
         }
     }
 
-   
+    private function validarSiYaFueRegistrado(TasacionDigitalCreacionDTO $tasacionDigital, mysqli $linkExterno)
+    {
+        $query = "SELECT 1 FROM tasaciondigital
+                 WHERE tadUsrTasId = {$tasacionDigital->tasador->usrId}
+                 AND tadUsrPropId = {$tasacionDigital->propietario->usrId}
+                 AND tadAntId = {$tasacionDigital->antiguedad->antId}
+                 AND tadFechaBaja IS NULL
+                 AND tadFechaTasDigitalRealizada IS NULL
+                 AND tadFechaTasDigitalRechazada IS NULL";
 
+        if ($this->_existeEnBD(
+            link: $linkExterno,
+            query: $query,
+            msg: 'verificar si ya existe una tasación digital pendiente de realizar o rechazar.'
+        )) {
+            throw new CustomException(code: 409, message: 'La tasación digital ya fue registrada. Esta pendiente de realizar o rechazar.');
+        }
+    }
+
+    private function validarSiYafueRegistradoModificar(TasacionDigitalDTO $tasacionDigital, mysqli $linkExterno)
+    {
+        $query = "SELECT 1 FROM tasaciondigital
+                 WHERE tadId = {$tasacionDigital->tadId}
+                 AND tadFechaBaja IS NULL
+                 AND tadFechaTasDigitalRealizada IS NULL
+                 AND tadFechaTasDigitalRechazada IS NULL";
+
+        if (!$this->_existeEnBD(
+            link: $linkExterno,
+            query: $query,
+            msg: 'verificar si ya existe una tasación digital pendiente de realizar o rechazar.'
+        )) {
+            throw new CustomException(code: 409, message: 'La tasación digital no existe ');
+        }
+    }
 
 }

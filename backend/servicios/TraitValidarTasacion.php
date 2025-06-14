@@ -1,14 +1,15 @@
 <?php
 
 use Model\CustomException;
+use Utilidades\Input;
 
 trait TraitValidarTasacion
 {
     use TraitGetInterno;
 
-    private function validarTasacionDigital(TasacionDigitalCreacionDTO|TasacionDigitalDTO $tasacionDigital, mysqli $linkExterno)
+    private function validarTasacionDigitalCreacionDTO(TasacionDigitalCreacionDTO $tasacionDigital, mysqli $linkExterno)
     {
-        if (!($tasacionDigital instanceof TasacionDigitalCreacionDTO) && !($tasacionDigital instanceof TasacionDigitalDTO)) {
+        if (!($tasacionDigital instanceof TasacionDigitalCreacionDTO)) {
             throw new CustomException(code: 500, message: 'Error interno: el DTO de tasación digital no es del tipo correcto.');
         }
 
@@ -261,5 +262,114 @@ trait TraitValidarTasacion
             throw new CustomException(code: 409, message: "El tasador con id $tasador->usrId no tiene habilidades para la antigüedad con id $antiguedad->antId.");
         }
 
+    }
+
+
+    /** TasacionDigitalDTO */
+
+
+    private function validarTasacionDigitalDTO(TasacionDigitalDTO $tasacionDigitalDTO, mysqli $linkExterno): void
+    {
+        if (!($tasacionDigitalDTO instanceof TasacionDigitalDTO)) {
+            throw new CustomException(code: 500, message: 'Error interno: el DTO de tasación digital no es del tipo correcto.');
+        }
+
+        if (!isset($tasacionDigitalDTO->tadId)) {
+            throw new InvalidArgumentException(message: 'El ID de la tasación digital no fue proporcionado.');
+        }
+
+        if ($tasacionDigitalDTO->tadId <= 0) {
+            throw new InvalidArgumentException(message: 'El ID de la tasación digital no es válido: ' . $tasacionDigitalDTO->tadId);
+        }
+
+        $this->validarObservacionesDigital($tasacionDigitalDTO->tadObservacionesDigital);
+        $this->validarFechasTasacionDigitalDTO($tasacionDigitalDTO, $linkExterno);
+        $this->validarPrecioDigital($tasacionDigitalDTO);
+    }
+
+
+    private function validarObservacionesDigital(?string $observacionesDigital)
+    {
+        if ($observacionesDigital !== null && !Input::esStringLongitud($observacionesDigital, 1, 500)) {
+            throw new InvalidArgumentException(message: 'Las observaciones digitales deben ser un string de al menos un caracter y un máximo de 500.');
+        }
+    }
+
+    private function validarFechasTasacionDigitalDTO(TasacionDigitalDTO $tasacionDigital, mysqli $linkExterno)
+    {
+        if ($tasacionDigital->tadFechaTasDigitalRealizada !== null) {
+            try {
+                Input::esFechaValida($tasacionDigital->tadFechaTasDigitalRealizada);
+            } catch (\Throwable $th) {
+                throw new InvalidArgumentException(message: 'La fecha de la tasación digital realizada no es válida.');
+            }
+        }
+
+        if ($tasacionDigital->tadFechaTasDigitalRechazada !== null) {
+            try {
+                Input::esFechaValida($tasacionDigital->tadFechaTasDigitalRechazada);
+            } catch (\Throwable $th) {
+                throw new InvalidArgumentException(message: 'La fecha de la tasación digital rechazada no es válida.');
+            }
+        }
+
+        if ($tasacionDigital->tadFechaTasDigitalRealizada !== null && $tasacionDigital->tadFechaTasDigitalRechazada !== null) {
+            throw new InvalidArgumentException(message: 'No se puede establecer una fecha de tasación digital realizada y rechazada al mismo tiempo.');
+        }
+
+        if ($tasacionDigital->tadFechaTasDigitalRealizada === null && $tasacionDigital->tadFechaTasDigitalRechazada === null) {
+            throw new InvalidArgumentException(message: 'Debe establecer al menos una fecha de tasación digital realizada o rechazada.');
+        }
+
+        $tasacionDigitalBD = $this->getInternoById(
+            query: "SELECT tadFechaTasDigitalRealizada, tadFechaTasDigitalRechazada
+                    FROM tasaciondigital
+                    WHERE tadId = {$tasacionDigital->tadId}
+                    AND tadFechaBaja IS NULL",
+            classDTO: TasacionDigitalDTO::class,
+            linkExterno: $linkExterno
+        );
+
+        if ($tasacionDigitalBD === null || !($tasacionDigitalBD instanceof TasacionDigitalDTO)) {
+            throw new InvalidArgumentException(message: 'La tasación digital no existe en la base de datos.');
+        } else {
+            $fSolicitud = new DateTime($tasacionDigitalBD->tadFechaSolicitud);
+
+            if ($tasacionDigital->tadFechaTasDigitalRealizada !== null) {
+                $fRealizada = new DateTime($tasacionDigital->tadFechaTasDigitalRealizada);
+                if ($fRealizada < $fSolicitud) {
+                    throw new InvalidArgumentException(message: 'La fecha de la tasación digital realizada no puede ser anterior a la fecha de solicitud.');
+                }
+            }
+            if ($tasacionDigital->tadFechaTasDigitalRechazada !== null) {
+                $fRechazada = new DateTime($tasacionDigital->tadFechaTasDigitalRechazada);
+                if ($fRechazada < $fSolicitud) {
+                    throw new InvalidArgumentException(message: 'La fecha de la tasación digital rechazada no puede ser anterior a la fecha de solicitud.');
+                }
+            }
+        }
+
+    }
+
+    private function validarPrecioDigital(TasacionDigitalDTO $tasacionDigitalDTO)
+    {
+        if ($tasacionDigitalDTO->tadPrecioDigital !== null) {
+            if (!is_numeric($tasacionDigitalDTO->tadPrecioDigital)) {
+                throw new InvalidArgumentException(message: 'El precio digital debe ser un número.');
+            }
+            if ($tasacionDigitalDTO->tadPrecioDigital < 0) {
+                throw new InvalidArgumentException(message: 'El precio digital no puede ser negativo.');
+            }
+            if ($tasacionDigitalDTO->tadPrecioDigital > 9999999999999.99) {
+                throw new InvalidArgumentException(message: 'El precio digital no puede ser mayor a 9999999999999.99');
+            }
+        }
+
+        if ($tasacionDigitalDTO->tadFechaTasDigitalRealizada !== null && $tasacionDigitalDTO->tadPrecioDigital === null) {
+            throw new InvalidArgumentException(message: 'El precio digital debe ser proporcionado si la tasación digital fue realizada.');
+        }
+        if ($tasacionDigitalDTO->tadFechaTasDigitalRechazada !== null && $tasacionDigitalDTO->tadPrecioDigital !== null) {
+            throw new InvalidArgumentException(message: 'El precio digital no debe ser proporcionado si la tasación digital fue rechazada.');
+        }
     }
 }

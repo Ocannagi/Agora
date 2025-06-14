@@ -193,11 +193,6 @@ abstract class ValidacionServiceBase
         return $bool;
     }
 
-    protected function _esFormatoFecha(string $fecha): bool
-    {
-        return preg_match("/^\d{4}-{1}\d{2}-{1}\d{2}$/", $fecha) === 1;
-    }
-
     /***************************** Funciones privadas que conectan a BD con link externo ********************************/
 
     /**
