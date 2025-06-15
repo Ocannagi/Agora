@@ -13,7 +13,6 @@ class TasacionDigitalDTO implements IDTO
     public ?string $tadFechaTasDigitalRechazada = null; // Fecha de la tasación rechazada.
     public ?string $tadObservacionesDigital = null; // Observaciones de la tasación.
     public ?float $tadPrecioDigital = null; // Precio de la tasación digital.
-    public ?int $tadTisId = null;
 
 
     use TraitMapUsuarioDTO; // Trait para mapear UsuarioDTO
@@ -39,6 +38,8 @@ class TasacionDigitalDTO implements IDTO
                     $this->tasador = $usuarioDTO;
                 }
             }
+        } else if (array_key_exists('tadUsrTasId', $data)) {
+            $this->tasador = $this->mapUsuarioDTO(['usrId' => (int)$data['tadUsrTasId']]);
         }
 
         if (array_key_exists('propietario', $data)) {
@@ -50,6 +51,8 @@ class TasacionDigitalDTO implements IDTO
                     $this->propietario = $usuarioDTO;
                 }
             }
+        } else if (array_key_exists('tadUsrPropId', $data)) {
+            $this->propietario = $this->mapUsuarioDTO(['usrId' => (int)$data['tadUsrPropId']]);
         }
 
         if (array_key_exists('antiguedad', $data)) {
@@ -61,6 +64,8 @@ class TasacionDigitalDTO implements IDTO
                     $this->antiguedad = $antiguedadDTO;
                 }
             }
+        } else if (array_key_exists('tadAntId', $data)) {
+            $this->antiguedad = $this->mapAntiguedadDTO(['antId' => (int)$data['tadAntId']]);
         }
 
         if (array_key_exists('tadFechaSolicitud', $data)) {

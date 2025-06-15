@@ -6,8 +6,9 @@ use Utilidades\Input;
 trait TraitValidarTasacion
 {
     use TraitGetInterno;
+    use TraitGetByIdInterno;
 
-    private function validarTasacionDigitalCreacionDTO(TasacionDigitalCreacionDTO $tasacionDigital, mysqli $linkExterno)
+    private function validarTasacionDigitalCreacionDTO(TasacionDigitalCreacionDTO $tasacionDigital, mysqli $linkExterno, bool $corroborarExistencia = true)
     {
         if (!($tasacionDigital instanceof TasacionDigitalCreacionDTO)) {
             throw new CustomException(code: 500, message: 'Error interno: el DTO de tasación digital no es del tipo correcto.');
@@ -25,14 +26,14 @@ trait TraitValidarTasacion
             throw new InvalidArgumentException(message: 'La antigüedad no fue proporcionada o no es del tipo correcto.');
         }
 
-        $this->validarTasador($tasacionDigital->tasador, $linkExterno);
-        $this->validarPropietario($tasacionDigital->propietario, $linkExterno);
-        $this->validarAntiguedadDTO($tasacionDigital->antiguedad, $linkExterno);
-        $this->validarAntieguedadPropietario($tasacionDigital->antiguedad, $tasacionDigital->propietario, $linkExterno);
+        $this->validarTasador($tasacionDigital->tasador, $linkExterno, $corroborarExistencia);
+        $this->validarPropietario($tasacionDigital->propietario, $linkExterno, $corroborarExistencia);
+        $this->validarAntiguedadDTO($tasacionDigital->antiguedad, $linkExterno, $corroborarExistencia);
+        $this->validarAntieguedadPropietario($tasacionDigital->antiguedad, $tasacionDigital->propietario);
         $this->validarHabilidadesTasadorAntiguedad($tasacionDigital->tasador, $tasacionDigital->antiguedad, $linkExterno);
     }
 
-    private function validarTasador(UsuarioDTO $tasadorDTO, mysqli $linkExterno)
+    private function validarTasador(UsuarioDTO $tasadorDTO, mysqli $linkExterno, $corroborarExistencia = true)
     {
         if (!($tasadorDTO instanceof UsuarioDTO)) {
             throw new CustomException(code: 500, message: 'Error interno: el DTO de tasador no es del tipo correcto.');
@@ -50,20 +51,23 @@ trait TraitValidarTasacion
             throw new InvalidArgumentException(message: 'El tipo de usuario del tasador no fue proporcionado.');
         }
 
-        if(in_array($tasadorDTO->usrTipoUsuario, TipoUsuarioEnum::tasadorToArray()) === false) {
+        if (in_array($tasadorDTO->usrTipoUsuario, TipoUsuarioEnum::tasadorToArray()) === false) {
             throw new InvalidArgumentException(message: 'El usuario tasador debe ser de tipo "tasador".');
         }
 
-        if(!$this->_existeEnBD(
-            link: $linkExterno,
-            query: "SELECT usrId FROM usuario WHERE usrId = $tasadorDTO->usrId AND usrFechaBaja IS NULL AND usrTipoUsuario = '{$tasadorDTO->usrTipoUsuario}'",
-            msg: 'validar tasador'
-        )) {
-            throw new InvalidArgumentException(message: 'El tasador no existe en la base de datos.');
+        if ($corroborarExistencia) {
+
+            if (!$this->_existeEnBD(
+                link: $linkExterno,
+                query: "SELECT usrId FROM usuario WHERE usrId = $tasadorDTO->usrId AND usrFechaBaja IS NULL AND usrTipoUsuario = '{$tasadorDTO->usrTipoUsuario}'",
+                msg: 'validar tasador'
+            )) {
+                throw new InvalidArgumentException(message: 'El tasador no existe en la base de datos.');
+            }
         }
     }
-    
-    private function validarPropietario(UsuarioDTO $propietarioDTO, mysqli $linkExterno)
+
+    private function validarPropietario(UsuarioDTO $propietarioDTO, mysqli $linkExterno, $corroborarExistencia = true)
     {
         if (!($propietarioDTO instanceof UsuarioDTO)) {
             throw new CustomException(code: 500, message: 'Error interno: el DTO de propietario no es del tipo correcto.');
@@ -81,20 +85,23 @@ trait TraitValidarTasacion
             throw new InvalidArgumentException(message: 'El tipo de usuario del propietario no fue proporcionado.');
         }
 
-        if(in_array($propietarioDTO->usrTipoUsuario, TipoUsuarioEnum::compradorVendedorToArray()) === false) {
+        if (in_array($propietarioDTO->usrTipoUsuario, TipoUsuarioEnum::compradorVendedorToArray()) === false) {
             throw new InvalidArgumentException(message: 'El usuario propietario debe ser de tipo "anticuario" o "general".');
         }
 
-        if(!$this->_existeEnBD(
-            link: $linkExterno,
-            query: "SELECT usrId FROM usuario WHERE usrId = $propietarioDTO->usrId AND usrFechaBaja IS NULL AND usrTipoUsuario = '{$propietarioDTO->usrTipoUsuario}'",
-            msg: 'validar propietario'
-        )) {
-            throw new InvalidArgumentException(message: 'El propietario no existe en la base de datos.');
+        if ($corroborarExistencia) {
+
+            if (!$this->_existeEnBD(
+                link: $linkExterno,
+                query: "SELECT usrId FROM usuario WHERE usrId = $propietarioDTO->usrId AND usrFechaBaja IS NULL AND usrTipoUsuario = '{$propietarioDTO->usrTipoUsuario}'",
+                msg: 'validar propietario'
+            )) {
+                throw new InvalidArgumentException(message: 'El propietario no existe en la base de datos.');
+            }
         }
     }
-    
-    private function validarAntiguedadDTO(AntiguedadDTO $antiguedadDTO, mysqli $linkExterno)
+
+    private function validarAntiguedadDTO(AntiguedadDTO $antiguedadDTO, mysqli $linkExterno, $corroborarExistencia = true)
     {
         if (!($antiguedadDTO instanceof AntiguedadDTO)) {
             throw new CustomException(code: 500, message: 'Error interno: el DTO de antigüedad no es del tipo correcto.');
@@ -104,12 +111,12 @@ trait TraitValidarTasacion
             throw new InvalidArgumentException(message: 'El id de la antigüedad no fue proporcionado.');
         }
 
-        $this->validarPeriodo($antiguedadDTO->periodo, $linkExterno);
-        $this->validarSubcategoria($antiguedadDTO->subcategoria, $linkExterno);
-        $this->_validarAntiguedadDTO($antiguedadDTO, $linkExterno);
+        $this->validarPeriodo($antiguedadDTO->periodo, $linkExterno, $corroborarExistencia);
+        $this->validarSubcategoria($antiguedadDTO->subcategoria, $linkExterno, $corroborarExistencia);
+        $this->_validarAntiguedadDTO($antiguedadDTO, $linkExterno, $corroborarExistencia);
     }
 
-    private function validarPeriodo(PeriodoDTO $periodoDTO, mysqli $linkExterno)
+    private function validarPeriodo(PeriodoDTO $periodoDTO, mysqli $linkExterno, $corroborarExistencia = true)
     {
         if (!($periodoDTO instanceof PeriodoDTO)) {
             throw new CustomException(code: 500, message: 'Error interno: el DTO de periodo no es del tipo correcto.');
@@ -127,8 +134,10 @@ trait TraitValidarTasacion
             throw new InvalidArgumentException(message: "El id del periodo no es válido: $periodoDTO->perId");
         }
 
-        if (!$this->_existePeriodo($periodoDTO->perId, $linkExterno)) {
-            throw new CustomException(code: 409, message: "El periodo con id $periodoDTO->perId no existe.");
+        if ($corroborarExistencia) {
+            if (!$this->_existePeriodo($periodoDTO->perId, $linkExterno)) {
+                throw new CustomException(code: 409, message: "El periodo con id $periodoDTO->perId no existe.");
+            }
         }
     }
 
@@ -138,7 +147,7 @@ trait TraitValidarTasacion
         return $this->_existeEnBD($linkExterno, $query, "obtener un periodo por id");
     }
 
-    private function validarSubcategoria(SubcategoriaDTO $subcategoriaDTO, mysqli $linkExterno)
+    private function validarSubcategoria(SubcategoriaDTO $subcategoriaDTO, mysqli $linkExterno, $corroborarExistencia = true)
     {
         if (!($subcategoriaDTO instanceof SubcategoriaDTO)) {
             throw new CustomException(code: 500, message: 'Error interno: el DTO de subcategoría no es del tipo correcto.');
@@ -156,8 +165,10 @@ trait TraitValidarTasacion
             throw new InvalidArgumentException(message: "El id de la subcategoría no es válido: $subcategoriaDTO->scatId");
         }
 
-        if (!$this->_existeSubcategoria($subcategoriaDTO->scatId, $linkExterno)) {
-            throw new CustomException(code: 409, message: "La subcategoría con id $subcategoriaDTO->scatId no existe.");
+        if ($corroborarExistencia) {
+            if (!$this->_existeSubcategoria($subcategoriaDTO->scatId, $linkExterno)) {
+                throw new CustomException(code: 409, message: "La subcategoría con id $subcategoriaDTO->scatId no existe.");
+            }
         }
     }
 
@@ -167,7 +178,7 @@ trait TraitValidarTasacion
         return $this->_existeEnBD($linkExterno, $query, "obtener una subcategoría por id");
     }
 
-    private function _validarAntiguedadDTO(AntiguedadDTO $antiguedadDTO, mysqli $linkExterno)
+    private function _validarAntiguedadDTO(AntiguedadDTO $antiguedadDTO, mysqli $linkExterno, $corroborarExistencia = true)
     {
         if (!($antiguedadDTO instanceof AntiguedadDTO)) {
             throw new CustomException(code: 500, message: 'Error interno: el DTO de antigüedad no es del tipo correcto.');
@@ -189,19 +200,21 @@ trait TraitValidarTasacion
             throw new InvalidArgumentException(message: 'El tipo de estado de la antigüedad no puede ser "RetiradoNoDisponible".');
         }
 
-        if (!$this->_existeEnBD(
-            link: $linkExterno,
-            query: "SELECT antId FROM antiguedad
+        if ($corroborarExistencia) {
+            if (!$this->_existeEnBD(
+                link: $linkExterno,
+                query: "SELECT antId FROM antiguedad
                     WHERE antId = $antiguedadDTO->antId
                     AND antUsrId = '{$antiguedadDTO->usuario->usrId}'
                     AND antTipoEstado = '{$antiguedadDTO->tipoEstado->value}'",
-            msg: 'validar antigüedad'
-        )) {
-            throw new InvalidArgumentException(message: 'La antigüedad no existe en la base de datos con los datos consignados.');
+                msg: 'validar antigüedad'
+            )) {
+                throw new InvalidArgumentException(message: 'La antigüedad no existe en la base de datos con los datos consignados.');
+            }
         }
     }
 
-    private function validarAntieguedadPropietario(AntiguedadDTO $antiguedadDTO, UsuarioDTO $propietarioDTO, mysqli $linkExterno)
+    private function validarAntieguedadPropietario(AntiguedadDTO $antiguedadDTO, UsuarioDTO $propietarioDTO)
     {
         if (!($antiguedadDTO instanceof AntiguedadDTO)) {
             throw new CustomException(code: 500, message: 'Error interno: el DTO de antigüedad no es del tipo correcto.');
@@ -261,14 +274,13 @@ trait TraitValidarTasacion
         if (empty($habilidadesValidas)) {
             throw new CustomException(code: 409, message: "El tasador con id $tasador->usrId no tiene habilidades para la antigüedad con id $antiguedad->antId.");
         }
-
     }
 
 
     /** TasacionDigitalDTO */
 
 
-    private function validarTasacionDigitalDTO(TasacionDigitalDTO $tasacionDigitalDTO, mysqli $linkExterno): void
+    private function validarTasacionDigitalDTO(TasacionDigitalDTO $tasacionDigitalDTO): void
     {
         if (!($tasacionDigitalDTO instanceof TasacionDigitalDTO)) {
             throw new CustomException(code: 500, message: 'Error interno: el DTO de tasación digital no es del tipo correcto.');
@@ -283,7 +295,7 @@ trait TraitValidarTasacion
         }
 
         $this->validarObservacionesDigital($tasacionDigitalDTO->tadObservacionesDigital);
-        $this->validarFechasTasacionDigitalDTO($tasacionDigitalDTO, $linkExterno);
+        $this->validarFechasTasacionDigitalDTO($tasacionDigitalDTO);
         $this->validarPrecioDigital($tasacionDigitalDTO);
     }
 
@@ -295,60 +307,38 @@ trait TraitValidarTasacion
         }
     }
 
-    private function validarFechasTasacionDigitalDTO(TasacionDigitalDTO $tasacionDigital, mysqli $linkExterno)
+    private function validarFechasTasacionDigitalDTO(TasacionDigitalDTO $tasacionDigital)
     {
-        if ($tasacionDigital->tadFechaTasDigitalRealizada !== null) {
-            try {
-                Input::esFechaValida($tasacionDigital->tadFechaTasDigitalRealizada);
-            } catch (\Throwable $th) {
-                throw new InvalidArgumentException(message: 'La fecha de la tasación digital realizada no es válida.');
-            }
+        if (Input::esNotNullVacioBlanco($tasacionDigital->tadFechaTasDigitalRealizada)) {
+            Input::esFechaValida($tasacionDigital->tadFechaTasDigitalRealizada);
         }
 
-        if ($tasacionDigital->tadFechaTasDigitalRechazada !== null) {
-            try {
-                Input::esFechaValida($tasacionDigital->tadFechaTasDigitalRechazada);
-            } catch (\Throwable $th) {
-                throw new InvalidArgumentException(message: 'La fecha de la tasación digital rechazada no es válida.');
-            }
+        if (Input::esNotNullVacioBlanco($tasacionDigital->tadFechaTasDigitalRechazada)) {
+            Input::esFechaValida($tasacionDigital->tadFechaTasDigitalRechazada);
         }
 
-        if ($tasacionDigital->tadFechaTasDigitalRealizada !== null && $tasacionDigital->tadFechaTasDigitalRechazada !== null) {
+        if (Input::esNotNullVacioBlanco($tasacionDigital->tadFechaTasDigitalRealizada) && Input::esNotNullVacioBlanco($tasacionDigital->tadFechaTasDigitalRechazada)) {
             throw new InvalidArgumentException(message: 'No se puede establecer una fecha de tasación digital realizada y rechazada al mismo tiempo.');
         }
 
-        if ($tasacionDigital->tadFechaTasDigitalRealizada === null && $tasacionDigital->tadFechaTasDigitalRechazada === null) {
+        if (!Input::esNotNullVacioBlanco($tasacionDigital->tadFechaTasDigitalRealizada) && !Input::esNotNullVacioBlanco($tasacionDigital->tadFechaTasDigitalRechazada)) {
             throw new InvalidArgumentException(message: 'Debe establecer al menos una fecha de tasación digital realizada o rechazada.');
         }
 
-        $tasacionDigitalBD = $this->getInternoById(
-            query: "SELECT tadFechaTasDigitalRealizada, tadFechaTasDigitalRechazada
-                    FROM tasaciondigital
-                    WHERE tadId = {$tasacionDigital->tadId}
-                    AND tadFechaBaja IS NULL",
-            classDTO: TasacionDigitalDTO::class,
-            linkExterno: $linkExterno
-        );
+        $fSolicitud = new DateTime($tasacionDigital->tadFechaSolicitud);
 
-        if ($tasacionDigitalBD === null || !($tasacionDigitalBD instanceof TasacionDigitalDTO)) {
-            throw new InvalidArgumentException(message: 'La tasación digital no existe en la base de datos.');
-        } else {
-            $fSolicitud = new DateTime($tasacionDigitalBD->tadFechaSolicitud);
-
-            if ($tasacionDigital->tadFechaTasDigitalRealizada !== null) {
-                $fRealizada = new DateTime($tasacionDigital->tadFechaTasDigitalRealizada);
-                if ($fRealizada < $fSolicitud) {
-                    throw new InvalidArgumentException(message: 'La fecha de la tasación digital realizada no puede ser anterior a la fecha de solicitud.');
-                }
-            }
-            if ($tasacionDigital->tadFechaTasDigitalRechazada !== null) {
-                $fRechazada = new DateTime($tasacionDigital->tadFechaTasDigitalRechazada);
-                if ($fRechazada < $fSolicitud) {
-                    throw new InvalidArgumentException(message: 'La fecha de la tasación digital rechazada no puede ser anterior a la fecha de solicitud.');
-                }
+        if (Input::esNotNullVacioBlanco($tasacionDigital->tadFechaTasDigitalRealizada)) {
+            $fRealizada = new DateTime($tasacionDigital->tadFechaTasDigitalRealizada);
+            if ($fRealizada < $fSolicitud) {
+                throw new InvalidArgumentException(message: 'La fecha de la tasación digital realizada no puede ser anterior a la fecha de solicitud.');
             }
         }
-
+        if (Input::esNotNullVacioBlanco($tasacionDigital->tadFechaTasDigitalRechazada)) {
+            $fRechazada = new DateTime($tasacionDigital->tadFechaTasDigitalRechazada);
+            if ($fRechazada < $fSolicitud) {
+                throw new InvalidArgumentException(message: 'La fecha de la tasación digital rechazada no puede ser anterior a la fecha de solicitud.');
+            }
+        }
     }
 
     private function validarPrecioDigital(TasacionDigitalDTO $tasacionDigitalDTO)
@@ -365,10 +355,10 @@ trait TraitValidarTasacion
             }
         }
 
-        if ($tasacionDigitalDTO->tadFechaTasDigitalRealizada !== null && $tasacionDigitalDTO->tadPrecioDigital === null) {
+        if (Input::esNotNullVacioBlanco($tasacionDigitalDTO->tadFechaTasDigitalRealizada) && $tasacionDigitalDTO->tadPrecioDigital === null) {
             throw new InvalidArgumentException(message: 'El precio digital debe ser proporcionado si la tasación digital fue realizada.');
         }
-        if ($tasacionDigitalDTO->tadFechaTasDigitalRechazada !== null && $tasacionDigitalDTO->tadPrecioDigital !== null) {
+        if (Input::esNotNullVacioBlanco($tasacionDigitalDTO->tadFechaTasDigitalRechazada) && $tasacionDigitalDTO->tadPrecioDigital !== null) {
             throw new InvalidArgumentException(message: 'El precio digital no debe ser proporcionado si la tasación digital fue rechazada.');
         }
     }

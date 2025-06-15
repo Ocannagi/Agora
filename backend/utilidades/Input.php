@@ -194,15 +194,20 @@ class Input
     public static function esFechaValida(string $stringFecha) : void
     {
         if (!self::_esFormatoFecha($stringFecha))
-            throw new InvalidArgumentException(message: 'El formato de la fecha debe ser AAAA-MM-DD');
+            throw new InvalidArgumentException(message: 'El formato de la fecha debe ser AAAA-MM-DD. La fecha ingresada es: ' . $stringFecha);
         list($anio, $mes, $dia) = explode('-', $stringFecha); //Revisar
         if (!checkdate($mes, $dia, $anio)) {
-            throw new InvalidArgumentException(message: 'La fecha no es válida');
+            throw new InvalidArgumentException(message: 'La fecha no es válida. La fecha ingresada es: ' . $stringFecha);
         }
     }
 
-    private function _esFormatoFecha(string $fecha): bool
+    private static function _esFormatoFecha(string $fecha): bool
     {
-        return preg_match("/^\d{4}-{1}\d{2}-{1}\d{2}$/", $fecha) === 1;
+        return  preg_match("/^\d{4}-{1}\d{2}-{1}\d{2}$/", $fecha) === 1;
+    }
+
+    public static function redondearNumero(float $numero, int $decimales = 2): float
+    {
+        return round($numero, $decimales);
     }
 }

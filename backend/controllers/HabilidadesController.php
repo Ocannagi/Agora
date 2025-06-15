@@ -147,11 +147,13 @@ class HabilidadesController extends BaseController
                 // El usuario tasador y el usuario anticuario sólo pueden agregar habilidades a sí mismos.
                 if ($claimDTO->usrTipoUsuario == 'UT' || $claimDTO->usrTipoUsuario == 'UA') {
                     $habilidadCreacionDTO->usuario->usrId = $claimDTO->usrId;
+                    $habilidadCreacionDTO->usuario->usrTipoUsuario = $claimDTO->usrTipoUsuario;
                 }
                 // A modo de prueba, el usuario técnico puede agregar habilidades a cualquier usuario o a sí mismo.
                 if ($claimDTO->usrTipoUsuario == 'ST') {
-                    if ($habilidadCreacionDTO->usuario->usrId == 0)
+                    if (!isset($habilidadCreacionDTO->usuario->usrId) || $habilidadCreacionDTO->usuario->usrId == 0)
                         $habilidadCreacionDTO->usuario->usrId = $claimDTO->usrId;
+                        $habilidadCreacionDTO->usuario->usrTipoUsuario = $claimDTO->usrTipoUsuario;
                 }
             }
 
@@ -185,13 +187,13 @@ class HabilidadesController extends BaseController
             $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::tasadorToArray());
             settype($id, 'integer');
 
-            if ($claimDTO->usrTipoUsuario == 'UT' || $claimDTO->usrTipoUsuario == 'UA') {
-                if ($id != $claimDTO->usrId) {
-                    Output::outputError(403, "No tiene permiso para eliminar la habilidad de otro usuario.");
-                }
+            $queryBusqueda = "SELECT utsId FROM usuariotasadorhabilidad WHERE utsId = $id AND utsFechaBaja IS NULL";
+
+            if($claimDTO->usrTipoUsuario != 'ST') {
+                // El usuario tasador y el usuario anticuario sólo pueden dar de baja sus propias habilidades.
+                $queryBusqueda .= " AND utsUsrId = {$claimDTO->usrId}";
             }
 
-            $queryBusqueda = "SELECT utsId FROM usuariotasadorhabilidad WHERE utsId = $id AND utsFechaBaja IS NULL";
             $queryBajaLogica = "UPDATE usuariotasadorhabilidad SET utsFechaBaja = CURRENT_TIMESTAMP() WHERE utsId = $id";
 
             return parent::delete(queryBusqueda: $queryBusqueda, queryBajaLogica: $queryBajaLogica);

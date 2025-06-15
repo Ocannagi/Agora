@@ -26,6 +26,14 @@ enum TipoUsuarioEnum: string
         ]);
     }
 
+    public function isSolicitanteTasacion(): bool
+    {
+        return in_array($this, [
+            self::UsuarioGeneral,
+            self::SoporteTecnico // Solo para pruebas
+        ]);
+    }
+
     public static function compradorVendedorToArray(): array
     {
         return [
@@ -56,4 +64,14 @@ enum TipoUsuarioEnum: string
             self::SoporteTecnico->value
         ];
     }
+
+    public static function solicitanteTasacionToArray(): array
+    {
+        return [
+            self::UsuarioGeneral->value,
+            self::SoporteTecnico->value // Solo para pruebas
+        ];
+    }
+
+
 }

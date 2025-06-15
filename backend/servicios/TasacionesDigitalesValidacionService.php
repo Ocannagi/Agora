@@ -38,9 +38,9 @@ class TasacionesDigitalesValidacionService extends ValidacionServiceBase
 
         if ($tasacionDigital instanceof TasacionDigitalDTO) {
             $this->validarSiYafueRegistradoModificar($tasacionDigital, $linkExterno);
-            $this->validarTasacionDigitalDTO($tasacionDigital, $linkExterno);
+            $this->validarTasacionDigitalDTO($tasacionDigital);
         } else {
-            $this->validarTasacionDigitalCreacionDTO($tasacionDigital, $linkExterno);
+            $this->validarTasacionDigitalCreacionDTO($tasacionDigital, $linkExterno, false);
             $this->validarSiYaFueRegistrado($tasacionDigital, $linkExterno);
         }
     }
@@ -77,7 +77,7 @@ class TasacionesDigitalesValidacionService extends ValidacionServiceBase
             query: $query,
             msg: 'verificar si ya existe una tasación digital pendiente de realizar o rechazar.'
         )) {
-            throw new CustomException(code: 409, message: 'La tasación digital no existe ');
+            throw new CustomException(code: 409, message: 'No existe una tasación digital pendiente de realizar o rechazar.');
         }
     }
 

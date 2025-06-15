@@ -145,8 +145,9 @@ class UsuariosController extends BaseController
 
             Input::agregarComillas_ConvertNULLtoString($usuarioDTO); // cuidado con el password, no usar el de usuarioDTO, usar el de la variable anterior que ya fue escapada, hasheada y se le agregaron comillas simples.
 
+            /** NO SE DEBE MODIFICAR EL TIPO DE USUARIO */
             $query = "UPDATE usuario SET usrDni = $usuarioDTO->usrDni, usrApellido = $usuarioDTO->usrApellido, usrNombre = $usuarioDTO->usrNombre, usrRazonSocialFantasia = $usuarioDTO->usrRazonSocialFantasia , usrCuitCuil = $usuarioDTO->usrCuitCuil,
-            usrTipoUsuario = $usuarioDTO->usrTipoUsuario, usrMatricula = $usuarioDTO->usrMatricula, usrDomicilio = {$usuarioDTO->domicilio->domId}, usrFechaNacimiento = $usuarioDTO->usrFechaNacimiento, usrDescripcion = $usuarioDTO->usrDescripcion,
+            /* usrTipoUsuario = $usuarioDTO->usrTipoUsuario, */ usrMatricula = $usuarioDTO->usrMatricula, usrDomicilio = {$usuarioDTO->domicilio->domId}, usrFechaNacimiento = $usuarioDTO->usrFechaNacimiento, usrDescripcion = $usuarioDTO->usrDescripcion,
             usrScoring = $usuarioDTO->usrScoring, usrEmail = $usuarioDTO->usrEmail,
             usrPassword = $hashPassword WHERE usrId = $usuarioDTO->usrId AND usrFechaBaja IS NULL";
 

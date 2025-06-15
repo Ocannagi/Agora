@@ -16,7 +16,6 @@ class TasacionDigital extends ClassBase
     private ?DateTime $tadFechaTasDigitalRechazada = null;
     private ?string $tadObservacionesDigital = null;
     private ?float $tadPrecioDigital = null;
-    private ?int $tadTisId = null;
     private ?DateTime $tadFechaBaja = null;
 
     public static function fromCreacionDTO(ICreacionDTO $dto): self

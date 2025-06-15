@@ -24,6 +24,10 @@ trait TraitMapUsuarioDTO
             $arrayUsr['usrId'] = (int)$data['usrId'];
         else if (array_key_exists('antUsrId', $data))
             $arrayUsr['usrId'] = (int)$data['antUsrId'];
+        else if (array_key_exists('tadUsrTasId', $data))
+            $arrayUsr['usrId'] = (int)$data['tadUsrTasId'];
+        else if (array_key_exists('tadUsrPropId', $data))
+            $arrayUsr['usrId'] = (int)$data['tadUsrPropId'];
         else
             return null;
 
@@ -38,7 +42,7 @@ trait TraitMapUsuarioDTO
 
         if (array_key_exists('usrRazonSocialFantasia', $data))
             $arrayUsr['usrRazonSocialFantasia'] = (string)$data['usrRazonSocialFantasia'];
-        
+
         if (array_key_exists('usrCuitCuil', $data))
             $arrayUsr['usrCuitCuil'] = (string)$data['usrCuitCuil'];
 
@@ -71,7 +75,7 @@ trait TraitMapUsuarioDTO
 
         if (array_key_exists('usrPassword', $data))
             $arrayUsr['usrPassword'] = (string)$data['usrPassword'];
-        
+
         return $returnArray ? $arrayUsr : new UsuarioDTO($arrayUsr);
     }
 }
