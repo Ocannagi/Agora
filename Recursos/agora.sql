@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 14-06-2025 a las 21:13:15
+-- Tiempo de generación: 15-06-2025 a las 20:45:54
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -348,7 +348,8 @@ INSERT INTO `subcategoria` (`scatId`, `scatCatId`, `scatDescripcion`, `scatFecha
 --
 -- Estructura de tabla para la tabla `tasaciondigital`
 --
--- Creación: 14-06-2025 a las 16:01:26
+-- Creación: 15-06-2025 a las 18:38:55
+-- Última actualización: 15-06-2025 a las 18:38:55
 --
 
 DROP TABLE IF EXISTS `tasaciondigital`;
@@ -362,7 +363,6 @@ CREATE TABLE `tasaciondigital` (
   `tadFechaTasDigitalRechazada` date DEFAULT NULL,
   `tadObservacionesDigital` varchar(500) DEFAULT NULL,
   `tadPrecioDigital` decimal(15,2) UNSIGNED DEFAULT NULL,
-  `tadTisId` int(10) UNSIGNED DEFAULT NULL,
   `tadFechaBaja` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -372,29 +372,35 @@ CREATE TABLE `tasaciondigital` (
 --       `usuario` -> `usrId`
 --   `tadAntId`
 --       `antiguedad` -> `antId`
---   `tadTisId`
---       `tasacioninsitu` -> `tisId`
 --   `tadUsrTasId`
 --       `usuario` -> `usrId`
 --
+
+--
+-- Volcado de datos para la tabla `tasaciondigital`
+--
+
+INSERT INTO `tasaciondigital` (`tadId`, `tadUsrTasId`, `tadUsrPropId`, `tadAntId`, `tadFechaSolicitud`, `tadFechaTasDigitalRealizada`, `tadFechaTasDigitalRechazada`, `tadObservacionesDigital`, `tadPrecioDigital`, `tadFechaBaja`) VALUES
+(1, 3, 2, 3, '2025-06-14', '2025-06-15', NULL, 'Ta buena la mesa', 590000000.95, NULL);
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `tasacioninsitu`
 --
--- Creación: 14-06-2025 a las 17:58:38
+-- Creación: 15-06-2025 a las 18:41:33
 --
 
 DROP TABLE IF EXISTS `tasacioninsitu`;
 CREATE TABLE `tasacioninsitu` (
   `tisId` int(10) UNSIGNED NOT NULL,
-  `tisDomicilioTasacion` int(10) UNSIGNED NOT NULL,
+  `tisTadId` int(10) UNSIGNED NOT NULL,
+  `tisDomTasId` int(10) UNSIGNED NOT NULL,
   `tisFechaTasInSituSolicitada` date NOT NULL DEFAULT current_timestamp(),
   `tisFechaTasInSituAcordada` date NOT NULL,
   `tisFechaTasInSituRealizada` date DEFAULT NULL,
   `tisFechaTasInSituRechazada` date DEFAULT NULL,
-  `tisObservaciones` varchar(500) DEFAULT NULL,
+  `tisObservacionesInSitu` varchar(500) DEFAULT NULL,
   `tisPrecioInSitu` decimal(15,2) DEFAULT NULL,
   `tisFechaBaja` datetime DEFAULT NULL,
   `tisActivo` tinyint(1) NOT NULL DEFAULT 0
@@ -402,8 +408,10 @@ CREATE TABLE `tasacioninsitu` (
 
 --
 -- RELACIONES PARA LA TABLA `tasacioninsitu`:
---   `tisDomicilioTasacion`
+--   `tisDomTasId`
 --       `domicilio` -> `domId`
+--   `tisTadId`
+--       `tasaciondigital` -> `tadId`
 --
 
 -- --------------------------------------------------------
@@ -472,7 +480,7 @@ INSERT INTO `tipousuario` (`ttuTipoUsuario`, `ttuDescripcion`, `ttuRequiereMatri
 -- Estructura de tabla para la tabla `tokens`
 --
 -- Creación: 14-06-2025 a las 14:37:52
--- Última actualización: 14-06-2025 a las 14:45:45
+-- Última actualización: 15-06-2025 a las 18:35:43
 --
 
 DROP TABLE IF EXISTS `tokens`;
@@ -490,7 +498,7 @@ CREATE TABLE `tokens` (
 --
 
 INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NDk5MTU5NDV9.-SXOivn1RDsWhJK-9dblzzQuXcjmh3ZMm6C4xPNFYgvcTCXT90POAzvSLzCzOOg3vcy8KmyXV280n_j188adOQ', '2025-06-14 11:45:45');
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTAwMTYxNDN9.swf6VZMDp2yu7-tfSHQL9Dm_Sge2_aJhD7cyyUeMaTvk_laa8Dqz0CvO7mpp--OOQwShUfB_6ot2IAJZK9itew', '2025-06-15 15:35:43');
 
 -- --------------------------------------------------------
 
@@ -576,7 +584,8 @@ INSERT INTO `usuariotasadorhabilidad` (`utsId`, `utsUsrId`, `utsScatId`, `utsPer
 (2, 3, 4, 2, '2025-05-14 22:32:43', NULL),
 (3, 4, 1, 2, '2025-05-14 22:32:43', NULL),
 (4, 4, 2, 1, '2025-05-14 22:32:43', NULL),
-(5, 3, 8, 3, '2025-06-01 21:35:46', NULL);
+(5, 3, 8, 3, '2025-06-01 21:35:46', NULL),
+(6, 3, 8, 4, '2025-06-14 21:40:54', NULL);
 
 --
 -- Índices para tablas volcadas
@@ -645,7 +654,6 @@ ALTER TABLE `tasaciondigital`
   ADD PRIMARY KEY (`tadId`),
   ADD KEY `FK_TasadorUsuario` (`tadUsrTasId`),
   ADD KEY `FK_TasAntAntiguedad` (`tadAntId`),
-  ADD KEY `FK_TasPrevTasInSitu` (`tadTisId`),
   ADD KEY `FK_PropietarioUsuario` (`tadUsrPropId`);
 
 --
@@ -653,7 +661,8 @@ ALTER TABLE `tasaciondigital`
 --
 ALTER TABLE `tasacioninsitu`
   ADD PRIMARY KEY (`tisId`),
-  ADD KEY `FK_InSituDomicilio` (`tisDomicilioTasacion`);
+  ADD KEY `FK_InSituDomicilio` (`tisDomTasId`),
+  ADD KEY `FK_InSituTasDigital` (`tisTadId`);
 
 --
 -- Indices de la tabla `tipoestado`
@@ -740,7 +749,7 @@ ALTER TABLE `subcategoria`
 -- AUTO_INCREMENT de la tabla `tasaciondigital`
 --
 ALTER TABLE `tasaciondigital`
-  MODIFY `tadId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `tadId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `tasacioninsitu`
@@ -758,7 +767,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `usuariotasadorhabilidad`
 --
 ALTER TABLE `usuariotasadorhabilidad`
-  MODIFY `utsId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `utsId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Restricciones para tablas volcadas
@@ -803,14 +812,14 @@ ALTER TABLE `subcategoria`
 ALTER TABLE `tasaciondigital`
   ADD CONSTRAINT `FK_PropietarioUsuario` FOREIGN KEY (`tadUsrPropId`) REFERENCES `usuario` (`usrId`) ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_TasAntAntiguedad` FOREIGN KEY (`tadAntId`) REFERENCES `antiguedad` (`antId`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `FK_TasPrevTasInSitu` FOREIGN KEY (`tadTisId`) REFERENCES `tasacioninsitu` (`tisId`) ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_TasadorUsuario` FOREIGN KEY (`tadUsrTasId`) REFERENCES `usuario` (`usrId`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `tasacioninsitu`
 --
 ALTER TABLE `tasacioninsitu`
-  ADD CONSTRAINT `FK_InSituDomicilio` FOREIGN KEY (`tisDomicilioTasacion`) REFERENCES `domicilio` (`domId`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `FK_InSituDomicilio` FOREIGN KEY (`tisDomTasId`) REFERENCES `domicilio` (`domId`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_InSituTasDigital` FOREIGN KEY (`tisTadId`) REFERENCES `tasaciondigital` (`tadId`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `usuario`

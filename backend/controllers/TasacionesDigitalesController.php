@@ -46,7 +46,7 @@ class TasacionesDigitalesController extends BaseController
             $claimDTO = $this->securityService->requireLogin(tipoUsurio: null);
             $query = "SELECT tadId, tadUsrTasId, tadUsrPropId, tadAntId, tadFechaSolicitud, 
                              tadFechaTasDigitalRealizada, tadFechaTasDigitalRechazada, 
-                             tadObservacionesDigital, tadPrecioDigital, tadTisId
+                             tadObservacionesDigital, tadPrecioDigital
                       FROM tasaciondigital
                       WHERE tadFechaBaja IS NULL";
 
@@ -90,7 +90,7 @@ class TasacionesDigitalesController extends BaseController
             $claimDTO = $this->securityService->requireLogin(tipoUsurio: null);
             $query = "SELECT tadId, tadUsrTasId, tadUsrPropId, tadAntId, tadFechaSolicitud,
                              tadFechaTasDigitalRealizada, tadFechaTasDigitalRechazada,
-                             tadObservacionesDigital, tadPrecioDigital, tadTisId
+                             tadObservacionesDigital, tadPrecioDigital
                       FROM tasaciondigital
                       WHERE tadId = {$id} AND tadFechaBaja IS NULL";
 
