@@ -19,7 +19,7 @@ class SubcategoriasValidacionService extends ValidacionServiceBase
 
     private function __clone() {}
 
-    public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $subcategoria)
+    public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $subcategoria, mixed $extraParams = null): void
     {
         if (!($subcategoria instanceof SubcategoriaCreacionDTO) && !($subcategoria instanceof SubcategoriaDTO)) {
             throw new CustomException(code: 500, message: 'Error interno: el DTO proporcionado no es del tipo correcto.');

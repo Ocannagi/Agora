@@ -6,6 +6,7 @@ use mysqli;
 use ReflectionClass;
 use DTOs\PHP_FileDTO;
 use InvalidArgumentException;
+use DateTime;
 
 class Input
 {
@@ -198,6 +199,26 @@ class Input
         list($anio, $mes, $dia) = explode('-', $stringFecha); //Revisar
         if (!checkdate($mes, $dia, $anio)) {
             throw new InvalidArgumentException(message: 'La fecha no es válida. La fecha ingresada es: ' . $stringFecha);
+        }
+    }
+
+    public static function esFechaValidaYNoFutura(string $stringFecha): void
+    {
+        self::esFechaValida($stringFecha);
+        $fechaActual = new DateTime();
+        $fechaIngresada = DateTime::createFromFormat('Y-m-d', $stringFecha);
+        if ($fechaIngresada > $fechaActual) {
+            throw new InvalidArgumentException(message: 'La fecha no puede ser futura. La fecha ingresada es: ' . $stringFecha);
+        }
+    }
+
+    public static function esFechaValidaYNoPasada(string $stringFecha): void
+    {
+        self::esFechaValida($stringFecha);
+        $fechaActual = new DateTime();
+        $fechaIngresada = DateTime::createFromFormat('Y-m-d', $stringFecha);
+        if ($fechaIngresada < $fechaActual) {
+            throw new InvalidArgumentException(message: 'La fecha no puede ser pasada. La fecha ingresada es: ' . $stringFecha);
         }
     }
 

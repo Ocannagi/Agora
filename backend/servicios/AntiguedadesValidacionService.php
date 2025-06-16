@@ -25,7 +25,7 @@ class AntiguedadesValidacionService extends ValidacionServiceBase
         // Previene la clonación de la instancia
     }
 
-    public function validarInput(mysqli $linkExterno, ICreacionDTO|IDTO $antiguedad)
+    public function validarInput(mysqli $linkExterno, ICreacionDTO|IDTO $antiguedad, mixed $extraParams = null): void
     {
         if (!($antiguedad instanceof AntiguedadCreacionDTO) && !($antiguedad instanceof AntiguedadDTO)) {
             throw new CustomException(code: 500, message: 'Error interno: el DTO proporcionado no es del tipo correcto.');

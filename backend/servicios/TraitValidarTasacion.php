@@ -7,6 +7,7 @@ trait TraitValidarTasacion
 {
     use TraitGetInterno;
     use TraitGetByIdInterno;
+    use TraitValidarDomicilio;
 
     private function validarTasacionDigitalCreacionDTO(TasacionDigitalCreacionDTO $tasacionDigital, mysqli $linkExterno, bool $corroborarExistencia = true)
     {
@@ -302,19 +303,24 @@ trait TraitValidarTasacion
 
     private function validarObservacionesDigital(?string $observacionesDigital)
     {
-        if ($observacionesDigital !== null && !Input::esStringLongitud($observacionesDigital, 1, 500)) {
-            throw new InvalidArgumentException(message: 'Las observaciones digitales deben ser un string de al menos un caracter y un máximo de 500.');
+        $this->_validarObs($observacionesDigital);
+    }
+
+    private function _validarObs(?string $observaciones)
+    {
+        if ($observaciones !== null && !Input::esStringLongitud($observaciones, 1, 500)) {
+            throw new InvalidArgumentException(message: 'Las observaciones deben ser un string de al menos un caracter y un máximo de 500.');
         }
     }
 
     private function validarFechasTasacionDigitalDTO(TasacionDigitalDTO $tasacionDigital)
     {
         if (Input::esNotNullVacioBlanco($tasacionDigital->tadFechaTasDigitalRealizada)) {
-            Input::esFechaValida($tasacionDigital->tadFechaTasDigitalRealizada);
+            Input::esFechaValidaYNoFutura($tasacionDigital->tadFechaTasDigitalRealizada);
         }
 
         if (Input::esNotNullVacioBlanco($tasacionDigital->tadFechaTasDigitalRechazada)) {
-            Input::esFechaValida($tasacionDigital->tadFechaTasDigitalRechazada);
+            Input::esFechaValidaYNoFutura($tasacionDigital->tadFechaTasDigitalRechazada);
         }
 
         if (Input::esNotNullVacioBlanco($tasacionDigital->tadFechaTasDigitalRealizada) && Input::esNotNullVacioBlanco($tasacionDigital->tadFechaTasDigitalRechazada)) {
@@ -360,6 +366,144 @@ trait TraitValidarTasacion
         }
         if (Input::esNotNullVacioBlanco($tasacionDigitalDTO->tadFechaTasDigitalRechazada) && $tasacionDigitalDTO->tadPrecioDigital !== null) {
             throw new InvalidArgumentException(message: 'El precio digital no debe ser proporcionado si la tasación digital fue rechazada.');
+        }
+    }
+
+
+    /** TasacionInSituCreacionDTO */
+    private function validarTasacionInSituCreacionDTO(TasacionInSituCreacionDTO $tasacionInSitu, ClaimDTO $claimDTO, mysqli $linkExterno): void
+    {
+
+        if (!($tasacionInSitu instanceof TasacionInSituCreacionDTO)) {
+            throw new CustomException(code: 500, message: 'Error interno: el DTO de tasación In Situ no es del tipo correcto.');
+        }
+
+        $this->validarExistencia_Solicitante($tasacionInSitu->tasacionDigital, $claimDTO, $linkExterno);
+        $this->validarDomicilioDTO($tasacionInSitu->domicilio, $linkExterno);
+        $this->validarFechaProvisoria($tasacionInSitu->tisFechaTasInSituProvisoria);
+    }
+
+    private function validarExistencia_Solicitante(TasacionDigitalDTO $tasacionDigital, ClaimDTO $claimDTO, mysqli $linkExterno): void
+    {
+        if (!($tasacionDigital instanceof TasacionDigitalDTO)) {
+            throw new CustomException(code: 500, message: 'Error interno: el DTO de tasación digital no es del tipo correcto.');
+        }
+
+        if (!($claimDTO instanceof ClaimDTO)) {
+            throw new CustomException(code: 500, message: 'Error interno: el DTO de Claim no es del tipo correcto.');
+        }
+
+        $query = "SELECT 1 FROM tasaciondigital
+                  INNER JOIN usuario ON tadUsrPropId = usrId
+                  WHERE tadId = {$tasacionDigital->tadId}
+                  AND tadFechaBaja IS NULL
+                  AND usrFechaBaja IS NULL
+                  AND tadFechaTasDigitalRealizada IS NOT NULL";
+        
+        if($claimDTO->usrTipoUsuario !== TipoUsuarioEnum::SoporteTecnico->value) {
+            $query .= " AND usrId = {$claimDTO->usrId}";
+        }
+        
+        if (!$this->_existeEnBD(
+            link: $linkExterno,
+            query: $query,
+            msg: 'validar tasación digital y solicitante'
+        )) {
+            throw new InvalidArgumentException(message: 'No se halló en la base de datos una tasación digital en estado realizada por el solicitante indicado.');
+        }
+    }
+
+    private function validarFechaProvisoria(?string $fechaProvisoria): void
+    {
+        if (Input::esNotNullVacioBlanco($fechaProvisoria)) {
+            Input::esFechaValidaYNoPasada($fechaProvisoria);
+        } else {
+            throw new InvalidArgumentException(message: 'La fecha provisoria es obligatoria.');
+        }
+    }
+
+
+    /**** TasacionInSituDTO */
+
+    private function validarTasacionInSituDTO(TasacionInSituDTO $tasacionInSituDTO): void
+    {
+        if (!($tasacionInSituDTO instanceof TasacionInSituDTO)) {
+            throw new CustomException(code: 500, message: 'Error interno: el DTO de tasación In Situ no es del tipo correcto.');
+        }
+
+        if (!isset($tasacionInSituDTO->tisId)) {
+            throw new InvalidArgumentException(message: 'El ID de la tasación In Situ no fue proporcionado.');
+        }
+
+        if ($tasacionInSituDTO->tisId <= 0) {
+            throw new InvalidArgumentException(message: 'El ID de la tasación In Situ no es válido: ' . $tasacionInSituDTO->tisId);
+        }
+
+        $this->validarObservacionesInSitu($tasacionInSituDTO->tisObservacionesInSitu);
+        $this->validarFechasTasacionInSituDTO($tasacionInSituDTO);
+        $this->validarPrecioInSitu($tasacionInSituDTO);
+    }
+
+    private function validarObservacionesInSitu(?string $observacionesInSitu)
+    {
+        $this->_validarObs($observacionesInSitu);
+    }
+
+    private function validarFechasTasacionInSituDTO(TasacionInSituDTO $tasacionInSitu)
+    {
+        if (Input::esNotNullVacioBlanco($tasacionInSitu->tisFechaTasInSituRealizada)) {
+            Input::esFechaValidaYNoFutura($tasacionInSitu->tisFechaTasInSituRealizada);
+        }
+
+        if (Input::esNotNullVacioBlanco($tasacionInSitu->tisFechaTasInSituRechazada)) {
+            Input::esFechaValidaYNoFutura($tasacionInSitu->tisFechaTasInSituRechazada);
+        }
+
+        if (Input::esNotNullVacioBlanco($tasacionInSitu->tisFechaTasInSituRealizada) && Input::esNotNullVacioBlanco($tasacionInSitu->tisFechaTasInSituRechazada)) {
+            throw new InvalidArgumentException(message: 'No se puede establecer una fecha de tasación in situ realizada y rechazada al mismo tiempo.');
+        }
+
+        if (!Input::esNotNullVacioBlanco($tasacionInSitu->tisFechaTasInSituRealizada) && !Input::esNotNullVacioBlanco($tasacionInSitu->tisFechaTasInSituRechazada)) {
+            throw new InvalidArgumentException(message: 'Debe establecer al menos una fecha de tasación in situ realizada o rechazada.');
+        }
+
+        $fSolicitud = new DateTime($tasacionInSitu->tisFechaTasInSituSolicitada);
+
+        if (Input::esNotNullVacioBlanco($tasacionInSitu->tisFechaTasInSituRealizada)) {
+            $fRealizada = new DateTime($tasacionInSitu->tisFechaTasInSituRealizada);
+            if ($fRealizada < $fSolicitud) {
+                throw new InvalidArgumentException(message: 'La fecha de la tasación in situ realizada no puede ser anterior a la fecha de solicitud.');
+            }
+        }
+        if (Input::esNotNullVacioBlanco($tasacionInSitu->tisFechaTasInSituRechazada)) {
+            $fRechazada = new DateTime($tasacionInSitu->tisFechaTasInSituRechazada);
+            if ($fRechazada < $fSolicitud) {
+                throw new InvalidArgumentException(message: 'La fecha de la tasación in situ rechazada no puede ser anterior a la fecha de solicitud.');
+            }
+        }
+    }
+
+    private function validarPrecioInSitu(TasacionInSituDTO $tasacionInSitu)
+    {
+        $precioInSitu = $tasacionInSitu->tisPrecioInSitu;
+        if ($precioInSitu !== null) {
+            if (!is_numeric($precioInSitu)) {
+                throw new InvalidArgumentException(message: 'El precio de la tasación in situ debe ser un número.');
+            }
+            if ($precioInSitu < 0) {
+                throw new InvalidArgumentException(message: 'El precio de la tasación in situ no puede ser negativo.');
+            }
+            if ($precioInSitu > 9999999999999.99) {
+                throw new InvalidArgumentException(message: 'El precio de la tasación in situ no puede ser mayor a 9999999999999.99.');
+            }
+        }
+
+        if (Input::esNotNullVacioBlanco($tasacionInSitu->tisFechaTasInSituRealizada) && $precioInSitu === null) {
+            throw new InvalidArgumentException(message: 'El precio de la tasación in situ debe ser proporcionado si la tasación in situ fue realizada.');
+        }
+
+        if (Input::esNotNullVacioBlanco($tasacionInSitu->tisFechaTasInSituRechazada) && $precioInSitu !== null) {
+            throw new InvalidArgumentException(message: 'El precio de la tasación in situ no debe ser proporcionado si la tasación in situ fue rechazada.');
         }
     }
 }

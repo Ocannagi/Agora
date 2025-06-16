@@ -19,7 +19,7 @@ class PeriodosValidacionService extends ValidacionServiceBase
 
     private function __clone() {}
 
-    public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $periodo)
+    public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $periodo, mixed $extraParams = null): void
     {
         if (!($periodo instanceof PeriodoCreacionDTO) && !($periodo instanceof PeriodoDTO)) {
             throw new CustomException(code: 500, message: 'Error interno: el DTO proporcionado no es del tipo correcto.');

@@ -22,7 +22,7 @@ class HabilidadesValidacionService extends ValidacionServiceBase
     // Método para evitar la clonación del objeto
     private function __clone() {}
 
-    public function validarInput(mysqli $linkExterno, ICreacionDTO|IDTO $habilidadCreacionDTO)
+    public function validarInput(mysqli $linkExterno, ICreacionDTO|IDTO $habilidadCreacionDTO, mixed $extraParams = null): void
     {
         // No se puede modificar una habilidad, sólo se puede dar de baja.
         if (!$habilidadCreacionDTO instanceof habilidadCreacionDTO) {

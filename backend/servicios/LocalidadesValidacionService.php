@@ -19,7 +19,7 @@ class LocalidadesValidacionService extends ValidacionServiceBase
 
     private function __clone() {}
 
-    public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $localidad)
+    public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $localidad, mixed $extraParams = null): void
     {
         if (!($localidad instanceof LocalidadCreacionDTO) && !($localidad instanceof LocalidadDTO)) {
             throw new CustomException(code: 500, message: 'Error interno: el DTO proporcionado no es del tipo correcto.');

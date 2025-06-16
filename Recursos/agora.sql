@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 15-06-2025 a las 20:45:54
+-- Tiempo de generación: 16-06-2025 a las 02:31:32
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -388,7 +388,8 @@ INSERT INTO `tasaciondigital` (`tadId`, `tadUsrTasId`, `tadUsrPropId`, `tadAntId
 --
 -- Estructura de tabla para la tabla `tasacioninsitu`
 --
--- Creación: 15-06-2025 a las 18:41:33
+-- Creación: 16-06-2025 a las 00:07:35
+-- Última actualización: 15-06-2025 a las 23:11:21
 --
 
 DROP TABLE IF EXISTS `tasacioninsitu`;
@@ -397,13 +398,12 @@ CREATE TABLE `tasacioninsitu` (
   `tisTadId` int(10) UNSIGNED NOT NULL,
   `tisDomTasId` int(10) UNSIGNED NOT NULL,
   `tisFechaTasInSituSolicitada` date NOT NULL DEFAULT current_timestamp(),
-  `tisFechaTasInSituAcordada` date NOT NULL,
+  `tisFechaTasInSituProvisoria` date NOT NULL,
   `tisFechaTasInSituRealizada` date DEFAULT NULL,
   `tisFechaTasInSituRechazada` date DEFAULT NULL,
   `tisObservacionesInSitu` varchar(500) DEFAULT NULL,
   `tisPrecioInSitu` decimal(15,2) DEFAULT NULL,
-  `tisFechaBaja` datetime DEFAULT NULL,
-  `tisActivo` tinyint(1) NOT NULL DEFAULT 0
+  `tisFechaBaja` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

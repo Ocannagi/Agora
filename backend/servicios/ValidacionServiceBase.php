@@ -7,7 +7,7 @@ use Utilidades\Querys;
 abstract class ValidacionServiceBase
 {
 
-    abstract public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $entidadDTO);
+    abstract public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $entidadDTO, mixed $extraParams = null): void;
 
     /**
      * Valida que los tipos de datos de las propiedades de la clase coincidan con los tipos de los datos del array.

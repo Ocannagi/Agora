@@ -27,7 +27,7 @@ class TasacionesDigitalesValidacionService extends ValidacionServiceBase
         // Previene la clonación de la instancia
     }
 
-    public function validarInput(mysqli $linkExterno, ICreacionDTO|IDTO $tasacionDigital)
+    public function validarInput(mysqli $linkExterno, ICreacionDTO|IDTO $tasacionDigital, mixed $extraParams = null): void
     {
         if (!($tasacionDigital instanceof TasacionDigitalCreacionDTO) && !($tasacionDigital instanceof TasacionDigitalDTO)) {
             throw new CustomException(code: 500, message: 'Error interno: el DTO proporcionado no es del tipo correcto.');
@@ -51,16 +51,14 @@ class TasacionesDigitalesValidacionService extends ValidacionServiceBase
                  WHERE tadUsrTasId = {$tasacionDigital->tasador->usrId}
                  AND tadUsrPropId = {$tasacionDigital->propietario->usrId}
                  AND tadAntId = {$tasacionDigital->antiguedad->antId}
-                 AND tadFechaBaja IS NULL
-                 AND tadFechaTasDigitalRealizada IS NULL
-                 AND tadFechaTasDigitalRechazada IS NULL";
+                 AND tadFechaBaja IS NULL";
 
         if ($this->_existeEnBD(
             link: $linkExterno,
             query: $query,
-            msg: 'verificar si ya existe una tasación digital pendiente de realizar o rechazar.'
+            msg: 'verificar si ya existe una tasación digital.'
         )) {
-            throw new CustomException(code: 409, message: 'La tasación digital ya fue registrada. Esta pendiente de realizar o rechazar.');
+            throw new CustomException(code: 409, message: 'La tasación digital ya fue registrada. Debe darla de baja si quiere iniciar una nueva para la misma antigüedad y tasador.');
         }
     }
 

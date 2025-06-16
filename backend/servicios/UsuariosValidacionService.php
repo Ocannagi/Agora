@@ -2,10 +2,11 @@
 
 use Model\CustomException;
 use Utilidades\Input;
-use Utilidades\Output;
 
 class UsuariosValidacionService extends ValidacionServiceBase
 {
+    use TraitValidarDomicilio;
+    
     private static $instancia = null;
 
     private function __construct() {}
@@ -20,7 +21,7 @@ class UsuariosValidacionService extends ValidacionServiceBase
 
     private function __clone() {}
 
-    public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $usuario)
+    public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $usuario, mixed $extraParams = null): void
     {
         if (!($usuario instanceof UsuarioCreacionDTO) && !($usuario instanceof UsuarioDTO)) {
             throw new CustomException(code: 500, message: 'Error interno: el DTO proporcionado no es del tipo correcto.');
@@ -33,7 +34,7 @@ class UsuariosValidacionService extends ValidacionServiceBase
         $this->validarApellido($usuario->usrApellido);
         $this->validarNombre($usuario->usrNombre);
         $this->validarTipoUsuario($usuario->usrTipoUsuario, $linkExterno);
-        $this->validarDomicilio($usuario->domicilio, $linkExterno);
+        $this->validarDomicilioDTO($usuario->domicilio, $linkExterno);
         $this->validarEmail($usuario->usrEmail);
 
         if ($usuario instanceof UsuarioDTO) {
@@ -82,27 +83,6 @@ class UsuariosValidacionService extends ValidacionServiceBase
                 throw new CustomException(code: 409, message: 'No existe el usrTipoUsuario enviado.');
         } else
             throw new InvalidArgumentException(message: 'El usrTipoUsuario debe tener 2 caracteres.');
-    }
-
-    private function validarDomicilio(DomicilioDTO $domicilio, mysqli $linkExterno)
-    {
-        if (!($domicilio instanceof DomicilioDTO)) {
-            throw new CustomException(code: 500, message: 'Error interno: el DTO de domicilio no es del tipo correcto.');
-        }
-        
-        if (!isset($domicilio->domId)) {
-            throw new InvalidArgumentException(message: 'El ID del domicilio no fue proporcionado.');
-        }
-        
-        if ($domicilio->domId <= 0) {
-            throw new InvalidArgumentException(message: 'El ID del domicilio no es válido: ' . $domicilio->domId);
-        }
-        
-        if (is_int($domicilio->domId)) {
-            if (!$this->_existeDomicilio($linkExterno, $domicilio->domId))
-                throw new CustomException(code: 409, message: 'No está registrado el domicilo enviado');
-        } else
-            throw new InvalidArgumentException(message: 'El usrDomicilio/domId debe ser un integer, no debe enviarse como string.');
     }
 
     private function validarEmail(string $email)
@@ -251,13 +231,6 @@ class UsuariosValidacionService extends ValidacionServiceBase
         $sql = "SELECT 1 FROM tipousuario WHERE ttuTipoUsuario = '$tipoUsuario'";
         return $this->_existeEnBD($link, $sql, 'obtener un tipoUsuario por id');
     }
-
-    private function _existeDomicilio($link, int $domicilio)
-    {
-        $sql = "SELECT 1 FROM domicilio WHERE domId = $domicilio";
-        return $this->_existeEnBD($link, $sql, 'obtener un domicilio por id');
-    }
-
 
     /**
      * Devuelve true si el TipoUsuario pasado por parámetro tiene obligación de tener matrícula. Devuelve false, si no.

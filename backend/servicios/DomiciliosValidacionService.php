@@ -19,7 +19,7 @@ class DomiciliosValidacionService extends ValidacionServiceBase
 
     private function __clone() {}
 
-    public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $domicilio)
+    public function validarInput(mysqli $linkExterno, ICreacionDTO | IDTO $domicilio, mixed $extraParams = null): void
     {
         if (!($domicilio instanceof DomicilioCreacionDTO) && !($domicilio instanceof DomicilioDTO)) {
             throw new CustomException(code: 500, message: 'Error interno: el DTO proporcionado no es del tipo correcto.');
