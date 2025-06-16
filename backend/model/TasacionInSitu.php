@@ -5,7 +5,7 @@ class TasacionInSitu extends ClassBase
 {
     private int $tisId;
     #[Obligatorio]
-    private TasacionDigital $tasacionDigital;
+    private int $tadId; // Identificador de la tasación digital asociada.
     #[Obligatorio]
     private Domicilio $domicilio; // Identificador del domicilio de la tasación in situ.
     private DateTime $tisFechaTasInSituSolicitada;
@@ -24,7 +24,7 @@ class TasacionInSitu extends ClassBase
         }
 
         $instance = new self();
-        $instance->tasacionDigital = TasacionDigital::fromArray(get_object_vars($dto->tasacionDigital));
+        $instance->tadId = (int)$dto->tadId;
         $instance->domicilio = Domicilio::fromArray(get_object_vars($dto->domicilio));
         $instance->tisFechaTasInSituSolicitada = new DateTime();
         $instance->tisFechaTasInSituProvisoria = new DateTime($dto->tisFechaTasInSituProvisoria);

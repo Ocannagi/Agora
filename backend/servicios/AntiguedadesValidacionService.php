@@ -145,7 +145,7 @@ class AntiguedadesValidacionService extends ValidacionServiceBase
 
     private function _existeUsuario(UsuarioDTO $usuario, mysqli $linkExterno): bool
     {
-        $query = "SELECT 1 FROM usuario WHERE usrId=$usuario->usrId AND usrFechaBaja IS NULL AND usrTipoUsuario = $usuario->usrTipoUsuario";
+        $query = "SELECT 1 FROM usuario WHERE usrId=$usuario->usrId AND usrFechaBaja IS NULL AND usrTipoUsuario = '$usuario->usrTipoUsuario'";
         return $this->_existeEnBD($linkExterno, $query, "obtener un usuario por id");
     }
 

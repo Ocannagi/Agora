@@ -5,7 +5,7 @@ use Utilidades\Input;
 class TasacionInSituDTO implements IDTO
 {
     public int $tisId;
-    public TasacionDigitalDTO $tasacionDigital; // Tasación digital asociada a la tasación in situ.
+    public int $tadId; // Tasación digital asociada a la tasación in situ.
     public DomicilioDTO $domicilio; // Identificador del domicilio de la tasación in situ.
     public string $tisFechaTasInSituSolicitada; // Fecha solicitada para la tasación in situ.
     public string $tisFechaTasInSituProvisoria; // Fecha provisoria para la tasación in situ.
@@ -27,13 +27,10 @@ class TasacionInSituDTO implements IDTO
             $this->tisId = (int)$data['tisId'];
         }
 
-        if (array_key_exists('tasacionDigital', $data) && $data['tasacionDigital'] instanceof TasacionDigitalDTO) {
-            $this->tasacionDigital = $data['tasacionDigital'];
-        } else {
-            $tasacionDigital = $this->mapTasacionDigitalDTO($data);
-            if ($tasacionDigital !== null) {
-                $this->tasacionDigital = $tasacionDigital;
-            }
+        if (array_key_exists('tadId', $data)) {
+            $this->tadId = (int)$data['tadId'];
+        } else if (array_key_exists('tisTadId', $data)) {
+            $this->tadId = (int)$data['tisTadId'];
         }
 
         if (array_key_exists('domicilio', $data) && $data['domicilio'] instanceof DomicilioDTO) {

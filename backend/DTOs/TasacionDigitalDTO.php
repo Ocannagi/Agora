@@ -14,6 +14,7 @@ class TasacionDigitalDTO implements IDTO
     public ?string $tadObservacionesDigital = null; // Observaciones de la tasación.
     public ?float $tadPrecioDigital = null; // Precio de la tasación digital.
     public ?string $tadFechaBaja = null; // Fecha de baja de la tasación digital.
+    public ?TasacionInSituDTO $tasacionInSitu = null; // Tasación in situ asociada, si existe.
 
 
     use TraitMapUsuarioDTO; // Trait para mapear UsuarioDTO
@@ -91,6 +92,13 @@ class TasacionDigitalDTO implements IDTO
 
         if (array_key_exists('tadFechaBaja', $data)) {
             $this->tadFechaBaja = Input::esNotNullVacioBlanco($data['tadFechaBaja']) ? (string)$data['tadFechaBaja'] : null;
+        }
+
+        if (array_key_exists('tisId', $data)){
+            if (isset($data['tisId']) && $data['tisId'] > 0)
+            {
+                $this->tasacionInSitu = new TasacionInSituDTO($data);
+            }
         }
     }
 }

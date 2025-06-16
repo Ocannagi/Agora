@@ -2,6 +2,7 @@
 
 use Model\CustomException;
 use Utilidades\Input;
+use Utilidades\Querys;
 
 trait TraitValidarTasacion
 {
@@ -308,7 +309,7 @@ trait TraitValidarTasacion
 
     private function _validarObs(?string $observaciones)
     {
-        if ($observaciones !== null && !Input::esStringLongitud($observaciones, 1, 500)) {
+        if (Input::esNotNullVacioBlanco($observaciones) && !Input::esStringLongitud($observaciones, 1, 500)) {
             throw new InvalidArgumentException(message: 'Las observaciones deben ser un string de al menos un caracter y un máximo de 500.');
         }
     }
@@ -378,16 +379,13 @@ trait TraitValidarTasacion
             throw new CustomException(code: 500, message: 'Error interno: el DTO de tasación In Situ no es del tipo correcto.');
         }
 
-        $this->validarExistencia_Solicitante($tasacionInSitu->tasacionDigital, $claimDTO, $linkExterno);
+        $this->validarExistencia_Solicitante($tasacionInSitu->tadId, $claimDTO, $linkExterno);
         $this->validarDomicilioDTO($tasacionInSitu->domicilio, $linkExterno);
         $this->validarFechaProvisoria($tasacionInSitu->tisFechaTasInSituProvisoria);
     }
 
-    private function validarExistencia_Solicitante(TasacionDigitalDTO $tasacionDigital, ClaimDTO $claimDTO, mysqli $linkExterno): void
+    private function validarExistencia_Solicitante(int $tadId, ClaimDTO $claimDTO, mysqli $linkExterno): void
     {
-        if (!($tasacionDigital instanceof TasacionDigitalDTO)) {
-            throw new CustomException(code: 500, message: 'Error interno: el DTO de tasación digital no es del tipo correcto.');
-        }
 
         if (!($claimDTO instanceof ClaimDTO)) {
             throw new CustomException(code: 500, message: 'Error interno: el DTO de Claim no es del tipo correcto.');
@@ -395,7 +393,7 @@ trait TraitValidarTasacion
 
         $query = "SELECT 1 FROM tasaciondigital
                   INNER JOIN usuario ON tadUsrPropId = usrId
-                  WHERE tadId = {$tasacionDigital->tadId}
+                  WHERE tadId = {$tadId}
                   AND tadFechaBaja IS NULL
                   AND usrFechaBaja IS NULL
                   AND tadFechaTasDigitalRealizada IS NOT NULL";
@@ -404,7 +402,7 @@ trait TraitValidarTasacion
             $query .= " AND usrId = {$claimDTO->usrId}";
         }
         
-        if (!$this->_existeEnBD(
+        if (!Querys::existeEnBD(
             link: $linkExterno,
             query: $query,
             msg: 'validar tasación digital y solicitante'

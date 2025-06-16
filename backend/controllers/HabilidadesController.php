@@ -137,25 +137,29 @@ class HabilidadesController extends BaseController
         $mysqli = $this->dbConnection->conectarBD();
         try {
             $claimDTO = $this->securityService->requireLogin(TipoUsuarioEnum::tasadorToArray());
-            
+
             $data = Input::getArrayBody(msgEntidad: "la habilidad");
 
             $this->habilidadesValidacionService->validarType(className: "HabilidadCreacionDTO", datos: $data);
-            $habilidadCreacionDTO = new HabilidadCreacionDTO($data);
 
-            if (isset($habilidadCreacionDTO->usuario->usrId)) {
+
+
+
+            if (!isset($habilidadCreacionDTO->usuario->usrId) || $habilidadCreacionDTO->usuario->usrId == 0) {
                 // El usuario tasador y el usuario anticuario sólo pueden agregar habilidades a sí mismos.
                 if ($claimDTO->usrTipoUsuario == 'UT' || $claimDTO->usrTipoUsuario == 'UA') {
-                    $habilidadCreacionDTO->usuario->usrId = $claimDTO->usrId;
-                    $habilidadCreacionDTO->usuario->usrTipoUsuario = $claimDTO->usrTipoUsuario;
+                    $data['usrId'] = $claimDTO->usrId;
+                    $data['usrTipoUsuario'] = $claimDTO->usrTipoUsuario;
                 }
                 // A modo de prueba, el usuario técnico puede agregar habilidades a cualquier usuario o a sí mismo.
                 if ($claimDTO->usrTipoUsuario == 'ST') {
                     if (!isset($habilidadCreacionDTO->usuario->usrId) || $habilidadCreacionDTO->usuario->usrId == 0)
-                        $habilidadCreacionDTO->usuario->usrId = $claimDTO->usrId;
-                        $habilidadCreacionDTO->usuario->usrTipoUsuario = $claimDTO->usrTipoUsuario;
+                        $data['usrId'] = $claimDTO->usrId;
+                    $data['usrTipoUsuario'] = $claimDTO->usrTipoUsuario;
                 }
             }
+
+            $habilidadCreacionDTO = new HabilidadCreacionDTO($data);
 
             $this->habilidadesValidacionService->validarInput($mysqli, $habilidadCreacionDTO);
 
@@ -189,7 +193,7 @@ class HabilidadesController extends BaseController
 
             $queryBusqueda = "SELECT utsId FROM usuariotasadorhabilidad WHERE utsId = $id AND utsFechaBaja IS NULL";
 
-            if($claimDTO->usrTipoUsuario != 'ST') {
+            if ($claimDTO->usrTipoUsuario != 'ST') {
                 // El usuario tasador y el usuario anticuario sólo pueden dar de baja sus propias habilidades.
                 $queryBusqueda .= " AND utsUsrId = {$claimDTO->usrId}";
             }

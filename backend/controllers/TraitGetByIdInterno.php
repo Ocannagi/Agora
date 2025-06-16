@@ -90,4 +90,48 @@ trait TraitGetByIdInterno
         }
         return $ret;
     }
+
+
+    public function getByIdInternoAllowsNull(string $query, string $classDTO, ?mysqli $linkExterno = null, ?int $id = null): ?IDTO
+    {
+        if (!class_exists($classDTO)) {
+            throw new CustomException(code: 500, message: 'La clase ' . $classDTO . ' no existe.');
+        }
+
+        if (!is_subclass_of($classDTO, IDTO::class)) {
+            throw new CustomException(code: 500, message: 'La clase ' . $classDTO . ' no implementa la interfaz IDTO.');
+        }
+
+        $mysqli = null;
+        if ($linkExterno === null || !($linkExterno instanceof mysqli)) {
+            $mysqli = $this->dbConnection->conectarBD();
+        } else {
+            $mysqli = $linkExterno;
+        }
+
+        if ($id !== null) {
+            $query = QUERYS[$query] ?? $query;
+            $query = str_replace('%id', $id, $query);
+        }
+
+        $resultado = $mysqli->query($query);
+        if ($resultado === false) {
+            $error = $mysqli->error;
+            if ($linkExterno === null || !($linkExterno instanceof mysqli)) {
+                $mysqli->close();
+            }
+            throw new mysqli_sql_exception(code: 500, message: "Falló la consulta al querer obtener un $classDTO por id: " . $error);
+        }
+        if ($resultado->num_rows == 0) {
+            $mysqli->close();
+            return null; // Permite que el resultado sea nulo si no se encuentra el objeto
+        }
+        $ret = new $classDTO(mysqli_fetch_assoc($resultado));
+        $resultado->free_result();
+        if ($linkExterno === null || !($linkExterno instanceof mysqli)) {
+            $mysqli->close();
+        }
+        return $ret;
+    }
+
 }

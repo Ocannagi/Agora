@@ -96,6 +96,7 @@ class ImagenesAntiguedadController extends BaseController
         $mysqli = $this->dbConnection->conectarBD();
         $imagenesAntiguedadDTOs = [];
         try {
+            $mysqli->begin_transaction(); // Iniciar transacción
             $claimDTO = $this->securityService->requireLogin(TipoUsuarioEnum::compradorVendedorToArray());
 
 
@@ -140,10 +141,14 @@ class ImagenesAntiguedadController extends BaseController
                 }
                 $ids[] = $mysqli->insert_id; // Guardar el ID de la imagen insertada
             }
-            $mysqli->close(); // Cerrar la conexión a la base de datos
+            $mysqli->commit(); // Confirmar la transacción
             Output::outputJson(['ids' => $ids], 201); // Retornar los IDs de las imágenes insertadas
 
         } catch (\Throwable $th) {
+
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                $mysqli->rollback(); // Revertir transacción si hay error
+            }
 
             if (!empty($imagenesAntiguedadDTOs) && count($imagenesAntiguedadDTOs) > 0) {
                 foreach ($imagenesAntiguedadDTOs as $imagen) {

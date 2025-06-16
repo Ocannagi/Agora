@@ -123,7 +123,7 @@ class UsuariosController extends BaseController
     }
 
 
-    public function patchUsuarios($id)
+  /*   public function patchUsuarios($id)
     {
         $mysqli = $this->dbConnection->conectarBD();
         try {
@@ -145,9 +145,9 @@ class UsuariosController extends BaseController
 
             Input::agregarComillas_ConvertNULLtoString($usuarioDTO); // cuidado con el password, no usar el de usuarioDTO, usar el de la variable anterior que ya fue escapada, hasheada y se le agregaron comillas simples.
 
-            /** NO SE DEBE MODIFICAR EL TIPO DE USUARIO */
+            //NO SE DEBE MODIFICAR EL TIPO DE USUARIO // usrTipoUsuario = $usuarioDTO->usrTipoUsuario, 
             $query = "UPDATE usuario SET usrDni = $usuarioDTO->usrDni, usrApellido = $usuarioDTO->usrApellido, usrNombre = $usuarioDTO->usrNombre, usrRazonSocialFantasia = $usuarioDTO->usrRazonSocialFantasia , usrCuitCuil = $usuarioDTO->usrCuitCuil,
-            /* usrTipoUsuario = $usuarioDTO->usrTipoUsuario, */ usrMatricula = $usuarioDTO->usrMatricula, usrDomicilio = {$usuarioDTO->domicilio->domId}, usrFechaNacimiento = $usuarioDTO->usrFechaNacimiento, usrDescripcion = $usuarioDTO->usrDescripcion,
+            usrMatricula = $usuarioDTO->usrMatricula, usrDomicilio = {$usuarioDTO->domicilio->domId}, usrFechaNacimiento = $usuarioDTO->usrFechaNacimiento, usrDescripcion = $usuarioDTO->usrDescripcion,
             usrScoring = $usuarioDTO->usrScoring, usrEmail = $usuarioDTO->usrEmail,
             usrPassword = $hashPassword WHERE usrId = $usuarioDTO->usrId AND usrFechaBaja IS NULL";
 
@@ -167,9 +167,9 @@ class UsuariosController extends BaseController
                 $mysqli->close(); // Cerrar la conexión a la base de datos
             }
         }
-    }
+    } */
 
-    /*
+    
     public function patchUsuarios($id) // Usar únicamente para cambiar la contraseña
     {
 
@@ -202,7 +202,7 @@ class UsuariosController extends BaseController
             }
         }
     }
-    */
+    
 
     public function deleteUsuarios($id)
     {

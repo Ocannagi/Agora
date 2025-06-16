@@ -228,6 +228,35 @@
 							"header": null,
 							"cookie": [],
 							"body": null
+						},
+						{
+							"name": "Ok_Recondo",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usrEmail\":\"recondomariel@uol.com\",\r\n    \"usrPassword\":\"R3c0nd0Mar13l%\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/Login",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"Login"
+									]
+								}
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": null
 						}
 					]
 				},
@@ -3558,7 +3587,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"usrId\" : 3,\r\n    \"perId\" : 3,\r\n    \"scatId\" : 8\r\n}",
+							"raw": "{\r\n    \"usrId\" : 3,\r\n    \"perId\" : 4,\r\n    \"scatId\" : 8\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3828,7 +3857,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"perId\": 4,\r\n    \"scatId\": 8,\r\n    \"antDescripcion\": \"Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C.\",\r\n    \"usrId\": 2\r\n}",
+							"raw": "{\r\n    \"perId\": 2,\r\n    \"scatId\": 6,\r\n    \"antDescripcion\": \"Armario Barroco. Es una preciosura\",\r\n    \"usrId\": 6\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4114,6 +4143,444 @@
 								{
 									"key": "id",
 									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "TasacionesDigitales",
+			"item": [
+				{
+					"name": "getTasacionesDigitales",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an array with an object that have a property \"tadId\" that is a \"number\"`, function () {\r",
+									"    pm.expect(jsonData[0]).to.have.own.property('tadId').that.is.a('number');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/TasacionesDigitales",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"TasacionesDigitales"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getTasacionesDigitalesById",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/TasacionesDigitales/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"TasacionesDigitales",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "postTasacionesDigitales",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"usrTasId\" : 3,\r\n    \"usrPropId\" : 2,\r\n    \"antId\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/TasacionesDigitales",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"TasacionesDigitales"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patchTasacionesDigitales",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tadFechaTasDigitalRealizada\": \"2025-06-16\",\r\n    \"tadFechaTasDigitalRechazada\": \"\",\r\n    \"tadObservacionesDigital\": \"Ta buena la mesa\",\r\n    \"tadPrecioDigital\": 590000000.95\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/TasacionesDigitales/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"TasacionesDigitales",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteTasacionesDigitales",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/TasacionesDigitales/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"TasacionesDigitales",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "TasacionesInSitu",
+			"item": [
+				{
+					"name": "getTasacionesInSitu",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an array with an object that have a property \"tadId\" that is a \"number\"`, function () {\r",
+									"    pm.expect(jsonData[0]).to.have.own.property('tadId').that.is.a('number');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/TasacionesInSitu",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"TasacionesInSitu"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getTasacionesInSituById",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an array with an object that have a property \"tadId\" that is a \"number\"`, function () {\r",
+									"    pm.expect(jsonData[0]).to.have.own.property('tadId').that.is.a('number');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/TasacionesInSitu/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"TasacionesInSitu",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "postTasacionesInSitu",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tisTadId\" : 1,\r\n    \"domId\" : 2,\r\n    \"tisFechaTasInSituProvisoria\": \"2025-06-20\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/TasacionesInSitu",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"TasacionesInSitu"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patchTasacionesInSitu",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tisFechaTasInSituRealizada\" : \"2025-06-16\",\r\n    \"tisFechaTasInSituRechazada\" : \"\",\r\n    \"tisObservacionesInSitu\" : \"Posta, es la mesa del Rey Arturo!!\",\r\n    \"tisPrecioInSitu\" : 780000000.13\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/TasacionesInSitu/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"TasacionesInSitu",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteTasacionesInSitu",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/TasacionesInSitu/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"TasacionesInSitu",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
 								}
 							]
 						}

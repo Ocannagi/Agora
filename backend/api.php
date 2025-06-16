@@ -80,7 +80,8 @@ define('DEPENDENCIAS', [
     'AntiguedadesValidacionService' => 'AntiguedadesValidacionService',
     'ImagenesantiguedadValidacionService' => 'ImagenesAntiguedadValidacionService',
     'TasacionesdigitalesValidacionService' => 'TasacionesDigitalesValidacionService',
-]); // es necesario que en caso de clases con nombre compuesto, la key del array sea el nombre de la clase solo con mayúscula inicial
+    'TasacionesinsituValidacionService' => 'TasacionesInSituValidacionService'
+]); // es necesario que, en caso de clases con nombre compuesto, la key del array sea el nombre de la clase solo con mayúscula inicial
 
 /** Configuración Zona Horaria */
 date_default_timezone_set('America/Argentina/Buenos_Aires');

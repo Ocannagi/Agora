@@ -37,13 +37,14 @@ class TasacionesInSituValidacionService extends ValidacionServiceBase
             throw new CustomException(code: 500, message: 'Error interno: se requiere ClaimDTO para validar la tasación In Situ.');
         }
 
-        $this->validarDatosObligatorios(classModelName: 'TasacionInSitu', datos: get_object_vars($tasacionInSitu));
+        
         Input::trimStringDatos($tasacionInSitu);
 
         if ($tasacionInSitu instanceof TasacionInSituDTO) {
             $this->validarSiYafueRegistradoModificar($tasacionInSitu, $linkExterno);
             $this->validarTasacionInSituDTO($tasacionInSitu);
-        } else {;
+        } else {
+            $this->validarDatosObligatorios(classModelName: 'TasacionInSitu', datos: get_object_vars($tasacionInSitu));
             $this->validarTasacionInSituCreacionDTO($tasacionInSitu, $extraParams, $linkExterno);
             $this->validarSiYaFueRegistrado($tasacionInSitu, $linkExterno);
         }
@@ -52,7 +53,7 @@ class TasacionesInSituValidacionService extends ValidacionServiceBase
     private function validarSiYaFueRegistrado(TasacionInSituCreacionDTO $tasacionInSitu, mysqli $linkExterno)
     {
         $query = "SELECT 1 FROM tasacioninsitu
-                 WHERE tisTadId = {$tasacionInSitu->tasacionDigital->tadId}
+                 WHERE tisTadId = {$tasacionInSitu->tadId}
                  AND tisFechaBaja IS NULL";
 
         if ($this->_existeEnBD(

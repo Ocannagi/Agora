@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 16-06-2025 a las 02:31:32
+-- Tiempo de generación: 16-06-2025 a las 22:04:46
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -29,6 +29,7 @@ USE `agora`;
 -- Estructura de tabla para la tabla `antiguedad`
 --
 -- Creación: 14-06-2025 a las 14:37:52
+-- Última actualización: 16-06-2025 a las 18:24:14
 --
 
 DROP TABLE IF EXISTS `antiguedad`;
@@ -62,7 +63,8 @@ CREATE TABLE `antiguedad` (
 INSERT INTO `antiguedad` (`antId`, `antScatId`, `antPerId`, `antDescripcion`, `antUsrId`, `antFechaInsert`, `antTipoEstado`, `antFechaEstado`) VALUES
 (1, 7, 2, 'Vitrina Barroca circa 1656. Hermosos detalles en oro. Madera maciza de ébano. Dos puertas.', 4, '2025-05-24 19:41:04', 'RD', '2025-05-24 19:41:04'),
 (2, 3, 1, 'Hermosa escultura renacentista de un ángel. Mármol. Circa 1486.', 3, '2025-05-24 19:51:02', 'RD', '2025-05-24 19:51:02'),
-(3, 8, 4, 'Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C.', 2, '2025-06-01 21:37:12', 'RD', '2025-06-01 21:58:00');
+(3, 8, 4, 'Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C.', 2, '2025-06-01 21:37:12', 'RD', '2025-06-01 21:58:00'),
+(4, 6, 2, 'Armario Barroco. Es una preciosura', 6, '2025-06-16 15:24:14', 'RD', '2025-06-16 15:24:14');
 
 -- --------------------------------------------------------
 
@@ -137,6 +139,7 @@ INSERT INTO `domicilio` (`domId`, `domLocId`, `domCPA`, `domCalleRuta`, `domNroK
 -- Estructura de tabla para la tabla `imagenantiguedad`
 --
 -- Creación: 14-06-2025 a las 14:37:52
+-- Última actualización: 16-06-2025 a las 18:47:23
 --
 
 DROP TABLE IF EXISTS `imagenantiguedad`;
@@ -161,7 +164,8 @@ CREATE TABLE `imagenantiguedad` (
 
 INSERT INTO `imagenantiguedad` (`imaId`, `imaAntId`, `imaUrl`, `imaNombreArchivo`, `imaFechaInsert`, `imaOrden`) VALUES
 (1, 3, '/storage/imagenesAntiguedad/antId3_1749426389_detalle-mesa-redonda-medieval.jpeg', 'detalle-mesa-redonda-medieval.jpg', '2025-06-08 20:46:29', 1),
-(2, 3, '/storage/imagenesAntiguedad/antId3_1749426389_tablaredonda.jpeg', 'tablaredonda.jpg', '2025-06-08 20:46:29', 2);
+(2, 3, '/storage/imagenesAntiguedad/antId3_1749426389_tablaredonda.jpeg', 'tablaredonda.jpg', '2025-06-08 20:46:29', 2),
+(3, 4, '/storage/imagenesAntiguedad/antId4_1750099643_ArmarioBarroco.jpeg', 'ArmarioBarroco.jpg', '2025-06-16 15:47:23', 1);
 
 -- --------------------------------------------------------
 
@@ -349,7 +353,7 @@ INSERT INTO `subcategoria` (`scatId`, `scatCatId`, `scatDescripcion`, `scatFecha
 -- Estructura de tabla para la tabla `tasaciondigital`
 --
 -- Creación: 15-06-2025 a las 18:38:55
--- Última actualización: 15-06-2025 a las 18:38:55
+-- Última actualización: 16-06-2025 a las 19:26:58
 --
 
 DROP TABLE IF EXISTS `tasaciondigital`;
@@ -381,15 +385,16 @@ CREATE TABLE `tasaciondigital` (
 --
 
 INSERT INTO `tasaciondigital` (`tadId`, `tadUsrTasId`, `tadUsrPropId`, `tadAntId`, `tadFechaSolicitud`, `tadFechaTasDigitalRealizada`, `tadFechaTasDigitalRechazada`, `tadObservacionesDigital`, `tadPrecioDigital`, `tadFechaBaja`) VALUES
-(1, 3, 2, 3, '2025-06-14', '2025-06-15', NULL, 'Ta buena la mesa', 590000000.95, NULL);
+(1, 3, 2, 3, '2025-06-16', '2025-06-16', NULL, 'Ta buena la mesa', 590000000.95, NULL),
+(2, 4, 6, 4, '2025-06-16', '2025-06-16', NULL, 'Muy lindo armario Barroco', 659000.00, NULL);
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `tasacioninsitu`
 --
--- Creación: 16-06-2025 a las 00:07:35
--- Última actualización: 15-06-2025 a las 23:11:21
+-- Creación: 16-06-2025 a las 17:00:12
+-- Última actualización: 16-06-2025 a las 17:50:02
 --
 
 DROP TABLE IF EXISTS `tasacioninsitu`;
@@ -413,6 +418,13 @@ CREATE TABLE `tasacioninsitu` (
 --   `tisTadId`
 --       `tasaciondigital` -> `tadId`
 --
+
+--
+-- Volcado de datos para la tabla `tasacioninsitu`
+--
+
+INSERT INTO `tasacioninsitu` (`tisId`, `tisTadId`, `tisDomTasId`, `tisFechaTasInSituSolicitada`, `tisFechaTasInSituProvisoria`, `tisFechaTasInSituRealizada`, `tisFechaTasInSituRechazada`, `tisObservacionesInSitu`, `tisPrecioInSitu`, `tisFechaBaja`) VALUES
+(1, 1, 2, '2025-06-16', '2025-06-20', '2025-06-16', NULL, 'Posta, es la mesa del Rey Arturo!!', 780000000.13, NULL);
 
 -- --------------------------------------------------------
 
@@ -480,7 +492,7 @@ INSERT INTO `tipousuario` (`ttuTipoUsuario`, `ttuDescripcion`, `ttuRequiereMatri
 -- Estructura de tabla para la tabla `tokens`
 --
 -- Creación: 14-06-2025 a las 14:37:52
--- Última actualización: 15-06-2025 a las 18:35:43
+-- Última actualización: 16-06-2025 a las 19:29:12
 --
 
 DROP TABLE IF EXISTS `tokens`;
@@ -498,7 +510,14 @@ CREATE TABLE `tokens` (
 --
 
 INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTAwMTYxNDN9.swf6VZMDp2yu7-tfSHQL9Dm_Sge2_aJhD7cyyUeMaTvk_laa8Dqz0CvO7mpp--OOQwShUfB_6ot2IAJZK9itew', '2025-06-15 15:35:43');
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NiwidXNyTm9tYnJlIjoiQWRyaWFuYSBNYXJpZWwiLCJ1c3JUaXBvVXN1YXJpbyI6IlVHIiwiZXhwIjoxNzUwMTAzMjM3fQ.TB9kKpPVT5mmnL1ZRIt2wmeLyHRjJ8OAJ_0D_sJD4firY93KytZ5B3VLniYphwDNibJI-FumNUiJTwI54ATgtQ', '2025-06-16 15:47:17'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NiwidXNyTm9tYnJlIjoiQWRyaWFuYSBNYXJpZWwiLCJ1c3JUaXBvVXN1YXJpbyI6IlVHIiwiZXhwIjoxNzUwMTAzMzczfQ.1PJjDR4_TwW7TJdx3YV_piArajQKejzu9tJhr1gDMyxMEMCw_X3fZxvfWm7IxnRuCfX7DFLJ7dqwQBKTyglGPw', '2025-06-16 15:49:33'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NCwidXNyTm9tYnJlIjoiS2FyaW5hIiwidXNyVGlwb1VzdWFyaW8iOiJVQSIsImV4cCI6MTc1MDEwMzQxMH0.xlR8Udduv4ZWlOZ7v3Gmc-__coMLG7-l3NwrF3mnhzMK5fcIb7lIlMwKMV3ykLEPgwvPuDXt_PWsTLQIkn8deg', '2025-06-16 15:50:10'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NCwidXNyTm9tYnJlIjoiS2FyaW5hIiwidXNyVGlwb1VzdWFyaW8iOiJVQSIsImV4cCI6MTc1MDEwNDI0OX0.XOBWvBfC4WBHvfTUdstO2drfoORkzaDK-d3sABLoKk83bnrtlC35h7dyt0ciDv2lmv2fA69kJQPUVpprmmSrvg', '2025-06-16 16:04:09'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NiwidXNyTm9tYnJlIjoiQWRyaWFuYSBNYXJpZWwiLCJ1c3JUaXBvVXN1YXJpbyI6IlVHIiwiZXhwIjoxNzUwMTA0MzE0fQ.nGFmbX3n5-Xgq6lVbnxGWyqzmFpfA_j46UdS3fKKeCSC1Mn7UFwSJUGWnYPriKGQ1odekhU_PW80c75J0kwPUQ', '2025-06-16 16:05:14'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NCwidXNyTm9tYnJlIjoiS2FyaW5hIiwidXNyVGlwb1VzdWFyaW8iOiJVQSIsImV4cCI6MTc1MDEwNDM1MX0.R1rGQGKDCAvVdfzdCKDJPz0BhMbHkNPhv3OkLRmOCZ0Sjzn-fxmEZjkihlYed7PGzZJrlbZHBrRdtZUWA1EXpw', '2025-06-16 16:05:51'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NCwidXNyTm9tYnJlIjoiS2FyaW5hIiwidXNyVGlwb1VzdWFyaW8iOiJVQSIsImV4cCI6MTc1MDEwNTU0OX0.GUflE8R92igLPu6fFRRxXynpFwpfnTP_btit85JTAVK7U7LUBXNvqewodMRLriEssMIc9iVx3hl72NrDWEgkqg', '2025-06-16 16:25:49'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTAxMDU3NTJ9._yqWxIc4cvfWiENnaTtbZcL4CHN_v-rcaChciT7hVnE494JbRh5SvFbJ3y475Akizbq0yZardGjZKum-lc_SXg', '2025-06-16 16:29:12');
 
 -- --------------------------------------------------------
 
@@ -506,6 +525,7 @@ INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
 -- Estructura de tabla para la tabla `usuario`
 --
 -- Creación: 14-06-2025 a las 14:37:52
+-- Última actualización: 16-06-2025 a las 18:09:58
 --
 
 DROP TABLE IF EXISTS `usuario`;
@@ -545,7 +565,7 @@ INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonS
 (2, '33286958', 'Sosa Leonetti', 'Cristian Javier', NULL, NULL, 'UG', NULL, 2, '1988-02-08', NULL, 0, 'sleonetti@gmail.com', '$2y$10$HjR2rlPfne0GyNXGJ41jU.EiCfvVpMpQ5cOvRbitoynkYeMaEGnM.', '2024-07-08 14:42:43', NULL),
 (3, '29741295', 'Galíndez', 'Gustavo', 'Tasaciones Galíndez Jumbo SH', '30708772964', 'UT', '123456', 3, '1984-01-01', 'Tasamos el valor de sus afectos al mejor precio de Mercado.', 50, 'gusgalindez@tasgalindez.com', '$2y$10$U9YS.OMtjMhnOzAUWovHv.uQo38bb3dva9qDUmq48w5fBZW0NVsyq', '2024-07-10 16:18:01', NULL),
 (4, '27965368', 'Rolón', 'Karina', 'Paraíso Antigüedades SA', '30123456781', 'UA', '95874L', 4, '1982-06-12', 'Compra y Venta de antigüedades. Tasamos.', 60, 'krolon@paraiso.com', '$2y$10$Os4S45NKUqrBnLYDqALpYewr8CBMbKx8n4dNm9FTLhg7ySVxgcTx2', '2024-07-10 16:18:01', NULL),
-(6, '13355922', 'Recondo', 'Adriana Mariel', NULL, NULL, 'UG', NULL, 1, '1959-07-09', NULL, 0, 'recondomariel@uol.com', '$2y$10$z0qsH.nfqgY3j1llxhfIvO8LoG54WT0r7637axiTq1ZPmShSNL.jq', '2025-06-01 21:32:15', NULL);
+(6, '13355922', 'Recondo', 'Adriana Mariel', NULL, NULL, 'UG', NULL, 1, '1959-07-09', NULL, 0, 'recondomariel@uol.com', '$2y$10$n6.BF3HUDCMABqY7iRHOOuhPw..8nlE.cws7vSjmyIRNuYee1iXZu', '2025-06-01 21:32:15', NULL);
 
 -- --------------------------------------------------------
 
@@ -553,6 +573,7 @@ INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonS
 -- Estructura de tabla para la tabla `usuariotasadorhabilidad`
 --
 -- Creación: 14-06-2025 a las 14:37:52
+-- Última actualización: 16-06-2025 a las 19:04:13
 --
 
 DROP TABLE IF EXISTS `usuariotasadorhabilidad`;
@@ -585,7 +606,8 @@ INSERT INTO `usuariotasadorhabilidad` (`utsId`, `utsUsrId`, `utsScatId`, `utsPer
 (3, 4, 1, 2, '2025-05-14 22:32:43', NULL),
 (4, 4, 2, 1, '2025-05-14 22:32:43', NULL),
 (5, 3, 8, 3, '2025-06-01 21:35:46', NULL),
-(6, 3, 8, 4, '2025-06-14 21:40:54', NULL);
+(6, 3, 8, 4, '2025-06-14 21:40:54', NULL),
+(7, 4, 6, 2, '2025-06-16 16:04:13', NULL);
 
 --
 -- Índices para tablas volcadas
@@ -701,7 +723,7 @@ ALTER TABLE `usuariotasadorhabilidad`
 -- AUTO_INCREMENT de la tabla `antiguedad`
 --
 ALTER TABLE `antiguedad`
-  MODIFY `antId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `antId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `categoria`
@@ -719,7 +741,7 @@ ALTER TABLE `domicilio`
 -- AUTO_INCREMENT de la tabla `imagenantiguedad`
 --
 ALTER TABLE `imagenantiguedad`
-  MODIFY `imaId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `imaId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `localidad`
@@ -749,13 +771,13 @@ ALTER TABLE `subcategoria`
 -- AUTO_INCREMENT de la tabla `tasaciondigital`
 --
 ALTER TABLE `tasaciondigital`
-  MODIFY `tadId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `tadId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `tasacioninsitu`
 --
 ALTER TABLE `tasacioninsitu`
-  MODIFY `tisId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `tisId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `usuario`
@@ -767,7 +789,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `usuariotasadorhabilidad`
 --
 ALTER TABLE `usuariotasadorhabilidad`
-  MODIFY `utsId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `utsId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Restricciones para tablas volcadas

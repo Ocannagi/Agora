@@ -27,6 +27,7 @@ abstract class ValidacionServiceBase
                     continue; // Si no es un tipo primitivo, no se valida
                 }
 
+                /* Función interna */
                 $estandarizarType = function (string $tipo): string {
                     return match ($tipo) {
                         'integer' => 'int',
@@ -43,7 +44,11 @@ abstract class ValidacionServiceBase
                     var_dump(gettype($datos[$propiedad->getName()]));
                     var_dump($tipo); */
 
-
+                    if($tipo === 'float' && is_int($datos[$propiedad->getName()])) {
+                        // Si el tipo es float pero el dato es un entero, lo convertimos a float
+                        $datos[$propiedad->getName()] = (float)$datos[$propiedad->getName()];
+                        continue;
+                    }
 
                     throw new InvalidArgumentException(message: "El campo " . $propiedad->getName() . " debe ser de tipo $tipo.");
                 }

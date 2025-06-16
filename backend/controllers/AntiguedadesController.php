@@ -225,11 +225,14 @@ class AntiguedadesController extends BaseController
             if (isset($antiguedadCreacionDTO->usuario->usrId)) {
                 if ($claimDTO->usrTipoUsuario == TipoUsuarioEnum::UsuarioGeneral->value || $claimDTO->usrTipoUsuario == TipoUsuarioEnum::UsuarioAnticuario->value) {
                     $antiguedadCreacionDTO->usuario->usrId = $claimDTO->usrId;
+                    $antiguedadCreacionDTO->usuario->usrTipoUsuario = $claimDTO->usrTipoUsuario;
                 }
                 // A modo de prueba, el usuario técnico puede agregar antigüedades a cualquier usuario o a sí mismo.
                 if ($claimDTO->usrTipoUsuario == TipoUsuarioEnum::SoporteTecnico->value) {
-                    if ($antiguedadCreacionDTO->usuario->usrId == 0)
+                    if (!isset($antiguedadCreacionDTO->usuario->usrId) || $antiguedadCreacionDTO->usuario->usrId == 0) {
                         $antiguedadCreacionDTO->usuario->usrId = $claimDTO->usrId;
+                    }
+                    $antiguedadCreacionDTO->usuario->usrTipoUsuario = $claimDTO->usrTipoUsuario; // Soporte Técnico puede agregar antigüedades a cualquier usuario.
                 }
             }
 
