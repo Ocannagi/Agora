@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 16-06-2025 a las 22:04:46
+-- Tiempo de generación: 16-06-2025 a las 22:54:02
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -65,6 +65,35 @@ INSERT INTO `antiguedad` (`antId`, `antScatId`, `antPerId`, `antDescripcion`, `a
 (2, 3, 1, 'Hermosa escultura renacentista de un ángel. Mármol. Circa 1486.', 3, '2025-05-24 19:51:02', 'RD', '2025-05-24 19:51:02'),
 (3, 8, 4, 'Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C.', 2, '2025-06-01 21:37:12', 'RD', '2025-06-01 21:58:00'),
 (4, 6, 2, 'Armario Barroco. Es una preciosura', 6, '2025-06-16 15:24:14', 'RD', '2025-06-16 15:24:14');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `antiguedadalaventa`
+--
+-- Creación: 16-06-2025 a las 20:14:31
+--
+
+DROP TABLE IF EXISTS `antiguedadalaventa`;
+CREATE TABLE `antiguedadalaventa` (
+  `aavId` int(10) UNSIGNED NOT NULL,
+  `aavAntId` int(10) UNSIGNED NOT NULL,
+  `aavDomOrigen` int(10) UNSIGNED NOT NULL,
+  `aavPrecioVenta` decimal(15,2) UNSIGNED NOT NULL,
+  `aavTadId` int(10) UNSIGNED DEFAULT NULL,
+  `aavFechaPublicacion` datetime NOT NULL,
+  `aavFechaRetiro` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `antiguedadalaventa`:
+--   `aavAntId`
+--       `antiguedad` -> `antId`
+--   `aavDomOrigen`
+--       `domicilio` -> `domId`
+--   `aavTadId`
+--       `tasaciondigital` -> `tadId`
+--
 
 -- --------------------------------------------------------
 
@@ -492,7 +521,7 @@ INSERT INTO `tipousuario` (`ttuTipoUsuario`, `ttuDescripcion`, `ttuRequiereMatri
 -- Estructura de tabla para la tabla `tokens`
 --
 -- Creación: 14-06-2025 a las 14:37:52
--- Última actualización: 16-06-2025 a las 19:29:12
+-- Última actualización: 16-06-2025 a las 20:32:51
 --
 
 DROP TABLE IF EXISTS `tokens`;
@@ -510,14 +539,11 @@ CREATE TABLE `tokens` (
 --
 
 INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NiwidXNyTm9tYnJlIjoiQWRyaWFuYSBNYXJpZWwiLCJ1c3JUaXBvVXN1YXJpbyI6IlVHIiwiZXhwIjoxNzUwMTAzMjM3fQ.TB9kKpPVT5mmnL1ZRIt2wmeLyHRjJ8OAJ_0D_sJD4firY93KytZ5B3VLniYphwDNibJI-FumNUiJTwI54ATgtQ', '2025-06-16 15:47:17'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NiwidXNyTm9tYnJlIjoiQWRyaWFuYSBNYXJpZWwiLCJ1c3JUaXBvVXN1YXJpbyI6IlVHIiwiZXhwIjoxNzUwMTAzMzczfQ.1PJjDR4_TwW7TJdx3YV_piArajQKejzu9tJhr1gDMyxMEMCw_X3fZxvfWm7IxnRuCfX7DFLJ7dqwQBKTyglGPw', '2025-06-16 15:49:33'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NCwidXNyTm9tYnJlIjoiS2FyaW5hIiwidXNyVGlwb1VzdWFyaW8iOiJVQSIsImV4cCI6MTc1MDEwMzQxMH0.xlR8Udduv4ZWlOZ7v3Gmc-__coMLG7-l3NwrF3mnhzMK5fcIb7lIlMwKMV3ykLEPgwvPuDXt_PWsTLQIkn8deg', '2025-06-16 15:50:10'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NCwidXNyTm9tYnJlIjoiS2FyaW5hIiwidXNyVGlwb1VzdWFyaW8iOiJVQSIsImV4cCI6MTc1MDEwNDI0OX0.XOBWvBfC4WBHvfTUdstO2drfoORkzaDK-d3sABLoKk83bnrtlC35h7dyt0ciDv2lmv2fA69kJQPUVpprmmSrvg', '2025-06-16 16:04:09'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NiwidXNyTm9tYnJlIjoiQWRyaWFuYSBNYXJpZWwiLCJ1c3JUaXBvVXN1YXJpbyI6IlVHIiwiZXhwIjoxNzUwMTA0MzE0fQ.nGFmbX3n5-Xgq6lVbnxGWyqzmFpfA_j46UdS3fKKeCSC1Mn7UFwSJUGWnYPriKGQ1odekhU_PW80c75J0kwPUQ', '2025-06-16 16:05:14'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NCwidXNyTm9tYnJlIjoiS2FyaW5hIiwidXNyVGlwb1VzdWFyaW8iOiJVQSIsImV4cCI6MTc1MDEwNDM1MX0.R1rGQGKDCAvVdfzdCKDJPz0BhMbHkNPhv3OkLRmOCZ0Sjzn-fxmEZjkihlYed7PGzZJrlbZHBrRdtZUWA1EXpw', '2025-06-16 16:05:51'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NCwidXNyTm9tYnJlIjoiS2FyaW5hIiwidXNyVGlwb1VzdWFyaW8iOiJVQSIsImV4cCI6MTc1MDEwNTU0OX0.GUflE8R92igLPu6fFRRxXynpFwpfnTP_btit85JTAVK7U7LUBXNvqewodMRLriEssMIc9iVx3hl72NrDWEgkqg', '2025-06-16 16:25:49'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTAxMDU3NTJ9._yqWxIc4cvfWiENnaTtbZcL4CHN_v-rcaChciT7hVnE494JbRh5SvFbJ3y475Akizbq0yZardGjZKum-lc_SXg', '2025-06-16 16:29:12');
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MiwidXNyTm9tYnJlIjoiQ3Jpc3RpYW4gSmF2aWVyIiwidXNyVGlwb1VzdWFyaW8iOiJVRyIsImV4cCI6MTc1MDEwOTUyNn0.9XbgyDYFtdyyeGbuJCdL41viRoiQJZnRKB32PLvuRJSY3mJgUy_2MMkZPrBIjYZ2SIJUf52QVGhfo0GHxm1Qcg', '2025-06-16 17:32:06'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MywidXNyTm9tYnJlIjoiR3VzdGF2byIsInVzclRpcG9Vc3VhcmlvIjoiVVQiLCJleHAiOjE3NTAxMDk1NDB9.w6SkzN4FR4b5vMK6njykVAERo6bgEfeY0y4WGEcZWmnND-A8z8MciLri_He_xPt8oHUVACbvswbEnJAGh0SDwg', '2025-06-16 17:32:20'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NCwidXNyTm9tYnJlIjoiS2FyaW5hIiwidXNyVGlwb1VzdWFyaW8iOiJVQSIsImV4cCI6MTc1MDEwOTU0OH0.iTdG0qc8t4LrMooH_0CDjdSxvqSO2ag6oYN9OYPelILPExV20W8YVd3vYc1V1J8UBvQY4JKetYajfgdHh-W6Lg', '2025-06-16 17:32:28'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NiwidXNyTm9tYnJlIjoiQWRyaWFuYSBNYXJpZWwiLCJ1c3JUaXBvVXN1YXJpbyI6IlVHIiwiZXhwIjoxNzUwMTA5NTU1fQ.5UoeMdewxyeIgw67uN6pIyeTV6DHt74TnYLt-ITK1bsBFK9LKtDILcfdcFEVjHg3hlycnOaCFwMg8z0-b81ouQ', '2025-06-16 17:32:35'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTAxMDk1NzF9.Ijqer6DKYTx_vUmvr1EzcS3saW7KxgJQFSSEaIhVQOubm5t-bnVE9EiuTzctifNUSriex75J_eeSlOZcRSGAOQ', '2025-06-16 17:32:51');
 
 -- --------------------------------------------------------
 
@@ -624,6 +650,15 @@ ALTER TABLE `antiguedad`
   ADD KEY `FK_antiguedadTipoEstado` (`antTipoEstado`);
 
 --
+-- Indices de la tabla `antiguedadalaventa`
+--
+ALTER TABLE `antiguedadalaventa`
+  ADD PRIMARY KEY (`aavId`),
+  ADD KEY `FK_AlaVenta_Antiguedad` (`aavAntId`),
+  ADD KEY `FK_AlaVenta_Domicilio` (`aavDomOrigen`),
+  ADD KEY `FK_AlaVenta_Tasacion` (`aavTadId`);
+
+--
 -- Indices de la tabla `categoria`
 --
 ALTER TABLE `categoria`
@@ -726,6 +761,12 @@ ALTER TABLE `antiguedad`
   MODIFY `antId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT de la tabla `antiguedadalaventa`
+--
+ALTER TABLE `antiguedadalaventa`
+  MODIFY `aavId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `categoria`
 --
 ALTER TABLE `categoria`
@@ -803,6 +844,14 @@ ALTER TABLE `antiguedad`
   ADD CONSTRAINT `FK_antiguedadSubcategoria` FOREIGN KEY (`antScatId`) REFERENCES `subcategoria` (`scatId`) ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_antiguedadTipoEstado` FOREIGN KEY (`antTipoEstado`) REFERENCES `tipoestado` (`tteTipoEstado`) ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_antiguedadUsuario` FOREIGN KEY (`antUsrId`) REFERENCES `usuario` (`usrId`) ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `antiguedadalaventa`
+--
+ALTER TABLE `antiguedadalaventa`
+  ADD CONSTRAINT `FK_AlaVenta_Antiguedad` FOREIGN KEY (`aavAntId`) REFERENCES `antiguedad` (`antId`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_AlaVenta_Domicilio` FOREIGN KEY (`aavDomOrigen`) REFERENCES `domicilio` (`domId`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_AlaVenta_Tasacion` FOREIGN KEY (`aavTadId`) REFERENCES `tasaciondigital` (`tadId`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `domicilio`
