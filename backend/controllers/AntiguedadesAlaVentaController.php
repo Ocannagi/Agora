@@ -1,0 +1,77 @@
+<?php
+
+use Utilidades\Output;
+use Utilidades\Input;
+use Utilidades\Querys;
+use Model\CustomException;
+
+class AntiguedadesAlaVentaController extends BaseController
+{
+    private ValidacionServiceBase $antiguedadesAlaVentaValidacionService;
+    private ISecurity $securityService;
+
+    private static $instancia = null; // La única instancia de la clase
+
+    /** El orden de las dependencias debe ser el mismo que en inyectarDependencias en api.php  */
+    private function __construct(IDbConnection $dbConnection, ISecurity $securityService, ValidacionServiceBase $antiguedadesAlaVentaValidacionService)
+    {
+        parent::__construct($dbConnection);
+        $this->securityService = $securityService;
+        $this->antiguedadesAlaVentaValidacionService = $antiguedadesAlaVentaValidacionService;
+    }
+
+    public static function getInstance(IDbConnection $dbConnection, ISecurity $securityService, ValidacionServiceBase $antiguedadesAlaVentaValidacionService): AntiguedadesAlaVentaController
+    {
+        if (self::$instancia === null) {
+            self::$instancia = new AntiguedadesAlaVentaController($dbConnection, $securityService, $antiguedadesAlaVentaValidacionService);
+        }
+        return self::$instancia;
+    }
+
+    // Método para evitar la clonación del objeto
+    private function __clone() {}
+
+    public function postAntiguedadesAlaVenta(): void
+    {
+        $mysqli = $this->dbConnection->conectarBD();
+        try {
+            $mysqli->begin_transaction(); // Iniciar transacción
+            $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
+            $data = Input::getArrayBody(msgEntidad: "la antigüedad a la venta");
+
+            $this->antiguedadesAlaVentaValidacionService->validarType(className: "AntiguedadCreacionDTO", datos: $data);
+            $antiguedadAlaVentaCreacionDTO = new AntiguedadAlaVentaCreacionDTO($data);
+
+            $this->antiguedadesAlaVentaValidacionService->validarInput(
+                linkExterno: $mysqli,
+                entidadDTO: $antiguedadAlaVentaCreacionDTO,
+                extraParams: $claimDTO
+            );
+
+            Input::escaparDatos($antiguedadAlaVentaCreacionDTO, $mysqli);
+            Input::agregarComillas_ConvertNULLtoString($antiguedadAlaVentaCreacionDTO);
+
+            
+
+        } catch (\Throwable $th) {
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                $mysqli->rollback(); // Revertir transacción si hay error
+            }
+            if ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if(isset($mysqli) && $mysqli instanceof mysqli) {
+                // Cierra la conexión a la base de datos si se creó en este método.
+                $mysqli->close();
+            }
+        }
+    }
+
+}

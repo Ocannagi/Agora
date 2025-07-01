@@ -19,12 +19,12 @@ class AntiguedadAlaVenta extends ClassBase
         }
 
         $instance = new self();
-        $instance->aavAntId = $dto->aavAntId;
-        $instance->aavDomOrigen = $dto->aavDomOrigen;
+        $instance->antiguedad = Antiguedad::fromArray(get_object_vars($dto->antiguedad)); // Convertir el DTO de antigüedad a objeto
+        $instance->domicilio = Domicilio::fromArray(get_object_vars($dto->domicilio)); // Convertir el DTO de domicilio a objeto
         $instance->aavPrecioVenta = $dto->aavPrecioVenta;
-        $instance->aavTadId = $dto->aavTadId;
-        $instance->aavFechaPublicacion = $dto->aavFechaPublicacion;
-        $instance->aavFechaRetiro = $dto->aavFechaRetiro;
+        $instance->tasacionDigital = TasacionDigital::fromArray(get_object_vars($dto->tasacion));
+        $instance->aavFechaPublicacion = DateTime::createFromFormat('Y-m-d', $dto->aavFechaPublicacion);
+        $instance->aavFechaRetiro = $dto->aavFechaRetiro !== null ? DateTime::createFromFormat('Y-m-d', $dto->aavFechaRetiro) : null;
 
         return $instance;
     }

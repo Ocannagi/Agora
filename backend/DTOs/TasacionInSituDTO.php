@@ -15,7 +15,7 @@ class TasacionInSituDTO implements IDTO
     public ?float $tisPrecioInSitu = null; // Precio de la tasación in situ.
 
     use TraitMapDomicilioDTO; // Trait para mapear el domicilio desde el array o stdClass.
-    use TraitMapTasacionDigitalDTO; // Trait para mapear TasacionDigitalDTO.
+    
 
     public function __construct(array | stdClass $data)
     {
@@ -41,6 +41,7 @@ class TasacionInSituDTO implements IDTO
                 $this->domicilio = $domicilioDTO;
             }
         }
+
         if (array_key_exists('tisFechaTasInSituSolicitada', $data)) {
             $this->tisFechaTasInSituSolicitada = (string)$data['tisFechaTasInSituSolicitada'];
         }
