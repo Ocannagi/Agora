@@ -39,7 +39,8 @@ trait TraitGetByIdInterno
      * Si se completa el ID en la consulta, se reemplaza el marcador %id por el valor proporcionado.
      * 
      * Consultas predefinidas: 'USUARIO' para obtener un usuario por su ID.
-     *
+     * Antigüedades: 'ANTIGUEDAD' para obtener una antigüedad por su ID.
+     * 
      * @param string $query Consulta SQL para obtener el objeto. Puede proporcionarse un string con el nombre de una consulta predefinida en QUERYS.
      * @param string $classDTO Nombre de la clase que implementa IDTO.
      * @param mysqli|null $linkExterno Conexión a la base de datos externa, si es necesario.

@@ -27,6 +27,8 @@ class AntiguedadAlaVentaCreacionDTO implements ICreacionDTO
                     $this->antiguedad = $antiguedadDTO;
                 }
             }
+        } else if (array_key_exists('antId', $data)) {
+            $this->antiguedad = $this->mapAntiguedadDTO(['antId' => (int)$data['antId']]);
         } else if (array_key_exists('aavAntId', $data)) {
             $this->antiguedad = $this->mapAntiguedadDTO(['antId' => (int)$data['aavAntId']]);
         }

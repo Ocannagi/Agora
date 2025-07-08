@@ -10,6 +10,8 @@ class AntiguedadesAlaVentaController extends BaseController
     private ValidacionServiceBase $antiguedadesAlaVentaValidacionService;
     private ISecurity $securityService;
 
+    use TraitGetByIdInterno; // Trait para métodos internos de obtención por ID
+
     private static $instancia = null; // La única instancia de la clase
 
     /** El orden de las dependencias debe ser el mismo que en inyectarDependencias en api.php  */
@@ -41,6 +43,13 @@ class AntiguedadesAlaVentaController extends BaseController
 
             $this->antiguedadesAlaVentaValidacionService->validarType(className: "AntiguedadCreacionDTO", datos: $data);
             $antiguedadAlaVentaCreacionDTO = new AntiguedadAlaVentaCreacionDTO($data);
+
+            $antiguedadAlaVentaCreacionDTO->antiguedad = $this->getByIdInterno(
+                query: 'ANTIGUEDAD',
+                classDTO: "AntiguedadDTO",
+                linkExterno: $mysqli,
+                id: $antiguedadAlaVentaCreacionDTO->antiguedad->antId
+            );
 
             $this->antiguedadesAlaVentaValidacionService->validarInput(
                 linkExterno: $mysqli,
