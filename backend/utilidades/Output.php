@@ -27,6 +27,9 @@ class Output
             case 404:
                 header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found", true, 404);
                 break;
+            case 405:
+                header($_SERVER["SERVER_PROTOCOL"] . " 405 Method Not Allowed", true, 405);
+                break;
             case 409:
                 header($_SERVER["SERVER_PROTOCOL"] . " 409 Conflict", true, 409);
                 break;

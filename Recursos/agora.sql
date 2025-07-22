@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 16-06-2025 a las 22:54:02
+-- Tiempo de generación: 22-07-2025 a las 04:33:41
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -29,7 +29,6 @@ USE `agora`;
 -- Estructura de tabla para la tabla `antiguedad`
 --
 -- Creación: 14-06-2025 a las 14:37:52
--- Última actualización: 16-06-2025 a las 18:24:14
 --
 
 DROP TABLE IF EXISTS `antiguedad`;
@@ -168,7 +167,6 @@ INSERT INTO `domicilio` (`domId`, `domLocId`, `domCPA`, `domCalleRuta`, `domNroK
 -- Estructura de tabla para la tabla `imagenantiguedad`
 --
 -- Creación: 14-06-2025 a las 14:37:52
--- Última actualización: 16-06-2025 a las 18:47:23
 --
 
 DROP TABLE IF EXISTS `imagenantiguedad`;
@@ -382,7 +380,6 @@ INSERT INTO `subcategoria` (`scatId`, `scatCatId`, `scatDescripcion`, `scatFecha
 -- Estructura de tabla para la tabla `tasaciondigital`
 --
 -- Creación: 15-06-2025 a las 18:38:55
--- Última actualización: 16-06-2025 a las 19:26:58
 --
 
 DROP TABLE IF EXISTS `tasaciondigital`;
@@ -423,7 +420,6 @@ INSERT INTO `tasaciondigital` (`tadId`, `tadUsrTasId`, `tadUsrPropId`, `tadAntId
 -- Estructura de tabla para la tabla `tasacioninsitu`
 --
 -- Creación: 16-06-2025 a las 17:00:12
--- Última actualización: 16-06-2025 a las 17:50:02
 --
 
 DROP TABLE IF EXISTS `tasacioninsitu`;
@@ -521,7 +517,6 @@ INSERT INTO `tipousuario` (`ttuTipoUsuario`, `ttuDescripcion`, `ttuRequiereMatri
 -- Estructura de tabla para la tabla `tokens`
 --
 -- Creación: 14-06-2025 a las 14:37:52
--- Última actualización: 16-06-2025 a las 20:32:51
 --
 
 DROP TABLE IF EXISTS `tokens`;
@@ -539,11 +534,7 @@ CREATE TABLE `tokens` (
 --
 
 INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MiwidXNyTm9tYnJlIjoiQ3Jpc3RpYW4gSmF2aWVyIiwidXNyVGlwb1VzdWFyaW8iOiJVRyIsImV4cCI6MTc1MDEwOTUyNn0.9XbgyDYFtdyyeGbuJCdL41viRoiQJZnRKB32PLvuRJSY3mJgUy_2MMkZPrBIjYZ2SIJUf52QVGhfo0GHxm1Qcg', '2025-06-16 17:32:06'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MywidXNyTm9tYnJlIjoiR3VzdGF2byIsInVzclRpcG9Vc3VhcmlvIjoiVVQiLCJleHAiOjE3NTAxMDk1NDB9.w6SkzN4FR4b5vMK6njykVAERo6bgEfeY0y4WGEcZWmnND-A8z8MciLri_He_xPt8oHUVACbvswbEnJAGh0SDwg', '2025-06-16 17:32:20'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NCwidXNyTm9tYnJlIjoiS2FyaW5hIiwidXNyVGlwb1VzdWFyaW8iOiJVQSIsImV4cCI6MTc1MDEwOTU0OH0.iTdG0qc8t4LrMooH_0CDjdSxvqSO2ag6oYN9OYPelILPExV20W8YVd3vYc1V1J8UBvQY4JKetYajfgdHh-W6Lg', '2025-06-16 17:32:28'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NiwidXNyTm9tYnJlIjoiQWRyaWFuYSBNYXJpZWwiLCJ1c3JUaXBvVXN1YXJpbyI6IlVHIiwiZXhwIjoxNzUwMTA5NTU1fQ.5UoeMdewxyeIgw67uN6pIyeTV6DHt74TnYLt-ITK1bsBFK9LKtDILcfdcFEVjHg3hlycnOaCFwMg8z0-b81ouQ', '2025-06-16 17:32:35'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTAxMDk1NzF9.Ijqer6DKYTx_vUmvr1EzcS3saW7KxgJQFSSEaIhVQOubm5t-bnVE9EiuTzctifNUSriex75J_eeSlOZcRSGAOQ', '2025-06-16 17:32:51');
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTI5NzU4Njh9.tRJsAedDVvXClCyOMy0BC1yjldlXq0nF9xK6VdBhyvyqLmkKH_0coS-TyrzfYuMI5QyItGIzlqfaatSCCFasQw', '2025-07-19 21:44:28');
 
 -- --------------------------------------------------------
 
@@ -551,7 +542,6 @@ INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
 -- Estructura de tabla para la tabla `usuario`
 --
 -- Creación: 14-06-2025 a las 14:37:52
--- Última actualización: 16-06-2025 a las 18:09:58
 --
 
 DROP TABLE IF EXISTS `usuario`;
@@ -599,7 +589,6 @@ INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonS
 -- Estructura de tabla para la tabla `usuariotasadorhabilidad`
 --
 -- Creación: 14-06-2025 a las 14:37:52
--- Última actualización: 16-06-2025 a las 19:04:13
 --
 
 DROP TABLE IF EXISTS `usuariotasadorhabilidad`;

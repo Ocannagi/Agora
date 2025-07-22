@@ -206,10 +206,12 @@ abstract class ValidacionServiceBase
      * @param mysqli $link Conexión a la base de datos.
      * @param string $query Consulta SQL a ejecutar.
      * @param string $msg Mensaje descriptivo de la acción que se está realizando.
-     * @return bool
+     * @param string|null $columnId Nombre de la columna a verificar (opcional).
+     * Si se proporciona, se devuelve el valor de esa columna del primer resultado.
+     * @return bool|int
      */
-    protected function _existeEnBD(mysqli $link, string $query, string $msg): bool
+    protected function _existeEnBD(mysqli $link, string $query, string $msg, ?string $columnId = null): bool | int
     {
-        return Querys::existeEnBD($link, $query, $msg);
+        return Querys::existeEnBD($link, $query, $msg, $columnId);
     }
 }

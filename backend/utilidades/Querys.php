@@ -12,17 +12,34 @@ class Querys
      * @param mysqli $link Conexión a la base de datos.
      * @param string $query Consulta SQL a ejecutar.
      * @param string $msg Mensaje descriptivo para el error.
-     * @return bool Verdadero si hay resultados, falso en caso contrario.
+     * @param string|null $columnId Nombre de la columna a verificar (opcional).
+     * Si se proporciona, se devuelve el valor de esa columna del primer resultado.
+     * Si no se proporciona, se devuelve un booleano.
+     * @throws CustomException Si hay un error al ejecutar la consulta.
+     * 
+     * @return bool|int Devuelve true si hay resultados, false si no los hay.
+     * Si se proporciona $columnId, devuelve el valor de esa columna del primer resultado.
      */
-    public static function existeEnBD(mysqli $link, string $query, string $msg): bool
+    public static function existeEnBD(mysqli $link, string $query, string $msg, ?string $columnId = null): bool | int
     {
         $result = $link->query($query);
         if (!$result) {
             throw new CustomException(code: 500, message: "Error interno al querer $msg: " . $link->error);
         }
-        $bool = $result->num_rows > 0;
+
+        $retorno = false;
+
+        if ($columnId !== null) {
+            if ($result->num_rows === 0) {
+                $retorno = 0;
+            }
+            $row = $result->fetch_assoc();
+            $retorno = (int)$row[$columnId];
+        } 
+
+        $retorno = $result->num_rows > 0;
         $result->free_result();
-        return $bool;
+        return $retorno;
     }
 
     public static function obtenerCount(mysqli $link, string $base, string $where, string $msg): int

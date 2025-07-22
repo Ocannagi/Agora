@@ -136,12 +136,17 @@ class DomiciliosValidacionService extends ValidacionServiceBase
 
         if ($domicilio instanceof DomicilioDTO) {
             $query = "SELECT 1 FROM domicilio WHERE domCalleRuta = '{$domicilio->domCalleRuta}' AND domNroKm = {$domicilio->domNroKm} $qPiso $qDepto AND domLocId = {$domicilio->localidad->locId} AND domId <> {$domicilio->domId} AND domFechaBaja IS NULL";
+            if ($this->_existeEnBD(link: $linkExterno, query: $query, msg: 'verificar si el domicilio ya fue registrado')) {
+                throw new CustomException(code: 409, message: 'El domicilio ya fue registrado.');
+        }
         } else {
             $query = "SELECT 1 FROM domicilio WHERE domCalleRuta = '{$domicilio->domCalleRuta}' AND domNroKm = {$domicilio->domNroKm} $qPiso $qDepto AND domLocId = {$domicilio->localidad->locId} AND domFechaBaja IS NULL";
+            $id = $this->_existeEnBD(link: $linkExterno, query: $query, msg: 'verificar si el domicilio ya fue registrado', columnId: 'domId');
+            if ($id !== 0) {
+                throw new CustomException(code: 409, message: "El domicilio ya fue registrado: ID_$id.");
+            }
         }
 
-        if ($this->_existeEnBD(link: $linkExterno, query: $query, msg: 'verificar si el domicilio ya fue registrado')) {
-            throw new CustomException(code: 409, message: 'El domicilio ya fue registrado.');
-        }
+        
     }
 }

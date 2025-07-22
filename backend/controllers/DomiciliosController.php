@@ -90,12 +90,28 @@ class DomiciliosController extends BaseController
         $mysqli = $this->dbConnection->conectarBD();
         try {
             $this->securityService->requireLogin(null);
+
             $data = Input::getArrayBody(msgEntidad: 'el domicilio');
 
             $this->domiciliosValidacionService->validarType(className: "DomicilioCreacionDTO", datos: $data);
             $domicilioCreacionDTO = new DomicilioCreacionDTO($data);
 
-            $this->domiciliosValidacionService->validarInput($mysqli, $domicilioCreacionDTO);
+            try {
+                $this->domiciliosValidacionService->validarInput($mysqli, $domicilioCreacionDTO);
+            } catch (\Throwable $th) {
+                if ($th instanceof CustomException) {
+                    if (str_contains($th->getMessage(), 'ID_')) {
+                        $id = substr($th->getMessage(), strpos($th->getMessage(), 'ID_') + 3);
+                        //TODO: seguir acá
+                    }
+
+                }
+                else {
+                    throw $th;
+                }
+            }
+
+
             Input::escaparDatos($domicilioCreacionDTO, $mysqli);
             Input::agregarComillas_ConvertNULLtoString($domicilioCreacionDTO);
 
@@ -129,6 +145,10 @@ class DomiciliosController extends BaseController
         $mysqli = $this->dbConnection->conectarBD();
         try {
             $this->securityService->requireLogin(null);
+
+            throw new CustomException("Método PatchDomicilios deshabilitado temporalmente", 405);
+
+            /*
             settype($id, 'integer');
             
             $data = Input::getArrayBody(msgEntidad: 'el domicilio');
@@ -155,6 +175,7 @@ class DomiciliosController extends BaseController
                       AND domFechaBaja is NULL";
 
             return parent::patch(query: $query, link: $mysqli);
+            */
         } catch (\Throwable $th) {
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
