@@ -34,6 +34,11 @@ enum TipoUsuarioEnum: string
         ]);
     }
 
+    public function isSoporteTecnico(): bool
+    {
+        return $this === self::SoporteTecnico;
+    }
+
     public static function compradorVendedorToArray(): array
     {
         return [

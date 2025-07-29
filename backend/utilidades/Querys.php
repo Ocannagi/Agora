@@ -1,6 +1,7 @@
 <?php
 
 namespace Utilidades;
+
 use mysqli;
 use Model\CustomException;
 use InvalidArgumentException;
@@ -32,12 +33,19 @@ class Querys
         if ($columnId !== null) {
             if ($result->num_rows === 0) {
                 $retorno = 0;
-            }
-            $row = $result->fetch_assoc();
-            $retorno = (int)$row[$columnId];
-        } 
+            } else {
+                $row = $result->fetch_assoc();
 
-        $retorno = $result->num_rows > 0;
+                if (!isset($row[$columnId])) {
+                    throw new InvalidArgumentException(message: "La columna '$columnId' no existe en el resultado de la consulta.");
+                }
+
+                $retorno = (int)$row[$columnId] ?? 0;
+            }
+        } else {
+            $retorno = $result->num_rows > 0;
+        }
+
         $result->free_result();
         return $retorno;
     }
@@ -52,7 +60,7 @@ class Querys
         } else if ($result->num_rows === 0) {
             throw new InvalidArgumentException(message: "No se encontraron resultados al querer $msg.");
         }
-        
+
         $count = (int)$result->fetch_assoc()['count'];
         $result->free_result();
         return $count;

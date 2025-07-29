@@ -43,7 +43,7 @@ class Usuario extends ClassBase
         $instance->usrCuitCuil = $dto->usrCuitCuil;
         $instance->usrTipoUsuario = $dto->usrTipoUsuario;
         $instance->usrMatricula = $dto->usrMatricula;
-        $instance->domicilio = Domicilio::fromArray(get_object_vars($dto->domicilio));
+        $instance->domicilio = Domicilio::fromArray(['domId' => $dto->domicilio->domId]);
         $instance->usrFechaNacimiento = DateTime::createFromFormat('Y-m-d', $dto->usrFechaNacimiento);
         $instance->usrDescripcion = $dto->usrDescripcion;
         $instance->usrEmail = $dto->usrEmail;

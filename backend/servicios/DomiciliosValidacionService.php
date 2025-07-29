@@ -35,9 +35,11 @@ class DomiciliosValidacionService extends ValidacionServiceBase
         $this->validarPiso($domicilio->domPiso);
         $this->validarDepto($domicilio->domDepto);
 
+        
+        /** Esta validación fue hecha antes de la creación de la tabla UsuarioDomicilio, actualmente no está habilitada la modificación de domicilios */
         if ($domicilio instanceof DomicilioDTO) {
-            $this->validarExisteDomicilioModificar($domicilio->domId, $linkExterno);
-            $this->validarSiYaFueRegistrado($domicilio, $linkExterno);
+            $this->validarExisteDomicilioModificar($domicilio->domId, $linkExterno); //Sin uso
+            $this->validarSiYaFueRegistrado($domicilio, $linkExterno); // Sin uso
         } else {
             $this->validarSiYaFueRegistrado($domicilio, $linkExterno);
         }
@@ -143,10 +145,9 @@ class DomiciliosValidacionService extends ValidacionServiceBase
             $query = "SELECT 1 FROM domicilio WHERE domCalleRuta = '{$domicilio->domCalleRuta}' AND domNroKm = {$domicilio->domNroKm} $qPiso $qDepto AND domLocId = {$domicilio->localidad->locId} AND domFechaBaja IS NULL";
             $id = $this->_existeEnBD(link: $linkExterno, query: $query, msg: 'verificar si el domicilio ya fue registrado', columnId: 'domId');
             if ($id !== 0) {
-                throw new CustomException(code: 409, message: "El domicilio ya fue registrado: ID_$id.");
+                throw new CustomException(code: 409, message: "El domicilio ya fue registrado bajo el ID_$id"); //TODO: El Frontend debe manejar este mensaje para capturar el ID y llamar al controller de usuarioDomicilio
             }
         }
-
         
     }
 }

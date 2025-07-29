@@ -35,6 +35,8 @@ trait TraitMapDomicilioDTO
             $arrayDom['domId'] = $data['usrDomicilio'];
         else if (array_key_exists('tisDomTasId', $data))
             $arrayDom['domId'] = $data['tisDomTasId'];
+        else if (array_key_exists('udomDom', $data))
+            $arrayDom['domId'] = (int)$data['udomDom'];
         else
             return null;
 

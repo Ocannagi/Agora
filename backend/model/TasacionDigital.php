@@ -25,9 +25,9 @@ class TasacionDigital extends ClassBase
         }
 
         $instance = new self();
-        $instance->tasador = Usuario::fromArray(get_object_vars($dto->tasador));
-        $instance->propietario = Usuario::fromArray(get_object_vars($dto->propietario));
-        $instance->antiguedad = Antiguedad::fromArray(get_object_vars($dto->antiguedad));
+        $instance->tasador = Usuario::fromArray(['usrId' => $dto->tasador->usrId]);
+        $instance->propietario = Usuario::fromArray(['usrId' => $dto->propietario->usrId]);
+        $instance->antiguedad = Antiguedad::fromArray(['antId' => $dto->antiguedad->antId]);
         $instance->tadFechaSolicitud = new DateTime();
         return $instance;
     }

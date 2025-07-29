@@ -88,7 +88,7 @@ class UsuariosController extends BaseController
         try {
             $data = Input::getArrayBody(msgEntidad: "el usuario");
 
-            $this->usuariosValidacionService->validarType(className: "UsuarioCreacionDTO", datos: $data);
+            $this->usuariosValidacionService->validarType(className: UsuarioCreacionDTO::class, datos: $data);
 
             $usuarioCreacionDTO = new UsuarioCreacionDTO($data);
 
@@ -123,7 +123,7 @@ class UsuariosController extends BaseController
     }
 
 
-  /*   public function patchUsuarios($id)
+    public function patchUsuarios($id)
     {
         $mysqli = $this->dbConnection->conectarBD();
         try {
@@ -167,9 +167,9 @@ class UsuariosController extends BaseController
                 $mysqli->close(); // Cerrar la conexión a la base de datos
             }
         }
-    } */
+    }
 
-    
+    /*
     public function patchUsuarios($id) // Usar únicamente para cambiar la contraseña
     {
 
@@ -202,7 +202,7 @@ class UsuariosController extends BaseController
             }
         }
     }
-    
+    */
 
     public function deleteUsuarios($id)
     {

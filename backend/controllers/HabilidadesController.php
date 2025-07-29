@@ -42,7 +42,7 @@ class HabilidadesController extends BaseController
                 if (count($params) == 1 && array_key_exists('usrId', $params)) {
                     $id = $params['usrId'];
                     settype($id, 'integer');
-                    return $this->getHabilidadesByUserId($id);
+                    $this->getHabilidadesByUserId($id);
                 } else {
                     Output::outputError(400, "No se recibieron parámetros válidos.");
                 }
@@ -62,10 +62,9 @@ class HabilidadesController extends BaseController
         }
     }
 
-    private function getHabilidadesByUserId($id): ?array
+    private function getHabilidadesByUserId(int $id)
     {
         $this->securityService->requireLogin(tipoUsurio: null);
-        settype($id, 'integer');
 
         $query = "SELECT 
                         utsId
@@ -142,20 +141,12 @@ class HabilidadesController extends BaseController
 
             $this->habilidadesValidacionService->validarType(className: "HabilidadCreacionDTO", datos: $data);
 
-
-
-
-            if (!isset($habilidadCreacionDTO->usuario->usrId) || $habilidadCreacionDTO->usuario->usrId == 0) {
+            if (!isset($data['usrId']) || $data['usrId'] == 0)
+                $data['usrId'] = $claimDTO->usrId;
+            else {
                 // El usuario tasador y el usuario anticuario sólo pueden agregar habilidades a sí mismos.
-                if ($claimDTO->usrTipoUsuario == 'UT' || $claimDTO->usrTipoUsuario == 'UA') {
-                    $data['usrId'] = $claimDTO->usrId;
-                    $data['usrTipoUsuario'] = $claimDTO->usrTipoUsuario;
-                }
-                // A modo de prueba, el usuario técnico puede agregar habilidades a cualquier usuario o a sí mismo.
-                if ($claimDTO->usrTipoUsuario == 'ST') {
-                    if (!isset($habilidadCreacionDTO->usuario->usrId) || $habilidadCreacionDTO->usuario->usrId == 0)
-                        $data['usrId'] = $claimDTO->usrId;
-                    $data['usrTipoUsuario'] = $claimDTO->usrTipoUsuario;
+                if (!TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico() && $claimDTO->usrId !== $data['usrId']) {
+                    throw new CustomException(code: 403, message: "No tiene permiso para agregar una habilidad a otro usuario.");
                 }
             }
 

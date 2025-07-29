@@ -27,6 +27,12 @@ define('QUERYS', [
                     INNER JOIN provincia ON provId = locProvId
                   WHERE antTipoEstado <>'RN'
                   AND antId = %id",
+    'DOMICILIO' => "SELECT domId, domCPA, domCalleRuta, domNroKm, domPiso, domDepto
+                        ,locId, locDescripcion, provId, provDescripcion
+                    FROM domicilio
+                    LEFT JOIN localidad ON locId = domLocId
+                    LEFT JOIN provincia ON provId = locProvId
+                    WHERE domId = %id",
 
                 ]);
 

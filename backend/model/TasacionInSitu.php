@@ -25,7 +25,7 @@ class TasacionInSitu extends ClassBase
 
         $instance = new self();
         $instance->tadId = (int)$dto->tadId;
-        $instance->domicilio = Domicilio::fromArray(get_object_vars($dto->domicilio));
+        $instance->domicilio = Domicilio::fromArray(['domId' => $dto->domicilio->domId]);
         $instance->tisFechaTasInSituSolicitada = new DateTime();
         $instance->tisFechaTasInSituProvisoria = new DateTime($dto->tisFechaTasInSituProvisoria);
         return $instance;

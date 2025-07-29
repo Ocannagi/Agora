@@ -96,21 +96,7 @@ class DomiciliosController extends BaseController
             $this->domiciliosValidacionService->validarType(className: "DomicilioCreacionDTO", datos: $data);
             $domicilioCreacionDTO = new DomicilioCreacionDTO($data);
 
-            try {
-                $this->domiciliosValidacionService->validarInput($mysqli, $domicilioCreacionDTO);
-            } catch (\Throwable $th) {
-                if ($th instanceof CustomException) {
-                    if (str_contains($th->getMessage(), 'ID_')) {
-                        $id = substr($th->getMessage(), strpos($th->getMessage(), 'ID_') + 3);
-                        //TODO: seguir acá
-                    }
-
-                }
-                else {
-                    throw $th;
-                }
-            }
-
+            $this->domiciliosValidacionService->validarInput($mysqli, $domicilioCreacionDTO);
 
             Input::escaparDatos($domicilioCreacionDTO, $mysqli);
             Input::agregarComillas_ConvertNULLtoString($domicilioCreacionDTO);
@@ -142,11 +128,11 @@ class DomiciliosController extends BaseController
 
     public function patchDomicilios($id)
     {
-        $mysqli = $this->dbConnection->conectarBD();
+        //$mysqli = $this->dbConnection->conectarBD();
         try {
-            $this->securityService->requireLogin(null);
+            //$this->securityService->requireLogin(null);
 
-            throw new CustomException("Método PatchDomicilios deshabilitado temporalmente", 405);
+            throw new CustomException("Método PatchDomicilios deshabilitado permanentemente", 410);
 
             /*
             settype($id, 'integer');
@@ -209,6 +195,8 @@ class DomiciliosController extends BaseController
                                 WHERE domId = $id";
 
             return parent::delete(queryBusqueda: $queryBusqueda, queryBajaLogica: $queryBajaLogica);
+
+            //TODO: Modificar para se dé de baja también en la tabla usuariodomicilio
         } catch (\Throwable $th) {
             if ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());

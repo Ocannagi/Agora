@@ -28,6 +28,8 @@ trait TraitMapUsuarioDTO
             $arrayUsr['usrId'] = (int)$data['tadUsrTasId'];
         else if (array_key_exists('tadUsrPropId', $data))
             $arrayUsr['usrId'] = (int)$data['tadUsrPropId'];
+        else if (array_key_exists('udomUsr', $data))
+            $arrayUsr['usrId'] = (int)$data['udomUsr'];
         else
             return null;
 

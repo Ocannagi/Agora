@@ -80,7 +80,8 @@ define('DEPENDENCIAS', [
     'AntiguedadesValidacionService' => 'AntiguedadesValidacionService',
     'ImagenesantiguedadValidacionService' => 'ImagenesAntiguedadValidacionService',
     'TasacionesdigitalesValidacionService' => 'TasacionesDigitalesValidacionService',
-    'TasacionesinsituValidacionService' => 'TasacionesInSituValidacionService'
+    'TasacionesinsituValidacionService' => 'TasacionesInSituValidacionService',
+    'UsuariosdomiciliosValidacionService' => 'UsuariosDomiciliosValidacionService',
 ]); // es necesario que, en caso de clases con nombre compuesto, la key del array sea el nombre de la clase solo con mayúscula inicial
 
 /** Configuración Zona Horaria */

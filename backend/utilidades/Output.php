@@ -33,6 +33,8 @@ class Output
             case 409:
                 header($_SERVER["SERVER_PROTOCOL"] . " 409 Conflict", true, 409);
                 break;
+            case 410:
+                header($_SERVER["SERVER_PROTOCOL"] . " 410 Gone", true, 410);
             default:
                 header($_SERVER["SERVER_PROTOCOL"] . " 500 Internal Server Error", true, 500);
                 break;

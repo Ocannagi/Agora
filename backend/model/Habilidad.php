@@ -21,9 +21,9 @@ class Habilidad extends ClassBase
         }
 
         $instance = new self();
-        $instance->usuario = Usuario::fromArray(['usrId' => $dto->usrId]);
+        $instance->usuario = Usuario::fromArray(['usrId' => $dto->usuario->usrId]);
         $instance->periodo = Periodo::fromArray(get_object_vars($dto->periodo));
-        $instance->subcategoria = Subcategoria::fromArray(get_object_vars($dto->subcategoria));
+        $instance->subcategoria = Subcategoria::fromArray(['scatId' => $dto->subcategoria->scatId]);
         return $instance;
 
     }

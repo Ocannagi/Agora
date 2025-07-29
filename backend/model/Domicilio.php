@@ -27,7 +27,7 @@ class Domicilio extends ClassBase
         $instance->domNroKm = $dto->domNroKm;
         $instance->domPiso = $dto->domPiso;
         $instance->domDepto = $dto->domDepto;
-        $instance->localidad = Localidad::fromArray(get_object_vars($dto->localidad));
+        $instance->localidad = Localidad::fromArray(['locId' => $dto->localidad->locId]);
         return $instance;
     }
 }
