@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 22-07-2025 a las 04:33:41
+-- Tiempo de generación: 03-08-2025 a las 22:47:40
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -63,14 +63,14 @@ INSERT INTO `antiguedad` (`antId`, `antScatId`, `antPerId`, `antDescripcion`, `a
 (1, 7, 2, 'Vitrina Barroca circa 1656. Hermosos detalles en oro. Madera maciza de ébano. Dos puertas.', 4, '2025-05-24 19:41:04', 'RD', '2025-05-24 19:41:04'),
 (2, 3, 1, 'Hermosa escultura renacentista de un ángel. Mármol. Circa 1486.', 3, '2025-05-24 19:51:02', 'RD', '2025-05-24 19:51:02'),
 (3, 8, 4, 'Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C.', 2, '2025-06-01 21:37:12', 'RD', '2025-06-01 21:58:00'),
-(4, 6, 2, 'Armario Barroco. Es una preciosura', 6, '2025-06-16 15:24:14', 'RD', '2025-06-16 15:24:14');
+(4, 6, 2, 'Armario Barroco. Es una preciosura', 5, '2025-06-16 15:24:14', 'RD', '2025-06-16 15:24:14');
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `antiguedadalaventa`
 --
--- Creación: 16-06-2025 a las 20:14:31
+-- Creación: 03-08-2025 a las 20:46:14
 --
 
 DROP TABLE IF EXISTS `antiguedadalaventa`;
@@ -80,7 +80,7 @@ CREATE TABLE `antiguedadalaventa` (
   `aavDomOrigen` int(10) UNSIGNED NOT NULL,
   `aavPrecioVenta` decimal(15,2) UNSIGNED NOT NULL,
   `aavTadId` int(10) UNSIGNED DEFAULT NULL,
-  `aavFechaPublicacion` datetime NOT NULL,
+  `aavFechaPublicacion` datetime NOT NULL DEFAULT current_timestamp(),
   `aavFechaRetiro` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -412,7 +412,7 @@ CREATE TABLE `tasaciondigital` (
 
 INSERT INTO `tasaciondigital` (`tadId`, `tadUsrTasId`, `tadUsrPropId`, `tadAntId`, `tadFechaSolicitud`, `tadFechaTasDigitalRealizada`, `tadFechaTasDigitalRechazada`, `tadObservacionesDigital`, `tadPrecioDigital`, `tadFechaBaja`) VALUES
 (1, 3, 2, 3, '2025-06-16', '2025-06-16', NULL, 'Ta buena la mesa', 590000000.95, NULL),
-(2, 4, 6, 4, '2025-06-16', '2025-06-16', NULL, 'Muy lindo armario Barroco', 659000.00, NULL);
+(2, 4, 5, 4, '2025-06-16', '2025-06-16', NULL, 'Muy lindo armario Barroco', 659000.00, NULL);
 
 -- --------------------------------------------------------
 
@@ -534,7 +534,11 @@ CREATE TABLE `tokens` (
 --
 
 INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTI5NzU4Njh9.tRJsAedDVvXClCyOMy0BC1yjldlXq0nF9xK6VdBhyvyqLmkKH_0coS-TyrzfYuMI5QyItGIzlqfaatSCCFasQw', '2025-07-19 21:44:28');
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MiwidXNyTm9tYnJlIjoiQ3Jpc3RpYW4gSmF2aWVyIiwidXNyVGlwb1VzdWFyaW8iOiJVRyIsImV4cCI6MTc1Mzc0Nzk1N30.uQPFPtjnpO65_I92zLHV4C4BYh5-u-mD6ZOIiiq2kgRw3se0F_mI738CXdWkc41jPEeMXNWFTXWSdqI1N-KvHw', '2025-07-28 20:12:37'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NCwidXNyTm9tYnJlIjoiS2FyaW5hIiwidXNyVGlwb1VzdWFyaW8iOiJVQSIsImV4cCI6MTc1Mzc0ODE3NX0.KfS4ozBo04EtJd7wY-LbzrtmoL6kjjhJR5ogTjrxVDPCF18XWcBfj61hqoBPmOpki7hsBgSElX-w482xv2ex1Q', '2025-07-28 20:16:15'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTM3NDgyNDV9.CdeDtd07vK1VTc2exFQ-dmcokdr9KTIMgVKAfyuTsKtui5ExJdmhyOTRWZt3Q5WiIunDzQoXAhggb3U2uua0LA', '2025-07-28 20:17:25'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MiwidXNyTm9tYnJlIjoiQ3Jpc3RpYW4gSmF2aWVyIiwidXNyVGlwb1VzdWFyaW8iOiJVRyIsImV4cCI6MTc1Mzc1MTI5M30.eCR1lxS_lRCycyey2HwoiWYdu662kpeK3e9t-PhEd4XIQv6dGW7ZqK7TigJRwxUbfNpfWs7E6z5AXNhNGqn2rw', '2025-07-28 21:08:13'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NCwidXNyTm9tYnJlIjoiS2FyaW5hIiwidXNyVGlwb1VzdWFyaW8iOiJVQSIsImV4cCI6MTc1Mzc1MTMwM30.XJi08J4BMF6K-_bf6IT03xMfeQ2_YnuGc0sAmZxDdf6JGSKDZ26bWrL7d9MTzZWIptufffWfpZtJvDja4xQENQ', '2025-07-28 21:08:23');
 
 -- --------------------------------------------------------
 
@@ -581,7 +585,44 @@ INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonS
 (2, '33286958', 'Sosa Leonetti', 'Cristian Javier', NULL, NULL, 'UG', NULL, 2, '1988-02-08', NULL, 0, 'sleonetti@gmail.com', '$2y$10$HjR2rlPfne0GyNXGJ41jU.EiCfvVpMpQ5cOvRbitoynkYeMaEGnM.', '2024-07-08 14:42:43', NULL),
 (3, '29741295', 'Galíndez', 'Gustavo', 'Tasaciones Galíndez Jumbo SH', '30708772964', 'UT', '123456', 3, '1984-01-01', 'Tasamos el valor de sus afectos al mejor precio de Mercado.', 50, 'gusgalindez@tasgalindez.com', '$2y$10$U9YS.OMtjMhnOzAUWovHv.uQo38bb3dva9qDUmq48w5fBZW0NVsyq', '2024-07-10 16:18:01', NULL),
 (4, '27965368', 'Rolón', 'Karina', 'Paraíso Antigüedades SA', '30123456781', 'UA', '95874L', 4, '1982-06-12', 'Compra y Venta de antigüedades. Tasamos.', 60, 'krolon@paraiso.com', '$2y$10$Os4S45NKUqrBnLYDqALpYewr8CBMbKx8n4dNm9FTLhg7ySVxgcTx2', '2024-07-10 16:18:01', NULL),
-(6, '13355922', 'Recondo', 'Adriana Mariel', NULL, NULL, 'UG', NULL, 1, '1959-07-09', NULL, 0, 'recondomariel@uol.com', '$2y$10$n6.BF3HUDCMABqY7iRHOOuhPw..8nlE.cws7vSjmyIRNuYee1iXZu', '2025-06-01 21:32:15', NULL);
+(5, '13355922', 'Recondo', 'Adriana Mariel', NULL, NULL, 'UG', NULL, 1, '1959-07-09', NULL, 0, 'recondomariel@uol.com', '$2y$10$n6.BF3HUDCMABqY7iRHOOuhPw..8nlE.cws7vSjmyIRNuYee1iXZu', '2025-06-01 21:32:15', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuariodomicilio`
+--
+-- Creación: 22-07-2025 a las 01:46:31
+--
+
+DROP TABLE IF EXISTS `usuariodomicilio`;
+CREATE TABLE `usuariodomicilio` (
+  `udomId` int(10) UNSIGNED NOT NULL,
+  `udomUsr` int(10) UNSIGNED NOT NULL,
+  `udomDom` int(10) UNSIGNED NOT NULL,
+  `udomFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
+  `udomFechaBaja` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `usuariodomicilio`:
+--   `udomDom`
+--       `domicilio` -> `domId`
+--   `udomUsr`
+--       `usuario` -> `usrId`
+--
+
+--
+-- Volcado de datos para la tabla `usuariodomicilio`
+--
+
+INSERT INTO `usuariodomicilio` (`udomId`, `udomUsr`, `udomDom`, `udomFechaInsert`, `udomFechaBaja`) VALUES
+(1, 1, 1, '2025-07-27 14:49:46', NULL),
+(2, 5, 1, '2025-07-27 14:49:46', NULL),
+(3, 2, 2, '2025-07-27 14:49:46', NULL),
+(4, 3, 3, '2025-07-27 14:49:46', NULL),
+(5, 4, 4, '2025-07-27 14:49:46', NULL),
+(7, 4, 5, '2025-07-28 20:16:24', NULL);
 
 -- --------------------------------------------------------
 
@@ -644,8 +685,8 @@ ALTER TABLE `antiguedad`
 ALTER TABLE `antiguedadalaventa`
   ADD PRIMARY KEY (`aavId`),
   ADD KEY `FK_AlaVenta_Antiguedad` (`aavAntId`),
-  ADD KEY `FK_AlaVenta_Domicilio` (`aavDomOrigen`),
-  ADD KEY `FK_AlaVenta_Tasacion` (`aavTadId`);
+  ADD KEY `FK_AlaVenta_Tasacion` (`aavTadId`),
+  ADD KEY `FK_AlaVenta_Domicilio` (`aavDomOrigen`);
 
 --
 -- Indices de la tabla `categoria`
@@ -729,6 +770,14 @@ ALTER TABLE `usuario`
   ADD PRIMARY KEY (`usrId`),
   ADD KEY `FK_usuarioTipoUsuario` (`usrTipoUsuario`),
   ADD KEY `FK_usuarioDomicilio` (`usrDomicilio`);
+
+--
+-- Indices de la tabla `usuariodomicilio`
+--
+ALTER TABLE `usuariodomicilio`
+  ADD PRIMARY KEY (`udomId`),
+  ADD KEY `UdomUsuario` (`udomUsr`),
+  ADD KEY `UdomDomicilio` (`udomDom`);
 
 --
 -- Indices de la tabla `usuariotasadorhabilidad`
@@ -816,6 +865,12 @@ ALTER TABLE `usuario`
   MODIFY `usrId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
+-- AUTO_INCREMENT de la tabla `usuariodomicilio`
+--
+ALTER TABLE `usuariodomicilio`
+  MODIFY `udomId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
 -- AUTO_INCREMENT de la tabla `usuariotasadorhabilidad`
 --
 ALTER TABLE `usuariotasadorhabilidad`
@@ -887,6 +942,13 @@ ALTER TABLE `tasacioninsitu`
 ALTER TABLE `usuario`
   ADD CONSTRAINT `FK_usuarioDomicilio` FOREIGN KEY (`usrDomicilio`) REFERENCES `domicilio` (`domId`) ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_usuarioTipoUsuario` FOREIGN KEY (`usrTipoUsuario`) REFERENCES `tipousuario` (`ttuTipoUsuario`) ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `usuariodomicilio`
+--
+ALTER TABLE `usuariodomicilio`
+  ADD CONSTRAINT `UdomDomicilio` FOREIGN KEY (`udomDom`) REFERENCES `domicilio` (`domId`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `UdomUsuario` FOREIGN KEY (`udomUsr`) REFERENCES `usuario` (`usrId`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `usuariotasadorhabilidad`

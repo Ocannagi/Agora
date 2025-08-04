@@ -5,12 +5,16 @@ use Utilidades\Obligatorio;
 class AntiguedadAlaVenta extends ClassBase
 {
     private int $aavId;
+    #[Obligatorio]
     private Antiguedad $antiguedad;
+    #[Obligatorio]
     private Domicilio $domicilio;
+    #[Obligatorio]
     private float $aavPrecioVenta;
     private TasacionDigital $tasacionDigital;
+    #[Obligatorio]
     private DateTime $aavFechaPublicacion;
-    private ?DateTime $aavFechaRetiro;
+    private ?DateTime $aavFechaRetiro = null;
 
     public static function fromCreacionDTO(ICreacionDTO $dto): self
     {
@@ -23,8 +27,7 @@ class AntiguedadAlaVenta extends ClassBase
         $instance->domicilio = Domicilio::fromArray(['domId' => $dto->domicilio->domId]); // Convertir el DTO de domicilio a objeto
         $instance->aavPrecioVenta = $dto->aavPrecioVenta;
         $instance->tasacionDigital = TasacionDigital::fromArray(['tadId' => $dto->tasacion->tadId]);
-        $instance->aavFechaPublicacion = DateTime::createFromFormat('Y-m-d', $dto->aavFechaPublicacion);
-        $instance->aavFechaRetiro = $dto->aavFechaRetiro !== null ? DateTime::createFromFormat('Y-m-d', $dto->aavFechaRetiro) : null;
+        $instance->aavFechaPublicacion = new DateTime('now'); // Asignar la fecha actual como fecha de publicación
 
         return $instance;
     }

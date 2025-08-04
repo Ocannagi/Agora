@@ -37,7 +37,6 @@ class AntiguedadesAlaVentaController extends BaseController
     {
         $mysqli = $this->dbConnection->conectarBD();
         try {
-            $mysqli->begin_transaction(); // Iniciar transacción
             $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
             $data = Input::getArrayBody(msgEntidad: "la antigüedad a la venta");
 
@@ -46,10 +45,43 @@ class AntiguedadesAlaVentaController extends BaseController
 
             $antiguedadAlaVentaCreacionDTO->antiguedad = $this->getByIdInterno(
                 query: 'ANTIGUEDAD',
-                classDTO: "AntiguedadDTO",
+                classDTO: AntiguedadDTO::class,
                 linkExterno: $mysqli,
                 id: $antiguedadAlaVentaCreacionDTO->antiguedad->antId
             );
+
+            $antiguedadAlaVentaCreacionDTO->domicilio = $this->getByIdInterno(
+                query: 'DOMICILIO',
+                classDTO: DomicilioDTO::class,
+                linkExterno: $mysqli,
+                id: $antiguedadAlaVentaCreacionDTO->domicilio->domId
+            );
+
+            if (isset($antiguedadAlaVentaCreacionDTO->aavPrecioVenta)) {
+                $antiguedadAlaVentaCreacionDTO->aavPrecioVenta = Input::redondearNumero($antiguedadAlaVentaCreacionDTO->aavPrecioVenta, 2);
+            }
+
+            if (isset($antiguedadAlaVentaCreacionDTO->tasacion)) {
+                $antiguedadAlaVentaCreacionDTO->tasacion = $this->getByIdInterno(
+                    query: 'TASACIONDIGITAL',
+                    classDTO: TasacionDigitalDTO::class,
+                    linkExterno: $mysqli,
+                    id: $antiguedadAlaVentaCreacionDTO->tasacion->tadId
+                );
+
+                $queryInsitu = "SELECT tisId, tisTadId, tisDomTasId, tisFechaTasInSituSolicitada, tisFechaTasInSituProvisoria, 
+                             tisFechaTasInSituRealizada, tisFechaTasInSituRechazada, tisObservacionesInSitu, tisPrecioInSitu
+                    FROM tasacioninsitu
+                    INNER JOIN tasaciondigital ON tisTadId = tadId
+                    WHERE tisFechaBaja IS NULL AND tisTadId = {$antiguedadAlaVentaCreacionDTO->tasacion->tadId}";
+
+                // Si la tasación digital tiene una tasación in situ asociada, la obtenemos (se asume que puede ser nula)
+                $antiguedadAlaVentaCreacionDTO->tasacion->tasacionInSitu = $this->getByIdInternoAllowsNull(
+                    query: $queryInsitu,
+                    classDTO: TasacionInSituDTO::class,
+                    linkExterno: $mysqli
+                );
+            }
 
             $this->antiguedadesAlaVentaValidacionService->validarInput(
                 linkExterno: $mysqli,
@@ -60,12 +92,11 @@ class AntiguedadesAlaVentaController extends BaseController
             Input::escaparDatos($antiguedadAlaVentaCreacionDTO, $mysqli);
             Input::agregarComillas_ConvertNULLtoString($antiguedadAlaVentaCreacionDTO);
 
-            
+            //TODO: Seguir con el proceso de inserción en la base de datos
+
+
 
         } catch (\Throwable $th) {
-            if (isset($mysqli) && $mysqli instanceof mysqli) {
-                $mysqli->rollback(); // Revertir transacción si hay error
-            }
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {

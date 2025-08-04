@@ -86,6 +86,13 @@ trait TraitMapTasacionDigitalDTO
             $arrayTasDigital['tadPrecioDigital'] = Input::esNotNullVacioBlanco($data['tadPrecioDigital']) ? (float)$data['tadPrecioDigital'] : null;
         }
 
+        if (array_key_exists('tisId', $data)){
+            if (isset($data['tisId']) && $data['tisId'] > 0)
+            {
+                $this->tasacionInSitu = new TasacionInSituDTO($data['tisId']);
+            }
+        }
+
         return $returnArray ? $arrayTasDigital : new TasacionDigitalDTO($arrayTasDigital);
     }
 }

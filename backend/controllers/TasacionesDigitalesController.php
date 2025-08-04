@@ -56,7 +56,7 @@ class TasacionesDigitalesController extends BaseController
                             AND tis.tisFechaBaja IS NULL
                       WHERE tadFechaBaja IS NULL";
 
-            if ($claimDTO->usrTipoUsuario !== TipoUsuarioEnum::SoporteTecnico->value) {
+            if (!TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico()) {
                 $query .= " AND (tadUsrPropId = {$claimDTO->usrId} OR tadUsrTasId = {$claimDTO->usrId})";
             }
             $query .= " ORDER BY tadId DESC";
@@ -105,7 +105,7 @@ class TasacionesDigitalesController extends BaseController
                             AND tis.tisFechaBaja IS NULL
                       WHERE tadId = {$id} AND tadFechaBaja IS NULL";
 
-            if ($claimDTO->usrTipoUsuario !== TipoUsuarioEnum::SoporteTecnico->value) {
+            if (!TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico()) {
                 $query .= " AND (tadUsrPropId = {$claimDTO->usrId} OR tadUsrTasId = {$claimDTO->usrId})";
             }
 
@@ -220,7 +220,8 @@ class TasacionesDigitalesController extends BaseController
                 throw new InvalidArgumentException(code: 404, message: "No se encontró la tasación digital con ID $id.");
             }
 
-            if($claimDTO->usrTipoUsuario !== TipoUsuarioEnum::SoporteTecnico->value && $claimDTO->usrId !== $tasacionDigitalDTO->tasador->usrId) {
+            // Salvo que sea soporte técnico, el tasador debe ser el mismo que el usuario autenticado
+            if(!TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico() && $claimDTO->usrId !== $tasacionDigitalDTO->tasador->usrId) {
                 throw new InvalidArgumentException(code: 403, message: "No tienes permiso para modificar esta tasación digital.");
             }
 
@@ -243,10 +244,11 @@ class TasacionesDigitalesController extends BaseController
             $this->tasacionesDigitalesValidacionService->validarType(className: TasacionDigitalDTO::class, datos: $data);
             $tasacionDigitalDTO = new TasacionDigitalDTO($data);
 
-            if ($claimDTO->usrTipoUsuario !== TipoUsuarioEnum::SoporteTecnico->value && $claimDTO->usrId !== $tasacionDigitalDTO->tasador->usrId) {
+            //Estaría repetido
+/*             if ($claimDTO->usrTipoUsuario !== TipoUsuarioEnum::SoporteTecnico->value && $claimDTO->usrId !== $tasacionDigitalDTO->tasador->usrId) {
                 throw new InvalidArgumentException(code: 403, message: "No tienes permiso para modificar esta tasación digital.");
             }
-
+ */
             if (isset($tasacionDigitalDTO->tadPrecioDigital)) {
                 $tasacionDigitalDTO->tadPrecioDigital = Input::redondearNumero($tasacionDigitalDTO->tadPrecioDigital, 2);
             }

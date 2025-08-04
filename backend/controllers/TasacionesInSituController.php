@@ -46,7 +46,7 @@ class TasacionesInSituController extends BaseController
                             AND tad.tadFechaBaja IS NULL
                       WHERE tisFechaBaja IS NULL";
 
-            if ($claimDTO->usrTipoUsuario !== TipoUsuarioEnum::SoporteTecnico->value) {
+            if (!TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico()) {
                 $query .= " AND (tad.tadUsrPropId = {$claimDTO->usrId} OR tad.tadUsrTasId = {$claimDTO->usrId})";
             }
             $query .= " ORDER BY tisId DESC";
@@ -80,7 +80,7 @@ class TasacionesInSituController extends BaseController
                       WHERE tisId = $id
                         AND tisFechaBaja IS NULL";
 
-            if ($claimDTO->usrTipoUsuario !== TipoUsuarioEnum::SoporteTecnico->value) {
+            if (!TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico()) {
                 $query .= " AND (tad.tadUsrPropId = {$claimDTO->usrId} OR tad.tadUsrTasId = {$claimDTO->usrId})";
             }
 

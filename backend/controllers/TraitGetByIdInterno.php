@@ -33,7 +33,10 @@ define('QUERYS', [
                     LEFT JOIN localidad ON locId = domLocId
                     LEFT JOIN provincia ON provId = locProvId
                     WHERE domId = %id",
-
+    'TASACIONDIGITAL' => "SELECT tadId, tadUsrTasId, tadUsrPropId, tadAntId, tadFechaSolicitud, tadFechaTasacion
+                        ,tadPrecioDigital, tadObservaciones, tadEstado
+                    FROM tasaciondigital
+                    WHERE tadFechaBaja IS NULL AND tadId = %id",
                 ]);
 
 use Model\CustomException;

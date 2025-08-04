@@ -6,8 +6,7 @@ class AntiguedadAlaVentaCreacionDTO implements ICreacionDTO
     public DomicilioDTO $domicilio;
     public float $aavPrecioVenta;
     public TasacionDigitalDTO $tasacion;
-    public string $aavFechaPublicacion;
-    public ?string $aavFechaRetiro = null;
+
 
     use TraitMapAntiguedadDTO; // Trait para mapear AntiguedadDTO
     use TraitMapTasacionDigitalDTO; // Trait para mapear TasacionDigitalDTO.
@@ -61,15 +60,10 @@ class AntiguedadAlaVentaCreacionDTO implements ICreacionDTO
             }
         } else if (array_key_exists('aavTadId', $data)) {
             $this->tasacion = $this->mapTasacionDigitalDTO(['tadId' => (int)$data['aavTadId']]);
+        } else if (array_key_exists('tadId', $data)) {
+            $this->tasacion = $this->mapTasacionDigitalDTO(['tadId' => (int)$data['tadId']]);
         }
 
-        if (array_key_exists('aavFechaPublicacion', $data)) {
-            $this->aavFechaPublicacion = (string)$data['aavFechaPublicacion'];
-        }
-
-        if (array_key_exists('aavFechaRetiro', $data)) {
-            $this->aavFechaRetiro = (string)$data['aavFechaRetiro'];
-        }
         
     }
 }

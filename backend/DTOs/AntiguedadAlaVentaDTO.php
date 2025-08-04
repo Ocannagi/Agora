@@ -64,6 +64,8 @@ class AntiguedadALaVentaDTO implements IDTO
             }
         } else if (array_key_exists('aavTadId', $data)) {
             $this->tasacion = $this->mapTasacionDigitalDTO(['tadId' => (int)$data['aavTadId']]);
+        } else if (array_key_exists('tadId', $data)) {
+            $this->tasacion = $this->mapTasacionDigitalDTO(['tadId' => (int)$data['tadId']]);
         }
 
         if (array_key_exists('aavFechaPublicacion', $data)) {
