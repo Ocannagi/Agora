@@ -49,6 +49,8 @@ trait TraitGetByIdInterno
      * 
      * Consultas predefinidas: 'USUARIO' para obtener un usuario por su ID.
      * Antigüedades: 'ANTIGUEDAD' para obtener una antigüedad por su ID.
+     * Domicilios: 'DOMICILIO' para obtener un domicilio por su ID.
+     * Tasaciones Digitales: 'TASACIONDIGITAL' para obtener una tasación digital por su ID.
      * 
      * @param string $query Consulta SQL para obtener el objeto. Puede proporcionarse un string con el nombre de una consulta predefinida en QUERYS.
      * @param string $classDTO Nombre de la clase que implementa IDTO.
