@@ -11,7 +11,7 @@ class AntiguedadAlaVenta extends ClassBase
     private Domicilio $domicilio;
     #[Obligatorio]
     private float $aavPrecioVenta;
-    private TasacionDigital $tasacionDigital;
+    private ?TasacionDigital $tasacionDigital = null;
     #[Obligatorio]
     private DateTime $aavFechaPublicacion;
     private ?DateTime $aavFechaRetiro = null;
@@ -26,7 +26,9 @@ class AntiguedadAlaVenta extends ClassBase
         $instance->antiguedad = Antiguedad::fromArray(['antId' => $dto->antiguedad->antId]); // Convertir el DTO de antigüedad a objeto
         $instance->domicilio = Domicilio::fromArray(['domId' => $dto->domicilio->domId]); // Convertir el DTO de domicilio a objeto
         $instance->aavPrecioVenta = $dto->aavPrecioVenta;
-        $instance->tasacionDigital = TasacionDigital::fromArray(['tadId' => $dto->tasacion->tadId]);
+        if (isset($dto->tasacion)) {
+            $instance->tasacionDigital = TasacionDigital::fromArray(['tadId' => $dto->tasacion->tadId]);
+        }
         $instance->aavFechaPublicacion = new DateTime('now'); // Asignar la fecha actual como fecha de publicación
 
         return $instance;

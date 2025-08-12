@@ -5,7 +5,7 @@ class AntiguedadAlaVentaCreacionDTO implements ICreacionDTO
     public AntiguedadDTO $antiguedad;
     public DomicilioDTO $domicilio;
     public float $aavPrecioVenta;
-    public TasacionDigitalDTO $tasacion;
+    public ?TasacionDigitalDTO $tasacion = null;
 
 
     use TraitMapAntiguedadDTO; // Trait para mapear AntiguedadDTO

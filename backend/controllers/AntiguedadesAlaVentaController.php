@@ -33,7 +33,7 @@ class AntiguedadesAlaVentaController extends BaseController
     // Método para evitar la clonación del objeto
     private function __clone() {}
 
-    public function postAntiguedadesAlaVenta(): void
+    public function postAntiguedadesAlaVenta()
     {
         $mysqli = $this->dbConnection->conectarBD();
         try {
@@ -89,12 +89,16 @@ class AntiguedadesAlaVentaController extends BaseController
                 extraParams: $claimDTO
             );
 
-            Input::escaparDatos($antiguedadAlaVentaCreacionDTO, $mysqli);
-            Input::agregarComillas_ConvertNULLtoString($antiguedadAlaVentaCreacionDTO);
+            //Input::escaparDatos($antiguedadAlaVentaCreacionDTO, $mysqli); // No es necesario, no hay campos de tipo string
+            //Input::agregarComillas_ConvertNULLtoString($antiguedadAlaVentaCreacionDTO); //No es necesario, no hay campos de tipo string
 
-            //TODO: Seguir con el proceso de inserción en la base de datos
-
-
+            $query = "INSERT INTO antiguedadesalaventa (aavAntId, aavDomOrigen, aavPrecioVenta, aavTadId)
+                      VALUES ({$antiguedadAlaVentaCreacionDTO->antiguedad->antId}, 
+                              {$antiguedadAlaVentaCreacionDTO->domicilio->domId}, 
+                              {$antiguedadAlaVentaCreacionDTO->aavPrecioVenta}, 
+                              {$antiguedadAlaVentaCreacionDTO->tasacion->tadId}";
+            
+            return parent::post(query: $query, link: $mysqli);
 
         } catch (\Throwable $th) {
             if ($th instanceof InvalidArgumentException) {

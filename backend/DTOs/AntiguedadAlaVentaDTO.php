@@ -6,7 +6,7 @@ class AntiguedadALaVentaDTO implements IDTO
     public AntiguedadDTO $antiguedad;
     public DomicilioDTO $domicilio;
     public float $aavPrecioVenta;
-    public TasacionDigitalDTO $tasacion;
+    public ?TasacionDigitalDTO $tasacion = null;
     public string $aavFechaPublicacion;
     public ?string $aavFechaRetiro = null;
 
