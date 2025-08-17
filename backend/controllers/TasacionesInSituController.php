@@ -3,12 +3,14 @@
 use Utilidades\Output;
 use Utilidades\Input;
 use Model\CustomException;
+use Utilidades\Querys;
 
 class TasacionesInSituController extends BaseController
 {
 
     use TraitGetByIdInterno;
     use TraitValidarTasacion;
+    use TraitCambiarEstadoAntiguedad;
 
     private ValidacionServiceBase $tasacionesInSituValidacionService;
     private ISecurity $securityService;
@@ -141,13 +143,14 @@ class TasacionesInSituController extends BaseController
 
         $mysqli = $this->dbConnection->conectarBD();
         try {
+            $mysqli->begin_transaction();
             settype($id, 'int');
             $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::tasadorToArray());
             $data = Input::getArrayBody(msgEntidad: "la tasación In Situ");
 
 
             $tasacionInSituFechas = $this->getByIdInterno(
-                query: "SELECT  tisFechaTasInSituSolicitada, tisFechaTasInSituProvisoria
+                query: "SELECT  tisFechaTasInSituSolicitada, tisFechaTasInSituProvisoria, tisTadId
                     FROM tasacioninsitu
                     WHERE tisId = $id
                     AND tisFechaBaja IS NULL",
@@ -155,11 +158,12 @@ class TasacionesInSituController extends BaseController
                 linkExterno: $mysqli
             );
 
-            if ($tasacionInSituFechas === null) {
+            if ($tasacionInSituFechas === null || !($tasacionInSituFechas instanceof TasacionInSituDTO)) {
                 Output::outputError(404, "No se encontró la tasación in situ con ID: $id");
             }
 
             $data['tisId'] = $id; // Aseguramos que el ID esté en los datos para la validación y creación del DTO.
+            $data['tisTadId'] = $tasacionInSituFechas->tadId; // Aseguramos que el ID de tasación digital esté presente.
             $data['tisFechaTasInSituSolicitada'] = $tasacionInSituFechas->tisFechaTasInSituSolicitada; // Mantenemos la fecha solicitada si existe.
             $data['tisFechaTasInSituProvisoria'] = $tasacionInSituFechas->tisFechaTasInSituProvisoria; // Mantenemos la fecha provisoria si existe.
 
@@ -171,6 +175,12 @@ class TasacionesInSituController extends BaseController
             }
 
             $this->tasacionesInSituValidacionService->validarInput($mysqli, $tasacionInSituDTO, $claimDTO);
+            
+            if (Input::esNotNullVacioBlanco($tasacionInSituDTO->tisFechaTasInSituRealizada) && !empty($tasacionInSituDTO->tisPrecioInSitu)) {
+                $this->ifCambiarEstadoAntiguedadFromTDtoTI($mysqli, $tasacionInSituDTO);
+            }
+
+            
             Input::escaparDatos($tasacionInSituDTO, $mysqli);
             Input::agregarComillas_ConvertNULLtoString($tasacionInSituDTO);
 
@@ -181,8 +191,20 @@ class TasacionesInSituController extends BaseController
                           tisPrecioInSitu = {$tasacionInSituDTO->tisPrecioInSitu}
                       WHERE tisId = {$id}";
 
-            return parent::patch($query, $mysqli);
+            $resultado = $mysqli->query($query);
+            if ($resultado === false) {
+                $error = $mysqli->error;
+                throw new mysqli_sql_exception(code: 500, message: 'Falló la consulta: ' . $error);
+            }
+
+            $mysqli->commit(); // Confirmar transacción si todo sale bien
+            $ret = [];
+            Output::outputJson($ret, 201);
         } catch (\Throwable $th) {
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                $mysqli->rollback(); // Revertir transacción si hay error
+            }
+
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
@@ -204,13 +226,12 @@ class TasacionesInSituController extends BaseController
     {
         $mysqli = $this->dbConnection->conectarBD();
         try {
+            $mysqli->begin_transaction(); // Iniciar transacción
             settype($id, 'int');
             $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::solicitanteTasacionToArray());
 
             $query = $query = "SELECT tisId, tisTadId, tisDomTasId, tisFechaTasInSituSolicitada, tisFechaTasInSituProvisoria,
-                             tisFechaTasInSituRealizada, tisFechaTasInSituRechazada, tisObservacionesInSitu, tisPrecioInSitu,
-
-                             tadUsrPropId, tadUsrTasId
+                             tisFechaTasInSituRealizada, tisFechaTasInSituRechazada, tisObservacionesInSitu, tisPrecioInSitu
                       FROM tasacioninsitu AS tis
                         INNER JOIN tasaciondigital AS tad ON tis.tisTadId = tad.tadId
                             AND tad.tadFechaBaja IS NULL
@@ -219,6 +240,8 @@ class TasacionesInSituController extends BaseController
 
             $tasacionInSituDTO = $this->getByIdInterno(query: $query, classDTO: TasacionInSituDTO::class, linkExterno: $mysqli);
 
+            $tasDigitalDTO = $this->getByIdInterno('TASACIONDIGITAL', TasacionDigitalDTO::class, $mysqli, $tasacionInSituDTO->tadId);
+
             $this->validarExistencia_Solicitante($tasacionInSituDTO->tadId, $claimDTO, $mysqli);
 
             $queryBajaLogica = "UPDATE tasacioninsitu
@@ -226,15 +249,22 @@ class TasacionesInSituController extends BaseController
                                 WHERE tisId = $id";
 
             $resultado = $mysqli->query($queryBajaLogica);
-            
+
             if ($resultado === false) {
                 $error = $mysqli->error;
                 throw new mysqli_sql_exception(code: 500, message: 'Falló la consulta: ' . $error);
             }
 
-            Output::outputJson([]);
+            $this->ifCambiarEstadoAntiguedadFromTItoTD($mysqli, $tasDigitalDTO);
 
+            $mysqli->commit(); // Confirmar transacción
+            Output::outputJson([]);
         } catch (\Throwable $th) {
+
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                $mysqli->rollback(); // Revertir transacción si hay error
+            }
+
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {

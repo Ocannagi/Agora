@@ -11,6 +11,7 @@ class AntiguedadesAlaVentaController extends BaseController
     private ISecurity $securityService;
 
     use TraitGetByIdInterno; // Trait para métodos internos de obtención por ID
+    use TraitCambiarEstadoAntiguedad; // Trait para cambiar el TipoEstado de una Antiguedad
 
     private static $instancia = null; // La única instancia de la clase
 
@@ -37,6 +38,7 @@ class AntiguedadesAlaVentaController extends BaseController
     {
         $mysqli = $this->dbConnection->conectarBD();
         try {
+            $mysqli->begin_transaction(); // Iniciar transacción
             $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
             $data = Input::getArrayBody(msgEntidad: "la antigüedad a la venta");
 
@@ -92,15 +94,31 @@ class AntiguedadesAlaVentaController extends BaseController
             //Input::escaparDatos($antiguedadAlaVentaCreacionDTO, $mysqli); // No es necesario, no hay campos de tipo string
             //Input::agregarComillas_ConvertNULLtoString($antiguedadAlaVentaCreacionDTO); //No es necesario, no hay campos de tipo string
 
+            $this->cambiarEstadoAntiguedad($mysqli, $antiguedadAlaVentaCreacionDTO->antiguedad, TipoEstadoEnum::AlaVenta());
+
             $query = "INSERT INTO antiguedadesalaventa (aavAntId, aavDomOrigen, aavPrecioVenta, aavTadId)
                       VALUES ({$antiguedadAlaVentaCreacionDTO->antiguedad->antId}, 
                               {$antiguedadAlaVentaCreacionDTO->domicilio->domId}, 
                               {$antiguedadAlaVentaCreacionDTO->aavPrecioVenta}, 
                               {$antiguedadAlaVentaCreacionDTO->tasacion->tadId}";
-            
-            return parent::post(query: $query, link: $mysqli);
 
+            $resultado = $mysqli->query($query);
+            if ($resultado === false) {
+                $error = $mysqli->error;
+                throw new mysqli_sql_exception(code: 500, message: 'Falló la consulta: ' . $error);
+            }
+            $ret = [
+                'id' => $mysqli->insert_id
+            ];
+
+            $mysqli->commit(); // Confirmar transacción si todo sale bien
+            Output::outputJson($ret, 201);
         } catch (\Throwable $th) {
+
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                $mysqli->rollback(); // Revertir transacción si hay error
+            }
+
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
@@ -111,11 +129,10 @@ class AntiguedadesAlaVentaController extends BaseController
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
         } finally {
-            if(isset($mysqli) && $mysqli instanceof mysqli) {
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
                 // Cierra la conexión a la base de datos si se creó en este método.
                 $mysqli->close();
             }
         }
     }
-
 }

@@ -8,6 +8,7 @@ class TasacionesDigitalesController extends BaseController
 {
     use TraitGetByIdInterno;
     use TraitGetInterno;
+    use TraitCambiarEstadoAntiguedad;
 
     private ValidacionServiceBase $tasacionesDigitalesValidacionService;
     private ISecurity $securityService;
@@ -204,6 +205,7 @@ class TasacionesDigitalesController extends BaseController
         /*SOLO SE PUEDE MODIFICAR LAS FECHAS DE REALIZACION O RECHAZO Y EL PRECIO Y LA OBSERVACION POR ÚNICA VEZ*/
         $mysqli = $this->dbConnection->conectarBD();
         try {
+            $mysqli->begin_transaction();
             settype($id, 'int');
             $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::tasadorToArray());
             $data = Input::getArrayBody(msgEntidad: "la tasación digital");
@@ -254,6 +256,11 @@ class TasacionesDigitalesController extends BaseController
             }
 
             $this->tasacionesDigitalesValidacionService->validarInput($mysqli, $tasacionDigitalDTO);
+
+            if(Input::esNotNullVacioBlanco($tasacionDigitalDTO->tadFechaTasDigitalRealizada) && !empty($tasacionDigitalDTO->tadPrecioDigital)) {
+                $this->ifCambiarEstadoAntiguedadFromRDtoTD($mysqli, $tasacionDigitalDTO->antiguedad);
+            }
+            
             Input::escaparDatos($tasacionDigitalDTO, $mysqli);
             Input::agregarComillas_ConvertNULLtoString($tasacionDigitalDTO);
 
@@ -263,9 +270,24 @@ class TasacionesDigitalesController extends BaseController
                           tadObservacionesDigital = {$tasacionDigitalDTO->tadObservacionesDigital},
                           tadPrecioDigital = {$tasacionDigitalDTO->tadPrecioDigital}
                       WHERE tadId = {$tasacionDigitalDTO->tadId}";
+            
+        $resultado = $mysqli->query($query);
+        if ($resultado === false) {
+            $error= $mysqli->error;
+            throw new mysqli_sql_exception(code:500, message:'Falló la consulta: ' . $error);
+        }
 
-            return parent::patch($query, $mysqli);
+        $mysqli->commit(); // Confirmar transacción si todo sale bien
+        $ret = [];
+        Output::outputJson($ret, 201);
+
+            
         } catch (\Throwable $th) {
+
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                $mysqli->rollback(); // Revertir transacción si hay error
+            }
+
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
@@ -291,12 +313,14 @@ class TasacionesDigitalesController extends BaseController
             settype($id, 'int');
             $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::solicitanteTasacionToArray());
 
-            $queryBusqueda = "SELECT 1
-                            FROM tasaciondigital
-                            WHERE tadId = {$id} AND tadFechaBaja IS NULL";
+            $tasDigitalDTO = $this->getByIdInterno(query: 'TASACIONDIGITAL', classDTO: TasacionDigitalDTO::class, linkExterno: $mysqli, id: $id);
 
-            if ($claimDTO->usrTipoUsuario !== TipoUsuarioEnum::SoporteTecnico->value) {
-                $queryBusqueda .= " AND (tadUsrPropId = {$claimDTO->usrId} OR tadUsrTasId = {$claimDTO->usrId})";
+            if (!isset($tasDigitalDTO) || !$tasDigitalDTO instanceof TasacionDigitalDTO) {
+                throw new InvalidArgumentException(code: 404, message: "No se encontró la tasación digital con ID {$id}.");
+            }
+
+            if (!TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico() && $claimDTO->usrId !== $tasDigitalDTO->propietario->usrId) {
+                throw new InvalidArgumentException(code: 403, message: "No tienes permiso para eliminar esta tasación digital.");
             }
 
 
@@ -312,7 +336,9 @@ class TasacionesDigitalesController extends BaseController
                                 AND tadFechaBaja IS NULL";
 
 
-            $this->deleteInterno(queryBusqueda: $queryBusqueda, queryBajaLogica1: $queryBajaLogica1, queryBajaLogica2: $queryBajaLogica2, mysqli: $mysqli);
+            $this->deleteInterno(queryBajaLogica1: $queryBajaLogica1, queryBajaLogica2: $queryBajaLogica2, mysqli: $mysqli);
+            $this->ifCambiarEstadoAntiguedadFromTItoTD($mysqli, $tasDigitalDTO);
+            $this->ifCambiarEstadoAntiguedadFromTDtoRD($mysqli, $tasDigitalDTO);
 
             $mysqli->commit(); // Confirmar transacción si todo sale bien
             Output::outputJson([]);
@@ -338,19 +364,8 @@ class TasacionesDigitalesController extends BaseController
     }
 
 
-    private function deleteInterno(string $queryBusqueda, string $queryBajaLogica1, string $queryBajaLogica2, mysqli $mysqli)
+    private function deleteInterno(string $queryBajaLogica1, string $queryBajaLogica2, mysqli $mysqli)
     {
-        $resultado = $mysqli->query($queryBusqueda);
-        if ($resultado === false) {
-            $error = $mysqli->error;
-            throw new mysqli_sql_exception(code: 500, message: "Falló la consulta al querer comprobar la existencia de la entidad por id: " . $error);
-        }
-        if ($resultado->num_rows == 0) {
-            throw new CustomException(code: 404, message: 'No se encontró la entidad con ese id para ser eliminada');
-        }
-
-        $resultado->free_result();
-
         $resultado = $mysqli->query($queryBajaLogica1);
         if ($resultado === false) {
             $error = $mysqli->error;
@@ -361,6 +376,9 @@ class TasacionesDigitalesController extends BaseController
         if ($resultado === false) {
             $error = $mysqli->error;
             throw new mysqli_sql_exception(code: 500, message: 'Falló la consulta: ' . $error);
+        }
+        if ($mysqli->affected_rows <= 0) {
+            throw new CustomException(code: 500, message: "No se pudo efectuar la baja lógica de la tasación digital.");
         }
     }
 }

@@ -20,6 +20,7 @@ class DbConnection implements IDbConnection
     
     public function conectarBD() : mysqli
     {
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         $mysqli = new mysqli(DBHOST, DBUSER, DBPASS, DBBASE);
         if ($mysqli->connect_error) {
             Output::outputError(500, "Falló la conexión: " . $mysqli->connect_error);

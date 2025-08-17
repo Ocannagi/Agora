@@ -94,6 +94,7 @@ class ImagenesAntiguedadController extends BaseController
     public function postImagenesAntiguedad()
     {
         $mysqli = $this->dbConnection->conectarBD();
+        $stmt = $mysqli->prepare("INSERT INTO imagenantiguedad (imaUrl, imaAntId, imaOrden, imaNombreArchivo) VALUES (?, ?, ?, ?)");
         $imagenesAntiguedadDTOs = [];
         try {
             $mysqli->begin_transaction(); // Iniciar transacción
@@ -132,6 +133,8 @@ class ImagenesAntiguedadController extends BaseController
             }
 
             $ids = [];
+
+            /*
             foreach ($imagenesAntiguedadDTOs as $imagenAntiguedadDTO) {
                 $query = "INSERT INTO imagenantiguedad (imaUrl, imaAntId, imaOrden, imaNombreArchivo)
                           VALUES ('{$imagenAntiguedadDTO->imaUrl}', {$imagenAntiguedadDTO->antId}, {$imagenAntiguedadDTO->imaOrden}
@@ -141,10 +144,33 @@ class ImagenesAntiguedadController extends BaseController
                 }
                 $ids[] = $mysqli->insert_id; // Guardar el ID de la imagen insertada
             }
+            */
+
+            if (!$stmt) {
+                throw new mysqli_sql_exception("Error al preparar la consulta: " . $mysqli->error);
+            }
+            foreach ($imagenesAntiguedadDTOs as $imagenAntiguedadDTO) {
+                $stmt->bind_param(
+                    'siis',
+                    $imagenAntiguedadDTO->imaUrl,
+                    $imagenAntiguedadDTO->antId,
+                    $imagenAntiguedadDTO->imaOrden,
+                    $imagenAntiguedadDTO->imaNombreArchivo
+                );
+                if (!$stmt->execute()) {
+                    throw new mysqli_sql_exception("Error al insertar la imagen de antigüedad: " . $stmt->error);
+                }
+                $ids[] = $mysqli->insert_id; // Guardar el ID de la imagen insertada
+            }
+
             $mysqli->commit(); // Confirmar la transacción
             Output::outputJson(['ids' => $ids], 201); // Retornar los IDs de las imágenes insertadas
 
         } catch (\Throwable $th) {
+
+            if (isset($stmt) && $stmt instanceof mysqli_stmt) {
+                $stmt->close();
+            }
 
             if (isset($mysqli) && $mysqli instanceof mysqli) {
                 $mysqli->rollback(); // Revertir transacción si hay error
@@ -178,6 +204,7 @@ class ImagenesAntiguedadController extends BaseController
     public function patchImagenesAntiguedad()
     { //Solo se permite modificar el orden de las imágenes
         $mysqli = $this->dbConnection->conectarBD();
+        $stmt = $mysqli->prepare("UPDATE imagenantiguedad SET imaOrden = ? WHERE imaId = ? AND imaAntId = ?");
         try {
             $claimDTO = $this->securityService->requireLogin(TipoUsuarioEnum::compradorVendedorToArray());
             $data = Input::getArrayBody("el DTO ImagenesAntiguedadReordenarDTO");
@@ -190,6 +217,7 @@ class ImagenesAntiguedadController extends BaseController
                 claimDTO: $claimDTO
             );
 
+            /* Actualizar el orden de las imágenes con una sola consulta (opción comentada)
             $query = "UPDATE imagenantiguedad SET imaOrden = CASE imaId ";
             foreach ($imagenesAntiguedadReordenarDTO->imagenesAntiguedadOrden as $imagen) {
                 $query .= "WHEN {$imagen->imaId} THEN {$imagen->imaOrden} ";
@@ -201,8 +229,25 @@ class ImagenesAntiguedadController extends BaseController
             if (!$mysqli->query($query)) {
                 throw new mysqli_sql_exception("Error al actualizar el orden de las imágenes de antigüedad: " . $mysqli->error);
             }
+            */
 
-            return parent::patch($query, $mysqli);
+            // Actualizar el orden de cada imagen con consulta preparada
+            if (!$stmt) {
+                throw new mysqli_sql_exception("Error al preparar la consulta: " . $mysqli->error);
+            }
+            foreach ($imagenesAntiguedadReordenarDTO->imagenesAntiguedadOrden as $imagen) {
+                $stmt->bind_param(
+                    'iii',
+                    $imagen->imaOrden,
+                    $imagen->imaId,
+                    $imagenesAntiguedadReordenarDTO->antId
+                );
+                if (!$stmt->execute()) {
+                    throw new mysqli_sql_exception("Error al actualizar el orden de la imagen de antigüedad: " . $stmt->error);
+                }
+            }
+            Output::outputJson([], 200);
+            //return parent::patch($query, $mysqli);
         } catch (\Throwable $th) {
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
@@ -214,6 +259,11 @@ class ImagenesAntiguedadController extends BaseController
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
         } finally {
+            
+            if (isset($stmt) && $stmt instanceof mysqli_stmt) {
+                $stmt->close();
+            }
+
             if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
                 $mysqli->close(); // Cerrar la conexión a la base de datos
             }

@@ -31,18 +31,15 @@ class AntiguedadesAlaVentaValidacionService extends ValidacionServiceBase
             throw new CustomException(code: 500, message: 'Error interno: el DTO proporcionado no es del tipo correcto.');
         }
 
-        if ($extraParams === null) {
-            throw new CustomException(code: 500, message: 'Error interno: los parámetros extra son obligatorios.');
-        }
-        elseif (!($extraParams instanceof ClaimDTO)) {
-            throw new CustomException(code: 500, message: 'Error interno: los parámetros extra deben ser del tipo ClaimDTO.');
+        if ($extraParams === null || !($extraParams instanceof ClaimDTO)) {
+            throw new CustomException(code: 500, message: 'Error interno: los parámetros extra son obligatorios y deben ser del tipo ClaimDTO.');
         }
 
         $this->validarDatosObligatorios(classModelName: AntiguedadAlaVenta::class, datos: get_object_vars($antiguedadAlaVenta));
         //Input::trimStringDatos($antiguedadAlaVenta); // no hay campos string importantes en AntiguedadAlaVenta
 
-        $this->validarAntiguedad($antiguedadAlaVenta->antiguedad, $linkExterno);
-        $this->validarDomicilio($antiguedadAlaVenta->domicilio, $linkExterno);
+        $this->validarAntiguedad($antiguedadAlaVenta->antiguedad, $extraParams);
+        $this->validarDomicilio($antiguedadAlaVenta->antiguedad, $antiguedadAlaVenta->domicilio, $linkExterno);
 
         if ($antiguedadAlaVenta instanceof AntiguedadAlaVentaDTO) {
             $this->validarSiYafueRegistradoModificar($antiguedadAlaVenta, $linkExterno);
@@ -53,21 +50,23 @@ class AntiguedadesAlaVentaValidacionService extends ValidacionServiceBase
         }
     }
 
-    private function validarSiYaFueRegistrado(AntiguedadAlaVentaCreacionDTO $antiguedadAlaVenta, mysqli $linkExterno)
+    private function validarAntiguedad(AntiguedadDTO $antiguedad, ClaimDTO $claimDTO): void
     {
-        $query = "SELECT 1 FROM antiguedad
-                 WHERE antUsrId = {$antiguedadAlaVenta->usuario->usrId}
-                 AND antFechaBaja IS NULL";
+        if (!TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico() && $antiguedad->usuario->usrId !== $claimDTO->usrId) {
+            throw new CustomException(code: 403, message: 'No tienes permiso para registrar antigüedades a la venta.');
+        }
 
-        if ($this->_existeEnBD(
-            link: $linkExterno,
-            query: $query,
-            msg: 'verificar si ya existe una antigüedad a la venta.'
-        )) {
-            throw new CustomException(
-                code: 400,
-                message: 'Ya existe una antigüedad a la venta registrada para este usuario.'
-            );
+        if (!$antiguedad->tipoEstado->isHabilitadoParaVenta()) {
+            throw new CustomException(code: 403, message: 'La antigüedad no está habilitada para la venta.');
         }
     }
+
+    private function validarDomicilio(AntiguedadDTO $antiguedad, DomicilioDTO $domicilio, mysqli $linkExterno): void
+    {
+        $query = "SELECT 1 from usuariodomicilio WHERE udomUsr = {$antiguedad->usuario->usrId} AND udomDom = {$domicilio->domId} AND udomFechaBaja IS NULL";
+        if ($this->_existeEnBD($linkExterno, $query, "verificar si el domicilio pertenece al usuario de la antigüedad") === false) {
+            throw new CustomException(code: 403, message: 'El domicilio no pertenece al usuario de la antigüedad.');
+        }
     }
+
+}

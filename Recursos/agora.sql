@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-08-2025 a las 22:47:40
+-- Tiempo de generación: 17-08-2025 a las 05:41:57
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -28,8 +28,6 @@ USE `agora`;
 --
 -- Estructura de tabla para la tabla `antiguedad`
 --
--- Creación: 14-06-2025 a las 14:37:52
---
 
 DROP TABLE IF EXISTS `antiguedad`;
 CREATE TABLE `antiguedad` (
@@ -42,18 +40,6 @@ CREATE TABLE `antiguedad` (
   `antTipoEstado` char(2) NOT NULL DEFAULT 'RD',
   `antFechaEstado` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `antiguedad`:
---   `antPerId`
---       `periodo` -> `perId`
---   `antScatId`
---       `subcategoria` -> `scatId`
---   `antTipoEstado`
---       `tipoestado` -> `tteTipoEstado`
---   `antUsrId`
---       `usuario` -> `usrId`
---
 
 --
 -- Volcado de datos para la tabla `antiguedad`
@@ -70,8 +56,6 @@ INSERT INTO `antiguedad` (`antId`, `antScatId`, `antPerId`, `antDescripcion`, `a
 --
 -- Estructura de tabla para la tabla `antiguedadalaventa`
 --
--- Creación: 03-08-2025 a las 20:46:14
---
 
 DROP TABLE IF EXISTS `antiguedadalaventa`;
 CREATE TABLE `antiguedadalaventa` (
@@ -84,22 +68,10 @@ CREATE TABLE `antiguedadalaventa` (
   `aavFechaRetiro` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- RELACIONES PARA LA TABLA `antiguedadalaventa`:
---   `aavAntId`
---       `antiguedad` -> `antId`
---   `aavDomOrigen`
---       `domicilio` -> `domId`
---   `aavTadId`
---       `tasaciondigital` -> `tadId`
---
-
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `categoria`
---
--- Creación: 14-06-2025 a las 14:37:52
 --
 
 DROP TABLE IF EXISTS `categoria`;
@@ -108,10 +80,6 @@ CREATE TABLE `categoria` (
   `catDescripcion` varchar(50) NOT NULL,
   `catFechaBaja` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `categoria`:
---
 
 --
 -- Volcado de datos para la tabla `categoria`
@@ -127,8 +95,6 @@ INSERT INTO `categoria` (`catId`, `catDescripcion`, `catFechaBaja`) VALUES
 --
 -- Estructura de tabla para la tabla `domicilio`
 --
--- Creación: 14-06-2025 a las 14:37:52
---
 
 DROP TABLE IF EXISTS `domicilio`;
 CREATE TABLE `domicilio` (
@@ -142,12 +108,6 @@ CREATE TABLE `domicilio` (
   `domFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
   `domFechaBaja` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `domicilio`:
---   `domLocId`
---       `localidad` -> `locId`
---
 
 --
 -- Volcado de datos para la tabla `domicilio`
@@ -166,8 +126,6 @@ INSERT INTO `domicilio` (`domId`, `domLocId`, `domCPA`, `domCalleRuta`, `domNroK
 --
 -- Estructura de tabla para la tabla `imagenantiguedad`
 --
--- Creación: 14-06-2025 a las 14:37:52
---
 
 DROP TABLE IF EXISTS `imagenantiguedad`;
 CREATE TABLE `imagenantiguedad` (
@@ -178,12 +136,6 @@ CREATE TABLE `imagenantiguedad` (
   `imaFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
   `imaOrden` tinyint(3) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `imagenantiguedad`:
---   `imaAntId`
---       `antiguedad` -> `antId`
---
 
 --
 -- Volcado de datos para la tabla `imagenantiguedad`
@@ -199,8 +151,6 @@ INSERT INTO `imagenantiguedad` (`imaId`, `imaAntId`, `imaUrl`, `imaNombreArchivo
 --
 -- Estructura de tabla para la tabla `localidad`
 --
--- Creación: 14-06-2025 a las 14:37:52
---
 
 DROP TABLE IF EXISTS `localidad`;
 CREATE TABLE `localidad` (
@@ -210,12 +160,6 @@ CREATE TABLE `localidad` (
   `locFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
   `locFechaBaja` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `localidad`:
---   `locProvId`
---       `provincia` -> `provId`
---
 
 --
 -- Volcado de datos para la tabla `localidad`
@@ -264,8 +208,6 @@ INSERT INTO `localidad` (`locId`, `locProvId`, `locDescripcion`, `locFechaInsert
 --
 -- Estructura de tabla para la tabla `periodo`
 --
--- Creación: 14-06-2025 a las 14:37:52
---
 
 DROP TABLE IF EXISTS `periodo`;
 CREATE TABLE `periodo` (
@@ -273,10 +215,6 @@ CREATE TABLE `periodo` (
   `perDescripcion` varchar(50) NOT NULL,
   `perFechaBaja` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `periodo`:
---
 
 --
 -- Volcado de datos para la tabla `periodo`
@@ -295,18 +233,12 @@ INSERT INTO `periodo` (`perId`, `perDescripcion`, `perFechaBaja`) VALUES
 --
 -- Estructura de tabla para la tabla `provincia`
 --
--- Creación: 14-06-2025 a las 14:37:52
---
 
 DROP TABLE IF EXISTS `provincia`;
 CREATE TABLE `provincia` (
   `provId` smallint(6) NOT NULL,
   `provDescripcion` varchar(40) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `provincia`:
---
 
 --
 -- Volcado de datos para la tabla `provincia`
@@ -343,8 +275,6 @@ INSERT INTO `provincia` (`provId`, `provDescripcion`) VALUES
 --
 -- Estructura de tabla para la tabla `subcategoria`
 --
--- Creación: 14-06-2025 a las 14:37:52
---
 
 DROP TABLE IF EXISTS `subcategoria`;
 CREATE TABLE `subcategoria` (
@@ -353,12 +283,6 @@ CREATE TABLE `subcategoria` (
   `scatDescripcion` varchar(50) NOT NULL,
   `scatFechaBaja` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `subcategoria`:
---   `scatCatId`
---       `categoria` -> `catId`
---
 
 --
 -- Volcado de datos para la tabla `subcategoria`
@@ -379,8 +303,6 @@ INSERT INTO `subcategoria` (`scatId`, `scatCatId`, `scatDescripcion`, `scatFecha
 --
 -- Estructura de tabla para la tabla `tasaciondigital`
 --
--- Creación: 15-06-2025 a las 18:38:55
---
 
 DROP TABLE IF EXISTS `tasaciondigital`;
 CREATE TABLE `tasaciondigital` (
@@ -397,16 +319,6 @@ CREATE TABLE `tasaciondigital` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- RELACIONES PARA LA TABLA `tasaciondigital`:
---   `tadUsrPropId`
---       `usuario` -> `usrId`
---   `tadAntId`
---       `antiguedad` -> `antId`
---   `tadUsrTasId`
---       `usuario` -> `usrId`
---
-
---
 -- Volcado de datos para la tabla `tasaciondigital`
 --
 
@@ -418,8 +330,6 @@ INSERT INTO `tasaciondigital` (`tadId`, `tadUsrTasId`, `tadUsrPropId`, `tadAntId
 
 --
 -- Estructura de tabla para la tabla `tasacioninsitu`
---
--- Creación: 16-06-2025 a las 17:00:12
 --
 
 DROP TABLE IF EXISTS `tasacioninsitu`;
@@ -437,14 +347,6 @@ CREATE TABLE `tasacioninsitu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- RELACIONES PARA LA TABLA `tasacioninsitu`:
---   `tisDomTasId`
---       `domicilio` -> `domId`
---   `tisTadId`
---       `tasaciondigital` -> `tadId`
---
-
---
 -- Volcado de datos para la tabla `tasacioninsitu`
 --
 
@@ -456,18 +358,12 @@ INSERT INTO `tasacioninsitu` (`tisId`, `tisTadId`, `tisDomTasId`, `tisFechaTasIn
 --
 -- Estructura de tabla para la tabla `tipoestado`
 --
--- Creación: 14-06-2025 a las 14:37:52
---
 
 DROP TABLE IF EXISTS `tipoestado`;
 CREATE TABLE `tipoestado` (
   `tteTipoEstado` char(2) NOT NULL,
   `tteTipoEstadoDescripcion` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `tipoestado`:
---
 
 --
 -- Volcado de datos para la tabla `tipoestado`
@@ -478,15 +374,13 @@ INSERT INTO `tipoestado` (`tteTipoEstado`, `tteTipoEstadoDescripcion`) VALUES
 ('RD', 'Retirado Disponible'),
 ('RN', 'Retirado No Disponible'),
 ('TD', 'Tasado Digital'),
-('TS', 'Tasado In Situ'),
+('TI', 'Tasado In Situ'),
 ('VE', 'A la Venta');
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `tipousuario`
---
--- Creación: 14-06-2025 a las 14:37:52
 --
 
 DROP TABLE IF EXISTS `tipousuario`;
@@ -495,10 +389,6 @@ CREATE TABLE `tipousuario` (
   `ttuDescripcion` varchar(25) NOT NULL,
   `ttuRequiereMatricula` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `tipousuario`:
---
 
 --
 -- Volcado de datos para la tabla `tipousuario`
@@ -516,8 +406,6 @@ INSERT INTO `tipousuario` (`ttuTipoUsuario`, `ttuDescripcion`, `ttuRequiereMatri
 --
 -- Estructura de tabla para la tabla `tokens`
 --
--- Creación: 14-06-2025 a las 14:37:52
---
 
 DROP TABLE IF EXISTS `tokens`;
 CREATE TABLE `tokens` (
@@ -526,26 +414,16 @@ CREATE TABLE `tokens` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- RELACIONES PARA LA TABLA `tokens`:
---
-
---
 -- Volcado de datos para la tabla `tokens`
 --
 
 INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MiwidXNyTm9tYnJlIjoiQ3Jpc3RpYW4gSmF2aWVyIiwidXNyVGlwb1VzdWFyaW8iOiJVRyIsImV4cCI6MTc1Mzc0Nzk1N30.uQPFPtjnpO65_I92zLHV4C4BYh5-u-mD6ZOIiiq2kgRw3se0F_mI738CXdWkc41jPEeMXNWFTXWSdqI1N-KvHw', '2025-07-28 20:12:37'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NCwidXNyTm9tYnJlIjoiS2FyaW5hIiwidXNyVGlwb1VzdWFyaW8iOiJVQSIsImV4cCI6MTc1Mzc0ODE3NX0.KfS4ozBo04EtJd7wY-LbzrtmoL6kjjhJR5ogTjrxVDPCF18XWcBfj61hqoBPmOpki7hsBgSElX-w482xv2ex1Q', '2025-07-28 20:16:15'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTM3NDgyNDV9.CdeDtd07vK1VTc2exFQ-dmcokdr9KTIMgVKAfyuTsKtui5ExJdmhyOTRWZt3Q5WiIunDzQoXAhggb3U2uua0LA', '2025-07-28 20:17:25'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MiwidXNyTm9tYnJlIjoiQ3Jpc3RpYW4gSmF2aWVyIiwidXNyVGlwb1VzdWFyaW8iOiJVRyIsImV4cCI6MTc1Mzc1MTI5M30.eCR1lxS_lRCycyey2HwoiWYdu662kpeK3e9t-PhEd4XIQv6dGW7ZqK7TigJRwxUbfNpfWs7E6z5AXNhNGqn2rw', '2025-07-28 21:08:13'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NCwidXNyTm9tYnJlIjoiS2FyaW5hIiwidXNyVGlwb1VzdWFyaW8iOiJVQSIsImV4cCI6MTc1Mzc1MTMwM30.XJi08J4BMF6K-_bf6IT03xMfeQ2_YnuGc0sAmZxDdf6JGSKDZ26bWrL7d9MTzZWIptufffWfpZtJvDja4xQENQ', '2025-07-28 21:08:23');
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTUzODM1NDl9.QYPAK_v_v-AbmL3YPrk15LFBuaVKBG4kjhAM-PF7kPPK27E3uQd07zpUjdBVY3LtKVfUc4pKz8kY0oB24ayioQ', '2025-08-16 18:32:29');
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `usuario`
---
--- Creación: 14-06-2025 a las 14:37:52
 --
 
 DROP TABLE IF EXISTS `usuario`;
@@ -569,14 +447,6 @@ CREATE TABLE `usuario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- RELACIONES PARA LA TABLA `usuario`:
---   `usrDomicilio`
---       `domicilio` -> `domId`
---   `usrTipoUsuario`
---       `tipousuario` -> `ttuTipoUsuario`
---
-
---
 -- Volcado de datos para la tabla `usuario`
 --
 
@@ -592,8 +462,6 @@ INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonS
 --
 -- Estructura de tabla para la tabla `usuariodomicilio`
 --
--- Creación: 22-07-2025 a las 01:46:31
---
 
 DROP TABLE IF EXISTS `usuariodomicilio`;
 CREATE TABLE `usuariodomicilio` (
@@ -603,14 +471,6 @@ CREATE TABLE `usuariodomicilio` (
   `udomFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
   `udomFechaBaja` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `usuariodomicilio`:
---   `udomDom`
---       `domicilio` -> `domId`
---   `udomUsr`
---       `usuario` -> `usrId`
---
 
 --
 -- Volcado de datos para la tabla `usuariodomicilio`
@@ -629,8 +489,6 @@ INSERT INTO `usuariodomicilio` (`udomId`, `udomUsr`, `udomDom`, `udomFechaInsert
 --
 -- Estructura de tabla para la tabla `usuariotasadorhabilidad`
 --
--- Creación: 14-06-2025 a las 14:37:52
---
 
 DROP TABLE IF EXISTS `usuariotasadorhabilidad`;
 CREATE TABLE `usuariotasadorhabilidad` (
@@ -641,16 +499,6 @@ CREATE TABLE `usuariotasadorhabilidad` (
   `utsFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
   `utsFechaBaja` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- RELACIONES PARA LA TABLA `usuariotasadorhabilidad`:
---   `utsPerId`
---       `periodo` -> `perId`
---   `utsScatId`
---       `subcategoria` -> `scatId`
---   `utsUsrId`
---       `usuario` -> `usrId`
---
 
 --
 -- Volcado de datos para la tabla `usuariotasadorhabilidad`
