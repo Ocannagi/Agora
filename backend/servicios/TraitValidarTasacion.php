@@ -350,18 +350,9 @@ trait TraitValidarTasacion
 
     private function validarPrecioDigital(TasacionDigitalDTO $tasacionDigitalDTO)
     {
-        if ($tasacionDigitalDTO->tadPrecioDigital !== null) {
-            if (!is_numeric($tasacionDigitalDTO->tadPrecioDigital)) {
-                throw new InvalidArgumentException(message: 'El precio digital debe ser un número.');
-            }
-            if ($tasacionDigitalDTO->tadPrecioDigital < 0) {
-                throw new InvalidArgumentException(message: 'El precio digital no puede ser negativo.');
-            }
-            if ($tasacionDigitalDTO->tadPrecioDigital > 9999999999999.99) {
-                throw new InvalidArgumentException(message: 'El precio digital no puede ser mayor a 9999999999999.99');
-            }
-        }
-
+        if ($tasacionDigitalDTO->tadPrecioDigital !== null)
+            Input::esPrecioValido($tasacionDigitalDTO->tadPrecioDigital);
+        
         if (Input::esNotNullVacioBlanco($tasacionDigitalDTO->tadFechaTasDigitalRealizada) && $tasacionDigitalDTO->tadPrecioDigital === null) {
             throw new InvalidArgumentException(message: 'El precio digital debe ser proporcionado si la tasación digital fue realizada.');
         }
@@ -485,15 +476,7 @@ trait TraitValidarTasacion
     {
         $precioInSitu = $tasacionInSitu->tisPrecioInSitu;
         if ($precioInSitu !== null) {
-            if (!is_numeric($precioInSitu)) {
-                throw new InvalidArgumentException(message: 'El precio de la tasación in situ debe ser un número.');
-            }
-            if ($precioInSitu < 0) {
-                throw new InvalidArgumentException(message: 'El precio de la tasación in situ no puede ser negativo.');
-            }
-            if ($precioInSitu > 9999999999999.99) {
-                throw new InvalidArgumentException(message: 'El precio de la tasación in situ no puede ser mayor a 9999999999999.99.');
-            }
+            Input::esPrecioValido($precioInSitu);
         }
 
         if (Input::esNotNullVacioBlanco($tasacionInSitu->tisFechaTasInSituRealizada) && $precioInSitu === null) {

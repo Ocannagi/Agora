@@ -9,6 +9,7 @@ class AntiguedadesController extends BaseController
 {
     use TraitGetInterno; // Trait para métodos internos de obtención
     use TraitGetByIdInterno; // Trait para métodos internos de obtención por ID
+    use TraitCambiarEstadoAntiguedad; // Trait para cambiar el estado de una antiguedad
 
     private ValidacionServiceBase $antiguedadesValidacionService;
     private ISecurity $securityService;
@@ -42,12 +43,13 @@ class AntiguedadesController extends BaseController
         try {
             if (is_array($params)) {
 
-                if (array_key_exists('scatId', $params) || array_key_exists('catId', $params) || array_key_exists('perId', $params) || array_key_exists('usrId', $params) || array_key_exists('antDescripcion', $params)) {
+                if (array_key_exists('scatId', $params) || array_key_exists('catId', $params) || array_key_exists('perId', $params) || array_key_exists('usrId', $params) || array_key_exists('antDescripcion', $params) || array_key_exists('antTipoEstado', $params)) {
                     $scatId = null;
                     $catId = null;
                     $perId = null;
                     $usrId = null;
                     $antDescripcion = null;
+                    $antTipoEstado = null;
                     if (array_key_exists('scatId', $params)) {
                         $scatId = (int)$params['scatId'];
                     }
@@ -63,7 +65,14 @@ class AntiguedadesController extends BaseController
                     if (array_key_exists('antDescripcion', $params)) {
                         $antDescripcion = (string)$params['antDescripcion'];
                     }
-                    return $this->getAntiguedadesByFiltros($scatId, $catId, $perId, $usrId, $antDescripcion);
+                    if (array_key_exists('antTipoEstado', $params)) {
+                        $antTipoEstado = (string)$params['antTipoEstado'];
+                        if (!in_array($antTipoEstado, array_map(fn($e) => $e->value, TipoEstadoEnum::cases()))) {
+                            throw new InvalidArgumentException(code: 400, message: "El parámetro 'antTipoEstado' no es válido.");
+                        }
+                    }
+
+                    return $this->getAntiguedadesByFiltros($scatId, $catId, $perId, $usrId, $antDescripcion, $antTipoEstado);
                 } else {
                     throw new InvalidArgumentException(code: 400, message: "No se recibieron parámetros válidos.");
                 }
@@ -83,7 +92,7 @@ class AntiguedadesController extends BaseController
         }
     }
 
-    private function getAntiguedadesByFiltros(?int $scatId, ?int $catId, ?int $perId, ?int $usrId, ?string $antDescripcion): ?array
+    private function getAntiguedadesByFiltros(?int $scatId, ?int $catId, ?int $perId, ?int $usrId, ?string $antDescripcion, ?string $antTipoEstado): ?array
     {
         $this->securityService->requireLogin(tipoUsurio: null);
 
@@ -116,6 +125,9 @@ class AntiguedadesController extends BaseController
         }
         if ($antDescripcion != null) {
             $query .= " AND antDescripcion LIKE '%$antDescripcion%'";
+        }
+        if ($antTipoEstado != null) {
+            $query .= " AND antTipoEstado = '$antTipoEstado'";
         }
 
         $arrayAntiguedadesDTO = $this->getInterno(query: $query, classDTO: "AntiguedadDTO");
@@ -291,6 +303,8 @@ class AntiguedadesController extends BaseController
             Input::escaparDatos($antiguedadDTO, $mysqli);
             Input::agregarComillas_ConvertNULLtoString($antiguedadDTO);
 
+            $antiguedadDTO->tipoEstado = $this->calcularEstadoAntiguedad($mysqli, $antiguedadDTO);
+            
             $conservaMismoTipoEstado = Querys::existeEnBD(
                 link: $mysqli,
                 query: "SELECT 1 FROM antiguedad WHERE antId={$antiguedadDTO->antId} AND antTipoEstado='{$antiguedadDTO->tipoEstado->value}'",

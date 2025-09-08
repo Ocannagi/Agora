@@ -231,4 +231,18 @@ class Input
     {
         return round($numero, $decimales);
     }
+
+    public static function esPrecioValido(float $precio): void
+    {
+
+        if (!is_numeric($precio)) {
+            throw new InvalidArgumentException(message: 'El precio debe ser un número.');
+        }
+        if ($precio <= 0) {
+            throw new InvalidArgumentException(message: 'El precio no puede ser negativo ni cero.');
+        }
+        if ($precio > 9999999999999.99) {
+            throw new InvalidArgumentException(message: 'El precio no puede ser mayor a 9999999999999.99');
+            }
+    }
 }

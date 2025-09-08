@@ -15,7 +15,6 @@ class Antiguedad extends ClassBase
     /** @var ?ImagenAntiguedad[] */
     private ?array $imagenes = null;
     private DateTime $antFechaInsert;
-    #[Obligatorio]
     private TipoEstadoEnum $tipoEstado;
     private DateTime $antFechaEstado;
     

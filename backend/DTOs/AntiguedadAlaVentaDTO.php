@@ -9,6 +9,7 @@ class AntiguedadALaVentaDTO implements IDTO
     public ?TasacionDigitalDTO $tasacion = null;
     public string $aavFechaPublicacion;
     public ?string $aavFechaRetiro = null;
+    private bool $aavHayVenta = false;
 
     use TraitMapAntiguedadDTO; // Trait para mapear AntiguedadDTO
     use TraitMapTasacionDigitalDTO; // Trait para mapear TasacionDigitalDTO.

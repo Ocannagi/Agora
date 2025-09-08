@@ -15,6 +15,7 @@ class AntiguedadAlaVenta extends ClassBase
     #[Obligatorio]
     private DateTime $aavFechaPublicacion;
     private ?DateTime $aavFechaRetiro = null;
+    private bool $aavHayVenta = false;
 
     public static function fromCreacionDTO(ICreacionDTO $dto): self
     {

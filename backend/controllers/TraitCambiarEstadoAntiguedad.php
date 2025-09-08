@@ -70,4 +70,33 @@ trait TraitCambiarEstadoAntiguedad
             $this->cambiarEstadoAntiguedad($linkExterno, $antiguedadDTO, TipoEstadoEnum::TasadoInSitu());
         }
     }
+
+    public function calcularEstadoAntiguedad(mysqli $linkExterno, AntiguedadDTO $antiguedadDTO): TipoEstadoEnum
+    {
+       
+       
+       $queryQuedanTasacionesInSitu = "SELECT 1 FROM tasacioninsitu as ti
+                                            INNER JOIN tasaciondigital as td ON ti.tisTadId = td.tadId
+                                            WHERE ti.tisFechaBaja IS NULL
+                                            AND ti.tisFechaTasInSituRealizada IS NOT NULL
+                                            AND td.tadAntId = {$antiguedadDTO->antId}
+                                            AND td.tadUsrPropId = {$antiguedadDTO->usuario->usrId}
+                                            AND td.tadFechaBaja IS NULL";
+
+        if (Querys::existeEnBD($linkExterno, $queryQuedanTasacionesInSitu, "verificar si quedan tasaciones in situ para la antiguedad")) {
+            return TipoEstadoEnum::TasadoInSitu();
+        }
+
+        $queryQuedanTasacionesDigitales = "SELECT 1 FROM tasaciondigital
+                                              WHERE tadAntId = {$antiguedadDTO->antId}
+                                              AND tadUsrPropId = {$antiguedadDTO->usuario->usrId}
+                                              AND tadFechaTasDigitalRealizada IS NOT NULL
+                                              AND tadFechaBaja IS NULL";
+
+        if (Querys::existeEnBD($linkExterno, $queryQuedanTasacionesDigitales, "verificar si quedan tasaciones digitales para la antiguedad")) {
+            return TipoEstadoEnum::TasadoDigital();
+        }
+
+        return TipoEstadoEnum::RetiradoDisponible();
+    }
 }

@@ -40,7 +40,8 @@ class AntiguedadesValidacionService extends ValidacionServiceBase
         $this->validarUsuario($antiguedad->usuario, $linkExterno);
 
         if ($antiguedad instanceof AntiguedadDTO) {
-            $this->validarTipoEstado($antiguedad->tipoEstado);
+            //No validamos el tipo estado, se calcula automáticamente en el controlador
+            //$this->validarTipoEstado($antiguedad->tipoEstado);
             $this->validarExisteAntiguedadModificar($antiguedad->antId, $antiguedad->usuario->usrId, $linkExterno);
         } else {
             $this->validarSiYaFueRegistradoPorMismoUsuario($antiguedad, $linkExterno);
