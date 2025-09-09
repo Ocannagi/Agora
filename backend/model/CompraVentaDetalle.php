@@ -5,12 +5,9 @@ use Utilidades\Obligatorio;
 class CompraVentaDetalle extends ClassBase
 {
     private int $cvdId; // CompraVentaDetalle ID
-    #[Obligatorio]
     private int $covId; // CompraVenta ID
     #[Obligatorio]
-    private int $aavId; // AntiguedadAlaVenta ID
-    #[Obligatorio]
-    private int $domId; // Domicilio Destino ID
+    private AntiguedadAlaVenta $antiguedadAlaVenta; // AntiguedadAlaVenta
     #[Obligatorio]
     private DateTime $cvdFechaEntregaPrevista; // Fecha de entrega prevista
     private ?DateTime $cvdFechaEntregaReal = null; // Fecha de entrega real
@@ -24,9 +21,7 @@ class CompraVentaDetalle extends ClassBase
         }
 
         $instance = new self();
-        $instance->covId = $dto->covId;
-        $instance->aavId = $dto->aavId;
-        $instance->domId = $dto->domId;
+        $instance->antiguedadAlaVenta = AntiguedadAlaVenta::fromArray(['aavId' => $dto->antiguedadAlaVenta->aavId]);
         $instance->cvdFechaEntregaPrevista = new DateTime($dto->cvdFechaEntregaPrevista);
         return $instance;
     }

@@ -168,10 +168,6 @@ class ImagenesAntiguedadController extends BaseController
 
         } catch (\Throwable $th) {
 
-            if (isset($stmt) && $stmt instanceof mysqli_stmt) {
-                $stmt->close();
-            }
-
             if (isset($mysqli) && $mysqli instanceof mysqli) {
                 $mysqli->rollback(); // Revertir transacción si hay error
             }
@@ -195,6 +191,10 @@ class ImagenesAntiguedadController extends BaseController
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
         } finally {
+            if (isset($stmt) && $stmt instanceof mysqli_stmt) {
+                $stmt->close(); // Cerrar el statement
+            }
+            
             if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
                 $mysqli->close(); // Cerrar la conexión a la base de datos
             }

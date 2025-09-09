@@ -26,6 +26,8 @@ trait TraitMapAntiguedadDTO
         }  
         else if (array_key_exists('tasAntId', $data)) {
             $arrayAnt['antId'] = (int)$data['tasAntId'];
+        } else if (array_key_exists('aavAntId', $data)) {
+            $arrayAnt['antId'] = (int)$data['aavAntId'];
         } else {
             return null; // No se puede mapear sin antId
         }

@@ -40,6 +40,7 @@ class AntiguedadesController extends BaseController
 
     public function getAntiguedadesByParams($params)
     {
+        $mysqli = $this->dbConnection->conectarBD();
         try {
             if (is_array($params)) {
 
@@ -72,7 +73,7 @@ class AntiguedadesController extends BaseController
                         }
                     }
 
-                    return $this->getAntiguedadesByFiltros($scatId, $catId, $perId, $usrId, $antDescripcion, $antTipoEstado);
+                    return $this->getAntiguedadesByFiltros($mysqli ,$scatId, $catId, $perId, $usrId, $antDescripcion, $antTipoEstado);
                 } else {
                     throw new InvalidArgumentException(code: 400, message: "No se recibieron parámetros válidos.");
                 }
@@ -89,10 +90,15 @@ class AntiguedadesController extends BaseController
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
             }
+        } finally {
+            if(isset($mysqli) && $mysqli instanceof mysqli) {
+                // Cierra la conexión a la base de datos si se creó en este método.
+                $mysqli->close();
+            }
         }
     }
 
-    private function getAntiguedadesByFiltros(?int $scatId, ?int $catId, ?int $perId, ?int $usrId, ?string $antDescripcion, ?string $antTipoEstado): ?array
+    private function getAntiguedadesByFiltros(mysqli $mysqli, ?int $scatId, ?int $catId, ?int $perId, ?int $usrId, ?string $antDescripcion, ?string $antTipoEstado): ?array
     {
         $this->securityService->requireLogin(tipoUsurio: null);
 
@@ -123,17 +129,18 @@ class AntiguedadesController extends BaseController
         if ($usrId != null) {
             $query .= " AND usrId = $usrId";
         }
-        if ($antDescripcion != null) {
+        if (Input::esNotNullVacioBlanco($antDescripcion)) {
+            $antDescripcion = $mysqli->real_escape_string($antDescripcion);
             $query .= " AND antDescripcion LIKE '%$antDescripcion%'";
         }
         if ($antTipoEstado != null) {
             $query .= " AND antTipoEstado = '$antTipoEstado'";
         }
 
-        $arrayAntiguedadesDTO = $this->getInterno(query: $query, classDTO: "AntiguedadDTO");
+        $arrayAntiguedadesDTO = $this->getInterno(query: $query, classDTO: "AntiguedadDTO", linkExterno: $mysqli);
         foreach ($arrayAntiguedadesDTO as $antiguedadDTO) {
             $query = "SELECT imaId, imaUrl, imaAntId, imaOrden, imaNombreArchivo FROM imagenantiguedad WHERE imaAntId = {$antiguedadDTO->antId} ORDER BY imaOrden";
-            $antiguedadDTO->imagenes = $this->getInterno(query: $query, classDTO: "ImagenAntiguedadDTO");
+            $antiguedadDTO->imagenes = $this->getInterno(query: $query, classDTO: "ImagenAntiguedadDTO", linkExterno: $mysqli);
         }
         Output::outputJson($arrayAntiguedadesDTO);
     }

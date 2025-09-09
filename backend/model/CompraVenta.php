@@ -6,16 +6,16 @@ class CompraVenta extends ClassBase
 {
     private int $covId; // CompraVenta ID
     #[Obligatorio]
-    private Usuario $usuarioVendedor; // Usuario Vendedor
-    #[Obligatorio]
     private Usuario $usuarioComprador; // Usuario Comprador
+    #[Obligatorio]
+    private Domicilio $domicilioDestino; // Domicilio Destino
     #[Obligatorio]
     private DateTime $covFechaCompraVenta; // Fecha de la compra/venta
     #[Obligatorio]
     private TipoMedioPagoEnum $covTipoMedioPago; // Medio de pago (usar TipoMedioPagoEnum)
     #[Obligatorio]
-    /** @var ?CompraVentaDetalle[] */
-    private ?array $detalles = null; // Detalles de la compra/venta
+    /** @var CompraVentaDetalle[] */
+    private array $detalles = []; // Detalles de la compra/venta
     private ?DateTime $covFechaBaja = null; // Fecha de baja
 
     public static function fromCreacionDTO(ICreacionDTO $dto): self
@@ -25,8 +25,8 @@ class CompraVenta extends ClassBase
         }
 
         $instance = new self();
-        $instance->usuarioVendedor = Usuario::fromArray(['usrId' => $dto->usuarioVendedor->usrId]);
         $instance->usuarioComprador = Usuario::fromArray(['usrId' => $dto->usuarioComprador->usrId]);
+        $instance->domicilioDestino = Domicilio::fromArray(['domId' => $dto->domicilioDestino->domId]);
         $instance->covFechaCompraVenta = new DateTime($dto->covFechaCompraVenta);
         $instance->covTipoMedioPago = $dto->covTipoMedioPago;
         return $instance;

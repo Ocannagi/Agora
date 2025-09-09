@@ -3,7 +3,7 @@
 class AntiguedadAlaVentaCreacionDTO implements ICreacionDTO
 {
     public AntiguedadDTO $antiguedad;
-    public DomicilioDTO $domicilio;
+    public DomicilioDTO $domicilioOrigen;
     public float $aavPrecioVenta;
     public ?TasacionDigitalDTO $tasacion = null;
 
@@ -32,17 +32,17 @@ class AntiguedadAlaVentaCreacionDTO implements ICreacionDTO
             $this->antiguedad = $this->mapAntiguedadDTO(['antId' => (int)$data['aavAntId']]);
         }
 
-        if (array_key_exists('domicilio', $data)) {
-            if ($data['domicilio'] instanceof DomicilioDTO) {
-                $this->domicilio = $data['domicilio'];
+        if (array_key_exists('domicilioOrigen', $data)) {
+            if ($data['domicilioOrigen'] instanceof DomicilioDTO) {
+                $this->domicilioOrigen = $data['domicilioOrigen'];
             } else {
-                $domicilioDTO = $this->mapDomicilioDTO($data);
+                $domicilioDTO = $this->mapDomicilioDTO($data['domicilioOrigen']);
                 if ($domicilioDTO !== null) {
-                    $this->domicilio = $domicilioDTO;
+                    $this->domicilioOrigen = $domicilioDTO;
                 }
             }
         } else if (array_key_exists('aavDomOrigen', $data)) {
-            $this->domicilio = $this->mapDomicilioDTO(['domId' => $data['aavDomOrigen']]);
+            $this->domicilioOrigen = $this->mapDomicilioDTO(['domId' => $data['aavDomOrigen']]);
         }
 
         if (array_key_exists('aavPrecioVenta', $data)) {
@@ -53,7 +53,7 @@ class AntiguedadAlaVentaCreacionDTO implements ICreacionDTO
             if ($data['tasacion'] instanceof TasacionDigitalDTO) {
                 $this->tasacion = $data['tasacion'];
             } else {
-                $tasacionDTO = $this->mapTasacionDigitalDTO($data);
+                $tasacionDTO = $this->mapTasacionDigitalDTO($data['tasacion']);
                 if ($tasacionDTO !== null) {
                     $this->tasacion = $tasacionDTO;
                 }
@@ -62,6 +62,12 @@ class AntiguedadAlaVentaCreacionDTO implements ICreacionDTO
             $this->tasacion = $this->mapTasacionDigitalDTO(['tadId' => (int)$data['aavTadId']]);
         } else if (array_key_exists('tadId', $data)) {
             $this->tasacion = $this->mapTasacionDigitalDTO(['tadId' => (int)$data['tadId']]);
+        }
+
+        if ($this->tasacion !== null){
+            if (array_key_exists('tisId', $data)) {
+                $this->tasacion->tasacionInSitu = new TasacionInSituDTO(['tisId' => (int)$data['tisId']]);
+            }
         }
 
         

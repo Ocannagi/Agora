@@ -8,7 +8,7 @@ class AntiguedadAlaVenta extends ClassBase
     #[Obligatorio]
     private Antiguedad $antiguedad;
     #[Obligatorio]
-    private Domicilio $domicilio;
+    private Domicilio $domicilioOrigen;
     #[Obligatorio]
     private float $aavPrecioVenta;
     private ?TasacionDigital $tasacionDigital = null;
@@ -25,7 +25,7 @@ class AntiguedadAlaVenta extends ClassBase
 
         $instance = new self();
         $instance->antiguedad = Antiguedad::fromArray(['antId' => $dto->antiguedad->antId]); // Convertir el DTO de antigüedad a objeto
-        $instance->domicilio = Domicilio::fromArray(['domId' => $dto->domicilio->domId]); // Convertir el DTO de domicilio a objeto
+        $instance->domicilioOrigen = Domicilio::fromArray(['domId' => $dto->domicilioOrigen->domId]); // Convertir el DTO de domicilio a objeto
         $instance->aavPrecioVenta = $dto->aavPrecioVenta;
         if (isset($dto->tasacion)) {
             $instance->tasacionDigital = TasacionDigital::fromArray(['tadId' => $dto->tasacion->tadId]);

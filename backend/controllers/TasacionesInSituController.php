@@ -230,7 +230,7 @@ class TasacionesInSituController extends BaseController
             settype($id, 'int');
             $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::solicitanteTasacionToArray());
 
-            $query = $query = "SELECT tisId, tisTadId, tisDomTasId, tisFechaTasInSituSolicitada, tisFechaTasInSituProvisoria,
+            $query = "SELECT tisId, tisTadId, tisDomTasId, tisFechaTasInSituSolicitada, tisFechaTasInSituProvisoria,
                              tisFechaTasInSituRealizada, tisFechaTasInSituRechazada, tisObservacionesInSitu, tisPrecioInSitu
                       FROM tasacioninsitu AS tis
                         INNER JOIN tasaciondigital AS tad ON tis.tisTadId = tad.tadId

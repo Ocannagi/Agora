@@ -33,10 +33,12 @@ define('QUERYS', [
                     LEFT JOIN localidad ON locId = domLocId
                     LEFT JOIN provincia ON provId = locProvId
                     WHERE domId = %id",
-    'TASACIONDIGITAL' => "SELECT tadId, tadUsrTasId, tadUsrPropId, tadAntId, tadFechaSolicitud, tadFechaTasacion
-                        ,tadPrecioDigital, tadObservaciones, tadEstado
+    'TASACIONDIGITAL' => "SELECT tadId, tadUsrTasId, tadUsrPropId, tadAntId, tadFechaSolicitud, tadFechaTasDigitalRealizada, tadFechaTasDigitalRechazada
+                        ,tadPrecioDigital, tadObservacionesDigital
                     FROM tasaciondigital
-                    WHERE tadFechaBaja IS NULL AND tadId = %id",
+                    WHERE tadFechaBaja IS NULL
+                    AND tadFechaTasDigitalRealizada IS NOT NULL --IMPORTANTE: Solo se consideran las tasaciones digitales realizadas
+                    AND tadId = %id",
                 ]);
 
 use Model\CustomException;

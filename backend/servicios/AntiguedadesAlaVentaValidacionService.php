@@ -41,7 +41,7 @@ class AntiguedadesAlaVentaValidacionService extends ValidacionServiceBase
         //Input::trimStringDatos($antiguedadAlaVenta); // no hay campos string importantes en AntiguedadAlaVenta
 
         $this->validarAntiguedad($antiguedadAlaVenta->antiguedad, $extraParams);
-        $this->validarDomicilio($antiguedadAlaVenta->antiguedad, $antiguedadAlaVenta->domicilio, $linkExterno);
+        $this->validarDomicilio($antiguedadAlaVenta->antiguedad, $antiguedadAlaVenta->domicilioOrigen, $linkExterno);
         $this->validarTasacionDigitalDTO($antiguedadAlaVenta->tasacion, $extraParams);
         $this->validarPrecioVenta($antiguedadAlaVenta->aavPrecioVenta, $antiguedadAlaVenta->tasacion);
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-09-2025 a las 07:31:09
+-- Tiempo de generación: 09-09-2025 a las 04:19:21
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -128,13 +128,13 @@ INSERT INTO `categoria` (`catId`, `catDescripcion`, `catFechaBaja`) VALUES
 --
 -- Estructura de tabla para la tabla `compraventa`
 --
--- Creación: 08-09-2025 a las 05:20:46
+-- Creación: 09-09-2025 a las 02:10:06
+-- Última actualización: 09-09-2025 a las 02:10:06
 --
 
 DROP TABLE IF EXISTS `compraventa`;
 CREATE TABLE `compraventa` (
   `covId` int(10) UNSIGNED NOT NULL,
-  `covUsrVendedor` int(10) UNSIGNED NOT NULL,
   `covUsrComprador` int(10) UNSIGNED NOT NULL,
   `covFechaCompra` datetime NOT NULL DEFAULT current_timestamp(),
   `covTipoMedioPago` char(2) NOT NULL,
@@ -146,8 +146,6 @@ CREATE TABLE `compraventa` (
 --   `covTipoMedioPago`
 --       `tipomediopago` -> `tmpTipoMedioPago`
 --   `covUsrComprador`
---       `usuario` -> `usrId`
---   `covUsrVendedor`
 --       `usuario` -> `usrId`
 --
 
@@ -784,7 +782,6 @@ ALTER TABLE `categoria`
 --
 ALTER TABLE `compraventa`
   ADD PRIMARY KEY (`covId`),
-  ADD KEY `FK_UsrVendedor` (`covUsrVendedor`),
   ADD KEY `FK_UsrComprador` (`covUsrComprador`),
   ADD KEY `FK_TipoMedioPago` (`covTipoMedioPago`);
 
@@ -1023,8 +1020,7 @@ ALTER TABLE `antiguedadalaventa`
 --
 ALTER TABLE `compraventa`
   ADD CONSTRAINT `FK_TipoMedioPago` FOREIGN KEY (`covTipoMedioPago`) REFERENCES `tipomediopago` (`tmpTipoMedioPago`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `FK_UsrComprador` FOREIGN KEY (`covUsrComprador`) REFERENCES `usuario` (`usrId`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `FK_UsrVendedor` FOREIGN KEY (`covUsrVendedor`) REFERENCES `usuario` (`usrId`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `FK_UsrComprador` FOREIGN KEY (`covUsrComprador`) REFERENCES `usuario` (`usrId`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `compraventadetalle`
