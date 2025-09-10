@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 09-09-2025 a las 04:19:21
+-- Tiempo de generación: 10-09-2025 a las 03:43:57
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -70,13 +70,14 @@ INSERT INTO `antiguedad` (`antId`, `antScatId`, `antPerId`, `antDescripcion`, `a
 --
 -- Estructura de tabla para la tabla `antiguedadalaventa`
 --
--- Creación: 07-09-2025 a las 22:38:06
+-- Creación: 10-09-2025 a las 01:42:46
 --
 
 DROP TABLE IF EXISTS `antiguedadalaventa`;
 CREATE TABLE `antiguedadalaventa` (
   `aavId` int(10) UNSIGNED NOT NULL,
   `aavAntId` int(10) UNSIGNED NOT NULL,
+  `aavUsrIdVendedor` int(10) UNSIGNED NOT NULL,
   `aavDomOrigen` int(10) UNSIGNED NOT NULL,
   `aavPrecioVenta` decimal(15,2) UNSIGNED NOT NULL,
   `aavTadId` int(10) UNSIGNED DEFAULT NULL,
@@ -93,6 +94,8 @@ CREATE TABLE `antiguedadalaventa` (
 --       `domicilio` -> `domId`
 --   `aavTadId`
 --       `tasaciondigital` -> `tadId`
+--   `aavUsrIdVendedor`
+--       `usuario` -> `usrId`
 --
 
 -- --------------------------------------------------------
@@ -128,14 +131,14 @@ INSERT INTO `categoria` (`catId`, `catDescripcion`, `catFechaBaja`) VALUES
 --
 -- Estructura de tabla para la tabla `compraventa`
 --
--- Creación: 09-09-2025 a las 02:10:06
--- Última actualización: 09-09-2025 a las 02:10:06
+-- Creación: 09-09-2025 a las 14:02:28
 --
 
 DROP TABLE IF EXISTS `compraventa`;
 CREATE TABLE `compraventa` (
   `covId` int(10) UNSIGNED NOT NULL,
   `covUsrComprador` int(10) UNSIGNED NOT NULL,
+  `covDomDestino` int(10) UNSIGNED NOT NULL,
   `covFechaCompra` datetime NOT NULL DEFAULT current_timestamp(),
   `covTipoMedioPago` char(2) NOT NULL,
   `covFechaBaja` datetime DEFAULT NULL
@@ -143,6 +146,8 @@ CREATE TABLE `compraventa` (
 
 --
 -- RELACIONES PARA LA TABLA `compraventa`:
+--   `covDomDestino`
+--       `domicilio` -> `domId`
 --   `covTipoMedioPago`
 --       `tipomediopago` -> `tmpTipoMedioPago`
 --   `covUsrComprador`
@@ -154,7 +159,8 @@ CREATE TABLE `compraventa` (
 --
 -- Estructura de tabla para la tabla `compraventadetalle`
 --
--- Creación: 08-09-2025 a las 05:28:48
+-- Creación: 09-09-2025 a las 14:03:18
+-- Última actualización: 09-09-2025 a las 14:03:18
 --
 
 DROP TABLE IF EXISTS `compraventadetalle`;
@@ -162,7 +168,6 @@ CREATE TABLE `compraventadetalle` (
   `cvdId` int(10) UNSIGNED NOT NULL,
   `cvdCovId` int(10) UNSIGNED NOT NULL,
   `cvdAavId` int(10) UNSIGNED NOT NULL,
-  `cvdDomDestino` int(10) UNSIGNED NOT NULL,
   `cvdFechaEntregaPrevista` date NOT NULL,
   `cvdFechaEntregaReal` date DEFAULT NULL,
   `cvdFechaBaja` datetime DEFAULT NULL
@@ -174,8 +179,6 @@ CREATE TABLE `compraventadetalle` (
 --       `antiguedadalaventa` -> `aavId`
 --   `cvdCovId`
 --       `compraventa` -> `covId`
---   `cvdDomDestino`
---       `domicilio` -> `domId`
 --
 
 -- --------------------------------------------------------
@@ -543,7 +546,6 @@ INSERT INTO `tipoestado` (`tteTipoEstado`, `tteTipoEstadoDescripcion`) VALUES
 -- Estructura de tabla para la tabla `tipomediopago`
 --
 -- Creación: 08-09-2025 a las 05:06:03
--- Última actualización: 08-09-2025 a las 05:08:24
 --
 
 DROP TABLE IF EXISTS `tipomediopago`;
@@ -769,7 +771,8 @@ ALTER TABLE `antiguedadalaventa`
   ADD PRIMARY KEY (`aavId`),
   ADD KEY `FK_AlaVenta_Antiguedad` (`aavAntId`),
   ADD KEY `FK_AlaVenta_Tasacion` (`aavTadId`),
-  ADD KEY `FK_AlaVenta_Domicilio` (`aavDomOrigen`);
+  ADD KEY `FK_AlaVenta_Domicilio` (`aavDomOrigen`),
+  ADD KEY `FK_UsrVendedor` (`aavUsrIdVendedor`);
 
 --
 -- Indices de la tabla `categoria`
@@ -783,7 +786,8 @@ ALTER TABLE `categoria`
 ALTER TABLE `compraventa`
   ADD PRIMARY KEY (`covId`),
   ADD KEY `FK_UsrComprador` (`covUsrComprador`),
-  ADD KEY `FK_TipoMedioPago` (`covTipoMedioPago`);
+  ADD KEY `FK_TipoMedioPago` (`covTipoMedioPago`),
+  ADD KEY `FK_DomDestino` (`covDomDestino`);
 
 --
 -- Indices de la tabla `compraventadetalle`
@@ -791,8 +795,7 @@ ALTER TABLE `compraventa`
 ALTER TABLE `compraventadetalle`
   ADD PRIMARY KEY (`cvdId`),
   ADD KEY `FK_CompraVenta` (`cvdCovId`),
-  ADD KEY `FK_AntiguedadaLaVenta` (`cvdAavId`),
-  ADD KEY `FK_DomDestino` (`cvdDomDestino`);
+  ADD KEY `FK_AntiguedadaLaVenta` (`cvdAavId`);
 
 --
 -- Indices de la tabla `domicilio`
@@ -1013,12 +1016,14 @@ ALTER TABLE `antiguedad`
 ALTER TABLE `antiguedadalaventa`
   ADD CONSTRAINT `FK_AlaVenta_Antiguedad` FOREIGN KEY (`aavAntId`) REFERENCES `antiguedad` (`antId`) ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_AlaVenta_Domicilio` FOREIGN KEY (`aavDomOrigen`) REFERENCES `domicilio` (`domId`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `FK_AlaVenta_Tasacion` FOREIGN KEY (`aavTadId`) REFERENCES `tasaciondigital` (`tadId`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `FK_AlaVenta_Tasacion` FOREIGN KEY (`aavTadId`) REFERENCES `tasaciondigital` (`tadId`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_UsrVendedor` FOREIGN KEY (`aavUsrIdVendedor`) REFERENCES `usuario` (`usrId`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `compraventa`
 --
 ALTER TABLE `compraventa`
+  ADD CONSTRAINT `FK_DomDestino` FOREIGN KEY (`covDomDestino`) REFERENCES `domicilio` (`domId`) ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_TipoMedioPago` FOREIGN KEY (`covTipoMedioPago`) REFERENCES `tipomediopago` (`tmpTipoMedioPago`) ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_UsrComprador` FOREIGN KEY (`covUsrComprador`) REFERENCES `usuario` (`usrId`) ON UPDATE CASCADE;
 
@@ -1027,8 +1032,7 @@ ALTER TABLE `compraventa`
 --
 ALTER TABLE `compraventadetalle`
   ADD CONSTRAINT `FK_AntiguedadaLaVenta` FOREIGN KEY (`cvdAavId`) REFERENCES `antiguedadalaventa` (`aavId`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `FK_CompraVenta` FOREIGN KEY (`cvdCovId`) REFERENCES `compraventa` (`covId`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `FK_DomDestino` FOREIGN KEY (`cvdDomDestino`) REFERENCES `domicilio` (`domId`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `FK_CompraVenta` FOREIGN KEY (`cvdCovId`) REFERENCES `compraventa` (`covId`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `domicilio`
@@ -1144,6 +1148,13 @@ USE `phpmyadmin`;
 --
 -- Metadatos para la tabla tasaciondigital
 --
+
+--
+-- Volcado de datos para la tabla `pma__table_uiprefs`
+--
+
+INSERT INTO `pma__table_uiprefs` (`username`, `db_name`, `table_name`, `prefs`, `last_update`) VALUES
+('root', 'agora', 'tasaciondigital', '{\"sorted_col\":\"`tasaciondigital`.`tadFechaTasDigitalRealizada` ASC\"}', '2025-09-09 18:37:58');
 
 --
 -- Metadatos para la tabla tasacioninsitu

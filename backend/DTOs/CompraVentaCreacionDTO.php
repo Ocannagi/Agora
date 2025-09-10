@@ -5,7 +5,7 @@ class CompraVentaCreacionDTO implements ICreacionDTO
 {
     public UsuarioDTO $usuarioComprador; // Usuario Comprador
     public DomicilioDTO $domicilioDestino; // Domicilio Destino
-    public string $covFechaCompraVenta; // Fecha de la compra/venta en formato 'Y-m-d H:i:s'
+    public string $covFechaCompra; // Fecha de la compra/venta en formato 'Y-m-d H:i:s'
     public TipoMedioPagoEnum $covTipoMedioPago; // Medio de pago (usar TipoMedioPagoEnum)
     /**
      * @var CompraVentaDetalleCreacionDTO[]
@@ -52,8 +52,8 @@ class CompraVentaCreacionDTO implements ICreacionDTO
             $this->domicilioDestino = new DomicilioDTO(['domId' => (int)$data['domId']]);
         }
 
-        if (array_key_exists('covFechaCompraVenta', $data)) {
-            $this->covFechaCompraVenta = (string)$data['covFechaCompraVenta'];
+        if (array_key_exists('covFechaCompra', $data)) {
+            $this->covFechaCompra = (string)$data['covFechaCompra'];
         }
         
         if (array_key_exists('covTipoMedioPago', $data) && $data['covTipoMedioPago'] instanceof TipoMedioPagoEnum) {

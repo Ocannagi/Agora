@@ -30,6 +30,10 @@ trait TraitMapUsuarioDTO
             $arrayUsr['usrId'] = (int)$data['tadUsrPropId'];
         else if (array_key_exists('udomUsr', $data))
             $arrayUsr['usrId'] = (int)$data['udomUsr'];
+        else if (array_key_exists('covUsrComprador', $data))
+            $arrayUsr['usrId'] = (int)$data['covUsrComprador'];
+        else if (array_key_exists('aavUsrIdVendedor', $data))
+            $arrayUsr['usrId'] = (int)$data['aavUsrIdVendedor'];
         else
             return null;
 

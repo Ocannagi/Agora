@@ -4,6 +4,7 @@ class AntiguedadALaVentaDTO implements IDTO
 {
     public int $aavId;
     public AntiguedadDTO $antiguedad;
+    public UsuarioDTO $vendedor; // Se agrega el vendedor
     public DomicilioDTO $domicilioOrigen;
     public float $aavPrecioVenta;
     public ?TasacionDigitalDTO $tasacion = null;
@@ -35,6 +36,19 @@ class AntiguedadALaVentaDTO implements IDTO
             }
         } else if (array_key_exists('aavAntId', $data)) {
             $this->antiguedad = $this->mapAntiguedadDTO(['antId' => (int)$data['aavAntId']]);
+        }
+
+        if (array_key_exists('vendedor', $data)) {
+            if ($data['vendedor'] instanceof UsuarioDTO) {
+                $this->vendedor = $data['vendedor'];
+            } else {
+                $usuarioDTO = $this->mapUsuarioDTO($data['vendedor']);
+                if ($usuarioDTO !== null) {
+                    $this->vendedor = $usuarioDTO;
+                }
+            }
+        } else if (array_key_exists('aavUsrIdVendedor', $data)) {
+            $this->vendedor = $this->mapUsuarioDTO(['usrId' => (int)$data['aavUsrIdVendedor']]);
         }
 
         if (array_key_exists('domicilioOrigen', $data)) {

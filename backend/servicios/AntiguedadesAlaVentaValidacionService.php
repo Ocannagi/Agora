@@ -40,7 +40,8 @@ class AntiguedadesAlaVentaValidacionService extends ValidacionServiceBase
         $this->validarDatosObligatorios(classModelName: AntiguedadAlaVenta::class, datos: get_object_vars($antiguedadAlaVenta));
         //Input::trimStringDatos($antiguedadAlaVenta); // no hay campos string importantes en AntiguedadAlaVenta
 
-        $this->validarAntiguedad($antiguedadAlaVenta->antiguedad, $extraParams);
+        
+
         $this->validarDomicilio($antiguedadAlaVenta->antiguedad, $antiguedadAlaVenta->domicilioOrigen, $linkExterno);
         $this->validarTasacionDigitalDTO($antiguedadAlaVenta->tasacion, $extraParams);
         $this->validarPrecioVenta($antiguedadAlaVenta->aavPrecioVenta, $antiguedadAlaVenta->tasacion);
@@ -49,17 +50,22 @@ class AntiguedadesAlaVentaValidacionService extends ValidacionServiceBase
             //no se valida la fecha de retiro, si existe, se la cambia por la fecha actual en el update
             $this->validarSiExisteAntiguedadAlaVentaAModificar($antiguedadAlaVenta, $linkExterno);
         } else {
+            $this->validarAntiguedad($antiguedadAlaVenta, $extraParams);
             $this->validarSiYaFueRegistradoYSinBaja($antiguedadAlaVenta, $linkExterno);
         }
     }
 
-    private function validarAntiguedad(AntiguedadDTO $antiguedad, ClaimDTO $claimDTO): void
+    private function validarAntiguedad(AntiguedadAlaVentaCreacionDTO $antiguedadAlaVenta, ClaimDTO $claimDTO): void
     {
-        if (!TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico() && $antiguedad->usuario->usrId !== $claimDTO->usrId) {
+        if (!TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico() && $antiguedadAlaVenta->antiguedad->usuario->usrId !== $claimDTO->usrId) {
             throw new CustomException(code: 403, message: 'No tienes permiso para registrar a la venta esta antigüedad.');
         }
 
-        if (!$antiguedad->tipoEstado->isHabilitadoParaVenta()) {
+        if ($antiguedadAlaVenta->vendedor->usrId !== $antiguedadAlaVenta->antiguedad->usuario->usrId) {
+            throw new CustomException(code: 403, message: 'El vendedor debe ser el propietario de la antigüedad.');
+        }
+
+        if (!$antiguedadAlaVenta->antiguedad->tipoEstado->isHabilitadoParaVenta()) {
             throw new CustomException(code: 403, message: 'La antigüedad no está habilitada para la venta.');
         }
     }

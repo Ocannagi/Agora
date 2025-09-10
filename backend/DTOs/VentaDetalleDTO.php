@@ -2,25 +2,30 @@
 
 use Model\CustomException;
 
-class CompraVentaDTO implements IDTO
+class VentaDetalleDTO implements IDTO
 {
-    public int $covId;
-    public UsuarioDTO $usuarioComprador;
-    public DomicilioDTO $domicilioDestino;
-    public string $covFechaCompra;
-    public TipoMedioPagoEnum $covTipoMedioPago;
-    /**
-     * @var CompraVentaDetalleDTO[]
-     */
-    public array $detalles = [];
-
-    use TraitMapUsuarioDTO; // Trait para mapear UsuarioDTO
+    use TraitMapAntiguedadAlaVentaDTO; // Trait para mapear AntiguedadAlaVentaDTO
     use TraitMapDomicilioDTO; // Trait para mapear DomicilioDTO
+    use TraitMapUsuarioDTO; // Trait para mapear UsuarioDTO
+
+    public int $cvdId; // CompraVentaDetalle ID
+    public int $covId; // CompraVenta ID
+    public UsuarioDTO $usuarioComprador;// Usuario comprador
+    public DomicilioDTO $domicilioDestino; // Domicilio de destino
+    public string $covFechaCompra;
+    public AntiguedadAlaVentaDTO $antiguedadAlaVenta; // AntiguedadAlaVenta
+    public TipoMedioPagoEnum $covTipoMedioPago;
+    public string $cvdFechaEntregaPrevista; // Fecha de entrega prevista en formato 'Y-m-d H:i:s'
+    public ?string $cvdFechaEntregaReal = null; // Fecha de entrega real en formato 'Y-m-d H:i:s'
 
     public function __construct(array | stdClass $data)
     {
         if ($data instanceof stdClass) {
             $data = (array)$data;
+        }
+
+        if (array_key_exists('cvdId', $data)) {
+            $this->cvdId = (int)$data['cvdId'];
         }
 
         if (array_key_exists('covId', $data)) {
@@ -63,6 +68,19 @@ class CompraVentaDTO implements IDTO
             $this->covFechaCompra = (string)$data['covFechaCompra'];
         }
 
+        if (array_key_exists('antiguedadAlaVenta', $data)) {
+            if ($data['antiguedadAlaVenta'] instanceof AntiguedadAlaVentaDTO) {
+                $this->antiguedadAlaVenta = $data['antiguedadAlaVenta'];
+            } else {
+                $aavDTO = $this->mapAntiguedadAlaVentaDTO($data['antiguedadAlaVenta']);
+                if ($aavDTO !== null) {
+                    $this->antiguedadAlaVenta = $aavDTO;
+                }
+            }
+        } else if (array_key_exists('aavId', $data)) {
+            $this->antiguedadAlaVenta = new AntiguedadAlaVentaDTO(['aavId' => (int)$data['aavId']]);
+        }
+
         if (array_key_exists('covTipoMedioPago', $data) && $data['covTipoMedioPago'] instanceof TipoMedioPagoEnum) {
             $this->covTipoMedioPago = $data['covTipoMedioPago'];
         } else {
@@ -77,16 +95,12 @@ class CompraVentaDTO implements IDTO
             }
         }
 
-        if (array_key_exists('detalles', $data) && is_array($data['detalles'])) {
-            $this->detalles = [];
-            foreach ($data['detalles'] as $detalle) {
-                if ($detalle instanceof CompraVentaDetalleDTO) {
-                    $this->detalles[] = $detalle;
-                } else {
-                    $detalleDTO = new CompraVentaDetalleDTO($detalle);
-                    $this->detalles[] = $detalleDTO;
-                }
-            }
+        if (array_key_exists('cvdFechaEntregaPrevista', $data)) {
+            $this->cvdFechaEntregaPrevista = (string)$data['cvdFechaEntregaPrevista'];
+        }
+
+        if (array_key_exists('cvdFechaEntregaReal', $data)) {
+            $this->cvdFechaEntregaReal = $data['cvdFechaEntregaReal'] !== null ? (string)$data['cvdFechaEntregaReal'] : null;
         }
     }
 }

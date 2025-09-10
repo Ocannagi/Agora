@@ -296,11 +296,15 @@ class AntiguedadesController extends BaseController
             $antiguedadDTO = new AntiguedadDTO($data);
 
             if (isset($antiguedadDTO->usuario->usrId)) {
-                if ($claimDTO->usrTipoUsuario == 'ST') {
+                if (TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico()) {
                     if (!isset($antiguedadDTO->usuario->usrId) || $antiguedadDTO->usuario->usrId == 0)
                         $antiguedadDTO->usuario->usrId = $claimDTO->usrId;
                 } else {
                     if ($claimDTO->usrId != $antiguedadDTO->usuario->usrId) {
+                        throw new CustomException(code: 403, message: "No tiene permiso para modificar esta antigüedad.");
+                    }
+
+                    if($antiguedadDTO->usuario->usrId != $this->obtenerUsrIdAntiguedad($mysqli, $id)) {
                         throw new CustomException(code: 403, message: "No tiene permiso para modificar esta antigüedad.");
                     }
                 }

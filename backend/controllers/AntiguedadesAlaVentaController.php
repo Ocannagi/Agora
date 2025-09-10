@@ -135,7 +135,7 @@ class AntiguedadesAlaVentaController extends BaseController
         }
 
 
-        $query = "SELECT aavId, aavAntId, aavDomOrigen, aavPrecioVenta, aavTadId, aavFechaPublicacion, aavFechaRetiro, aavHayVenta, tisId
+        $query = "SELECT aavId, aavAntId, aavUsrIdVendedor, aavDomOrigen, aavPrecioVenta, aavTadId, aavFechaPublicacion, aavFechaRetiro, aavHayVenta, tisId
                       FROM antiguedadesalaventa
                       INNER JOIN antiguedades ON aavAntId = antId
                       INNER JOIN subcategorias ON antScatId = scatId
@@ -149,6 +149,13 @@ class AntiguedadesAlaVentaController extends BaseController
         $arrayAntiguedadesAlaVentaDTO = $this->getInterno(query: $query, classDTO: AntiguedadAlaVentaDTO::class, linkExterno: $mysqli);
 
         foreach ($arrayAntiguedadesAlaVentaDTO as $antiguedadAlaVentaDTO) {
+            $antiguedadAlaVentaDTO->usuarioVendedor = $this->getByIdInterno(
+                query: 'USUARIO',
+                classDTO: UsuarioDTO::class,
+                linkExterno: $mysqli,
+                id: $antiguedadAlaVentaDTO->usuarioVendedor->usrId
+            );
+
             $antiguedadAlaVentaDTO->domicilioOrigen = $this->getByIdInterno(
                 query: 'DOMICILIO',
                 classDTO: DomicilioDTO::class,
@@ -207,7 +214,7 @@ class AntiguedadesAlaVentaController extends BaseController
         $mysqli = $this->dbConnection->conectarBD();
         try {
             $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
-            $query = "SELECT aavId, aavAntId, aavDomOrigen, aavPrecioVenta, aavTadId, aavFechaPublicacion, aavFechaRetiro, aavHayVenta, tisId
+            $query = "SELECT aavId, aavAntId, aavUsrIdVendedor, aavDomOrigen, aavPrecioVenta, aavTadId, aavFechaPublicacion, aavFechaRetiro, aavHayVenta, tisId
                       FROM antiguedadesalaventa
                       LEFT  JOIN tasacioninsitu ON aavTadId = tisTadId
                                     AND tisFechaBaja IS NULL
@@ -217,6 +224,13 @@ class AntiguedadesAlaVentaController extends BaseController
             $arrayAntiguedadesAlaVentaDTO = $this->getInterno(query: $query, classDTO: AntiguedadAlaVentaDTO::class, linkExterno: $mysqli);
 
             foreach ($arrayAntiguedadesAlaVentaDTO as $antiguedadAlaVentaDTO) {
+                $antiguedadAlaVentaDTO->usuarioVendedor = $this->getByIdInterno(
+                    query: 'USUARIO',
+                    classDTO: UsuarioDTO::class,
+                    linkExterno: $mysqli,
+                    id: $antiguedadAlaVentaDTO->usuarioVendedor->usrId
+                );
+                
                 $antiguedadAlaVentaDTO->domicilioOrigen = $this->getByIdInterno(
                     query: 'DOMICILIO',
                     classDTO: DomicilioDTO::class,
@@ -290,7 +304,7 @@ class AntiguedadesAlaVentaController extends BaseController
         try {
             settype($id, 'integer');
             $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
-            $query = "SELECT aavId, aavAntId, aavDomOrigen, aavPrecioVenta, aavTadId, aavFechaPublicacion, aavFechaRetiro, aavHayVenta, tisId
+            $query = "SELECT aavId, aavAntId, aavUsrIdVendedor, aavDomOrigen, aavPrecioVenta, aavTadId, aavFechaPublicacion, aavFechaRetiro, aavHayVenta, tisId
                       FROM antiguedadesalaventa
                       LEFT  JOIN tasacioninsitu ON aavTadId = tisTadId
                                     AND tisFechaBaja IS NULL
@@ -300,6 +314,13 @@ class AntiguedadesAlaVentaController extends BaseController
             $antiguedadAlaVentaDTO = $this->getByIdInterno(query: $query, classDTO: AntiguedadAlaVentaDTO::class, linkExterno: $mysqli);
 
 
+            $antiguedadAlaVentaDTO->usuarioVendedor = $this->getByIdInterno(
+                query: 'USUARIO',
+                classDTO: UsuarioDTO::class,
+                linkExterno: $mysqli,
+                id: $antiguedadAlaVentaDTO->usuarioVendedor->usrId
+            );
+            
             $antiguedadAlaVentaDTO->domicilioOrigen = $this->getByIdInterno(
                 query: 'DOMICILIO',
                 classDTO: DomicilioDTO::class,
@@ -384,6 +405,13 @@ class AntiguedadesAlaVentaController extends BaseController
                 id: $antiguedadAlaVentaCreacionDTO->antiguedad->antId
             );
 
+            $antiguedadAlaVentaCreacionDTO->vendedor = $this->getByIdInterno(
+                query: 'USUARIO',
+                classDTO: UsuarioDTO::class,
+                linkExterno: $mysqli,
+                id: $claimDTO->usrId
+            );
+
             $antiguedadAlaVentaCreacionDTO->domicilioOrigen = $this->getByIdInterno(
                 query: 'DOMICILIO',
                 classDTO: DomicilioDTO::class,
@@ -435,8 +463,9 @@ class AntiguedadesAlaVentaController extends BaseController
 
             $tasacionId = isset($antiguedadAlaVentaCreacionDTO->tasacion->tadId) ? $antiguedadAlaVentaCreacionDTO->tasacion->tadId : "NULL";
 
-            $query = "INSERT INTO antiguedadesalaventa (aavAntId, aavDomOrigen, aavPrecioVenta, aavTadId)
+            $query = "INSERT INTO antiguedadesalaventa (aavAntId, aavVendedor, aavDomOrigen, aavPrecioVenta, aavTadId)
                       VALUES ({$antiguedadAlaVentaCreacionDTO->antiguedad->antId}, 
+                              {$antiguedadAlaVentaCreacionDTO->vendedor->usrId}, 
                               {$antiguedadAlaVentaCreacionDTO->domicilioOrigen->domId}, 
                               {$antiguedadAlaVentaCreacionDTO->aavPrecioVenta}, 
                               {$tasacionId}";
@@ -475,6 +504,7 @@ class AntiguedadesAlaVentaController extends BaseController
         }
     }
 
+    //No se permite modificar al avAntId (antigüedad) ni el vendedor ni aavFechaPublicacion (se mantiene la original)
     public function patchAntiguedadesAlaVenta()
     {
         $mysqli = $this->dbConnection->conectarBD();
@@ -491,6 +521,13 @@ class AntiguedadesAlaVentaController extends BaseController
                 classDTO: AntiguedadDTO::class,
                 linkExterno: $mysqli,
                 id: $antiguedadAlaVentaDTO->antiguedad->antId
+            );
+
+            $antiguedadAlaVentaDTO->vendedor = $this->getByIdInterno(
+                query: 'USUARIO',
+                classDTO: UsuarioDTO::class,
+                linkExterno: $mysqli,
+                id: $claimDTO->usrId
             );
 
             $antiguedadAlaVentaDTO->domicilioOrigen = $this->getByIdInterno(
@@ -540,8 +577,7 @@ class AntiguedadesAlaVentaController extends BaseController
                 $this->cambiarEstadoAntiguedad($mysqli, $antiguedadAlaVentaDTO->antiguedad, TipoEstadoEnum::RetiradoNoDisponible());
 
             $query = "UPDATE antiguedadesalaventa
-                      SET aavAntId = {$antiguedadAlaVentaDTO->antiguedad->antId}, 
-                          aavDomOrigen = {$antiguedadAlaVentaDTO->domicilioOrigen->domId}, 
+                      SET aavDomOrigen = {$antiguedadAlaVentaDTO->domicilioOrigen->domId}, 
                           aavPrecioVenta = {$antiguedadAlaVentaDTO->aavPrecioVenta}, 
                           aavTadId = " . (isset($antiguedadAlaVentaDTO->tasacion->tadId) ? $antiguedadAlaVentaDTO->tasacion->tadId : "NULL") . ",
                           aavFechaRetiro = " . (isset($antiguedadAlaVentaDTO->aavFechaRetiro) ? "NOW()" : "NULL") . "

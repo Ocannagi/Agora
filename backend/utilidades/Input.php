@@ -222,6 +222,27 @@ class Input
         }
     }
 
+    public static function esFechaMayorOIgual(string $fechaInicio, string $fechaFin): void
+    {
+        self::esFechaValida($fechaInicio);
+        self::esFechaValida($fechaFin);
+
+        $fechaInicioDT = DateTime::createFromFormat('Y-m-d', $fechaInicio);
+        $fechaFinDT = DateTime::createFromFormat('Y-m-d', $fechaFin);
+
+        if ($fechaFinDT < $fechaInicioDT) {
+            throw new InvalidArgumentException(message: 'La fecha de fin no puede ser anterior a la fecha de inicio. Fecha inicio: ' . $fechaInicio . ', Fecha fin: ' . $fechaFin);
+        }
+    }
+
+    public static function agregarDiasAFecha(string $fecha, int $dias) : string
+    {
+        self::esFechaValida($fecha);
+        $fechaDT = DateTime::createFromFormat('Y-m-d', $fecha);
+        $fechaDT->modify("+$dias days");
+        return $fechaDT->format('Y-m-d');
+    }
+
     private static function _esFormatoFecha(string $fecha): bool
     {
         return  preg_match("/^\d{4}-{1}\d{2}-{1}\d{2}$/", $fecha) === 1;
