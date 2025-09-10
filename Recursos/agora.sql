@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-09-2025 a las 03:43:57
+-- Tiempo de generación: 10-09-2025 a las 23:53:29
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -29,6 +29,7 @@ USE `agora`;
 -- Estructura de tabla para la tabla `antiguedad`
 --
 -- Creación: 17-08-2025 a las 04:05:01
+-- Última actualización: 10-09-2025 a las 21:52:06
 --
 
 DROP TABLE IF EXISTS `antiguedad`;
@@ -62,8 +63,8 @@ CREATE TABLE `antiguedad` (
 INSERT INTO `antiguedad` (`antId`, `antScatId`, `antPerId`, `antDescripcion`, `antUsrId`, `antFechaInsert`, `antTipoEstado`, `antFechaEstado`) VALUES
 (1, 7, 2, 'Vitrina Barroca circa 1656. Hermosos detalles en oro. Madera maciza de ébano. Dos puertas.', 4, '2025-05-24 19:41:04', 'RD', '2025-05-24 19:41:04'),
 (2, 3, 1, 'Hermosa escultura renacentista de un ángel. Mármol. Circa 1486.', 3, '2025-05-24 19:51:02', 'RD', '2025-05-24 19:51:02'),
-(3, 8, 4, 'Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C.', 2, '2025-06-01 21:37:12', 'RD', '2025-06-01 21:58:00'),
-(4, 6, 2, 'Armario Barroco. Es una preciosura', 5, '2025-06-16 15:24:14', 'RD', '2025-06-16 15:24:14');
+(3, 8, 4, 'Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C.', 2, '2025-06-01 21:37:12', 'TI', '2025-06-01 21:58:00'),
+(4, 6, 2, 'Armario Barroco. Es una preciosura', 5, '2025-06-16 15:24:14', 'TD', '2025-06-16 15:24:14');
 
 -- --------------------------------------------------------
 
@@ -160,7 +161,6 @@ CREATE TABLE `compraventa` (
 -- Estructura de tabla para la tabla `compraventadetalle`
 --
 -- Creación: 09-09-2025 a las 14:03:18
--- Última actualización: 09-09-2025 a las 14:03:18
 --
 
 DROP TABLE IF EXISTS `compraventadetalle`;
