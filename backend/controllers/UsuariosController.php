@@ -3,6 +3,7 @@
 use Utilidades\Output;
 use Utilidades\Input;
 use Model\CustomException;
+use Utilidades\Querys;
 
 class UsuariosController extends BaseController
 {
@@ -206,9 +207,13 @@ class UsuariosController extends BaseController
 
     public function deleteUsuarios($id)
     {
+        $mysqli = $this->dbConnection->conectarBD();
         try {
             $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::soporteTecnicoToArray());
             settype($id, 'integer');
+
+            if(Querys::existeEnBD(link: $mysqli, query: "SELECT 1 FROM antiguedadalaventa WHERE aavUsrIdVendedor = $id AND aavFechaRetiro IS NULL AND aavHayVenta = FALSE", msg: "comprobar si el usuario tiene antigüedades a la venta sin retirar en la base de datos."))
+                throw new CustomException(code: 400, message: "No se puede eliminar el usuario porque tiene antigüedades a la venta sin retirar en la base de datos.");
 
             return parent::delete(queryBusqueda: "SELECT usrId FROM usuario WHERE usrId=$id AND usrFechaBaja IS NULL", queryBajaLogica: "UPDATE usuario SET usrFechaBaja = CURRENT_TIMESTAMP() WHERE usrId=$id");
         } catch (\Throwable $th) {
@@ -220,6 +225,10 @@ class UsuariosController extends BaseController
                 Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
             } else {
                 Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
+                $mysqli->close(); // Cerrar la conexión a la base de datos
             }
         }
     }

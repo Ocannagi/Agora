@@ -72,25 +72,25 @@ abstract class BaseController implements IBaseController
     }
     public function delete(string $queryBusqueda, string $queryBajaLogica)
     {
-        $mysqli = $this->dbConnection->conectarBD();
-        $resultado = $mysqli->query($queryBusqueda);
+        $mysqliDelete = $this->dbConnection->conectarBD();
+        $resultado = $mysqliDelete->query($queryBusqueda);
         if ($resultado === false) {
-            $error = $mysqli->error;
-            $mysqli->close();
+            $error = $mysqliDelete->error;
+            $mysqliDelete->close();
             throw new mysqli_sql_exception(code:500, message:"Falló la consulta al querer comprobar la existencia de la entidad por id: " . $error);
         }
         if ($resultado->num_rows == 0) {
-            $mysqli->close();
+            $mysqliDelete->close();
             throw new CustomException(code:404, message:'No se encontró la entidad con ese id para ser eliminada');
         }
         $resultado->free_result();
-        $resultado = $mysqli->query($queryBajaLogica);
+        $resultado = $mysqliDelete->query($queryBajaLogica);
         if ($resultado === false) {
-            $error= $mysqli->error;
-            $mysqli->close();
+            $error= $mysqliDelete->error;
+            $mysqliDelete->close();
             throw new mysqli_sql_exception(code:500, message:'Falló la consulta: ' . $error);
         }
-        $mysqli->close();
+        $mysqliDelete->close();
         Output::outputJson([]);
     }
 }
