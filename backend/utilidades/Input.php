@@ -13,13 +13,13 @@ class Input
     public static function getArrayBody(string $msgEntidad = "la entidad"): array
     {        
         $array = json_decode(file_get_contents('php://input'), true);
-        if (json_last_error()) {
-            throw new InvalidArgumentException(message: 'El formato de datos es incorrecto');
-        }
         if (empty($array)) {
             throw new InvalidArgumentException(message: "No se recibieron datos para crear $msgEntidad");
         }
-
+        if (json_last_error()) {
+            throw new InvalidArgumentException(message: 'El formato de datos es incorrecto');
+        }
+        
         return $array;
     }
 
@@ -206,6 +206,7 @@ class Input
     {
         self::esFechaValida($stringFecha);
         $fechaActual = new DateTime();
+        $fechaActual = DateTime::createFromFormat('Y-m-d', $fechaActual->format('Y-m-d'));
         $fechaIngresada = DateTime::createFromFormat('Y-m-d', $stringFecha);
         if ($fechaIngresada > $fechaActual) {
             throw new InvalidArgumentException(message: 'La fecha no puede ser futura. La fecha ingresada es: ' . $stringFecha);
@@ -216,6 +217,7 @@ class Input
     {
         self::esFechaValida($stringFecha);
         $fechaActual = new DateTime();
+        $fechaActual = DateTime::createFromFormat('Y-m-d', $fechaActual->format('Y-m-d'));
         $fechaIngresada = DateTime::createFromFormat('Y-m-d', $stringFecha);
         if ($fechaIngresada < $fechaActual) {
             throw new InvalidArgumentException(message: 'La fecha no puede ser pasada. La fecha ingresada es: ' . $stringFecha);

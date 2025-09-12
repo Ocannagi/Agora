@@ -15,7 +15,7 @@ class AntiguedadAlaVenta extends ClassBase
     #[Obligatorio]
     private float $aavPrecioVenta;
     private ?TasacionDigital $tasacionDigital = null;
-    #[Obligatorio]
+    //#[Obligatorio] // La fecha de publicación se asigna automáticamente al crear la antigüedad a la venta
     private DateTime $aavFechaPublicacion;
     private ?DateTime $aavFechaRetiro = null;
     private bool $aavHayVenta = false;

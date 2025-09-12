@@ -37,7 +37,7 @@ define('QUERYS', [
                         ,tadPrecioDigital, tadObservacionesDigital
                     FROM tasaciondigital
                     WHERE tadFechaBaja IS NULL
-                    AND tadFechaTasDigitalRealizada IS NOT NULL --IMPORTANTE: Solo se consideran las tasaciones digitales realizadas
+                    AND tadFechaTasDigitalRealizada IS NOT NULL
                     AND tadId = %id",
                 ]);
 
@@ -94,9 +94,12 @@ trait TraitGetByIdInterno
             throw new mysqli_sql_exception(code: 500, message: "Falló la consulta al querer obtener un $classDTO por id: " . $error);
         }
         if ($resultado->num_rows == 0) {
-            $mysqli->close();
+            if ($linkExterno === null || !($linkExterno instanceof mysqli)) {
+                $mysqli->close();
+            }
             throw new CustomException(code: 404, message: "No se encontró un $classDTO con ese id");
         }
+
         $ret = new $classDTO(mysqli_fetch_assoc($resultado));
         $resultado->free_result();
         if ($linkExterno === null || !($linkExterno instanceof mysqli)) {
@@ -137,7 +140,9 @@ trait TraitGetByIdInterno
             throw new mysqli_sql_exception(code: 500, message: "Falló la consulta al querer obtener un $classDTO por id: " . $error);
         }
         if ($resultado->num_rows == 0) {
-            $mysqli->close();
+            if ($linkExterno === null || !($linkExterno instanceof mysqli)) {
+                $mysqli->close();
+            }
             return null; // Permite que el resultado sea nulo si no se encuentra el objeto
         }
         $ret = new $classDTO(mysqli_fetch_assoc($resultado));

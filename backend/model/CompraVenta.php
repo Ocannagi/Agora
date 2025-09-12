@@ -9,7 +9,6 @@ class CompraVenta extends ClassBase
     private Usuario $usuarioComprador; // Usuario Comprador
     #[Obligatorio]
     private Domicilio $domicilioDestino; // Domicilio Destino
-    #[Obligatorio]
     private DateTime $covFechaCompra; // Fecha de la compra/venta
     #[Obligatorio]
     private TipoMedioPagoEnum $covTipoMedioPago; // Medio de pago (usar TipoMedioPagoEnum)
@@ -27,7 +26,6 @@ class CompraVenta extends ClassBase
         $instance = new self();
         $instance->usuarioComprador = Usuario::fromArray(['usrId' => $dto->usuarioComprador->usrId]);
         $instance->domicilioDestino = Domicilio::fromArray(['domId' => $dto->domicilioDestino->domId]);
-        $instance->covFechaCompra = new DateTime($dto->covFechaCompra);
         $instance->covTipoMedioPago = $dto->covTipoMedioPago;
         return $instance;
     }

@@ -10,7 +10,7 @@ class AntiguedadALaVentaDTO implements IDTO
     public ?TasacionDigitalDTO $tasacion = null;
     public string $aavFechaPublicacion;
     public ?string $aavFechaRetiro = null;
-    private bool $aavHayVenta = false;
+    public bool $aavHayVenta = false;
 
     use TraitMapAntiguedadDTO; // Trait para mapear AntiguedadDTO
     use TraitMapTasacionDigitalDTO; // Trait para mapear TasacionDigitalDTO.
@@ -34,6 +34,8 @@ class AntiguedadALaVentaDTO implements IDTO
                     $this->antiguedad = $antiguedadDTO;
                 }
             }
+        } else if (array_key_exists('antId', $data)) {
+            $this->antiguedad = $this->mapAntiguedadDTO(['antId' => (int)$data['antId']]);
         } else if (array_key_exists('aavAntId', $data)) {
             $this->antiguedad = $this->mapAntiguedadDTO(['antId' => (int)$data['aavAntId']]);
         }
@@ -83,12 +85,12 @@ class AntiguedadALaVentaDTO implements IDTO
             $this->tasacion = $this->mapTasacionDigitalDTO(['tadId' => (int)$data['tadId']]);
         }
 
-        if ($this->tasacion !== null){
+        if ($this->tasacion !== null) {
             if (array_key_exists('tisId', $data)) {
                 $this->tasacion->tasacionInSitu = new TasacionInSituDTO(['tisId' => (int)$data['tisId']]);
             }
         }
-            
+
         if (array_key_exists('aavFechaPublicacion', $data)) {
             $this->aavFechaPublicacion = (string)$data['aavFechaPublicacion'];
         }

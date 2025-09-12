@@ -4588,6 +4588,533 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "UsuariosDomicilios",
+			"item": [
+				{
+					"name": "getUsuariosDomiciliosByUserId",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/UsuariosDomicilios&params[usrId]=4",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"UsuariosDomicilios&params[usrId]=4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getUsuariosDomicilios",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an array with an object that have a property \"domId\" that is a \"number\"`, function () {\r",
+									"    pm.expect(jsonData[0]).to.have.own.property('domId').that.is.a('number');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/UsuariosDomicilios",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"UsuariosDomicilios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "postUsuariosDomicilios",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"udomUsr\" : 4,\r\n    \"udomDom\" : 5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/UsuariosDomicilios",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"UsuariosDomicilios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteUsuariosDomicilios",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/UsuariosDomicilios/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"UsuariosDomicilios",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AntiguedadesAlaVenta",
+			"item": [
+				{
+					"name": "getAntiguedadesAlaVenta",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an array with an object that have a property \"antId\" that is a \"number\"`, function () {\r",
+									"    pm.expect(jsonData[0]).to.have.own.property('antId').that.is.a('number');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/AntiguedadesAlaVenta",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"AntiguedadesAlaVenta"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAntiguedadesAlaVentaById",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/AntiguedadesAlaVenta/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"AntiguedadesAlaVenta",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAntiguedadesAlaVentaByCatId",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/AntiguedadesAlaVenta&params[catId]=3",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"AntiguedadesAlaVenta&params[catId]=3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "postAntiguedadesAlaVenta",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"antId\": 3,\r\n    \"aavUsrIdVendedor\": 2,\r\n    \"aavDomOrigen\": 2,\r\n    \"aavPrecioVenta\": 781000000.13,\r\n    \"tadId\": 1,\r\n    \"tisId\":1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/AntiguedadesAlaVenta",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"AntiguedadesAlaVenta"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patchAntiguedadesAlaVenta",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"aavPrecioVenta\": 781000000.13\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/AntiguedadesAlaVenta/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"AntiguedadesAlaVenta",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteAntiguedadesAlaVenta",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/AntiguedadesAlaVenta/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"AntiguedadesAlaVenta",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ComprasVentas",
+			"item": [
+				{
+					"name": "getComprasVentas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an array with an object that have a property \"antId\" that is a \"number\"`, function () {\r",
+									"    pm.expect(jsonData[0]).to.have.own.property('antId').that.is.a('number');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/ComprasVentas",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"ComprasVentas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getComprasVentasById",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/ComprasVentas/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"ComprasVentas",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "postComprasVentas",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n    \"usrId\": 5,\r\n    \"domId\": 1,\r\n    \"covTipoMedioPago\": \"MP\",\r\n    \"detalles\" : [\r\n        {\r\n            \"aavId\":1,\r\n            \"cvdFechaEntregaPrevista\": \"2025-09-16\"\r\n        }\r\n    ]\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/ComprasVentas",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"ComprasVentas"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "VentasDetalle",
+			"item": [],
+			"description": "Este controller solo tiene Get y Patch, y devuelve un DTO que NO tiene correlación con una clase del Modelo"
 		}
 	]
 }

@@ -48,7 +48,7 @@ class VentasDetalleController extends BaseController
                                         covTipoMedioPago, cvdFechaEntregaPrevista, cvdFechaEntregaReal
                         FROM compraventadetalle
                         INNER JOIN compraventa ON cvdCovId = covId
-                        INNER JOIN antiguedadesalaventa ON cvdAavId = aavId
+                        INNER JOIN antiguedadalaventa ON cvdAavId = aavId
                         " . $where . "
                         ORDER BY cvdId DESC";
 
@@ -95,7 +95,7 @@ class VentasDetalleController extends BaseController
                                         covTipoMedioPago, cvdFechaEntregaPrevista, cvdFechaEntregaReal
                                 FROM compraventadetalle
                                 INNER JOIN compraventa ON cvdCovId = covId
-                                INNER JOIN antiguedadesalaventa ON cvdAavId = aavId
+                                INNER JOIN antiguedadalaventa ON cvdAavId = aavId
                                 WHERE cvdId = %id AND cvdFechaBaja IS NULL",
                 id: $id
             );
@@ -129,16 +129,17 @@ class VentasDetalleController extends BaseController
     }
 
     //Solo se permite al vendedor (no al comprador) o al soporte técnico actualizar la fecha de entrega real
-    public function patchVentasDetalle(){
+    public function patchVentasDetalle($id)
+    {
         $mysqli = $this->dbConnection->conectarBD();
         try {
             $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
+            settype($id, 'integer');
 
             $data = Input::getArrayBody(msgEntidad: "la Venta Detalle");
 
-            if (!array_key_exists('cvdId', $data) || !is_int($data['cvdId']) || $data['cvdId'] <= 0) {
-                throw new InvalidArgumentException("El campo 'cvdId' es obligatorio y debe ser un entero positivo.");
-            }
+            $data['cvdId'] = $id; // Asegura que el ID a modificar sea el de la URL
+
             $cvdId = $data['cvdId'];
 
             if (!array_key_exists('cvdFechaEntregaReal', $data) || !is_string($data['cvdFechaEntregaReal']) || empty(trim($data['cvdFechaEntregaReal']))) {
@@ -147,33 +148,42 @@ class VentasDetalleController extends BaseController
 
             $cvdFechaEntregaReal = trim($data['cvdFechaEntregaReal']);
             Input::esFechaValidaYNoPasada($cvdFechaEntregaReal);
-            
 
-            // Obtener el detalle de venta para verificar permisos
-            $ventaDetalleDTO = $this->getByIdInterno(
-                classDTO: VentaDetalleDTO::class,
-                linkExterno: $mysqli,
-                query: "SELECT cvdId, covId, covUsrComprador, covDomDestino, covFechaCompra,
+            try {
+                // Obtener el detalle de venta para verificar permisos
+                $ventaDetalleDTO = $this->getByIdInterno(
+                    classDTO: VentaDetalleDTO::class,
+                    linkExterno: $mysqli,
+                    query: "SELECT cvdId, covId, covUsrComprador, covDomDestino, covFechaCompra,
                                         aavId,
                                         covTipoMedioPago, cvdFechaEntregaPrevista, cvdFechaEntregaReal
                                 FROM compraventadetalle
                                 INNER JOIN compraventa ON cvdCovId = covId
-                                INNER JOIN antiguedadesalaventa ON cvdAavId = aavId
-                                WHERE cvdId = %id AND cvdFechaBaja IS NULL",
-                id: $cvdId
-            );
+                                INNER JOIN antiguedadalaventa ON cvdAavId = aavId
+                                WHERE cvdId = %id AND cvdFechaBaja IS NULL AND cvdFechaEntregaReal IS NULL",
+                    id: $cvdId
+                );
+            } catch (\Throwable $th) {
+                if ($th instanceof CustomException && $th->getCode() === 404) {
+                    throw new CustomException(code: 400, message: "No se puede actualizar la fecha de entrega real porque ya fue establecida previamente o el detalle de venta no existe.");
+                } else {
+                    throw $th;
+                }
+            }
 
-            Input::esFechaMayorOIgual($ventaDetalleDTO->cvdFechaEntregaPrevista, $cvdFechaEntregaReal);
+
+            $hoy = (new DateTime())->format('Y-m-d');
+            Input::esFechaMayorOIgual($hoy, $cvdFechaEntregaReal);
 
             $ventaDetalleDTO = $this->obtenerVentaDetalleCompleto($ventaDetalleDTO, $mysqli);
-            
-        
+
+
             // Verificar que el usuario sea el vendedor o soporte técnico
             if ($ventaDetalleDTO->antiguedadAlaVenta->vendedor->usrId !== $claimDTO->usrId && !TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico()) {
                 throw new CustomException(code: 403, message: "No tiene permiso para actualizar este detalle de venta.");
             }
             // Actualizar la fecha de entrega real
-            $updateQuery = "UPDATE compraventadetalle SET cvdFechaEntregaReal = {$cvdFechaEntregaReal} WHERE cvdId = {$cvdId} AND cvdFechaBaja IS NULL";
+            $updateQuery = "UPDATE compraventadetalle SET cvdFechaEntregaReal = '{$cvdFechaEntregaReal}' WHERE cvdId = {$cvdId} AND cvdFechaBaja IS NULL";
             $result = $mysqli->query($updateQuery);
             if ($result === false) {
                 throw new CustomException(code: 500, message: "Error al actualizar la fecha de entrega real: " . $mysqli->error);
@@ -196,7 +206,6 @@ class VentasDetalleController extends BaseController
                 $mysqli->close();
             }
         }
-
     }
 
     private function obtenerVentaDetalleCompleto(VentaDetalleDTO $ventaDetalleDTO, mysqli $mysqli): VentaDetalleDTO
@@ -219,14 +228,14 @@ class VentasDetalleController extends BaseController
             classDTO: AntiguedadAlaVentaDTO::class,
             linkExterno: $mysqli,
             query: "SELECT aavId, aavAntId, aavUsrIdVendedor, aavDomOrigen, aavPrecioVenta, aavTadId, aavFechaPublicacion, aavFechaRetiro, aavHayVenta, tisId
-                            FROM antiguedadesalaventa
+                            FROM antiguedadalaventa
                             LEFT  JOIN tasacioninsitu
                                 ON aavTadId = tisTadId
                                 AND tisFechaBaja IS NULL
-                                AND tisFechaTasInSituRealizada IS NOT NULL --IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
+                                AND tisFechaTasInSituRealizada IS NOT NULL
                             WHERE aavId = {$ventaDetalleDTO->antiguedadAlaVenta->aavId}",
             id: $ventaDetalleDTO->antiguedadAlaVenta->aavId
-        );
+        ); //IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
 
         $ventaDetalleDTO->antiguedadAlaVenta->antiguedad = $this->getByIdInterno(
             classDTO: AntiguedadDTO::class,
@@ -254,6 +263,8 @@ class VentasDetalleController extends BaseController
             query: "DOMICILIO",
             id: $ventaDetalleDTO->antiguedadAlaVenta->domicilioOrigen->domId
         );
+
+        $ventaDetalleDTO->antiguedadAlaVenta->tasacion = null; // No queremos mostrar la tasación en el detalle de la venta
 
         return $ventaDetalleDTO;
     }

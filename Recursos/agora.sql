@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-09-2025 a las 23:53:29
+-- Tiempo de generación: 12-09-2025 a las 03:23:10
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -29,7 +29,7 @@ USE `agora`;
 -- Estructura de tabla para la tabla `antiguedad`
 --
 -- Creación: 17-08-2025 a las 04:05:01
--- Última actualización: 10-09-2025 a las 21:52:06
+-- Última actualización: 11-09-2025 a las 21:23:58
 --
 
 DROP TABLE IF EXISTS `antiguedad`;
@@ -63,7 +63,7 @@ CREATE TABLE `antiguedad` (
 INSERT INTO `antiguedad` (`antId`, `antScatId`, `antPerId`, `antDescripcion`, `antUsrId`, `antFechaInsert`, `antTipoEstado`, `antFechaEstado`) VALUES
 (1, 7, 2, 'Vitrina Barroca circa 1656. Hermosos detalles en oro. Madera maciza de ébano. Dos puertas.', 4, '2025-05-24 19:41:04', 'RD', '2025-05-24 19:41:04'),
 (2, 3, 1, 'Hermosa escultura renacentista de un ángel. Mármol. Circa 1486.', 3, '2025-05-24 19:51:02', 'RD', '2025-05-24 19:51:02'),
-(3, 8, 4, 'Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C.', 2, '2025-06-01 21:37:12', 'TI', '2025-06-01 21:58:00'),
+(3, 8, 4, 'Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C.', 5, '2025-06-01 21:37:12', 'CO', '2025-09-11 18:23:58'),
 (4, 6, 2, 'Armario Barroco. Es una preciosura', 5, '2025-06-16 15:24:14', 'TD', '2025-06-16 15:24:14');
 
 -- --------------------------------------------------------
@@ -72,6 +72,7 @@ INSERT INTO `antiguedad` (`antId`, `antScatId`, `antPerId`, `antDescripcion`, `a
 -- Estructura de tabla para la tabla `antiguedadalaventa`
 --
 -- Creación: 10-09-2025 a las 01:42:46
+-- Última actualización: 11-09-2025 a las 21:23:58
 --
 
 DROP TABLE IF EXISTS `antiguedadalaventa`;
@@ -98,6 +99,13 @@ CREATE TABLE `antiguedadalaventa` (
 --   `aavUsrIdVendedor`
 --       `usuario` -> `usrId`
 --
+
+--
+-- Volcado de datos para la tabla `antiguedadalaventa`
+--
+
+INSERT INTO `antiguedadalaventa` (`aavId`, `aavAntId`, `aavUsrIdVendedor`, `aavDomOrigen`, `aavPrecioVenta`, `aavTadId`, `aavFechaPublicacion`, `aavFechaRetiro`, `aavHayVenta`) VALUES
+(1, 3, 2, 2, 781000000.13, 1, '2025-09-11 12:02:56', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -133,6 +141,7 @@ INSERT INTO `categoria` (`catId`, `catDescripcion`, `catFechaBaja`) VALUES
 -- Estructura de tabla para la tabla `compraventa`
 --
 -- Creación: 09-09-2025 a las 14:02:28
+-- Última actualización: 11-09-2025 a las 21:23:58
 --
 
 DROP TABLE IF EXISTS `compraventa`;
@@ -155,12 +164,20 @@ CREATE TABLE `compraventa` (
 --       `usuario` -> `usrId`
 --
 
+--
+-- Volcado de datos para la tabla `compraventa`
+--
+
+INSERT INTO `compraventa` (`covId`, `covUsrComprador`, `covDomDestino`, `covFechaCompra`, `covTipoMedioPago`, `covFechaBaja`) VALUES
+(1, 5, 1, '2025-09-11 18:23:58', 'MP', NULL);
+
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `compraventadetalle`
 --
 -- Creación: 09-09-2025 a las 14:03:18
+-- Última actualización: 12-09-2025 a las 01:15:10
 --
 
 DROP TABLE IF EXISTS `compraventadetalle`;
@@ -180,6 +197,13 @@ CREATE TABLE `compraventadetalle` (
 --   `cvdCovId`
 --       `compraventa` -> `covId`
 --
+
+--
+-- Volcado de datos para la tabla `compraventadetalle`
+--
+
+INSERT INTO `compraventadetalle` (`cvdId`, `cvdCovId`, `cvdAavId`, `cvdFechaEntregaPrevista`, `cvdFechaEntregaReal`, `cvdFechaBaja`) VALUES
+(1, 1, 1, '2025-09-16', '2025-09-11', NULL);
 
 -- --------------------------------------------------------
 
@@ -439,6 +463,7 @@ INSERT INTO `subcategoria` (`scatId`, `scatCatId`, `scatDescripcion`, `scatFecha
 -- Estructura de tabla para la tabla `tasaciondigital`
 --
 -- Creación: 17-08-2025 a las 04:05:01
+-- Última actualización: 11-09-2025 a las 21:23:58
 --
 
 DROP TABLE IF EXISTS `tasaciondigital`;
@@ -470,7 +495,7 @@ CREATE TABLE `tasaciondigital` (
 --
 
 INSERT INTO `tasaciondigital` (`tadId`, `tadUsrTasId`, `tadUsrPropId`, `tadAntId`, `tadFechaSolicitud`, `tadFechaTasDigitalRealizada`, `tadFechaTasDigitalRechazada`, `tadObservacionesDigital`, `tadPrecioDigital`, `tadFechaBaja`) VALUES
-(1, 3, 2, 3, '2025-06-16', '2025-06-16', NULL, 'Ta buena la mesa', 590000000.95, NULL),
+(1, 3, 2, 3, '2025-06-16', '2025-06-16', NULL, 'Ta buena la mesa', 590000000.95, '2025-09-11 18:23:58'),
 (2, 4, 5, 4, '2025-06-16', '2025-06-16', NULL, 'Muy lindo armario Barroco', 659000.00, NULL);
 
 -- --------------------------------------------------------
@@ -479,6 +504,7 @@ INSERT INTO `tasaciondigital` (`tadId`, `tadUsrTasId`, `tadUsrPropId`, `tadAntId
 -- Estructura de tabla para la tabla `tasacioninsitu`
 --
 -- Creación: 17-08-2025 a las 04:05:01
+-- Última actualización: 11-09-2025 a las 21:23:58
 --
 
 DROP TABLE IF EXISTS `tasacioninsitu`;
@@ -508,7 +534,7 @@ CREATE TABLE `tasacioninsitu` (
 --
 
 INSERT INTO `tasacioninsitu` (`tisId`, `tisTadId`, `tisDomTasId`, `tisFechaTasInSituSolicitada`, `tisFechaTasInSituProvisoria`, `tisFechaTasInSituRealizada`, `tisFechaTasInSituRechazada`, `tisObservacionesInSitu`, `tisPrecioInSitu`, `tisFechaBaja`) VALUES
-(1, 1, 2, '2025-06-16', '2025-06-20', '2025-06-16', NULL, 'Posta, es la mesa del Rey Arturo!!', 780000000.13, NULL);
+(1, 1, 2, '2025-06-16', '2025-06-20', '2025-06-16', NULL, 'Posta, es la mesa del Rey Arturo!!', 780000000.13, '2025-09-11 18:23:58');
 
 -- --------------------------------------------------------
 
@@ -603,6 +629,7 @@ INSERT INTO `tipousuario` (`ttuTipoUsuario`, `ttuDescripcion`, `ttuRequiereMatri
 -- Estructura de tabla para la tabla `tokens`
 --
 -- Creación: 17-08-2025 a las 04:05:01
+-- Última actualización: 12-09-2025 a las 00:32:55
 --
 
 DROP TABLE IF EXISTS `tokens`;
@@ -620,10 +647,11 @@ CREATE TABLE `tokens` (
 --
 
 INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTU0MDc2MDV9.ewn3Kk0zIkDxzKhNlCBheo6IkNpLsK3-ub1NvY0ruSwb5pSfLpOdMbgPzzpuFf2hVj7BgL43qD9HlvOHwcExzg', '2025-08-17 01:13:25'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MywidXNyTm9tYnJlIjoiR3VzdGF2byIsInVzclRpcG9Vc3VhcmlvIjoiVVQiLCJleHAiOjE3NTU0MDc2NjJ9.VB2jqBX3636QAvFa6L2iH3ARGHb7kq0UljOutDrwiQojh8vtgeXJyQ7agqh6PVIlWaA6TieRhYQWWxnQ7YWBBQ', '2025-08-17 01:14:22'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTU0MDc2NjV9.o3anepKSJPaohW3EhTU42HdQDS4HaQT4ndDGl5H3yapOkYGO6OrfvvkFTuSCdRWS25lPx2oOdp0j4YieCG9xcQ', '2025-08-17 01:14:25'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTU0MDc5OTZ9.ll-Ka77GYPRTrMyCGosloD07iD4HJPF19W4mdIH-OhuDqTeoZuJGGh11b-flLJoOC-XmfzzkMDQzq1M0t5sLOQ', '2025-08-17 01:19:56');
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTc2MzgxNjF9.c6LFvNOZurU1lLq22YL7aByrDz3BLPYGmguU9CxX0Mmh_xdGlQcw3o8ei1xYP07N-_tROwbpGWxSgWRdks8UeQ', '2025-09-11 20:49:21'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTc2MzgxNzl9.Mj5bQuGnla5NTuZJtFRZHyEse9_07dqG7oymN27NO4jV1rZarVwN_wJz_kUTyjlnGabJ8wimjpJoIoszF_iPuw', '2025-09-11 20:49:39'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NSwidXNyTm9tYnJlIjoiQWRyaWFuYSBNYXJpZWwiLCJ1c3JUaXBvVXN1YXJpbyI6IlVHIiwiZXhwIjoxNzU3NjM4MjgxfQ.vF9P-zKJB_oqbD4NsZHvhK7hUE5Nkoh0nfYdDktu_J5XKeeya-TKHlUB_q5HzOCz6zYQkXHWhnzj4vOeiumyXw', '2025-09-11 20:51:21'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTc2Mzk2MDN9.2OC4I2MpkWWl_x9WRMpjiWSdQVdMjuaB11wUeCU1ucMW727ulD0I8IbJvN0LtLnZOrixvgwb6OkBeOwdGmM_Qg', '2025-09-11 21:13:23'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTc2NDA3NzV9.Qzfi91ctouqcMLGNPjFO7pGzbX0CE8gWhEEUXkUHGrMte9H-a9B2FbmRQnHmISSXV7BqOs4FHOtF-tE-yk5NZQ', '2025-09-11 21:32:55');
 
 -- --------------------------------------------------------
 
@@ -911,7 +939,7 @@ ALTER TABLE `antiguedad`
 -- AUTO_INCREMENT de la tabla `antiguedadalaventa`
 --
 ALTER TABLE `antiguedadalaventa`
-  MODIFY `aavId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `aavId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `categoria`
@@ -923,13 +951,13 @@ ALTER TABLE `categoria`
 -- AUTO_INCREMENT de la tabla `compraventa`
 --
 ALTER TABLE `compraventa`
-  MODIFY `covId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `covId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `compraventadetalle`
 --
 ALTER TABLE `compraventadetalle`
-  MODIFY `cvdId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `cvdId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `domicilio`

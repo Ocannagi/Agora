@@ -54,7 +54,7 @@ trait TraitCambiarEstadoAntiguedad
 
     public function pasarAHayVenta(mysqli $linkExterno, AntiguedadALaVentaDTO $antiguedadALaVentaDTO):void
     {
-        $queryActualizarAavHayVenta = "UPDATE antiguedadesalaventa SET aavHayVenta = TRUE WHERE aavAntId = {$antiguedadALaVentaDTO->antiguedad->antId} AND aavFechaRetiro IS NULL";
+        $queryActualizarAavHayVenta = "UPDATE antiguedadalaventa SET aavHayVenta = TRUE WHERE aavAntId = {$antiguedadALaVentaDTO->antiguedad->antId} AND aavFechaRetiro IS NULL";
         $resultadoActualizarAavHayVenta = $linkExterno->query($queryActualizarAavHayVenta);
         if ($resultadoActualizarAavHayVenta === false) {
             $error = $linkExterno->error;
@@ -76,7 +76,7 @@ trait TraitCambiarEstadoAntiguedad
 
     public function revertirVentaEnAntiguedadALaVenta(mysqli $linkExterno, AntiguedadALaVentaDTO $antiguedadALaVentaDTO): void
     {
-        $queryActualizarAavHayVenta = "UPDATE antiguedadesalaventa SET aavHayVenta = FALSE WHERE aavAntId = {$antiguedadALaVentaDTO->antiguedad->antId} AND aavFechaRetiro IS NULL";
+        $queryActualizarAavHayVenta = "UPDATE antiguedadalaventa SET aavHayVenta = FALSE WHERE aavAntId = {$antiguedadALaVentaDTO->antiguedad->antId} AND aavFechaRetiro IS NULL";
         $resultadoActualizarAavHayVenta = $linkExterno->query($queryActualizarAavHayVenta);
         if ($resultadoActualizarAavHayVenta === false) {
             $error = $linkExterno->error;
@@ -137,7 +137,7 @@ trait TraitCambiarEstadoAntiguedad
 
     public function calcularEstadoAntiguedad(mysqli $linkExterno, AntiguedadDTO $antiguedadDTO): TipoEstadoEnum
     {
-        $queryEsAlaVenta = "SELECT 1 FROM antiguedadesalaventa
+        $queryEsAlaVenta = "SELECT 1 FROM antiguedadalaventa
                             INNER JOIN antiguedad ON aavAntId = antId
                             WHERE aavAntId = {$antiguedadDTO->antId}
                             AND aavFechaRetiro IS NULL

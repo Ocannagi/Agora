@@ -40,40 +40,44 @@ class AntiguedadesAlaVentaValidacionService extends ValidacionServiceBase
         $this->validarDatosObligatorios(classModelName: AntiguedadAlaVenta::class, datos: get_object_vars($antiguedadAlaVenta));
         //Input::trimStringDatos($antiguedadAlaVenta); // no hay campos string importantes en AntiguedadAlaVenta
 
-        
 
-        $this->validarDomicilio($antiguedadAlaVenta->antiguedad, $antiguedadAlaVenta->domicilioOrigen, $linkExterno);
+
+        $this->validarDomicilio($antiguedadAlaVenta->vendedor, $antiguedadAlaVenta->domicilioOrigen, $linkExterno);
         $this->validarTasacionDigitalDTO($antiguedadAlaVenta->tasacion, $extraParams);
         $this->validarPrecioVenta($antiguedadAlaVenta->aavPrecioVenta, $antiguedadAlaVenta->tasacion);
+        $this->validarAntiguedad($antiguedadAlaVenta, $extraParams);
 
         if ($antiguedadAlaVenta instanceof AntiguedadAlaVentaDTO) {
             //no se valida la fecha de retiro, si existe, se la cambia por la fecha actual en el update
             $this->validarSiExisteAntiguedadAlaVentaAModificar($antiguedadAlaVenta, $linkExterno);
         } else {
-            $this->validarAntiguedad($antiguedadAlaVenta, $extraParams);
             $this->validarSiYaFueRegistradoYSinBaja($antiguedadAlaVenta, $linkExterno);
+            
+            if (!$antiguedadAlaVenta->antiguedad->tipoEstado->isHabilitadoParaVenta()) {
+                throw new CustomException(code: 403, message: 'La antigüedad no está habilitada para la venta.');
+            }
         }
     }
 
-    private function validarAntiguedad(AntiguedadAlaVentaCreacionDTO $antiguedadAlaVenta, ClaimDTO $claimDTO): void
+    private function validarAntiguedad(AntiguedadAlaVentaCreacionDTO | AntiguedadAlaVentaDTO $antiguedadAlaVenta, ClaimDTO $claimDTO): void
     {
         if (!TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico() && $antiguedadAlaVenta->antiguedad->usuario->usrId !== $claimDTO->usrId) {
             throw new CustomException(code: 403, message: 'No tienes permiso para registrar a la venta esta antigüedad.');
         }
 
+        if ($antiguedadAlaVenta->tasacion !== null && $antiguedadAlaVenta->tasacion->antiguedad->antId !== $antiguedadAlaVenta->antiguedad->antId) {
+            throw new CustomException(code: 409, message: 'La tasación digital no corresponde a la antigüedad que se quiere vender.');
+        }
+
         if ($antiguedadAlaVenta->vendedor->usrId !== $antiguedadAlaVenta->antiguedad->usuario->usrId) {
             throw new CustomException(code: 403, message: 'El vendedor debe ser el propietario de la antigüedad.');
         }
-
-        if (!$antiguedadAlaVenta->antiguedad->tipoEstado->isHabilitadoParaVenta()) {
-            throw new CustomException(code: 403, message: 'La antigüedad no está habilitada para la venta.');
-        }
     }
 
-    private function validarDomicilio(AntiguedadDTO $antiguedad, DomicilioDTO $domicilio, mysqli $linkExterno): void
+    private function validarDomicilio(UsuarioDTO $usuarioVendedor, DomicilioDTO $domicilio, mysqli $linkExterno): void
     {
-        $query = "SELECT 1 from usuariodomicilio WHERE udomUsr = {$antiguedad->usuario->usrId} AND udomDom = {$domicilio->domId} AND udomFechaBaja IS NULL";
-        if ($this->_existeEnBD($linkExterno, $query, "verificar si el domicilio pertenece al usuario de la antigüedad") === false) {
+        $query = "SELECT 1 from usuariodomicilio WHERE udomUsr = {$usuarioVendedor->usrId} AND udomDom = {$domicilio->domId} AND udomFechaBaja IS NULL";
+        if (!$this->_existeEnBD($linkExterno, $query, "verificar si el domicilio pertenece al usuario de la antigüedad")) {
             throw new CustomException(code: 403, message: 'El domicilio no pertenece al usuario de la antigüedad.');
         }
     }
@@ -82,7 +86,7 @@ class AntiguedadesAlaVentaValidacionService extends ValidacionServiceBase
     {
         if ($tasacion !== null) {
             if (!TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico() && $tasacion->propietario->usrId !== $claimDTO->usrId) {
-                throw new CustomException(code: 403, message: 'No tienes permiso para registrar una tasación digital que no te pertenece.');
+                throw new CustomException(code: 403, message: 'No tienes permiso para usar una tasación digital que no te pertenece.');
             }
         }
     }
@@ -106,11 +110,11 @@ class AntiguedadesAlaVentaValidacionService extends ValidacionServiceBase
 
     private function validarSiYaFueRegistradoYSinBaja(AntiguedadAlaVentaCreacionDTO $antiguedadAlaVenta, mysqli $linkExterno): void
     {
-        $query = "SELECT 1 FROM antiguedadesalaventa aav
+        $query = "SELECT 1 FROM antiguedadalaventa aav
                   WHERE aav.aavAntId = {$antiguedadAlaVenta->antiguedad->antId}
-                  AND aav.aavFechaRetiro IS NULL";
-        if ($this->_existeEnBD($linkExterno, $query, "verificar si la antigüedad fue registrada a la venta y no fue retirada/vendida") === true) {
-            throw new CustomException(code: 409, message: 'La antigüedad ya fue registrada a la venta y no fue retirada/vendida.');
+                  AND aav.aavFechaRetiro IS NULL AND aav.aavHayVenta = 0";
+        if ($this->_existeEnBD($linkExterno, $query, "verificar si la antigüedad fue registrada a la venta y no fue retirada-vendida") === true) {
+            throw new CustomException(code: 409, message: 'La antigüedad ya fue registrada a la venta y no fue retirada-vendida.');
         }
     }
 
@@ -129,7 +133,7 @@ class AntiguedadesAlaVentaValidacionService extends ValidacionServiceBase
             throw new InvalidArgumentException(message: "El id de la antigüedad no es válido: {$antiguedadAlaVenta->aavId}");
         }
 
-        $query = "SELECT 1 FROM antiguedadesalaventa aav
+        $query = "SELECT 1 FROM antiguedadalaventa aav
                   WHERE aav.aavId = {$antiguedadAlaVenta->aavId}
                   AND aav.aavFechaRetiro IS NULL";
         if ($this->_existeEnBD($linkExterno, $query, "verificar si la antigüedad a la venta que se quiere modificar existe y no fue retirada/vendida") === false) {

@@ -91,7 +91,7 @@ class ComprasVentasValidacionService extends ValidacionServiceBase
 
     private function validarSiExisteAntiguedadAlaVentaActiva(AntiguedadAlaVentaDTO $antiguedadAlaVenta, mysqli $linkExterno): void
     {
-        $query = "SELECT 1 FROM antiguedadesalaventa WHERE aavId = {$antiguedadAlaVenta->aavId} AND aavFechaRetiro IS NULL AND aavHayVenta = FALSE";
+        $query = "SELECT 1 FROM antiguedadalaventa WHERE aavId = {$antiguedadAlaVenta->aavId} AND aavFechaRetiro IS NULL AND aavHayVenta = FALSE";
         if (!$this->_existeEnBD($linkExterno, $query, "verificar si la antigüedad a la venta existe y está activa")) {
             throw new CustomException(code: 400, message: 'La antigüedad a la venta no existe o no está activa.');
         }

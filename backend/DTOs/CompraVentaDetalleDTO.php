@@ -1,6 +1,6 @@
 <?php
 
-class CompraVentaDetalleDTO
+class CompraVentaDetalleDTO implements IDTO
 {
     use TraitMapAntiguedadAlaVentaDTO; // Trait para mapear AntiguedadAlaVentaDTO
     use TraitMapDomicilioDTO; // Trait para mapear DomicilioDTO
@@ -23,6 +23,8 @@ class CompraVentaDetalleDTO
 
         if (array_key_exists('covId', $data)) {
             $this->covId = (int)$data['covId'];
+        } else if (array_key_exists('cvdCovId', $data)) {
+            $this->covId = (int)$data['cvdCovId'];
         }
 
         if (array_key_exists('antiguedadAlaVenta', $data)) {
@@ -34,6 +36,8 @@ class CompraVentaDetalleDTO
                     $this->antiguedadAlaVenta = $aavDTO;
                 }
             }
+        } else if (array_key_exists('cvdAavId', $data)) {
+            $this->antiguedadAlaVenta = new AntiguedadAlaVentaDTO(['aavId' => (int)$data['cvdAavId']]);
         } else if (array_key_exists('aavId', $data)) {
             $this->antiguedadAlaVenta = new AntiguedadAlaVentaDTO(['aavId' => (int)$data['aavId']]);
         }

@@ -24,7 +24,7 @@ class AntiguedadesAlaVentaController extends BaseController
         $this->antiguedadesAlaVentaValidacionService = $antiguedadesAlaVentaValidacionService;
     }
 
-    public static function getInstance(IDbConnection $dbConnection, ISecurity $securityService, ValidacionServiceBase $antiguedadesAlaVentaValidacionService): AntiguedadesAlaVentaController
+    public static function getInstancia(IDbConnection $dbConnection, ISecurity $securityService, ValidacionServiceBase $antiguedadesAlaVentaValidacionService): AntiguedadesAlaVentaController
     {
         if (self::$instancia === null) {
             self::$instancia = new AntiguedadesAlaVentaController($dbConnection, $securityService, $antiguedadesAlaVentaValidacionService);
@@ -136,24 +136,24 @@ class AntiguedadesAlaVentaController extends BaseController
 
 
         $query = "SELECT aavId, aavAntId, aavUsrIdVendedor, aavDomOrigen, aavPrecioVenta, aavTadId, aavFechaPublicacion, aavFechaRetiro, aavHayVenta, tisId
-                      FROM antiguedadesalaventa
-                      INNER JOIN antiguedades ON aavAntId = antId
-                      INNER JOIN subcategorias ON antScatId = scatId
-                      INNER JOIN categorias ON scatCatId = catId
-                      INNER JOIN usuarios ON antUsrId = usrId
+                      FROM antiguedadalaventa
+                      INNER JOIN antiguedad ON aavAntId = antId
+                      INNER JOIN subcategoria ON antScatId = scatId
+                      INNER JOIN categoria ON scatCatId = catId
+                      INNER JOIN usuario ON antUsrId = usrId
                       LEFT  JOIN tasacioninsitu ON aavTadId = tisTadId
                                     AND tisFechaBaja IS NULL
-                                    AND tisFechaTasInSituRealizada IS NOT NULL --IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
-                      WHERE aavFechaRetiro IS NULL AND aavHayVenta = FALSE $whereAdicional";
+                                    AND tisFechaTasInSituRealizada IS NOT NULL 
+                      WHERE aavFechaRetiro IS NULL AND aavHayVenta = FALSE $whereAdicional"; //IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
 
         $arrayAntiguedadesAlaVentaDTO = $this->getInterno(query: $query, classDTO: AntiguedadAlaVentaDTO::class, linkExterno: $mysqli);
 
         foreach ($arrayAntiguedadesAlaVentaDTO as $antiguedadAlaVentaDTO) {
-            $antiguedadAlaVentaDTO->usuarioVendedor = $this->getByIdInterno(
+            $antiguedadAlaVentaDTO->vendedor = $this->getByIdInterno(
                 query: 'USUARIO',
                 classDTO: UsuarioDTO::class,
                 linkExterno: $mysqli,
-                id: $antiguedadAlaVentaDTO->usuarioVendedor->usrId
+                id: $antiguedadAlaVentaDTO->vendedor->usrId
             );
 
             $antiguedadAlaVentaDTO->domicilioOrigen = $this->getByIdInterno(
@@ -191,8 +191,8 @@ class AntiguedadesAlaVentaController extends BaseController
                     FROM tasacioninsitu
                     INNER JOIN tasaciondigital ON tisTadId = tadId
                     WHERE tisFechaBaja IS NULL
-                    AND tisFechaTasInSituRealizada IS NOT NULL --IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
-                    AND tisTadId = {$antiguedadAlaVentaDTO->tasacion->tadId}";
+                    AND tisFechaTasInSituRealizada IS NOT NULL 
+                    AND tisTadId = {$antiguedadAlaVentaDTO->tasacion->tadId}"; //IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
 
                     // Si la tasación digital tiene una tasación in situ asociada, la obtenemos (se asume que puede ser nula)
                     $antiguedadAlaVentaDTO->tasacion->tasacionInSitu = $this->getByIdInternoAllowsNull(
@@ -215,22 +215,22 @@ class AntiguedadesAlaVentaController extends BaseController
         try {
             $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
             $query = "SELECT aavId, aavAntId, aavUsrIdVendedor, aavDomOrigen, aavPrecioVenta, aavTadId, aavFechaPublicacion, aavFechaRetiro, aavHayVenta, tisId
-                      FROM antiguedadesalaventa
+                      FROM antiguedadalaventa
                       LEFT  JOIN tasacioninsitu ON aavTadId = tisTadId
                                     AND tisFechaBaja IS NULL
-                                    AND tisFechaTasInSituRealizada IS NOT NULL --IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
-                      WHERE aavFechaRetiro IS NULL AND aavHayVenta = FALSE";
+                                    AND tisFechaTasInSituRealizada IS NOT NULL 
+                      WHERE aavFechaRetiro IS NULL AND aavHayVenta = FALSE"; //IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
 
             $arrayAntiguedadesAlaVentaDTO = $this->getInterno(query: $query, classDTO: AntiguedadAlaVentaDTO::class, linkExterno: $mysqli);
 
             foreach ($arrayAntiguedadesAlaVentaDTO as $antiguedadAlaVentaDTO) {
-                $antiguedadAlaVentaDTO->usuarioVendedor = $this->getByIdInterno(
+                $antiguedadAlaVentaDTO->vendedor = $this->getByIdInterno(
                     query: 'USUARIO',
                     classDTO: UsuarioDTO::class,
                     linkExterno: $mysqli,
-                    id: $antiguedadAlaVentaDTO->usuarioVendedor->usrId
+                    id: $antiguedadAlaVentaDTO->vendedor->usrId
                 );
-                
+
                 $antiguedadAlaVentaDTO->domicilioOrigen = $this->getByIdInterno(
                     query: 'DOMICILIO',
                     classDTO: DomicilioDTO::class,
@@ -266,8 +266,8 @@ class AntiguedadesAlaVentaController extends BaseController
                     FROM tasacioninsitu
                     INNER JOIN tasaciondigital ON tisTadId = tadId
                     WHERE tisFechaBaja IS NULL
-                    AND tisFechaTasInSituRealizada IS NOT NULL --IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
-                    AND tisTadId = {$antiguedadAlaVentaDTO->tasacion->tadId}";
+                    AND tisFechaTasInSituRealizada IS NOT NULL
+                    AND tisTadId = {$antiguedadAlaVentaDTO->tasacion->tadId}"; //IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
 
                         // Si la tasación digital tiene una tasación in situ asociada, la obtenemos (se asume que puede ser nula)
                         $antiguedadAlaVentaDTO->tasacion->tasacionInSitu = $this->getByIdInternoAllowsNull(
@@ -305,22 +305,21 @@ class AntiguedadesAlaVentaController extends BaseController
             settype($id, 'integer');
             $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
             $query = "SELECT aavId, aavAntId, aavUsrIdVendedor, aavDomOrigen, aavPrecioVenta, aavTadId, aavFechaPublicacion, aavFechaRetiro, aavHayVenta, tisId
-                      FROM antiguedadesalaventa
+                      FROM antiguedadalaventa
                       LEFT  JOIN tasacioninsitu ON aavTadId = tisTadId
                                     AND tisFechaBaja IS NULL
-                                    AND tisFechaTasInSituRealizada IS NOT NULL --IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
-                      WHERE aavId = $id AND aavFechaRetiro IS NULL AND aavHayVenta = FALSE";
+                                    AND tisFechaTasInSituRealizada IS NOT NULL
+                      WHERE aavId = $id AND aavFechaRetiro IS NULL AND aavHayVenta = FALSE"; //IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
 
             $antiguedadAlaVentaDTO = $this->getByIdInterno(query: $query, classDTO: AntiguedadAlaVentaDTO::class, linkExterno: $mysqli);
 
-
-            $antiguedadAlaVentaDTO->usuarioVendedor = $this->getByIdInterno(
+            $antiguedadAlaVentaDTO->vendedor = $this->getByIdInterno(
                 query: 'USUARIO',
                 classDTO: UsuarioDTO::class,
                 linkExterno: $mysqli,
-                id: $antiguedadAlaVentaDTO->usuarioVendedor->usrId
+                id: $antiguedadAlaVentaDTO->vendedor->usrId
             );
-            
+
             $antiguedadAlaVentaDTO->domicilioOrigen = $this->getByIdInterno(
                 query: 'DOMICILIO',
                 classDTO: DomicilioDTO::class,
@@ -356,8 +355,8 @@ class AntiguedadesAlaVentaController extends BaseController
                     FROM tasacioninsitu
                     INNER JOIN tasaciondigital ON tisTadId = tadId
                     WHERE tisFechaBaja IS NULL
-                    AND tisFechaTasInSituRealizada IS NOT NULL --IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
-                    AND tisTadId = {$antiguedadAlaVentaDTO->tasacion->tadId}";
+                    AND tisFechaTasInSituRealizada IS NOT NULL
+                    AND tisTadId = {$antiguedadAlaVentaDTO->tasacion->tadId}"; //IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
 
                     // Si la tasación digital tiene una tasación in situ asociada, la obtenemos (se asume que puede ser nula)
                     $antiguedadAlaVentaDTO->tasacion->tasacionInSitu = $this->getByIdInternoAllowsNull(
@@ -395,8 +394,15 @@ class AntiguedadesAlaVentaController extends BaseController
             $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
             $data = Input::getArrayBody(msgEntidad: "la antigüedad a la venta");
 
+            // TODO : Validar que lleguen los datos necesarios
+
             $this->antiguedadesAlaVentaValidacionService->validarType(className: AntiguedadAlaVentaCreacionDTO::class, datos: $data);
+
             $antiguedadAlaVentaCreacionDTO = new AntiguedadAlaVentaCreacionDTO($data);
+
+            if (!isset($antiguedadAlaVentaCreacionDTO->antiguedad) || !isset($antiguedadAlaVentaCreacionDTO->antiguedad->antId)) {
+                throw new InvalidArgumentException(code: 400, message: "La antigüedad a la venta debe tener una antigüedad asociada con su ID.");
+            }
 
             $antiguedadAlaVentaCreacionDTO->antiguedad = $this->getByIdInterno(
                 query: 'ANTIGUEDAD',
@@ -405,12 +411,20 @@ class AntiguedadesAlaVentaController extends BaseController
                 id: $antiguedadAlaVentaCreacionDTO->antiguedad->antId
             );
 
+            if (!isset($antiguedadAlaVentaCreacionDTO->vendedor) || !isset($antiguedadAlaVentaCreacionDTO->vendedor->usrId)) {
+                throw new InvalidArgumentException(code: 400, message: "La antigüedad a la venta debe tener un vendedor asociado con su ID.");
+            }
+
             $antiguedadAlaVentaCreacionDTO->vendedor = $this->getByIdInterno(
                 query: 'USUARIO',
                 classDTO: UsuarioDTO::class,
                 linkExterno: $mysqli,
-                id: $claimDTO->usrId
+                id: $antiguedadAlaVentaCreacionDTO->vendedor->usrId
             );
+
+            if (!isset($antiguedadAlaVentaCreacionDTO->domicilioOrigen) || !isset($antiguedadAlaVentaCreacionDTO->domicilioOrigen->domId)) {
+                throw new InvalidArgumentException(code: 400, message: "La antigüedad a la venta debe tener un domicilio de origen asociado con su ID.");
+            }
 
             $antiguedadAlaVentaCreacionDTO->domicilioOrigen = $this->getByIdInterno(
                 query: 'DOMICILIO',
@@ -438,8 +452,8 @@ class AntiguedadesAlaVentaController extends BaseController
                     FROM tasacioninsitu
                     INNER JOIN tasaciondigital ON tisTadId = tadId
                     WHERE tisFechaBaja IS NULL
-                    AND tisFechaTasInSituRealizada IS NOT NULL --IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
-                    AND tisTadId = {$antiguedadAlaVentaCreacionDTO->tasacion->tadId}";
+                    AND tisFechaTasInSituRealizada IS NOT NULL
+                    AND tisTadId = {$antiguedadAlaVentaCreacionDTO->tasacion->tadId}"; //IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
 
                     // Si la tasación digital tiene una tasación in situ asociada, la obtenemos (se asume que puede ser nula)
                     $antiguedadAlaVentaCreacionDTO->tasacion->tasacionInSitu = $this->getByIdInternoAllowsNull(
@@ -451,9 +465,9 @@ class AntiguedadesAlaVentaController extends BaseController
             }
 
             $this->antiguedadesAlaVentaValidacionService->validarInput(
-                linkExterno: $mysqli,
-                entidadDTO: $antiguedadAlaVentaCreacionDTO,
-                extraParams: $claimDTO
+                $mysqli,
+                $antiguedadAlaVentaCreacionDTO,
+                $claimDTO
             );
 
             //Input::escaparDatos($antiguedadAlaVentaCreacionDTO, $mysqli); // No es necesario, no hay campos de tipo string
@@ -463,12 +477,12 @@ class AntiguedadesAlaVentaController extends BaseController
 
             $tasacionId = isset($antiguedadAlaVentaCreacionDTO->tasacion->tadId) ? $antiguedadAlaVentaCreacionDTO->tasacion->tadId : "NULL";
 
-            $query = "INSERT INTO antiguedadesalaventa (aavAntId, aavVendedor, aavDomOrigen, aavPrecioVenta, aavTadId)
+            $query = "INSERT INTO antiguedadalaventa (aavAntId, aavUsrIdVendedor, aavDomOrigen, aavPrecioVenta, aavTadId)
                       VALUES ({$antiguedadAlaVentaCreacionDTO->antiguedad->antId}, 
                               {$antiguedadAlaVentaCreacionDTO->vendedor->usrId}, 
                               {$antiguedadAlaVentaCreacionDTO->domicilioOrigen->domId}, 
                               {$antiguedadAlaVentaCreacionDTO->aavPrecioVenta}, 
-                              {$tasacionId}";
+                              {$tasacionId})";
 
             $resultado = $mysqli->query($query);
             if ($resultado === false) {
@@ -504,17 +518,40 @@ class AntiguedadesAlaVentaController extends BaseController
         }
     }
 
-    //No se permite modificar al avAntId (antigüedad) ni el vendedor ni aavFechaPublicacion (se mantiene la original)
-    public function patchAntiguedadesAlaVenta()
+    //Solo se permite modificar el domicilio de origen, el precio de venta y la tasación digital asociada
+    public function patchAntiguedadesAlaVenta($id)
     {
         $mysqli = $this->dbConnection->conectarBD();
         try {
             $mysqli->begin_transaction(); // Iniciar transacción
+            settype($id, 'integer');
             $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
+
+            $query = "SELECT aavId, aavAntId, aavUsrIdVendedor, aavDomOrigen, aavPrecioVenta, aavTadId, aavFechaPublicacion, aavFechaRetiro, aavHayVenta, tisId
+                      FROM antiguedadalaventa
+                      LEFT  JOIN tasacioninsitu ON aavTadId = tisTadId
+                                    AND tisFechaBaja IS NULL
+                                    AND tisFechaTasInSituRealizada IS NOT NULL
+                      WHERE aavId = $id AND aavFechaRetiro IS NULL AND aavHayVenta = FALSE"; //IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
+
+            $antiguedadAlaVentaDTO = $this->getByIdInterno(query: $query, classDTO: AntiguedadAlaVentaDTO::class, linkExterno: $mysqli);
+
             $data = Input::getArrayBody(msgEntidad: "la antigüedad a la venta");
 
+            $data['aavId'] = $id;
+
             $this->antiguedadesAlaVentaValidacionService->validarType(className: AntiguedadAlaVentaDTO::class, datos: $data);
-            $antiguedadAlaVentaDTO = new AntiguedadAlaVentaDTO($data);
+            $antiguedadAlaVentaDTOPatch = new AntiguedadAlaVentaDTO($data);
+
+            // Actualizar solo los campos que están presentes en el cuerpo de la solicitud (PATCH)
+            $antiguedadAlaVentaDTO->domicilioOrigen = isset($antiguedadAlaVentaDTOPatch->domicilioOrigen) ? $antiguedadAlaVentaDTOPatch->domicilioOrigen : $antiguedadAlaVentaDTO->domicilioOrigen;
+            $antiguedadAlaVentaDTO->aavPrecioVenta = isset($antiguedadAlaVentaDTOPatch->aavPrecioVenta) ? $antiguedadAlaVentaDTOPatch->aavPrecioVenta : $antiguedadAlaVentaDTO->aavPrecioVenta;
+            $antiguedadAlaVentaDTO->tasacion = isset($antiguedadAlaVentaDTOPatch->tasacion) ? $antiguedadAlaVentaDTOPatch->tasacion : $antiguedadAlaVentaDTO->tasacion;
+
+
+            if (!isset($antiguedadAlaVentaDTO->antiguedad) || !isset($antiguedadAlaVentaDTO->antiguedad->antId)) {
+                throw new InvalidArgumentException(code: 400, message: "La antigüedad a la venta debe tener una antigüedad asociada con su ID.");
+            }
 
             $antiguedadAlaVentaDTO->antiguedad = $this->getByIdInterno(
                 query: 'ANTIGUEDAD',
@@ -523,12 +560,20 @@ class AntiguedadesAlaVentaController extends BaseController
                 id: $antiguedadAlaVentaDTO->antiguedad->antId
             );
 
+            if (!isset($antiguedadAlaVentaDTO->vendedor) || !isset($antiguedadAlaVentaDTO->vendedor->usrId)) {
+                throw new InvalidArgumentException(code: 400, message: "La antigüedad a la venta debe tener un vendedor asociado con su ID.");
+            }
+
             $antiguedadAlaVentaDTO->vendedor = $this->getByIdInterno(
                 query: 'USUARIO',
                 classDTO: UsuarioDTO::class,
                 linkExterno: $mysqli,
-                id: $claimDTO->usrId
+                id: $antiguedadAlaVentaDTO->vendedor->usrId
             );
+
+            if (!isset($antiguedadAlaVentaDTO->domicilioOrigen) || !isset($antiguedadAlaVentaDTO->domicilioOrigen->domId)) {
+                throw new InvalidArgumentException(code: 400, message: "La antigüedad a la venta debe tener un domicilio de origen asociado con su ID.");
+            }
 
             $antiguedadAlaVentaDTO->domicilioOrigen = $this->getByIdInterno(
                 query: 'DOMICILIO',
@@ -541,7 +586,7 @@ class AntiguedadesAlaVentaController extends BaseController
                 $antiguedadAlaVentaDTO->aavPrecioVenta = Input::redondearNumero($antiguedadAlaVentaDTO->aavPrecioVenta, 2);
             }
 
-            if (isset($antiguedadAlaVentaDTO->tasacion->tadId)) {
+            if (isset($antiguedadAlaVentaDTO->tasacion) && isset($antiguedadAlaVentaDTO->tasacion->tadId)) {
                 // La tasación digital debe existir y estar realizada, por eso usamos getByIdInternoAllowsNull, la query ya filtra las no realizadas
                 $antiguedadAlaVentaDTO->tasacion = $this->getByIdInternoAllowsNull(
                     query: 'TASACIONDIGITAL',
@@ -555,8 +600,8 @@ class AntiguedadesAlaVentaController extends BaseController
                              tisFechaTasInSituRealizada, tisFechaTasInSituRechazada, tisObservacionesInSitu, tisPrecioInSitu
                     FROM tasacioninsitu
                     WHERE tisTadId = {$antiguedadAlaVentaDTO->tasacion->tadId}
-                    AND tisFechaTasInSituRealizada IS NOT NULL --IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
-                    AND tisFechaBaja IS NULL";
+                    AND tisFechaTasInSituRealizada IS NOT NULL
+                    AND tisFechaBaja IS NULL"; //IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
                     // Si la tasación digital tiene una tasación in situ asociada, la obtenemos (se asume que puede ser nula)
                     $antiguedadAlaVentaDTO->tasacion->tasacionInSitu =  $this->getByIdInternoAllowsNull(
                         query: $queryInsitu,
@@ -566,22 +611,19 @@ class AntiguedadesAlaVentaController extends BaseController
                 }
             }
             $this->antiguedadesAlaVentaValidacionService->validarInput(
-                linkExterno: $mysqli,
-                entidadDTO: $antiguedadAlaVentaDTO,
-                extraParams: $claimDTO
+                $mysqli,
+                $antiguedadAlaVentaDTO,
+                $claimDTO
             );
             //Input::escaparDatos($antiguedadAlaVentaDTO, $mysqli); // No es necesario, no hay campos de tipo string
             //Input::agregarComillas_ConvertNULLtoString($antiguedadAlaVentaDTO); //No es necesario, no hay campos de tipo string
 
-            if (isset($antiguedadAlaVentaDTO->aavFechaRetiro))
-                $this->cambiarEstadoAntiguedad($mysqli, $antiguedadAlaVentaDTO->antiguedad, TipoEstadoEnum::RetiradoNoDisponible());
-
-            $query = "UPDATE antiguedadesalaventa
+            $query = "UPDATE antiguedadalaventa
                       SET aavDomOrigen = {$antiguedadAlaVentaDTO->domicilioOrigen->domId}, 
                           aavPrecioVenta = {$antiguedadAlaVentaDTO->aavPrecioVenta}, 
-                          aavTadId = " . (isset($antiguedadAlaVentaDTO->tasacion->tadId) ? $antiguedadAlaVentaDTO->tasacion->tadId : "NULL") . ",
-                          aavFechaRetiro = " . (isset($antiguedadAlaVentaDTO->aavFechaRetiro) ? "NOW()" : "NULL") . "
+                          aavTadId = " . (isset($antiguedadAlaVentaDTO->tasacion->tadId) ? $antiguedadAlaVentaDTO->tasacion->tadId : "NULL") . "
                       WHERE aavId = {$antiguedadAlaVentaDTO->aavId}";
+
             $resultado = $mysqli->query($query);
             if ($resultado === false) {
                 $error = $mysqli->error;
@@ -593,8 +635,20 @@ class AntiguedadesAlaVentaController extends BaseController
             $mysqli->commit(); // Confirmar transacción si todo sale bien
             Output::outputJson($ret, 200);
         } catch (\Throwable $th) {
-            $mysqli->rollback(); // Revertir transacción en caso de error
-            throw $th;
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                $mysqli->rollback(); // Revertir transacción en caso de error
+            }
+
+
+            if ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
         } finally {
             if (isset($mysqli) && $mysqli instanceof mysqli) {
                 // Cierra la conexión a la base de datos si se creó en este método.
@@ -603,5 +657,69 @@ class AntiguedadesAlaVentaController extends BaseController
         }
     }
 
-    //No vamos a generar un método delete, ya que no se deben eliminar registros de antiguedades a la venta, solo retirarlas (patch)
+    // La eliminación de una antigüedad a la venta implica marcar la fecha de retiro y cambiar el estado de la antigüedad a "Retirado - No disponible"
+    function deleteAntiguedadesAlaVenta($id)
+    {
+        $mysqli = $this->dbConnection->conectarBD();
+        try {
+            $mysqli->begin_transaction(); // Iniciar transacción
+            settype($id, 'integer');
+            $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
+
+            
+            $condicionWhere = "";
+            if (!TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico()){
+                // Si no es soporte técnico, solo puede retirar su propia antigüedad a la venta
+                $condicionWhere = " AND aavUsrIdVendedor = {$claimDTO->usrId} ";
+            }
+
+            $aavAntId = Querys::existeEnBD( link: $mysqli,
+                                query: "SELECT aavAntId FROM antiguedadalaventa WHERE aavId = $id AND aavFechaRetiro IS NULL AND aavHayVenta = FALSE $condicionWhere",
+                                msg: 'establecer si la antigüedad a la venta existe',
+                                columnId: 'aavAntId');
+
+           if($aavAntId === 0)
+            {
+                throw new CustomException(code: 404, message: "No existe una antigüedad a la venta activa con el ID proporcionado" . (TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico() ? "" : " para el usuario logueado") . ".");
+            }
+
+            $queryUpdate = "UPDATE antiguedadalaventa
+                            SET aavFechaRetiro = NOW()
+                            WHERE aavId = $id AND aavFechaRetiro IS NULL AND aavHayVenta = FALSE $condicionWhere";
+            $resultado = $mysqli->query($queryUpdate);
+            if ($resultado === false) {
+                $error = $mysqli->error;
+                throw new mysqli_sql_exception(code: 500, message: 'Falló la consulta: ' . $error);
+            }
+
+            $this->cambiarEstadoAntiguedad($mysqli, new AntiguedadDTO(['antId' => $aavAntId]), TipoEstadoEnum::RetiradoNoDisponible());
+
+            $ret = [
+                'id' => $id
+            ];
+
+            $mysqli->commit(); // Confirmar transacción si todo sale bien
+            Output::outputJson($ret, 200);
+
+        } catch (\Throwable $th) {
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                $mysqli->rollback(); // Revertir transacción en caso de error
+            }
+            if ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                // Cierra la conexión a la base de datos si se creó en este método.
+                $mysqli->close();
+            }
+        }
+    }
+
 }
