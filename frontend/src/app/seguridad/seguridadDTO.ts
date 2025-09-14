@@ -11,3 +11,12 @@ export enum TipoUsuarioEnum{
     UsuarioTasador = 'UT',
     UsuarioGeneral = 'UG'
 }
+
+export interface CredencialesUsuarioDTO {
+    usrEmail: string;
+    usrPassword: string;
+}
+
+export interface RespuestaAutenticacionDTO{
+    jwt: string;
+}

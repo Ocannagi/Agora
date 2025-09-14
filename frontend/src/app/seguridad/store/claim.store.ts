@@ -1,7 +1,7 @@
 import { patchState, signalStore, withComputed, withMethods, withState } from "@ngrx/signals";
 import { claimInitialState } from "./claim.slice";
 import { computed } from "@angular/core";
-import { ClaimDTO, TipoUsuarioEnum } from "../claim";
+import { ClaimDTO, TipoUsuarioEnum } from "../seguridadDTO";
 
 
 export const ClaimStore = signalStore(
@@ -9,7 +9,7 @@ export const ClaimStore = signalStore(
     withState(claimInitialState),
     withComputed(
         (store) => {
-            const isLoggedIn = computed(() => store.usrId() !== null && store.exp()! * 1000 > new Date().getTime());
+            const isLoggedIn = computed(() => store.usrId() !== null && store.exp() !== null && store.exp()! * 1000 > new Date().getTime());
             const isSoporteTecnico = computed(() => isLoggedIn() && store.usrTipoUsuario() === TipoUsuarioEnum.SoporteTecnico);
             const isUsrAnticuario = computed(() => isLoggedIn() && store.usrTipoUsuario() === TipoUsuarioEnum.UsuarioAnticuario);
             const isUsrTasador = computed(() => isLoggedIn() && store.usrTipoUsuario() === TipoUsuarioEnum.UsuarioTasador);
