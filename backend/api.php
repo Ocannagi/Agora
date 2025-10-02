@@ -1,6 +1,25 @@
 <?php
 
+require_once(__DIR__ . '/../config/config.php');
 require_once(__DIR__ . '/persistencia.php');
+
+
+// CORS
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$allowedOrigins = [JWT_ISS]; //Cambiar en producción
+if (in_array($origin, $allowedOrigins, true)) {
+    header("Access-Control-Allow-Origin: $origin");
+    header("Access-Control-Allow-Credentials: true");
+    header("Vary: Origin");
+}
+header("Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+header("Access-Control-Expose-Headers: Content-Type");
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204);
+    exit;
+}
+
 
 use Utilidades\Output;
 

@@ -1,0 +1,22 @@
+<h2>{{titulo()}}</h2>
+
+<app-mostrar-errores [errores]="errores()"></app-mostrar-errores>
+
+<form (submit)="saveChanges()" [formGroup]="frmAutenticacion">
+    <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="usrEmail"/>
+        <mat-error>{{obtenerErrorCampo('usrEmail')}}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="usrPassword"/>
+        <mat-error>{{obtenerErrorCampo('usrPassword')}}</mat-error>
+    </mat-form-field>
+
+    <div class="contenedor-botones">
+        <button mat-flat-button type="submit" [disabled]="frmAutenticacion.invalid">Guardar cambios</button>
+    </div>
+
+</form>

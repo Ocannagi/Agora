@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { SeguridadService } from './seguridad-service';
+import { ValidaForm } from './valida-form';
 
-describe('SeguridadService', () => {
-  let service: SeguridadService;
+describe('ValidaForm', () => {
+  let service: ValidaForm;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(SeguridadService);
+    service = TestBed.inject(ValidaForm);
   });
 
   it('should be created', () => {

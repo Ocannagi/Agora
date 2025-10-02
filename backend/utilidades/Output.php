@@ -4,8 +4,20 @@
 namespace Utilidades;
 class Output
 {
+    private static function cors()
+    {
+        if (headers_sent()) return;
+        if (!isset($_SERVER['HTTP_ORIGIN'])) return;
+        $allowed = ['http://localhost:4200'];//Cambiar en producción
+        if (in_array($_SERVER['HTTP_ORIGIN'], $allowed, true)) {
+            header("Access-Control-Allow-Origin: " . $_SERVER['HTTP_ORIGIN']);
+            header("Access-Control-Allow-Credentials: true");
+        }
+    }
+    
     public static function outputJson($data, $codigo = 200)
     {
+        self::cors();
         header('', true, $codigo);
         header('Content-type: application/json');
         print_r(json_encode($data));
@@ -14,6 +26,7 @@ class Output
 
     public static function outputError($codigo = 500, $mensaje = "")
     {
+        self::cors();
         switch ($codigo) {
             case 400:
                 header($_SERVER["SERVER_PROTOCOL"] . " 400 Bad request", true, 400);

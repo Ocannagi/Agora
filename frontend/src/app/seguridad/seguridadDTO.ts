@@ -20,3 +20,5 @@ export interface CredencialesUsuarioDTO {
 export interface RespuestaAutenticacionDTO{
     jwt: string;
 }
+
+export type KeysClaimDTO = keyof ClaimDTO;

@@ -1,0 +1,53 @@
+<mat-toolbar>
+    <span>
+        <a mat-button routerLink="">
+            <mat-icon>account_balance</mat-icon> Angular Películas
+        </a>
+    </span>
+
+    <div>
+        <a mat-button routerLink="/">
+            <mat-icon>search</mat-icon>
+            Buscar Películas</a>
+    </div>
+
+    <app-autorizado [esAutorizado]="store.isSoporteTecnico()">
+        <ng-container autorizado>
+            <div>
+                <a mat-button routerLink="/">Géneros</a>
+            </div>
+        
+            <div>
+                <a mat-button routerLink="/">Actores</a>
+            </div>
+        
+            <div>
+                <a mat-button routerLink="/">Cines</a>
+            </div>
+        
+            <div>
+                <a mat-button routerLink="/">Crear Película</a>
+            </div>
+
+            <div>
+                <a mat-button routerLink="/">Usuarios</a>
+            </div>
+        </ng-container>
+    </app-autorizado>
+
+    <div class="espacio"></div>
+
+    <app-autorizado [esAutorizado]="store.isLoggedIn()" style="display: inline;">
+        <ng-container autorizado>
+            <!-- reemplazar el span -->
+            <button mat-button disableRipple class="saludo-btn" disabled>Hola, {{store.usrNombre()}}</button>
+            <!-- (click)="logout()" -->
+            <a mat-button [swal]="['Oops!', 'This is not implemented yet :/', 'warning']"  routerLink="" >Logout</a>
+        </ng-container>
+        <ng-container noAutorizado>
+            <a mat-button routerLink="login">Login</a>
+            <a mat-button routerLink="/">Registro</a>
+        </ng-container>
+    </app-autorizado>
+    
+</mat-toolbar>
