@@ -1,14 +1,14 @@
 <mat-toolbar>
     <span>
         <a mat-button routerLink="">
-            <mat-icon>account_balance</mat-icon> Angular Películas
+            <mat-icon>account_balance</mat-icon> Ágora eCommerce
         </a>
     </span>
 
     <div>
         <a mat-button routerLink="/">
             <mat-icon>search</mat-icon>
-            Buscar Películas</a>
+            Buscar Antigüedades</a>
     </div>
 
     <app-autorizado [esAutorizado]="store.isSoporteTecnico()">
@@ -42,11 +42,11 @@
             <!-- reemplazar el span -->
             <button mat-button disableRipple class="saludo-btn" disabled>Hola, {{store.usrNombre()}}</button>
             <!-- (click)="logout()" -->
-            <a mat-button [swal]="['Oops!', 'This is not implemented yet :/', 'warning']"  routerLink="" >Logout</a>
+            <a mat-button [swal]="{title: 'Logout', text: '¿Estás seguro de que deseas cerrar sesión?', icon: 'warning', showCancelButton: true}" (confirm)="store.logout()">Logout</a>
         </ng-container>
         <ng-container noAutorizado>
             <a mat-button routerLink="login">Login</a>
-            <a mat-button routerLink="/">Registro</a>
+            <a mat-button routerLink="usuarios/crear">SignUp</a>
         </ng-container>
     </app-autorizado>
     

@@ -25,13 +25,17 @@ export class SeguridadService {
     localStorage.setItem(this.keyToken, rtaAutenticacion.jwt);
   }
 
-  public getFieldJWT(field : KeysClaimDTO) : string | number | null {
+  public getFieldJWT(field: KeysClaimDTO): string | number | null {
     const token = localStorage.getItem(this.keyToken);
     if (!token)
       return null;
 
     let dataToken = JSON.parse(atob(token.split('.')[1]))
     return dataToken[field];
+  }
+
+  public logout(): Observable<HttpResponse<RespuestaAutenticacionDTO>> {
+    return this.http.delete<RespuestaAutenticacionDTO>(`${this.urlBase}/Login`, { observe: 'response' });
   }
 
 }

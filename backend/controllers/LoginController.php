@@ -35,7 +35,7 @@ class LoginController
             $this->securityService->deleteTokensExpirados($link);
             $loginData = Input::getArrayBody(msgEntidad: "el login");
             $usrEmail = $link->real_escape_string($loginData['usrEmail']);
-            $query = "SELECT usrId, usrNombre, usrTipoUsuario, usrPassword FROM usuario WHERE usrEmail='$usrEmail'";
+            $query = "SELECT usrId, usrNombre, usrTipoUsuario, usrPassword FROM usuario WHERE usrEmail='$usrEmail' AND usrFechaBaja IS NULL";
             $resultado = $link->query($query);
 
             if ($resultado === false) {
@@ -43,7 +43,7 @@ class LoginController
                 throw new mysqli_sql_exception(code: 500, message: $error);
             } else if ($resultado->num_rows != 1) {
                 $resultado->free();
-                throw new InvalidArgumentException(code: 401, message: 'No está registrado el mail');
+                throw new InvalidArgumentException(code: 401, message: 'No está registrado el mail o el usuario está dado de baja');
             } else {
                 $registro = $resultado->fetch_assoc();
                 $resultado->free();
@@ -94,7 +94,7 @@ class LoginController
             if (!$link->query("DELETE FROM tokens WHERE tokToken = '$jwtSql'")) {
                 throw new mysqli_sql_exception(code: 403, message: $link->error);
             }
-            Output::outputJson(['jwt' => []]);
+            Output::outputJson(['jwt' => ""]);
         } catch (\Throwable $th) {
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());

@@ -47,7 +47,7 @@ export const AutenticacionStore = signalStore(
                                 store.router.navigate(['/']);
                             },
                             error: (error: HttpErrorResponse) => {
-                                setOneError(error.message);
+                                setOneError(error.error as string ?? error.message);
                                 console.error(error);
                             },
                             finalize: () => setBusy(false)
@@ -56,6 +56,24 @@ export const AutenticacionStore = signalStore(
 
                 ), { injector: store._injector });
 
+            const logout = rxMethod<void>(pipe(
+                tap(() => {
+                    setBusy(true);
+                    setErrors([]);
+                }),
+                switchMap(() => store._seguridadService.logout()),
+                tapResponse({
+                    next: () => {
+                        resetState();
+                        store.router.navigate(['/login']);
+                    },
+                    error: (error: HttpErrorResponse) => {
+                        setOneError(error.error as string ?? error.message);
+                        console.error(error);
+                    },
+                    finalize: () => setBusy(false)
+                })
+            ), { injector: store._injector });
 
             return {
                 _setJwt,
@@ -63,7 +81,8 @@ export const AutenticacionStore = signalStore(
                 resetState,
                 setErrors,
                 setOneError,
-                login
+                login,
+                logout
             }
         }
     ),
@@ -140,6 +159,8 @@ export const AutenticacionStore = signalStore(
     ),
     withHooks(store => ({
         onInit(){
+            console.log('Inicializando Store autenticación');
+
             const persisted : Signal<PersistedAutenticacionSlice> = computed(() => ({ jwt: store.jwt() }));
             const saved = localStorage.getItem(store._seguridadService.keyToken);
 
@@ -152,9 +173,16 @@ export const AutenticacionStore = signalStore(
 
             effect(() => {
                 const persistedValue = persisted();
-                localStorage.setItem(store._seguridadService.keyToken, persistedValue.jwt ?? '');
-                console.log(store.ClaimDTOSignal(), store.ClaimDTOSignal().usrNombre)
+                if(persistedValue.jwt === null)
+                    localStorage.removeItem(store._seguridadService.keyToken);
+                else
+                    localStorage.setItem(store._seguridadService.keyToken, persistedValue.jwt);
+
+                console.log('Usuario', store.ClaimDTOSignal())
             });
+        },
+        onDestroy(){
+            console.log('Destruyendo Store autenticación');
         }
     }))
     

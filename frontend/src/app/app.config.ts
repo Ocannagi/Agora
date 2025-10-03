@@ -8,6 +8,7 @@ import { provideSweetAlert2} from '@sweetalert2/ngx-sweetalert2';
 
 import { routes } from './app.routes';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { authInterceptor } from './seguridad/token-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,7 +21,7 @@ export const appConfig: ApplicationConfig = {
       parse: {dateInput:['DD/MM/YYYY']},
       display: {dateInput:'DD/MM/YYYY', monthYearLabel:'MMMM YYYY', dateA11yLabel:'LL', monthYearA11yLabel:'MMMM YYYY',monthLabel:''}
     }),
-    provideHttpClient(withFetch()/*, withInterceptors([authInterceptor])*/),
+    provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
     provideSweetAlert2()
   ]
 };
