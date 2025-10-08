@@ -31,6 +31,95 @@ class LocalidadesController extends BaseController
     // Método para evitar la clonación del objeto
     private function __clone() {}
 
+    /** SECCION DE MÉTODOS CON getLocalidadesByParams */
+
+    public function getLocalidadesByParams($params)
+    {
+        $mysqli = $this->dbConnection->conectarBD();
+        try {
+            if (is_array($params)) {
+                if(array_key_exists('provId', $params) && array_key_exists('locDescripcion', $params)) {
+                    $provId = null;
+                    $locDescripcion = null;
+
+                    if (Input::esNotNullVacioBlanco($params['provId'])) {
+                        settype($params['provId'], 'integer');
+                        $provId = $params['provId'];
+                    }
+                    if (Input::esNotNullVacioBlanco($params['locDescripcion'])) {
+                        settype($params['locDescripcion'], 'string');
+                        $locDescripcion = $params['locDescripcion'];
+                    }
+
+                    return $this->getLocalidadesByFiltros($mysqli, $provId, $locDescripcion);
+
+                } else {
+                    throw new InvalidArgumentException("No se enviaron los parámetros necesarios");
+                }
+
+            } else {
+                throw new InvalidArgumentException("Los parámetros deben ser un array asociativo.");
+            }
+        } catch (\Throwable $th) {
+            if ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                // Cierra la conexión a la base de datos si se creó en este método.
+                $mysqli->close();
+            }
+        }
+    }
+
+    private function getLocalidadesByFiltros(mysqli $mysqli, ?int $provId, ?string $locDescripcion)
+    {
+        try {
+            //$this->securityService->requireLogin(null);
+
+            $whereClauses = [];
+            if (!is_null($provId)) {
+                $whereClauses[] = "locProvId = $provId";
+            }
+            if (!is_null($locDescripcion)) {
+                $locDescripcion = $mysqli->real_escape_string($locDescripcion);
+                $whereClauses[] = "locDescripcion LIKE '%$locDescripcion%'";
+            }
+
+            $whereSQL = "";
+            if (count($whereClauses) > 0) {
+                $whereSQL = " AND " . implode(" AND ", $whereClauses);
+            }
+
+            $query =   "SELECT locId, locDescripcion, provId, provDescripcion
+                    FROM localidad
+                    INNER JOIN provincia ON locProvId = provId
+                    WHERE locFechaBaja is NULL" . $whereSQL . "
+                    ORDER BY locId";
+
+
+            return parent::get(query: $query, classDTO: LocalidadDTO::class);
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
+    }
+
+    /** SECCION DE MÉTODOS CRUD */
+
     public function getLocalidades()
     {
         try {
@@ -126,7 +215,7 @@ class LocalidadesController extends BaseController
         try {
             $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::soporteTecnicoToArray());
             settype($id, 'integer');
-            
+
             $data = Input::getArrayBody(msgEntidad: "la localidad");
 
             $data['locId'] = $id;

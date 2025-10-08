@@ -78,6 +78,8 @@ class AntiguedadesAlaVentaController extends BaseController
                     }
 
                     return $this->getAntiguedadesAlaVentaByFiltros($mysqli, $aavPrecioVentaMax, $aavPrecioVentaMin, $usrId, $perId, $scatId, $catId, $antDescripcion);
+                } else {
+                    throw new InvalidArgumentException(code: 400, message: "No se recibieron parámetros válidos.");
                 }
             } else {
                 throw new InvalidArgumentException(code: 400, message: "No se recibieron parámetros válidos.");

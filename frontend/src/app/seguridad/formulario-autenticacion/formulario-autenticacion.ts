@@ -29,7 +29,7 @@ export class FormularioAutenticacion {
   })
 
   protected obtenerErrorCampo(campo: string): string | null {
-    return this.validaForm.obtenerErrorCampo(this.frmAutenticacion.controls, campo);
+    return this.validaForm.obtenerErrorCampoGroup(this.frmAutenticacion.controls, campo);
   }
 
   saveChanges(): void {

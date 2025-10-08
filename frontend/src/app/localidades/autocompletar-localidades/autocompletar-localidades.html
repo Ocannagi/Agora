@@ -1,0 +1,19 @@
+<app-mostrar-errores [errores]="errores()"></app-mostrar-errores>
+<form>
+    <mat-form-field appearance="outline">
+        <mat-label>Localidad</mat-label>
+        <input #SearchBox type="text" placeholder="Seleccione la localidad" matInput [formControl]="localidadControl"
+            [matAutocomplete]="auto" (input)="keyword.set(SearchBox.value)" />
+        <mat-error>{{obtenerErrorCampo('localidad')}}</mat-error>
+        <mat-autocomplete requireSelection="true" autoActiveFirstOption  #auto
+        [displayWith]="displayLocalidad"
+        (optionSelected)="modelId.set($event.option.value.locId)">
+            @for (localidad of localidadesResource.value(); track $index) {
+            <mat-option [value]="localidad">
+                {{localidad.locDescripcion}}
+            </mat-option>
+            }
+        </mat-autocomplete>
+
+    </mat-form-field>
+</form>

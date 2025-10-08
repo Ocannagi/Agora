@@ -1,0 +1,7 @@
+:host {
+  --autocompletar-width: 300px; // valor por defecto
+}
+
+mat-form-field {
+  width: var(--autocompletar-width);
+}

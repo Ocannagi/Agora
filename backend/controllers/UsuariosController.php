@@ -38,7 +38,7 @@ class UsuariosController extends BaseController
     {
         try {
             $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::soporteTecnicoToArray());
-            return parent::get(query: "SELECT usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario FROM usuario WHERE usrFechaBaja is NULL", classDTO: "UsuarioMinDTO");
+            return parent::get(query: "SELECT usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario FROM usuario WHERE usrFechaBaja is NULL", classDTO: UsuarioMinDTO::class);
         } catch (\Throwable $th) {
             if ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
@@ -69,7 +69,7 @@ class UsuariosController extends BaseController
                     WHERE usrId = $id
                     AND usrFechaBaja is NULL";
 
-            return parent::getById(query: $query, classDTO: "UsuarioDTO");
+            return parent::getById(query: $query, classDTO: UsuarioDTO::class);
         } catch (\Throwable $th) {
             if ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
