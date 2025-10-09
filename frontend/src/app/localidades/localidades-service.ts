@@ -6,11 +6,12 @@ import { Observable } from 'rxjs/internal/Observable';
 import { buildQueryParams } from '../compartidos/funciones/queryParams';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { of } from 'rxjs';
+import { IServiceAutocompletar } from '../compartidos/interfaces/IServiceAutocompletar';
 
 @Injectable({
   providedIn: 'root'
 })
-export class LocalidadesService {
+export class LocalidadesService implements IServiceAutocompletar<LocalidadDTO> {
 
   private http = inject(HttpClient);
   private urlBase = environment.apiURL + '/Localidades';
@@ -23,14 +24,14 @@ export class LocalidadesService {
     return this.http.get<LocalidadDTO[]>(this.urlBase, { observe: 'response', params: buildQueryParams(params) });
   }
 
-  public autocompletarLocalidadesResource(
-    provinciaId: () => number,
+  public autocompletarResource(
     locDescripcion: () => string | null,
-    injector: Injector = inject(Injector)
+    injector: Injector = inject(Injector),
+    provinciaId?: () => number | null
   ): Resource<LocalidadDTO[]> {
     return rxResource<LocalidadDTO[],HttpParams>({
       params: () => buildQueryParams({
-        provId: provinciaId(),
+        provId: provinciaId?.() ?? null,
         locDescripcion: locDescripcion() ?? ''
       }),
       stream: (options) => {if(/* options.params.get('params[locDescripcion]')!.length < 2 ||  */options.params.get('params[provId]') === '0') return of([]) as Observable<LocalidadDTO[]>;

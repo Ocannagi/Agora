@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, ElementRef, inject, Injector, input, model, output, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, Injector, input, model, output, signal, untracked, viewChild } from '@angular/core';
 import { MostrarErrores } from "../../compartidos/componentes/mostrar-errores/mostrar-errores";
 import { MatInputModule } from "@angular/material/input";
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -17,12 +17,10 @@ import { formControlSignal } from '../../compartidos/funciones/formToSignal';
 })
 export class AutocompletarLocalidades {
 
-  readonly provinciaId = input<number>(0);
-  readonly keyword = model<string>('');
+  readonly provinciaId = input<number | null>(null);
+  readonly keyword = signal<string>('');
   readonly modelId = model.required<number>();
   readonly errores = signal<string[]>([]);
-
-
 
 
   private validaForm = inject(ValidaForm);
@@ -33,10 +31,10 @@ export class AutocompletarLocalidades {
   readonly localidadControlSignal = formControlSignal(this.localidadControl);
 
 
-  readonly localidadesResource = this.service.autocompletarLocalidadesResource(
-    () => this.provinciaId(),
+  readonly localidadesResource = this.service.autocompletarResource(
     () => this.keyword(),
-    this.injector
+    this.injector,
+    () => this.provinciaId()
   );
 
   readonly hayError = computed(() => this.errores().length > 0);
@@ -55,18 +53,25 @@ export class AutocompletarLocalidades {
   constructor() {
 
     effect(() => {
-      console.log('Me ejecuto');
+      //console.log('Me ejecuto');
 
-      if (this.hayQueResetear()){
-        this.keyword.set('');
-        this.modelId.set(0);
+      if (this.hayQueResetear()) {
+        //console.log('Reseteo');
+        untracked(() => {
+          this.keyword.set('');
+          this.modelId.set(0);
+        })
+
       }
-        
 
-      if (this.hayResourceError())
-        this.errores.update(errs => [...errs, this.localidadesResource.error()!.message])
-      else
-        this.hayError() ? this.errores.set([]) : '';
+      if (this.hayResourceError()){
+        //console.log('Error en recurso');
+        untracked(() => this.errores.update(errs => [...errs, this.localidadesResource.error()!.message]));
+      }
+      else {
+        //console.log('No hay error en recurso');
+        this.hayError() ? untracked(() => this.errores.set([])) : '';
+      }
     });
   }
 
