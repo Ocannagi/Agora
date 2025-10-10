@@ -1,3 +1,7 @@
 app-autocompletar-localidades {
   --autocompletar-width: 300px; // o 100%, 40rem, etc.
 }
+
+app-autocompletar-localidades.autocomp-grande {
+  --autocompletar-width: 520px;
+}

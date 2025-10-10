@@ -1,7 +1,3 @@
-:host {
-  --autocompletar-width: 300px; // valor por defecto
-}
-
-mat-form-field {
+app-autocompletar-retorna-id {
   width: var(--autocompletar-width);
 }

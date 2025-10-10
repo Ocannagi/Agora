@@ -22,6 +22,6 @@ export const appConfig: ApplicationConfig = {
       display: {dateInput:'DD/MM/YYYY', monthYearLabel:'MMMM YYYY', dateA11yLabel:'LL', monthYearA11yLabel:'MMMM YYYY',monthLabel:''}
     }),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
-    provideSweetAlert2()
+    provideSweetAlert2(),
   ]
 };

@@ -1,9 +1,17 @@
-<p>LALALA</p>
+<p>LALALA2</p>
+
 
 <app-autocompletar-localidades
-  [provinciaId]="provId()"
-  [(modelId)]="pruebaSignal"
-
+  [idProv]="provId1()"
+  (idLoc)="pruebaSignal1.set($event)"
+  class="autocomp-grande"
 ></app-autocompletar-localidades>
 
-<h1>{{ pruebaSignal() }}</h1>
+<p>Prueba 1 {{ pruebaSignal1() }}</p>
+
+<app-autocompletar-localidades
+  [idProv]="provId2()"
+  (idLoc)="pruebaSignal2.set($event)"
+></app-autocompletar-localidades>
+
+<p>Prueba 2 {{ pruebaSignal2() }}</p>

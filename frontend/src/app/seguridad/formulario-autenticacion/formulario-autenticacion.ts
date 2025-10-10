@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MostrarErrores } from "../../compartidos/componentes/mostrar-errores/mostrar-errores";
 import { CredencialesUsuarioDTO } from '../seguridadDTO';
-import { ValidaForm } from '../../compartidos/servicios/valida-form';
+import { ValidaControlForm } from '../../compartidos/servicios/valida-control-form';
 
 @Component({
   selector: 'app-formulario-autenticacion',
@@ -21,7 +21,7 @@ export class FormularioAutenticacion {
   readonly posteoFormulario = output<CredencialesUsuarioDTO>();
 
   private formBuilder = inject(FormBuilder);
-  private validaForm = inject(ValidaForm);
+  private validaForm = inject(ValidaControlForm);
 
   protected frmAutenticacion = this.formBuilder.group({
     usrEmail: ['', { validators: [Validators.required, Validators.email] }],

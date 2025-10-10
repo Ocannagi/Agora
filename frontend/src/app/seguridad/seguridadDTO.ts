@@ -12,6 +12,12 @@ export enum TipoUsuarioEnum{
     UsuarioGeneral = 'UG'
 }
 
+export interface TipoUsuarioDTO{
+    ttuTipoUsuario: string;
+    ttuDescripcion: string;
+    ttuRequiereMatricula: boolean;
+}
+
 export interface CredencialesUsuarioDTO {
     usrEmail: string;
     usrPassword: string;

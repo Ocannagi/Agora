@@ -40,7 +40,7 @@ class TiposUsuarioController extends BaseController
         try {
             $tipoUsuario = $this->securityService->requireLogin(null)->usrTipoUsuario;
             $query = in_array($tipoUsuario, ['ST', 'SI']) ? "SELECT * FROM tipousuario" : "SELECT * FROM tipousuario WHERE ttuTipoUsuario NOT IN ('ST', 'SI')";
-            return parent::get(query: $query, classDTO: "TipoUsuarioDTO");
+            return parent::get(query: $query, classDTO: TipoUsuarioDTO::class);
         } catch (\Throwable $th) {
             if ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());

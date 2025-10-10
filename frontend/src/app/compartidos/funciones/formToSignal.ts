@@ -3,21 +3,21 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { startWith } from 'rxjs';
 
-export interface FormControlSignals<T> {
+export interface FormControlSignal<T> {
   value: WritableSignal<T>;
   status: () => string;
   disabled: WritableSignal<boolean>;
   control: FormControl<T>;
 }
 
-export interface FormGroupSignals<T> {
+export interface FormGroupSignal<T> {
   value: WritableSignal<T>;
   status: () => string;
   disabled: WritableSignal<boolean>;
   group: FormGroup;
 }
 
-export function formControlSignal<T>(control: FormControl<T>, injector: Injector = inject(Injector)): FormControlSignals<T> {
+export function formControlSignal<T>(control: FormControl<T>, injector: Injector = inject(Injector)): FormControlSignal<T> {
 
   // Value (incluye arranque)
   const value = signal<T>(control.value as T);
@@ -55,7 +55,7 @@ export function formControlSignal<T>(control: FormControl<T>, injector: Injector
 export function formGroupSignal<T extends Record<string, any>>(
   formGroup: FormGroup, 
   injector: Injector = inject(Injector)
-): FormGroupSignals<T> {
+): FormGroupSignal<T> {
 
   // Value usando getRawValue para incluir disabled
   const valueFormGroupSignal = signal<T>(formGroup.getRawValue() as T);
