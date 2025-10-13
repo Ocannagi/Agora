@@ -17,10 +17,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { AutocompletarLocalidades } from "../../localidades/autocompletar-localidades/autocompletar-localidades";
+import { AutocompletarProvincias } from "../../provincias/autocompletar-provincias/autocompletar-provincias";
 
 @Component({
   selector: 'app-crear-editar-usuario',
-  imports: [MatButtonModule, RouterLink, MatFormFieldModule, ReactiveFormsModule, MatInputModule, Cargando, MostrarErrores, MatSelectModule, MatTooltipModule, MatDatepickerModule, AutocompletarLocalidades],
+  imports: [MatButtonModule, RouterLink, MatFormFieldModule, ReactiveFormsModule, MatInputModule, Cargando, MostrarErrores, MatSelectModule, MatTooltipModule, MatDatepickerModule, AutocompletarLocalidades, AutocompletarProvincias],
   templateUrl: './crear-editar-usuario.html',
   styleUrl: './crear-editar-usuario.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -84,9 +85,9 @@ export class CrearEditarUsuario {
 
 
 
-  readonly idProv = signal<number | null>(null);
-  readonly idLoc = signal<number | null>(null);
   readonly ctrlTipoUsuario = formControlSignal(this.formUsuario.get('tipoUsuario') as FormControl<TipoUsuarioDTO | null>);
+  readonly ctrlProvinciaSignal = formControlSignal(this.formUsuario.get('domicilio')?.get('idProvincia') as FormControl<number | null>);
+  readonly ctrlLocalidadSignal = formControlSignal(this.formUsuario.get('domicilio')?.get('idLocalidad') as FormControl<number | null>);
 
   readonly requiereMatricula = computed(() => {
     const tipo = this.ctrlTipoUsuario.value();

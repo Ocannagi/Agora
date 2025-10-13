@@ -99,6 +99,12 @@
             <mat-error>{{obtenerErrorCampo('CPA', true)}}</mat-error>
         </mat-form-field>
 
+        <app-autocompletar-provincias
+            (idProv)="ctrlProvinciaSignal.value.set($event)"/>
+
+        <app-autocompletar-localidades
+            [idProv]="ctrlProvinciaSignal.value()"
+            (idLoc)="ctrlLocalidadSignal.value.set($event)"/>
 
         <mat-form-field appearance="fill">
             <mat-label>Calle/Ruta</mat-label>
