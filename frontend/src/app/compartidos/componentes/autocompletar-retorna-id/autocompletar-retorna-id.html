@@ -1,18 +1,22 @@
 <app-mostrar-errores [errores]="store.errors()"></app-mostrar-errores>
-<form>
+<form (submit)="$event.preventDefault()">
     <mat-form-field appearance="outline">
         <mat-label>{{label()}}</mat-label>
         <input #SearchBox type="text" placeholder="{{placeholder()}}" matInput [formControl]="control"
-            [matAutocomplete]="auto" (input)="store.setKeyword(SearchBox.value)" />
+            [matAutocomplete]="auto"
+            (input)="store.setKeyword(SearchBox.value)" (click)="store.noHayRegistros() && store.hayKeyword() ? store.resetKeyword() : null" 
+            (blur)="store.hayRegistros() && store.statusNoValido() ? store.resetKeyword() : null"/>
         <mat-error>{{obtenerErrorCampo(label())}}</mat-error>
         <mat-autocomplete requireSelection="true" autoActiveFirstOption  #auto
         [displayWith]="displayText"
         (optionSelected)="store.setModelId($event.option.value.id)">
+        @if(!store.hayError()) {
             @for (registro of store.resource.value(); track $index) {
             <mat-option [value]="registro">
                 {{registro.descripcion}}
             </mat-option>
             }
+        }    
         </mat-autocomplete>
 
     </mat-form-field>

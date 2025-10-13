@@ -53,17 +53,17 @@ export function formControlSignal<T>(control: FormControl<T>, injector: Injector
 }
 
 export function formGroupSignal<T extends Record<string, any>>(
-  formGroup: FormGroup, 
+  formGroup: FormGroup,
   injector: Injector = inject(Injector)
 ): FormGroupSignal<T> {
 
   // Value usando getRawValue para incluir disabled
-  const valueFormGroupSignal = signal<T>(formGroup.getRawValue() as T);
+  const valueFormGroupSignal = signal<T>(formGroup.getRawValue() as T, { equal: deepEqual });
 
   const valueChangesForm = formGroup.valueChanges
     .pipe(startWith(formGroup.getRawValue()))
     .subscribe(v => {
-      if (!shallowEqual(valueFormGroupSignal(), v)) valueFormGroupSignal.set(v as T);
+      if (!deepEqual(valueFormGroupSignal(), v)) valueFormGroupSignal.set(v as T);
     });
 
   // Status
@@ -79,7 +79,7 @@ export function formGroupSignal<T extends Record<string, any>>(
   effect(() => {
     const v = valueFormGroupSignal();
     const raw = formGroup.getRawValue();
-    if (!shallowEqual(raw, v)) {
+    if (!deepEqual(raw, v)) {
       formGroup.patchValue(v, { emitEvent: false });
     }
   }, { injector });
@@ -93,18 +93,52 @@ export function formGroupSignal<T extends Record<string, any>>(
 
   injector.get(DestroyRef).onDestroy(() => valueChangesForm.unsubscribe());
 
-  return { value : valueFormGroupSignal, status, disabled, group: formGroup };
+  return { value: valueFormGroupSignal, status, disabled, group: formGroup };
 }
 
-// Comparación superficial
-function shallowEqual(a: any, b: any): boolean {
+// Comparación profunda
+function deepEqual(a: any, b: any): boolean {
   if (a === b) return true;
-  if (!a || !b) return false;
-  const ka = Object.keys(a);
-  const kb = Object.keys(b);
-  if (ka.length !== kb.length) return false;
-  for (const k of ka) {
-    if (a[k] !== b[k]) return false;
+  if (a == null || b == null) return false;
+
+  if (a instanceof Date && b instanceof Date) return a.getTime() === b.getTime();
+
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) if (!deepEqual(a[i], b[i])) return false;
+    return true;
   }
-  return true;
+
+  if (typeof a === 'object' && typeof b === 'object') {
+    if (a.constructor !== b.constructor) return false;
+    const ka = Object.keys(a);
+    const kb = Object.keys(b);
+    if (ka.length !== kb.length) return false;
+    for (const k of ka) {
+      if (!Object.prototype.hasOwnProperty.call(b, k)) return false;
+      if (!deepEqual(a[k], b[k])) return false;
+    }
+    return true;
+  }
+
+  // Trata NaN === NaN como iguales
+  return Number.isNaN(a) && Number.isNaN(b);
+}
+
+export function formGroupStatusSignal(formGroup: FormGroup, injector: Injector = inject(Injector)) {
+  // Status
+  const status = toSignal(formGroup.statusChanges.pipe(startWith(formGroup.status)), {
+    initialValue: formGroup.status,
+    injector: injector
+  });
+  return  status;
+}
+
+export function formControlStatusSignal(control: FormControl, injector: Injector = inject(Injector)) {
+  // Status
+  const status = toSignal(control.statusChanges.pipe(startWith(control.status)), {
+    initialValue: control.status,
+    injector: injector
+  });
+  return  status;
 }

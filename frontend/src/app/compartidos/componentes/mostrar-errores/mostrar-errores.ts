@@ -8,5 +8,5 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MostrarErrores {
-  readonly errores = input.required<string[]>();
+  readonly errores = input<string[]>();
 }

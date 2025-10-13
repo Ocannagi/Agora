@@ -38,8 +38,20 @@ class TiposUsuarioController extends BaseController
     public function getTiposUsuario()
     {
         try {
-            $tipoUsuario = $this->securityService->requireLogin(null)->usrTipoUsuario;
-            $query = in_array($tipoUsuario, ['ST', 'SI']) ? "SELECT * FROM tipousuario" : "SELECT * FROM tipousuario WHERE ttuTipoUsuario NOT IN ('ST', 'SI')";
+            $query = "";
+            try {
+                $tipoUsuario = $this->securityService->requireLogin(null)->usrTipoUsuario;
+                $query = in_array($tipoUsuario, ['ST', 'SI']) ? "SELECT * FROM tipousuario" : "SELECT * FROM tipousuario WHERE ttuTipoUsuario NOT IN ('ST', 'SI')";
+            } catch (\Throwable $th) {
+                if ($th instanceof CustomException) {
+                    // Si no está logueado, devolvemos solo los tipos de usuario que no son ST o SI
+                    $query = "SELECT * FROM tipousuario WHERE ttuTipoUsuario NOT IN ('ST', 'SI')";
+                } else {
+                    throw $th;
+                }
+            }
+
+
             return parent::get(query: $query, classDTO: TipoUsuarioDTO::class);
         } catch (\Throwable $th) {
             if ($th instanceof mysqli_sql_exception) {

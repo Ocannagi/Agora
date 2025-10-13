@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
 import { ValidaControlForm } from '../../servicios/valida-control-form';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IAutocompletarDTO } from '../../interfaces/IAutocompletarDTO';
@@ -22,12 +22,19 @@ export class AutocompletarRetornaId<T extends IAutocompletarDTO> {
   readonly placeholder = input.required<string>();
   
   private validaForm = inject(ValidaControlForm);
-  protected control = new FormControl<string>('', [Validators.required]);
+  protected control = new FormControl<IAutocompletarDTO | null>(null, [Validators.required]);
   protected store = inject(AutocompletarStore);
+
+  readonly prueba = formControlSignal(this.control);
 
 
   constructor() {
     this.store.setFormControlSignal(formControlSignal(this.control));
+
+   /*  effect(() => {
+      console.log('Valor del control:', this.prueba.value());
+      console.log('Estado del control:', this.prueba.status());
+    }); */
     
   }
 

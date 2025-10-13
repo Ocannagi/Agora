@@ -6,7 +6,7 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 })
 export class ValidaGroupForm {
 
-  razonSocialRequiredIfCuitValid: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
+/*   razonSocialRequiredIfCuitValid: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
     const cuit = group.get('cuitCuil');
     const razon = group.get('razonSocial');
     if (!cuit || !razon) return null;
@@ -24,6 +24,6 @@ export class ValidaGroupForm {
       razon.setErrors(Object.keys(rest).length ? rest : null);
     }
     return null;
-  };
+  }; */
   
 }

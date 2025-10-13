@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
-  selector: 'app-crear-usuario',
+  selector: 'app-cargando',
   imports: [],
-  templateUrl: './crear-usuario.html',
-  styleUrl: './crear-usuario.scss',
+  templateUrl: './cargando.html',
+  styleUrl: './cargando.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CrearUsuario {
+export class Cargando {
 
 }

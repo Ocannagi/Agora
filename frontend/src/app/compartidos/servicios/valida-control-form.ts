@@ -166,6 +166,8 @@ export class ValidaControlForm {
                 return acumulador + `El valor máximo permitido para ${nombreCampo} es ${control.getError(valorActual).max}.` + ' ';
             } else if (control.getError(valorActual).msg) {
                 return acumulador + control.getError(valorActual).msg + ' ';
+            } else if (valorActual === 'matDatepickerParse') {
+                return acumulador + `La fecha o el formato del campo ${nombreCampo} no son válidos.` + ' ';
             } else {
                 return acumulador + `El campo ${nombreCampo} tuvo un error no definido.` + ' ';
             }

@@ -1,8 +1,7 @@
-import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
-import { inject, Injectable, Injector, Resource } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { inject, Injectable, Injector, Resource, ResourceRef } from '@angular/core';
 import { environment } from '../environments/environment.development';
 import { LocalidadAutocompletarDTO, LocalidadDTO } from './modelo/localidadDTO';
-import { Observable } from 'rxjs/internal/Observable';
 import { buildQueryParams } from '../compartidos/funciones/queryParams';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { of, map } from 'rxjs';
@@ -16,19 +15,12 @@ export class LocalidadesService implements IServiceAutocompletar<LocalidadAutoco
   private http = inject(HttpClient);
   private urlBase = environment.apiURL + '/Localidades';
 
-  public getLocalidadesByAutocompletar(provinciaId: number, localidadDescripcion: string): Observable<HttpResponse<LocalidadDTO[]>> {
-    const params = {
-      provId: provinciaId,
-      locDescripcion: localidadDescripcion
-    };
-    return this.http.get<LocalidadDTO[]>(this.urlBase, { observe: 'response', params: buildQueryParams(params) });
-  }
 
   public autocompletarResource(
     locDescripcion: () => string | null,
     injector: Injector = inject(Injector),
     provinciaId?: () => number | null
-  ): Resource<LocalidadAutocompletarDTO[]> {
+  ): ResourceRef<LocalidadAutocompletarDTO[]> {
     return rxResource<LocalidadAutocompletarDTO[], HttpParams>({
       params: () => buildQueryParams({
         provId: provinciaId?.() ?? null,
@@ -52,7 +44,7 @@ export class LocalidadesService implements IServiceAutocompletar<LocalidadAutoco
       },
       defaultValue: [],
       injector: injector
-    }).asReadonly();
+    });
   };
 
 }
