@@ -134,20 +134,22 @@ export class ValidaControlForm {
      * @param campo nombre del control
      * @returns todos los mensajes de error agrupados en un único string o null si no hay errores
      */
-    obtenerErrorCampoGroup(controles: { [key: string]: AbstractControl<any, any> }, campo: string): string | null {
+    obtenerErrorCampoGroup(controles: { [key: string]: AbstractControl<any, any> }, campo: string, quitarCodigo: boolean = false): string | null {
         let control = controles[campo];
         if (control === undefined || control === null)
             throw Error("Error interno: no existe el campo evaluado en el formulario");
 
         if (control.errors) {
-            return this.obtenerErrorControl(control, campo);
+            return this.obtenerErrorControl(control, campo, quitarCodigo);
         } else {
             return null;
         }
     }
 
-    obtenerErrorControl<T extends AbstractControl>(control: T, nombreCampo: string): string | null {
+    obtenerErrorControl<T extends AbstractControl>(control: T, nombreCampo: string, quitarCodigo: boolean = false): string | null {
         if (!control || !control.errors) return null;
+
+        nombreCampo = quitarCodigo ? nombreCampo.replace(/^.{3}/, '') : nombreCampo;
 
         let msg: string = Object.keys(control.errors).reduce((acumulador: string, valorActual: string) => {
             if (valorActual === 'required') {

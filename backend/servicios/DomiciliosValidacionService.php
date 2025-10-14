@@ -142,7 +142,7 @@ class DomiciliosValidacionService extends ValidacionServiceBase
                 throw new CustomException(code: 409, message: 'El domicilio ya fue registrado.');
         }
         } else {
-            $query = "SELECT 1 FROM domicilio WHERE domCalleRuta = '{$domicilio->domCalleRuta}' AND domNroKm = {$domicilio->domNroKm} $qPiso $qDepto AND domLocId = {$domicilio->localidad->locId} AND domFechaBaja IS NULL";
+            $query = "SELECT domId FROM domicilio WHERE domCalleRuta = '{$domicilio->domCalleRuta}' AND domNroKm = {$domicilio->domNroKm} $qPiso $qDepto AND domLocId = {$domicilio->localidad->locId} AND domFechaBaja IS NULL";
             $id = $this->_existeEnBD(link: $linkExterno, query: $query, msg: 'verificar si el domicilio ya fue registrado', columnId: 'domId');
             if ($id !== 0) {
                 throw new CustomException(code: 409, message: "El domicilio ya fue registrado bajo el ID_$id"); //TODO: El Frontend debe manejar este mensaje para capturar el ID y llamar al controller de usuarioDomicilio

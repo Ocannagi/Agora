@@ -1,140 +1,149 @@
 <h2>{{titulo()}}</h2>
 
-<app-mostrar-errores [errores]="errores()"></app-mostrar-errores>
+<app-mostrar-errores [errores]="errores()" ></app-mostrar-errores>
 
 @if (esCargando()){
     <app-cargando />
 } @else{
 
-<form [formGroup]="formUsuario">
+<form [formGroup]="formUsuario" (ngSubmit)="onSubmit()">
+  <div class="form-grid">
     <mat-form-field appearance="fill">
-        <mat-label>Apellido/s</mat-label>
-        <input matInput formControlName="apellido" />
-        <mat-error>{{obtenerErrorCampo('apellido')}}</mat-error>
+      <mat-label>Apellido/s</mat-label>
+      <input matInput formControlName="usrApellido" />
+      <mat-error>{{obtenerErrorCampo('usrApellido')}}</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="fill">
-        <mat-label>Nombre/s</mat-label>
-        <input matInput formControlName="nombre" />
-        <mat-error>{{obtenerErrorCampo('nombre')}}</mat-error>
+      <mat-label>Nombre/s</mat-label>
+      <input matInput formControlName="usrNombre" />
+      <mat-error>{{obtenerErrorCampo('usrNombre')}}</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="fill">
-        <mat-label>Fecha Nacimiento</mat-label>
-        <input matInput [matDatepicker]="picker" formControlName="fechaNacimiento" />
-        <mat-hint>DD/MM/YYYY</mat-hint>
-        <mat-datepicker #picker></mat-datepicker>
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-error>{{obtenerErrorCampo('fechaNacimiento')}}</mat-error>
+      <mat-label>Fecha Nacimiento</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="usrFechaNacimiento" />
+      <mat-hint>DD/MM/YYYY</mat-hint>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-error>{{obtenerErrorCampo('usrFechaNacimiento')}}</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="fill">
-        <mat-label>DNI</mat-label>
-        <input matInput formControlName="dni" />
-        <mat-error>{{obtenerErrorCampo('dni')}}</mat-error>
+      <mat-label>DNI</mat-label>
+      <input matInput formControlName="usrDni" />
+      <mat-error>{{obtenerErrorCampo('usrDni')}}</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="fill">
-        <mat-label>CUIT/CUIL</mat-label>
-        <input matInput formControlName="cuitCuil" />
-        <mat-error>{{obtenerErrorCampo('cuitCuil')}}</mat-error>
+      <mat-label>CUIT/CUIL</mat-label>
+      <input matInput formControlName="usrCuitCuil" />
+      <mat-error>{{obtenerErrorCampo('usrCuitCuil')}}</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="fill">
-        <mat-label>Razón Social</mat-label>
-        <input matInput formControlName="razonSocial" />
-        <mat-error>{{obtenerErrorCampo('razonSocial')}}</mat-error>
+      <mat-label>Razón Social</mat-label>
+      <input matInput formControlName="usrRazonSocialFantasia" />
+      <mat-error>{{obtenerErrorCampo('usrRazonSocialFantasia')}}</mat-error>
     </mat-form-field>
 
     <mat-form-field>
-        <mat-label>Tipo Usuario</mat-label>
-        <mat-select formControlName="tipoUsuario">
-            <mat-option>--Seleccione--</mat-option>
-            @if (tipoUsuarioResource.status() !== 'error') {
-                @for (tipoUsuario of tipoUsuarioResource.value(); track tipoUsuario) {
-                <mat-option [value]="tipoUsuario">{{tipoUsuario.ttuDescripcion}}</mat-option>
-                }
-            }
-        </mat-select>
-        <mat-error>{{obtenerErrorCampo('tipoUsuario')}}</mat-error>
+      <mat-label>Tipo Usuario</mat-label>
+      <mat-select formControlName="usrTipoUsuario">
+        <mat-option>--Seleccione--</mat-option>
+        @if (tipoUsuarioResource.status() !== 'error') {
+          @for (tipoUsuario of tipoUsuarioResource.value(); track tipoUsuario) {
+            <mat-option [value]="tipoUsuario">{{tipoUsuario.ttuDescripcion}}</mat-option>
+          }
+        }
+      </mat-select>
+      <mat-error>{{obtenerErrorCampo('usrTipoUsuario')}}</mat-error>
     </mat-form-field>
 
     @if(requiereMatricula()){
-        <mat-form-field appearance="fill">
-            <mat-label>Matrícula</mat-label>
-            <input matInput formControlName="matricula" />
-            <mat-error>{{obtenerErrorCampo('matricula')}}</mat-error>
-        </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Matrícula</mat-label>
+        <input matInput formControlName="usrMatricula" />
+        <mat-error>{{obtenerErrorCampo('usrMatricula')}}</mat-error>
+      </mat-form-field>
     }
 
-    <mat-form-field appearance="fill">
-        <mat-label>Email</mat-label>
-        <input matInput formControlName="email"/>
-        <mat-error>{{obtenerErrorCampo('email')}}</mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="fill"
-                [matTooltip]="passwordTooltip"
-                [matTooltipClass]="'tooltip-pre'"
-                matTooltipPosition="right"
-                matTooltipShowDelay="500">
-        <mat-label>Password</mat-label>
-        <input matInput type="password" formControlName="password"/>
-        <mat-error>{{obtenerErrorCampo('password')}}</mat-error>
+    <!-- Campo a pantalla completa -->
+    <mat-form-field appearance="fill" class="col-span-2">
+      <mat-label>Descríbete a vos mismo</mat-label>
+      <textarea #descripcion [maxLength]="maxCaracteresDescripcion()" matInput formControlName="usrDescripcion" placeholder="Describe tu perfil, tu empresa o tu experiencia si lo deseas"></textarea>
+      <mat-hint>{{descripcion.value.length}}/{{maxCaracteresDescripcion()}} caracteres</mat-hint>
+      <mat-error>{{obtenerErrorCampo('usrDescripcion')}}</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="fill">
-        <mat-label>Descríbete a vos mismo</mat-label>
-        <textarea #descripcion [maxLength]="maxCaracteresDescripcion()" matInput placeholder="Describe tu perfil, tu empresa o tu experiencia si lo deseas"></textarea>
-        <mat-hint> {{descripcion.value.length}}/{{maxCaracteresDescripcion()}} caracteres</mat-hint>
-        <mat-error>{{obtenerErrorCampo('descripcion')}}</mat-error>
+      <mat-label>Email</mat-label>
+      <input type="email" matInput formControlName="usrEmail" />
+      <mat-error>{{obtenerErrorCampo('usrEmail')}}</mat-error>
     </mat-form-field>
 
-    <fieldset formGroupName="domicilio" class="fieldset-domicilio">
-        <legend>Domicilio</legend>
+    <mat-form-field appearance="fill">
+      <mat-label>Contraseña</mat-label>
+      <input type="password" matInput formControlName="usrPassword"
+         [matTooltip]="passwordTooltip"
+         [matTooltipClass]="'tooltip-pre'"
+         matTooltipPosition="right"
+         matTooltipShowDelay="500"
+      />
+      <mat-error>{{obtenerErrorCampo('usrPassword')}}</mat-error>
+    </mat-form-field>
 
-        <mat-form-field appearance="fill">
-            <mat-label>CPA</mat-label>
-            <input matInput formControlName="CPA" />
-            <mat-error>{{obtenerErrorCampo('CPA', true)}}</mat-error>
-        </mat-form-field>
+  </div>
 
-        <app-autocompletar-provincias
-            (idProv)="ctrlProvinciaSignal.value.set($event)"/>
+  <fieldset formGroupName="domicilio" class="fieldset-domicilio">
+    <legend>Domicilio</legend>
 
-        <app-autocompletar-localidades
-            [idProv]="ctrlProvinciaSignal.value()"
-            (idLoc)="ctrlLocalidadSignal.value.set($event)"/>
+    <div class="form-grid">
+      <mat-form-field appearance="fill" class="col-span-2">
+        <mat-label >CPA</mat-label>
+        <input #cpaInput matInput formControlName="domCPA" maxlength="8" (input)="cpaInput.value = cpaInput.value.toUpperCase()" />
+        <mat-hint>L1234LLL</mat-hint>
+        <mat-error>{{obtenerErrorCampo('domCPA', true, 'El formato debe ser L1234LLL (1 letra, 4 números, 3 letras).')}}</mat-error>
+      </mat-form-field>
 
-        <mat-form-field appearance="fill">
-            <mat-label>Calle/Ruta</mat-label>
-            <input matInput formControlName="calleRuta" />
-            <mat-error>{{obtenerErrorCampo('calleRuta', true)}}</mat-error>
-        </mat-form-field>
+      <app-autocompletar-provincias
+        (idProv)="ctrlProvinciaSignal.value.set($event)"
+      />
+      <app-autocompletar-localidades
+        [idProv]="ctrlProvinciaSignal.value()"
+        (idLoc)="ctrlLocalidadSignal.value.set($event)"
+      ></app-autocompletar-localidades>
 
-        <mat-form-field appearance="fill">
-            <mat-label>Número</mat-label>
-            <input matInput formControlName="nroKm" />
-            <mat-error>{{obtenerErrorCampo('nroKm', true)}}</mat-error>
-        </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Calle/Ruta</mat-label>
+        <input matInput formControlName="domCalleRuta" />
+        <mat-error>{{obtenerErrorCampo('domCalleRuta', true)}}</mat-error>
+      </mat-form-field>
 
-        <mat-form-field appearance="fill">
-            <mat-label>Piso</mat-label>
-            <input matInput formControlName="piso" />
-            <mat-error>{{obtenerErrorCampo('piso', true)}}</mat-error>
-        </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Número</mat-label>
+        <input type="number" step="1" matInput formControlName="domNroKm" />
+        <mat-error>{{obtenerErrorCampo('domNroKm', true)}}</mat-error>
+      </mat-form-field>
 
-        <mat-form-field appearance="fill">
-            <mat-label>Departamento</mat-label>
-            <input matInput formControlName="departamento" />
-            <mat-error>{{obtenerErrorCampo('departamento', true)}}</mat-error>
-        </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Piso</mat-label>
+        <input matInput formControlName="domPiso" />
+        <mat-error>{{obtenerErrorCampo('domPiso', true)}}</mat-error>
+      </mat-form-field>
 
-    </fieldset>
-
-    <div class="contenedor-botones">
-        <button type="submit" mat-flat-button [disabled]="formUsuario.invalid">Guardar cambios</button>
-        <a mat-stroked-button routerLink="">Cancelar</a>
+      <mat-form-field appearance="fill">
+        <mat-label>Departamento</mat-label>
+        <input matInput formControlName="domDepto" />
+        <mat-error>{{obtenerErrorCampo('domDepto', true)}}</mat-error>
+      </mat-form-field>
     </div>
+  </fieldset>
+
+  <div class="contenedor-botones">
+    <button type="submit" mat-flat-button [disabled]="formUsuario.invalid">Guardar cambios</button>
+    <a mat-stroked-button routerLink="">Cancelar</a>
+    <button type="button" mat-stroked-button (click)="ConsoleValidFormulario()">Prueba formulario</button>
+  </div>
 </form>
 }

@@ -30,7 +30,7 @@ export class ProvinciasService implements IServiceAutocompletar<ProvinciaAutocom
             provincias.map(prov => ({
               id: prov.provId,
               descripcion: prov.provDescripcion,
-              dependenciaId: undefined
+              dependenciaId: null
             })) as ProvinciaAutocompletarDTO[]
           )
         );

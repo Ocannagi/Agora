@@ -5,6 +5,8 @@
 // Learn more about theming and how to use it for your application's
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
+@use '@angular/cdk' as cdk;
+@include cdk.text-field-autofill();
 
 html {
   @include mat.theme((
@@ -40,4 +42,28 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .tooltip-pre .mdc-tooltip__surface {
   white-space: pre-line;   // respeta \n
+}
+
+.mdc-text-field__input {
+  @include cdk.text-field-autofill-color(transparent, inherit);
+}
+
+/* Chrome/Edge */
+.mdc-text-field__input:-webkit-autofill,
+.mdc-text-field__input:-webkit-autofill:hover,
+.mdc-text-field__input:-webkit-autofill:focus,
+.mat-mdc-input-element:-webkit-autofill,
+.mat-mdc-input-element:-webkit-autofill:hover,
+.mat-mdc-input-element:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important; /* quita el fondo amarillo */
+  -webkit-text-fill-color: currentColor !important;              /* mantiene color de texto */
+  caret-color: currentColor;
+  transition: background-color 9999s ease-in-out 0s;              /* evita flash */
+}
+
+/* Firefox */
+.mdc-text-field__input:-moz-autofill,
+.mat-mdc-input-element:-moz-autofill {
+  box-shadow: 0 0 0 1000px transparent inset !important;
+  -moz-text-fill-color: currentColor !important;
 }

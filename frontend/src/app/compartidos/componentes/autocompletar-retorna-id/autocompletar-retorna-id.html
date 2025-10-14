@@ -1,6 +1,6 @@
 <app-mostrar-errores [errores]="store.errors()"></app-mostrar-errores>
 <form (submit)="$event.preventDefault()">
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="fill">
         <mat-label>{{label()}}</mat-label>
         <input #SearchBox type="text" placeholder="{{placeholder()}}" matInput [formControl]="control"
             [matAutocomplete]="auto"

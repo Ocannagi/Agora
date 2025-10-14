@@ -89,7 +89,7 @@ class DomiciliosController extends BaseController
     {
         $mysqli = $this->dbConnection->conectarBD();
         try {
-            $this->securityService->requireLogin(null);
+            //$this->securityService->requireLogin(null);
 
             $data = Input::getArrayBody(msgEntidad: 'el domicilio');
 

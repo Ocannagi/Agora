@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { ValidaControlForm } from '../../servicios/valida-control-form';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IAutocompletarDTO } from '../../interfaces/IAutocompletarDTO';
-import { STORE_AUTOCOMPLETAR_TOKEN } from '../../proveedores/tokens';
 import { formControlSignal } from '../../funciones/formToSignal';
 import { MostrarErrores } from "../mostrar-errores/mostrar-errores";
 import { MatInputModule } from "@angular/material/input";
@@ -25,17 +24,11 @@ export class AutocompletarRetornaId<T extends IAutocompletarDTO> {
   protected control = new FormControl<IAutocompletarDTO | null>(null, [Validators.required]);
   protected store = inject(AutocompletarStore);
 
-  readonly prueba = formControlSignal(this.control);
+
 
 
   constructor() {
     this.store.setFormControlSignal(formControlSignal(this.control));
-
-   /*  effect(() => {
-      console.log('Valor del control:', this.prueba.value());
-      console.log('Estado del control:', this.prueba.status());
-    }); */
-    
   }
 
 

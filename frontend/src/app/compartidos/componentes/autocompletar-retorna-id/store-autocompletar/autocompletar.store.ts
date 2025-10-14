@@ -46,12 +46,14 @@ export const AutocompletarStore = signalStore(
     const noHayRegistros = computed(() => cantidadRegistros() === 0);
     const hayRegistros = computed(() => cantidadRegistros() > 0);
     const statusNoValido = computed(() => store.formControlSignal.status()() !== 'VALID');
-    const hayQueReseterar = computed(() => (statusNoValido() ||  noHayRegistros()
-                                             || store.formControlSignal.value()() === null) 
-                                                    && store.keyword() !== '' && store.modelId() !== null);
+
     const hayResourceError = computed(() => store.resource.status() === 'error');
     const statusValido = computed(() => store.formControlSignal.status()() === 'VALID');
     const hayKeyword = computed(() => store.keyword().length > 0);
+
+    const hayQueReseterar = computed(() => (statusNoValido() || noHayRegistros()
+      || store.formControlSignal.value()() === null)
+      && store.keyword() !== '' && store.modelId() !== null);
 
 
     return {
@@ -69,8 +71,8 @@ export const AutocompletarStore = signalStore(
   }),
   withHooks(store => ({
     onInit: () => {
-      console.log('Autocompletar store init');
-      
+      //console.log('Autocompletar store init');
+
 
       effect(() => {
 
@@ -82,9 +84,9 @@ export const AutocompletarStore = signalStore(
         console.log('cantidadRegistros',store.cantidadRegistros());
         console.log('resourceHasValue',store.resource.hasValue());
  */
-        const hayQueReseterar = store.hayQueReseterar();
-
-        if (hayQueReseterar) {
+        const reset = store.hayQueReseterar();
+        if (reset) {
+          //console.log('Reseteando autocompletar')
           /* console.log('Reseteando autocompletar porque el form es inválido o no hay registros', {
             formStatus: store.formControlSignal.status()(),
             cantidadRegistros: store.cantidadRegistros(),
@@ -99,9 +101,24 @@ export const AutocompletarStore = signalStore(
 
 
       });
+
+      effect(() => {
+        const idDependenciaPadre = store.idDependenciaPadre();
+
+        if (idDependenciaPadre !== null && store.formControlSignal.value()()?.dependenciaId !== idDependenciaPadre) {
+          untracked(() => {
+            store.resetKeyword();
+            store.setModelId(null);
+            store.formControlSignal.value().set(null);
+          });
+        }
+
+      });
+
+
     },
     onDestroy: () => {
-      console.log('Autocompletar store destroy');
+      //console.log('Autocompletar store destroy');
     }
   }))
 );
