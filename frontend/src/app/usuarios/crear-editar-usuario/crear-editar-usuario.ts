@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, Injector, input, numberAttribute, signal, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, Injector, input, numberAttribute, Resource, ResourceRef, signal, untracked } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ValidaControlForm } from '../../compartidos/servicios/valida-control-form';
-import { TipoUsuarioDTO } from '../../seguridad/seguridadDTO';
+import { CredencialesUsuarioDTO, TipoUsuarioDTO } from '../../seguridad/seguridadDTO';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -18,11 +18,13 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { AutocompletarLocalidades } from "../../localidades/autocompletar-localidades/autocompletar-localidades";
 import { AutocompletarProvincias } from "../../provincias/autocompletar-provincias/autocompletar-provincias";
 import { TextFieldModule } from '@angular/cdk/text-field';
-import { DomicilioCreacionDTO } from '../../domicilios/modelo/domicilioDTO';
+import { DomicilioCreacionDTO, DomicilioDTO } from '../../domicilios/modelo/domicilioDTO';
 import { DomiciliosService } from '../../domicilios/domicilios-service';
 import { UsuariosService } from '../usuarios-service';
 import { switchMap } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AutenticacionStore } from '../../seguridad/store/autenticacion.store';
+import { numberAttributeOrNull } from '../../compartidos/funciones/transform';
 
 @Component({
   selector: 'app-crear-editar-usuario',
@@ -34,39 +36,76 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 export class CrearEditarUsuario {
 
   //INPUTS
-  readonly id = input(null, { transform: numberAttribute, alias: 'idPath' });
+  readonly id = input(null, { transform: numberAttributeOrNull });
 
-  protected user?: UsuarioDTO;
 
-  //SERVICES
-  #fb = inject(FormBuilder);
-  #vcf = inject(ValidaControlForm);
-  #destroyRef = inject(DestroyRef);
-  #domService = inject(DomiciliosService);
-  #usrService = inject(UsuariosService);
-  #router = inject(Router);
-
-  protected tipoUsuarioResource = inject(TiposUsuarioService).tiposUsuarioResource();
-
-  
   //COMPUTED & SIGNALS
-  readonly esEdicion = computed(() => Number.isInteger(this.id()));
+  readonly esEdicion = computed(() => this.id() !== null && this.id() !== undefined);
+  readonly esNuevo = computed(() => !this.esEdicion());
   readonly titulo = computed(() => this.esEdicion() ? 'Editar Perfil' : 'Registrar nuevo Usuario');
-  readonly esCargando = computed(() => this.tipoUsuarioResource === null || this.tipoUsuarioResource.isLoading());
-  readonly hayErrores = computed(() => this.tipoUsuarioResource === null ||
-    this.tipoUsuarioResource.status() === 'error' || this.#domService.postError() !== null
-    || this.#usrService.postError() !== null
-  );
+
+  readonly esCargando = computed(() => {
+    const tipoRes = this.tipoUsuarioResource;
+    if (!tipoRes || tipoRes.isLoading())
+      return true;
+
+    if (this.esEdicion()) {
+      const userRes = this.usuarioByIdResource;
+      if (userRes.isLoading())
+        return true;
+
+      const tipoUserRes = this.tipoUsuarioByIdResource;
+      if (tipoUserRes.isLoading())
+        return true;
+    }
+
+    return false;
+  });
+
+  readonly hayErrores = computed(() => {
+    const tipoRes = this.tipoUsuarioResource;
+    if (!tipoRes || tipoRes.status() === 'error')
+      return true;
+
+    if (this.#domService.postError() || this.#usrService.postError())
+      return true;
+
+    if (this.esEdicion()) {
+      const userRes = this.usuarioByIdResource;
+      if (userRes.status() === 'error')
+        return true;
+
+      const tipoUserRes = this.tipoUsuarioByIdResource;
+      if (tipoUserRes.status() === 'error')
+        return true;
+    }
+
+    return false;
+  });
 
   readonly errores = computed(() => {
     if (this.hayErrores()) {
       const lista: string[] = [];
-      if (this.tipoUsuarioResource?.status() === 'error')
-        lista.push((this.tipoUsuarioResource.error() as HttpErrorResponse)?.error as string ?? 'Error desconocido');
+      if (this.tipoUsuarioResource?.status() === 'error') {
+        const wrapped = this.tipoUsuarioResource.error();
+        const httpError = wrapped?.cause as HttpErrorResponse;
+        lista.push(httpError?.error as string ?? wrapped?.message ?? 'Error desconocido');
+      }
       if (this.#domService.postError() !== null)
         lista.push(this.#domService.postError()!);
       if (this.#usrService.postError() !== null)
         lista.push(this.#usrService.postError()!);
+      if (this.esEdicion() && this.usuarioByIdResource.status() === 'error') {
+        const wrapped = this.usuarioByIdResource.error();
+        const httpError = wrapped?.cause as HttpErrorResponse;
+        console.log('HttpErrorResponse real:', httpError);
+        lista.push(httpError?.error as string ?? httpError?.message ?? wrapped?.message ?? 'Error desconocido');
+      }
+      if (this.esEdicion() && this.tipoUsuarioByIdResource.status() === 'error') {
+        const wrapped = this.tipoUsuarioByIdResource.error();
+        const httpError = wrapped?.cause as HttpErrorResponse;
+        lista.push(httpError?.error as string ?? httpError?.message ?? wrapped?.message ?? 'Error desconocido');
+      }
       return lista;
     } else
       return [];
@@ -74,7 +113,26 @@ export class CrearEditarUsuario {
 
   protected readonly maxCaracteresDescripcion = signal(500);
 
+  //SERVICES & INYECCIONES
+  #fb = inject(FormBuilder);
+  #vcf = inject(ValidaControlForm);
+  #destroyRef = inject(DestroyRef);
+  #injector = inject(Injector);
+  #tipoUsrService = inject(TiposUsuarioService);
+  #domService = inject(DomiciliosService);
+  #usrService = inject(UsuariosService);
+  #router = inject(Router);
+  #authStore = inject(AutenticacionStore)
 
+  //RESOURCES
+
+  protected tipoUsuarioResource = this.#tipoUsrService.tiposUsuarioResource();
+
+  protected usuarioByIdResource = this.#usrService.getByIdResource(this.id, this.#injector).asReadonly();
+
+  //protected tipoUsuarioByIdResource : Resource<TipoUsuarioDTO>;
+
+  protected tipoUsuarioByIdResource = this.#tipoUsrService.getByIdResource(this.usuarioByIdResource.value, this.#injector).asReadonly();
 
   //FORMULARIOS
 
@@ -105,12 +163,12 @@ export class CrearEditarUsuario {
 
 
   // CONTROLES TO SIGNAL Y VALIDACIONES ESPECIALES
-  readonly ctrlTipoUsuario = formControlSignal(this.formUsuario.get('usrTipoUsuario') as FormControl<TipoUsuarioDTO | null>);
+  readonly ctrlTipoUsuarioSignal = formControlSignal(this.formUsuario.get('usrTipoUsuario') as FormControl<TipoUsuarioDTO | null>);
   readonly ctrlProvinciaSignal = formControlSignal(this.formUsuario.get('domicilio')?.get('provId') as FormControl<number | null>);
   readonly ctrlLocalidadSignal = formControlSignal(this.formUsuario.get('domicilio')?.get('locId') as FormControl<number | null>);
 
   readonly requiereMatricula = computed(() => {
-    const tipo = this.ctrlTipoUsuario.value();
+    const tipo = this.ctrlTipoUsuarioSignal.value();
     if (!tipo) return false;
     return tipo.ttuRequiereMatricula;
   });
@@ -145,6 +203,32 @@ export class CrearEditarUsuario {
       console.log('status matricula', this.ctrlMatriculaSignal.status());
     });
 
+    effect(() => {
+      console.log("esEdicion:", this.esEdicion());
+      console.log("id:", this.id());
+      if (this.esEdicion()) {
+
+        console.log('Cargando usuario y tipo usuario para edición...');
+
+        const userRes = this.usuarioByIdResource;
+        const tipoUserRes = this.tipoUsuarioByIdResource;
+
+        console.log('tipoUsuarioByIdResource value:', tipoUserRes.value());
+        console.log('usuarioByIdResource value:', userRes.value());
+
+        if (userRes.status() === 'resolved' && tipoUserRes.status() === 'resolved'
+          && userRes.value().usrId !== undefined && userRes.value().usrId !== null
+          && tipoUserRes.value().ttuTipoUsuario !== undefined && tipoUserRes.value().ttuTipoUsuario !== null) {
+          untracked(() => {
+            this.mapearUsuarioDTOAFormulario(userRes.value());
+            this.mapearDomicilioDTOAFormulario(userRes.value().domicilio);
+            //this.ctrlTipoUsuarioSignal.disabled.set(true);
+
+          });
+        }
+      }
+    });
+
     this.#destroyRef.onDestroy(() => {
       this.#domService.postError.set(null);
       this.#usrService.postError.set(null);
@@ -170,7 +254,27 @@ export class CrearEditarUsuario {
     }
 
     if (this.esEdicion()) {
-      // editar
+      const domCreacionEd = this.formDomicilio.value as DomicilioCreacionDTO;
+      this.#domService.create(domCreacionEd).pipe(
+        switchMap((domId: number) => {
+          console.log('domId tras crear domicilio: ', domId);
+          // Luego de crear el domicilio, editar el usuario
+          const usrCreacionEd = this.mapearFormularioAUsuarioCreacion(domId);
+          console.log('Editando usuario: ', usrCreacionEd);
+          return this.#usrService.update(this.id()!, usrCreacionEd);
+        }),
+        takeUntilDestroyed(this.#destroyRef)).subscribe({
+          next: () => {
+            if (this.#authStore.usrId() === this.id()!) {
+              this.#authStore.login({ usrEmail: this.formUsuario.get('usrEmail')?.value!, usrPassword: this.formUsuario.get('usrPassword')?.value! } as CredencialesUsuarioDTO);
+            }
+            this.#router.navigate(['/usuarios']);
+          },
+          error: (err: HttpErrorResponse) => {
+            console.error('Error en la edición del usuario: ', err);
+            //this.#usrService.patchError.set(String(err.error ?? 'Error desconocido al editar usuario.'));
+          }
+        });
     } else {
       //crear
       const domCreacion = this.formDomicilio.value as DomicilioCreacionDTO;
@@ -185,11 +289,12 @@ export class CrearEditarUsuario {
         }),
         takeUntilDestroyed(this.#destroyRef)).subscribe({
           next: () => {
-            this.#router.navigate(['/login']);
+            this.#authStore.login({ usrEmail: this.formUsuario.get('usrEmail')?.value!, usrPassword: this.formUsuario.get('usrPassword')?.value! } as CredencialesUsuarioDTO);
+            //this.#router.navigate(['/login']);
           },
           error: (err: HttpErrorResponse) => {
             console.error('Error en la creación del usuario: ', err);
-            this.#usrService.postError.set(String(err.error ?? 'Error desconocido al crear usuario.'));
+            //this.#usrService.postError.set(String(err.error ?? 'Error desconocido al crear usuario.'));
           }
         });
     }
@@ -199,7 +304,7 @@ export class CrearEditarUsuario {
     return {
       usrApellido: this.formUsuario.get('usrApellido')?.value!,
       usrNombre: this.formUsuario.get('usrNombre')?.value!,
-      usrTipoUsuario: this.ctrlTipoUsuario.value()!.ttuTipoUsuario,
+      usrTipoUsuario: this.ctrlTipoUsuarioSignal.value()!.ttuTipoUsuario,
       usrFechaNacimiento: (this.formUsuario.get('usrFechaNacimiento')?.value as Date)
         .toISOString().split('T')[0],
       usrDni: this.formUsuario.get('usrDni')?.value!,
@@ -212,6 +317,41 @@ export class CrearEditarUsuario {
       domId,
       usrScoring: 0, // Valor por defecto al crear un usuario
     };
+  }
+
+  private mapearUsuarioDTOAFormulario(user: UsuarioDTO) {
+    this.formUsuario.patchValue({
+      usrApellido: user.usrApellido,
+      usrNombre: user.usrNombre,
+      usrFechaNacimiento: user.usrFechaNacimiento ? new Date(user.usrFechaNacimiento) : null,
+      usrDni: user.usrDni,
+      usrCuitCuil: user.usrCuitCuil,
+      usrRazonSocialFantasia: user.usrRazonSocialFantasia,
+      usrMatricula: user.usrMatricula,
+      usrEmail: user.usrEmail,
+      usrDescripcion: user.usrDescripcion,
+      usrPassword: null,
+    });
+
+    console.log('Tipo usuario al mapear:', this.tipoUsuarioByIdResource.value());
+    this.formUsuario.get('usrTipoUsuario')?.setValue(this.tipoUsuarioByIdResource.value());
+    console.log('Control tipo usuario tras setValue:', this.formUsuario.get('usrTipoUsuario')?.value);
+    this.formUsuario.patchValue({
+      usrTipoUsuario: this.tipoUsuarioByIdResource?.value()
+    });
+  }
+
+  private mapearDomicilioDTOAFormulario(dom: DomicilioDTO) {
+    this.formDomicilio.patchValue({
+      domCPA: dom.domCPA,
+      domCalleRuta: dom.domCalleRuta,
+      domNroKm: dom.domNroKm,
+      domPiso: dom.domPiso,
+      domDepto: dom.domDepto,
+    });
+
+    this.ctrlLocalidadSignal.value.set(dom.localidad.locId);
+    this.ctrlProvinciaSignal.value.set(dom.localidad.provincia.provId);
   }
 
   ConsoleValidFormulario() {
@@ -240,6 +380,10 @@ export class CrearEditarUsuario {
       formDomicilioValue: this.formDomicilio.value,
     });
   }
+
+  protected compararTipoUsuario = (a: TipoUsuarioDTO | null, b: TipoUsuarioDTO | null): boolean => {
+    return a && b ? a.ttuTipoUsuario === b.ttuTipoUsuario : a === b;
+  };
 
 
 }

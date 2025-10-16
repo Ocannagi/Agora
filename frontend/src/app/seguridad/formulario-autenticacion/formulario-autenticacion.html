@@ -2,7 +2,7 @@
 
 <app-mostrar-errores [errores]="errores()"></app-mostrar-errores>
 
-<form (submit)="saveChanges()" [formGroup]="frmAutenticacion">
+<form (ngSubmit)="saveChanges()" [formGroup]="frmAutenticacion">
     <mat-form-field appearance="outline">
         <mat-label>Email</mat-label>
         <input matInput formControlName="usrEmail"/>

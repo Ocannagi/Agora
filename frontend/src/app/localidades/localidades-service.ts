@@ -47,4 +47,22 @@ export class LocalidadesService implements IServiceAutocompletar<LocalidadAutoco
     });
   };
 
+  public getByIdAutocompletarResource(id: () => number | null, injector: Injector = inject(Injector)): ResourceRef<LocalidadAutocompletarDTO> {
+    return rxResource<LocalidadAutocompletarDTO, number | null>({
+      stream: () => {
+        if(id() === null){
+          return of({} as LocalidadAutocompletarDTO);
+        }
+        return this.http.get<LocalidadDTO>(`${this.urlBase}/${id()}`).pipe(
+          map(loc => ({
+            id: loc.locId,
+            descripcion: loc.locDescripcion,
+            dependenciaId: loc.provincia.provId
+          } as LocalidadAutocompletarDTO))
+        );
+      },
+      defaultValue: {} as LocalidadAutocompletarDTO,
+      injector: injector
+    });
+  }
 }

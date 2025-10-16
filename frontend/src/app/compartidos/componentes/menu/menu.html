@@ -40,7 +40,7 @@
     <app-autorizado [esAutorizado]="store.isLoggedIn()" style="display: inline;">
         <ng-container autorizado>
             <!-- reemplazar el span -->
-            <button mat-button disableRipple class="saludo-btn" disabled>Hola, {{store.usrNombre()}}</button>
+            <button mat-button class="saludo-btn" [routerLink]="'/usuarios/editar/' + store.usrId()">Hola, {{store.usrNombre()}}</button>
             <!-- (click)="logout()" -->
             <a mat-button [swal]="{title: 'Logout', text: '¿Estás seguro de que deseas cerrar sesión?', icon: 'warning', showCancelButton: true}" (confirm)="store.logout()">Logout</a>
         </ng-container>

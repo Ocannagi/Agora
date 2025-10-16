@@ -11,7 +11,7 @@
         [displayWith]="displayText"
         (optionSelected)="store.setModelId($event.option.value.id)">
         @if(!store.hayError()) {
-            @for (registro of store.resource.value(); track $index) {
+            @for (registro of store.resourceAll.value(); track $index) {
             <mat-option [value]="registro">
                 {{registro.descripcion}}
             </mat-option>

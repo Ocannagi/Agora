@@ -1,10 +1,11 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, Injector, ResourceRef, signal } from '@angular/core';
 import { environment } from '../environments/environment.development';
-import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams} from '@angular/common/http';
 import { Observable } from 'rxjs/internal/Observable';
 import { RetornaId } from '../compartidos/modelo/RetornaId';
-import { DomicilioCreacionDTO } from './modelo/domicilioDTO';
-import { catchError, throwError, tap, map, of } from 'rxjs';
+import { DomicilioCreacionDTO, DomicilioDTO } from './modelo/domicilioDTO';
+import { catchError, throwError, map, of } from 'rxjs';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root'
@@ -36,5 +37,14 @@ export class DomiciliosService {
         return throwError(() => err);
       })
     );
+  }
+
+  public getByIdResource(id : number, injector: Injector = inject(Injector)) : ResourceRef<DomicilioDTO> {
+    return rxResource<DomicilioDTO, HttpParams>({
+      params: () => new HttpParams().set('id', id),
+      stream: (options) => this.http.get<DomicilioDTO>(this.urlBase, { params: options.params }),
+      defaultValue: {} as DomicilioDTO,
+      injector: injector
+    });
   }
 }

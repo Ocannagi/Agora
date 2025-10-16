@@ -49,7 +49,7 @@
 
     <mat-form-field>
       <mat-label>Tipo Usuario</mat-label>
-      <mat-select formControlName="usrTipoUsuario">
+      <mat-select formControlName="usrTipoUsuario" [compareWith]="compararTipoUsuario">
         <mat-option>--Seleccione--</mat-option>
         @if (tipoUsuarioResource.status() !== 'error') {
           @for (tipoUsuario of tipoUsuarioResource.value(); track tipoUsuario) {
@@ -108,10 +108,12 @@
 
       <app-autocompletar-provincias
         (idProv)="ctrlProvinciaSignal.value.set($event)"
+        [selectedId]="ctrlProvinciaSignal.value()"
       />
       <app-autocompletar-localidades
         [idProv]="ctrlProvinciaSignal.value()"
         (idLoc)="ctrlLocalidadSignal.value.set($event)"
+        [selectedId]="ctrlLocalidadSignal.value()"
       ></app-autocompletar-localidades>
 
       <mat-form-field appearance="fill">

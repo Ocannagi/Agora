@@ -58,6 +58,7 @@ class UsuariosController extends BaseController
             settype($id, 'integer');
             $this->securityService->requireLogin(tipoUsurio: null);
 
+            //No retorna el password
             $query = "  SELECT   usrId, usrDni, usrNombre, usrApellido
                             , domId, domCPA, domCalleRuta, domNroKm, domPiso, domDepto, locId, locDescripcion, provId, provDescripcion
                            , usrRazonSocialFantasia, usrCuitCuil, usrEmail

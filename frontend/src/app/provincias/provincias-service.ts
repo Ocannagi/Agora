@@ -40,4 +40,23 @@ export class ProvinciasService implements IServiceAutocompletar<ProvinciaAutocom
     });
   };
 
+  public getByIdAutocompletarResource(id: () => number | null, injector: Injector = inject(Injector)): ResourceRef<ProvinciaAutocompletarDTO> {
+      return rxResource<ProvinciaAutocompletarDTO, number | null>({
+        stream: () => {
+          if(id() === null){
+            return of({} as ProvinciaAutocompletarDTO);
+          }
+          return this.http.get<ProvinciaDTO>(`${this.urlBase}/${id()}`).pipe(
+            map(prov => ({
+              id: prov.provId,
+              descripcion: prov.provDescripcion,
+              dependenciaId: null
+            } as ProvinciaAutocompletarDTO))
+          );
+        },
+        defaultValue: {} as ProvinciaAutocompletarDTO,
+        injector: injector
+      });
+    }
+
 }

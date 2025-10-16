@@ -65,4 +65,26 @@ class TiposUsuarioController extends BaseController
             }
         }
     }
+
+    public function getTiposUsuarioById($id)
+    {
+        try {
+            settype($id, 'string');
+            $this->securityService->requireLogin(null);
+
+            $query =  "SELECT * FROM tipousuario WHERE ttuTipoUsuario = '$id'";
+
+            return parent::getById(query: $query, classDTO: "TipoUsuarioDTO");
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
+    }
 }

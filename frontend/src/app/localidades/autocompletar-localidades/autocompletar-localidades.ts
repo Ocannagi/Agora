@@ -22,6 +22,7 @@ export class AutocompletarLocalidades {
   readonly store = inject(AutocompletarStore);
   readonly idProv = input<number | null>(null);
   readonly idLoc = output<number | null>();
+  readonly selectedId = input<number | null>(null);
   
 
 
@@ -32,6 +33,11 @@ export class AutocompletarLocalidades {
 
       this.idLoc.emit(idLoc);
       untracked(() => this.store.setIdDependenciaPadre(idProv));
+    });
+
+    effect(() => {
+      const selectedId = this.selectedId();
+      untracked(() => this.store.setSelectedId(selectedId));
     });
 
     

@@ -1,6 +1,6 @@
 import { patchState, signalStore, withComputed, withHooks, withMethods, withProps, withState } from "@ngrx/signals";
 import { autocompletarInitialState } from "./autocompletar.slice";
-import { computed, effect, inject, InjectionToken, Injector, untracked } from "@angular/core";
+import { computed, effect, inject, Injector, untracked } from "@angular/core";
 import { IServiceAutocompletar } from "../../../interfaces/IServiceAutocompletar";
 import { SERVICIO_AUTOCOMPLETAR_TOKEN } from "../../../proveedores/tokens";
 import { FormControlSignal } from "../../../funciones/formToSignal";
@@ -12,13 +12,17 @@ export const AutocompletarStore = signalStore(
   withProps((store) => {
     const _injector = inject(Injector);
     const _service = inject(SERVICIO_AUTOCOMPLETAR_TOKEN) as IServiceAutocompletar<IAutocompletarDTO>;
-    const _resource = _service.autocompletarResource(store.keyword, _injector, store.idDependenciaPadre);
-    const resource = _resource.asReadonly();
+    const _resourceAll = _service.autocompletarResource(store.keyword, _injector, store.idDependenciaPadre);
+    const resourceAll = _resourceAll.asReadonly();
+    const _resourceById =  _service.getByIdAutocompletarResource(store.selectedId, _injector);
+    const resourceById = _resourceById.asReadonly();
 
     return {
       _injector,
-      _resource,
-      resource
+      _resourceAll,
+      resourceAll,
+      _resourceById,
+      resourceById
     };
   }),
   withMethods((store) => {
@@ -26,6 +30,7 @@ export const AutocompletarStore = signalStore(
     const setIdDependenciaPadre = (id: number | null) => patchState(store, { idDependenciaPadre: id });
     const setModelId = (id: number | null) => patchState(store, { modelId: id });
     const setFormControlSignal = (formControlSignal: FormControlSignal<IAutocompletarDTO | null>) => patchState(store, { formControlSignal });
+    const setSelectedId = (id: number | null) => patchState(store, { selectedId: id });
     const resetStore = () => patchState(store, autocompletarInitialState);
     const resetKeyword = () => patchState(store, { keyword: '' });
 
@@ -34,20 +39,51 @@ export const AutocompletarStore = signalStore(
       setIdDependenciaPadre,
       setModelId,
       setFormControlSignal,
+      setSelectedId,
       resetStore,
       resetKeyword
     };
   }),
   withComputed((store) => {
 
-    const hayError = computed(() => store.resource === null || store.resource.status() === 'error');
-    const errors = computed(() => hayError() ? [(store.resource.error() as HttpErrorResponse)?.error as string ?? 'Error desconocido'] : []);
-    const cantidadRegistros = computed(() => store.resource.value().length);
+    const resourceAll = store.resourceAll;
+    const resourceById = store.resourceById;
+
+    const haySelectedId = computed(() => store.selectedId !== null && store.selectedId !== undefined && store.selectedId() !== null && store.selectedId() !== undefined);
+
+    const hayResourceAllError = computed(() => resourceAll === null || resourceAll.status() === 'error');
+    const hayResourceByIdError = computed(() => haySelectedId() && resourceById.status() === 'error');
+
+    const hayError = computed(() => {
+      if (hayResourceByIdError()) {
+        return true;
+      }
+      if (hayResourceAllError()) {
+        return true;
+      }
+      return false;
+    });
+
+    const errors = computed(() => {
+      if (hayError()) {
+        const listaErrores: string[] = [];
+        
+        if (hayResourceByIdError()) {
+          listaErrores.push((resourceById.error()?.cause as HttpErrorResponse)?.error as string ?? 'Error desconocido');
+        }
+        if (hayResourceAllError()) {
+          listaErrores.push((resourceAll.error()?.cause as HttpErrorResponse)?.error as string ?? 'Error desconocido');
+        }
+        return listaErrores;
+      } else
+        return [];
+    });
+    const cantidadRegistros = computed(() => store.resourceAll.value().length);
     const noHayRegistros = computed(() => cantidadRegistros() === 0);
     const hayRegistros = computed(() => cantidadRegistros() > 0);
     const statusNoValido = computed(() => store.formControlSignal.status()() !== 'VALID');
 
-    const hayResourceError = computed(() => store.resource.status() === 'error');
+    
     const statusValido = computed(() => store.formControlSignal.status()() === 'VALID');
     const hayKeyword = computed(() => store.keyword().length > 0);
 
@@ -55,18 +91,27 @@ export const AutocompletarStore = signalStore(
       || store.formControlSignal.value()() === null)
       && store.keyword() !== '' && store.modelId() !== null);
 
+    const selectedItem = computed(() => {
+      if (haySelectedId() && resourceById.status() === 'resolved') {
+        return resourceById.value();
+      }
+      return null;
+    });
 
     return {
       hayError,
       errors,
       cantidadRegistros,
       noHayRegistros,
+      haySelectedId,
       hayRegistros,
       hayQueReseterar,
-      hayResourceError,
+      hayResourceAllError,
+      hayResourceByIdError,
       statusValido,
       statusNoValido,
-      hayKeyword
+      hayKeyword,
+      selectedItem
     }
   }),
   withHooks(store => ({
@@ -95,7 +140,7 @@ export const AutocompletarStore = signalStore(
           untracked(() => {
             store.resetKeyword();
             store.setModelId(null);
-            store._resource.reload();
+            store._resourceAll.reload(); // Es necesario?
           });
         }
 
@@ -112,9 +157,19 @@ export const AutocompletarStore = signalStore(
             store.formControlSignal.value().set(null);
           });
         }
-
       });
 
+      effect(() => {
+        const item = store.selectedItem();
+        if (item !== null && item.id !== store.modelId()) {
+          //console.log('Seteando modelId desde selectedItem', item);
+          untracked(() => {
+            store.formControlSignal.value().set(item);
+            store.setModelId(item.id);
+            store.setKeyword(item.descripcion);
+          });
+        }
+      });
 
     },
     onDestroy: () => {
