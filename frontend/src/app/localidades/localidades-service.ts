@@ -19,19 +19,33 @@ export class LocalidadesService implements IServiceAutocompletar<LocalidadAutoco
   public autocompletarResource(
     locDescripcion: () => string | null,
     injector: Injector = inject(Injector),
-    provinciaId?: () => number | null
+    provinciaId?: () => number | null,
+    selectedId?: () => number | null
   ): ResourceRef<LocalidadAutocompletarDTO[]> {
     return rxResource<LocalidadAutocompletarDTO[], HttpParams>({
       params: () => buildQueryParams({
         provId: provinciaId?.() ?? null,
-        locDescripcion: locDescripcion() ?? ''
+        locDescripcion: locDescripcion() ?? '',
+        selectedId: selectedId?.() ?? null
       }),
       stream: (options) => {
         const prov = options.params.get('params[provId]');
         const desc = (options.params.get('params[locDescripcion]') ?? '').trim();
+        const selId = options.params.get('params[selectedId]');
+
+        if (selId !== null) {
+          return this.http.get<LocalidadDTO>(`${this.urlBase}/${selId}`).pipe(
+            map(loc => ([{
+            id: loc.locId,
+            descripcion: loc.locDescripcion,
+            dependenciaId: loc.provincia.provId
+          }] as LocalidadAutocompletarDTO[])));
+        }
+
         if (/* desc === '' ||  */prov === null) {
           return of([] as LocalidadAutocompletarDTO[]);
         }
+        
         return this.http.get<LocalidadDTO[]>(this.urlBase, { params: options.params }).pipe(
           map(localidades =>
             localidades.map(loc => ({
@@ -47,7 +61,7 @@ export class LocalidadesService implements IServiceAutocompletar<LocalidadAutoco
     });
   };
 
-  public getByIdAutocompletarResource(id: () => number | null, injector: Injector = inject(Injector)): ResourceRef<LocalidadAutocompletarDTO> {
+/*   public getByIdAutocompletarResource(id: () => number | null, injector: Injector = inject(Injector)): ResourceRef<LocalidadAutocompletarDTO> {
     return rxResource<LocalidadAutocompletarDTO, number | null>({
       stream: () => {
         if(id() === null){
@@ -64,5 +78,5 @@ export class LocalidadesService implements IServiceAutocompletar<LocalidadAutoco
       defaultValue: {} as LocalidadAutocompletarDTO,
       injector: injector
     });
-  }
+  } */
 }

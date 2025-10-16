@@ -12,17 +12,17 @@ export const AutocompletarStore = signalStore(
   withProps((store) => {
     const _injector = inject(Injector);
     const _service = inject(SERVICIO_AUTOCOMPLETAR_TOKEN) as IServiceAutocompletar<IAutocompletarDTO>;
-    const _resourceAll = _service.autocompletarResource(store.keyword, _injector, store.idDependenciaPadre);
+    const _resourceAll = _service.autocompletarResource(store.keyword, _injector, store.idDependenciaPadre, store.selectedId);
+    // const _resourceById = _service.getByIdAutocompletarResource(store.modelId, _injector);
+    // const resourceById = _resourceById.asReadonly();
     const resourceAll = _resourceAll.asReadonly();
-    const _resourceById =  _service.getByIdAutocompletarResource(store.selectedId, _injector);
-    const resourceById = _resourceById.asReadonly();
 
     return {
       _injector,
       _resourceAll,
       resourceAll,
-      _resourceById,
-      resourceById
+      // _resourceById,
+      // resourceById
     };
   }),
   withMethods((store) => {
@@ -47,17 +47,17 @@ export const AutocompletarStore = signalStore(
   withComputed((store) => {
 
     const resourceAll = store.resourceAll;
-    const resourceById = store.resourceById;
+    //const resourceById = store.resourceById;
 
     const haySelectedId = computed(() => store.selectedId !== null && store.selectedId !== undefined && store.selectedId() !== null && store.selectedId() !== undefined);
 
     const hayResourceAllError = computed(() => resourceAll === null || resourceAll.status() === 'error');
-    const hayResourceByIdError = computed(() => haySelectedId() && resourceById.status() === 'error');
+    //const hayResourceByIdError = computed(() => haySelectedId() && resourceById.status() === 'error');
 
     const hayError = computed(() => {
-      if (hayResourceByIdError()) {
-        return true;
-      }
+      // if (hayResourceByIdError()) {
+      //   return true;
+      // } 
       if (hayResourceAllError()) {
         return true;
       }
@@ -68,9 +68,9 @@ export const AutocompletarStore = signalStore(
       if (hayError()) {
         const listaErrores: string[] = [];
         
-        if (hayResourceByIdError()) {
-          listaErrores.push((resourceById.error()?.cause as HttpErrorResponse)?.error as string ?? 'Error desconocido');
-        }
+        // if (hayResourceByIdError()) {
+        //   listaErrores.push((resourceById.error()?.cause as HttpErrorResponse)?.error as string ?? 'Error desconocido');
+        // }
         if (hayResourceAllError()) {
           listaErrores.push((resourceAll.error()?.cause as HttpErrorResponse)?.error as string ?? 'Error desconocido');
         }
@@ -92,8 +92,8 @@ export const AutocompletarStore = signalStore(
       && store.keyword() !== '' && store.modelId() !== null);
 
     const selectedItem = computed(() => {
-      if (haySelectedId() && resourceById.status() === 'resolved') {
-        return resourceById.value();
+      if (haySelectedId() && /*resourceById*/ resourceAll.status() === 'resolved' && resourceAll.hasValue() && cantidadRegistros() === 1) {
+        return /*resourceById*/ resourceAll.value();
       }
       return null;
     });
@@ -107,7 +107,7 @@ export const AutocompletarStore = signalStore(
       hayRegistros,
       hayQueReseterar,
       hayResourceAllError,
-      hayResourceByIdError,
+      //hayResourceByIdError,
       statusValido,
       statusNoValido,
       hayKeyword,
@@ -161,15 +161,18 @@ export const AutocompletarStore = signalStore(
 
       effect(() => {
         const item = store.selectedItem();
-        if (item !== null && item.id !== store.modelId()) {
+        if (item !== null && item[0].id !== store.modelId()) {
           //console.log('Seteando modelId desde selectedItem', item);
           untracked(() => {
-            store.formControlSignal.value().set(item);
-            store.setModelId(item.id);
-            store.setKeyword(item.descripcion);
+            store.formControlSignal.value().set(item[0]);
+            store.setModelId(item[0].id);
+            store.setKeyword(item[0].descripcion);
           });
         }
       });
+      
+      //PENSAR COMO HACER PARA QUE CUANDO SE VUELVE A ESCRIBIR LA KEYWORD, SE LIMPIE EL SELECTEDID Y EL MODELID
+      
 
     },
     onDestroy: () => {

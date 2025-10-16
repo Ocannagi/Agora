@@ -4,8 +4,9 @@ export interface IServiceAutocompletar<IAutocompletarDTO> {
   autocompletarResource: (
     keyword: () => string | null,
     injector: Injector,
-    idDependenciaPadre?: () => number | null
+    idDependenciaPadre?: () => number | null,
+    selectedId?: () => number | null
   ) => ResourceRef<IAutocompletarDTO[]>;
 
-  getByIdAutocompletarResource: (id: () => number | null, injector: Injector) => ResourceRef<IAutocompletarDTO>;
+  //getByIdAutocompletarResource: (id: () => number | null, injector: Injector) => ResourceRef<IAutocompletarDTO>;
 }

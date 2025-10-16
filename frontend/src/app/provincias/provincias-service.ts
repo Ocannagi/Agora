@@ -18,13 +18,28 @@ export class ProvinciasService implements IServiceAutocompletar<ProvinciaAutocom
   public autocompletarResource(
     provDescripcion: () => string | null,
     injector: Injector = inject(Injector),
-    dependenciaIdId?: () => number | null
+    dependenciaIdId?: () => number | null,
+    selectedId?: () => number | null
   ): ResourceRef<ProvinciaAutocompletarDTO[]> {
     return rxResource<ProvinciaAutocompletarDTO[], HttpParams>({
       params: () => buildQueryParams({
-        provDescripcion: provDescripcion() ?? ''
+        provDescripcion: provDescripcion() ?? '',
+        selectedId: selectedId?.() ?? null
       }),
       stream: (options) => {
+        const desc = (options.params.get('params[provDescripcion]') ?? '').trim();
+        const selId = options.params.get('params[selectedId]');
+
+        if (selId !== null) {
+          return this.http.get<ProvinciaDTO>(`${this.urlBase}/${selId}`).pipe(
+            map(prov => ([{
+              id: prov.provId,
+              descripcion: prov.provDescripcion,
+              dependenciaId: null
+            }] as ProvinciaAutocompletarDTO[]))
+          );
+        }
+
         return this.http.get<ProvinciaDTO[]>(this.urlBase, { params: options.params }).pipe(
           map(provincias =>
             provincias.map(prov => ({
@@ -40,7 +55,7 @@ export class ProvinciasService implements IServiceAutocompletar<ProvinciaAutocom
     });
   };
 
-  public getByIdAutocompletarResource(id: () => number | null, injector: Injector = inject(Injector)): ResourceRef<ProvinciaAutocompletarDTO> {
+  /* public getByIdAutocompletarResource(id: () => number | null, injector: Injector = inject(Injector)): ResourceRef<ProvinciaAutocompletarDTO> {
       return rxResource<ProvinciaAutocompletarDTO, number | null>({
         stream: () => {
           if(id() === null){
@@ -58,5 +73,5 @@ export class ProvinciasService implements IServiceAutocompletar<ProvinciaAutocom
         injector: injector
       });
     }
-
+ */
 }
