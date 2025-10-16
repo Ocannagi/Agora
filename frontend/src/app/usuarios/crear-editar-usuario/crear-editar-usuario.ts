@@ -54,9 +54,9 @@ export class CrearEditarUsuario {
       if (userRes.isLoading())
         return true;
 
-      const tipoUserRes = this.tipoUsuarioByIdResource;
-      if (tipoUserRes.isLoading())
-        return true;
+      // const tipoUserRes = this.tipoUsuarioByIdResource;
+      // if (tipoUserRes.isLoading())
+      //   return true;
     }
 
     return false;
@@ -75,9 +75,9 @@ export class CrearEditarUsuario {
       if (userRes.status() === 'error')
         return true;
 
-      const tipoUserRes = this.tipoUsuarioByIdResource;
-      if (tipoUserRes.status() === 'error')
-        return true;
+      // const tipoUserRes = this.tipoUsuarioByIdResource;
+      // if (tipoUserRes.status() === 'error')
+      //   return true;
     }
 
     return false;
@@ -101,11 +101,11 @@ export class CrearEditarUsuario {
         console.log('HttpErrorResponse real:', httpError);
         lista.push(httpError?.error as string ?? httpError?.message ?? wrapped?.message ?? 'Error desconocido');
       }
-      if (this.esEdicion() && this.tipoUsuarioByIdResource.status() === 'error') {
-        const wrapped = this.tipoUsuarioByIdResource.error();
-        const httpError = wrapped?.cause as HttpErrorResponse;
-        lista.push(httpError?.error as string ?? httpError?.message ?? wrapped?.message ?? 'Error desconocido');
-      }
+      // if (this.esEdicion() && this.tipoUsuarioByIdResource.status() === 'error') {
+      //   const wrapped = this.tipoUsuarioByIdResource.error();
+      //   const httpError = wrapped?.cause as HttpErrorResponse;
+      //   lista.push(httpError?.error as string ?? httpError?.message ?? wrapped?.message ?? 'Error desconocido');
+      // }
       return lista;
     } else
       return [];
@@ -132,7 +132,7 @@ export class CrearEditarUsuario {
 
   //protected tipoUsuarioByIdResource : Resource<TipoUsuarioDTO>;
 
-  protected tipoUsuarioByIdResource = this.#tipoUsrService.getByIdResource(this.usuarioByIdResource.value, this.#injector).asReadonly();
+  //protected tipoUsuarioByIdResource = this.#tipoUsrService.getByIdResource(this.usuarioByIdResource.value, this.#injector).asReadonly();
 
   //FORMULARIOS
 
@@ -211,14 +211,14 @@ export class CrearEditarUsuario {
         console.log('Cargando usuario y tipo usuario para edición...');
 
         const userRes = this.usuarioByIdResource;
-        const tipoUserRes = this.tipoUsuarioByIdResource;
+        //const tipoUserRes = this.tipoUsuarioByIdResource;
 
-        console.log('tipoUsuarioByIdResource value:', tipoUserRes.value());
+        //console.log('tipoUsuarioByIdResource value:', tipoUserRes.value());
         console.log('usuarioByIdResource value:', userRes.value());
 
-        if (userRes.status() === 'resolved' && tipoUserRes.status() === 'resolved'
+        if (userRes.status() === 'resolved' /* && tipoUserRes.status() === 'resolved' */
           && userRes.value().usrId !== undefined && userRes.value().usrId !== null
-          && tipoUserRes.value().ttuTipoUsuario !== undefined && tipoUserRes.value().ttuTipoUsuario !== null) {
+          /* && tipoUserRes.value().ttuTipoUsuario !== undefined && tipoUserRes.value().ttuTipoUsuario !== null */) {
           untracked(() => {
             this.mapearUsuarioDTOAFormulario(userRes.value());
             this.mapearDomicilioDTOAFormulario(userRes.value().domicilio);
@@ -333,12 +333,17 @@ export class CrearEditarUsuario {
       usrPassword: null,
     });
 
-    console.log('Tipo usuario al mapear:', this.tipoUsuarioByIdResource.value());
-    this.formUsuario.get('usrTipoUsuario')?.setValue(this.tipoUsuarioByIdResource.value());
-    console.log('Control tipo usuario tras setValue:', this.formUsuario.get('usrTipoUsuario')?.value);
-    this.formUsuario.patchValue({
-      usrTipoUsuario: this.tipoUsuarioByIdResource?.value()
-    });
+    //console.log('Tipo usuario al mapear:', this.tipoUsuarioByIdResource.value());
+
+    const tipoUsr = untracked(() => this.tipoUsuarioResource.value()?.find(t => t.ttuTipoUsuario === user.usrTipoUsuario) ?? null);
+    
+    this.ctrlTipoUsuarioSignal.value.set(tipoUsr);
+
+    // this.formUsuario.get('usrTipoUsuario')?.setValue(this.tipoUsuarioByIdResource.value());
+    // console.log('Control tipo usuario tras setValue:', this.formUsuario.get('usrTipoUsuario')?.value);
+    // this.formUsuario.patchValue({
+    //   usrTipoUsuario: this.tipoUsuarioByIdResource?.value()
+    // });
   }
 
   private mapearDomicilioDTOAFormulario(dom: DomicilioDTO) {
