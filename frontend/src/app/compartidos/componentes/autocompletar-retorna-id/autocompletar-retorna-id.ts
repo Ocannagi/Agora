@@ -19,7 +19,6 @@ export class AutocompletarRetornaId<T extends IAutocompletarDTO> {
 
   readonly label = input.required<string>();
   readonly placeholder = input.required<string>();
-  readonly selectedId = input<number | null>(null);
   
   private validaForm = inject(ValidaControlForm);
   protected control = new FormControl<IAutocompletarDTO | null>(null, [Validators.required]);
@@ -30,12 +29,6 @@ export class AutocompletarRetornaId<T extends IAutocompletarDTO> {
 
   constructor() {
     this.store.setFormControlSignal(formControlSignal(this.control));
-
-    effect(() => {
-      const selectedId = this.selectedId();
-      console.log('AutocompletarRetornaId - selectedId cambiado:', selectedId);
-      untracked(() => this.store.setSelectedId(selectedId));
-    });
   }
 
 

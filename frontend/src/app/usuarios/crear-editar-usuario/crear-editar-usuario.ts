@@ -355,8 +355,15 @@ export class CrearEditarUsuario {
       domDepto: dom.domDepto,
     });
 
-    this.ctrlLocalidadSignal.value.set(dom.localidad.locId);
+    console.log('Provincia al mapear:', dom.localidad.provincia.provId);
     this.ctrlProvinciaSignal.value.set(dom.localidad.provincia.provId);
+    console.log('valor del ctrlProvinciaSignal:', this.ctrlProvinciaSignal.value());
+
+    console.log('Localidad al mapear:', dom.localidad.locId);
+    this.ctrlLocalidadSignal.value.set(dom.localidad.locId);
+    console.log('valor del ctrlLocalidadSignal:', this.ctrlLocalidadSignal.value());
+
+    
   }
 
   ConsoleValidFormulario() {

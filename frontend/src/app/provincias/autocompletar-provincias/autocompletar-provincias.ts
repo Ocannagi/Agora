@@ -29,6 +29,7 @@ export class AutocompletarProvincias {
 
     effect(() => {
       const selectedId = this.selectedId();
+      console.log('AutocompletarRetornaId Provincia - selectedId cambiado:', selectedId);
       untracked(() => this.store.setSelectedId(selectedId));
     });
   }

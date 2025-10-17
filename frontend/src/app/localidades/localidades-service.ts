@@ -24,14 +24,13 @@ export class LocalidadesService implements IServiceAutocompletar<LocalidadAutoco
   ): ResourceRef<LocalidadAutocompletarDTO[]> {
     return rxResource<LocalidadAutocompletarDTO[], HttpParams>({
       params: () => buildQueryParams({
-        provId: provinciaId?.() ?? null,
+        provId: provinciaId?.() ?? '',
         locDescripcion: locDescripcion() ?? '',
-        selectedId: selectedId?.() ?? null
       }),
       stream: (options) => {
         const prov = options.params.get('params[provId]');
         const desc = (options.params.get('params[locDescripcion]') ?? '').trim();
-        const selId = options.params.get('params[selectedId]');
+        const selId = selectedId?.() ?? null;
 
         if (selId !== null) {
           return this.http.get<LocalidadDTO>(`${this.urlBase}/${selId}`).pipe(
@@ -42,7 +41,7 @@ export class LocalidadesService implements IServiceAutocompletar<LocalidadAutoco
           }] as LocalidadAutocompletarDTO[])));
         }
 
-        if (/* desc === '' ||  */prov === null) {
+        if (/* desc === '' ||  */prov === '') {
           return of([] as LocalidadAutocompletarDTO[]);
         }
         

@@ -13,9 +13,9 @@ import { AutocompletarStore } from '../../compartidos/componentes/autocompletar-
   templateUrl: './autocompletar-localidades.html',
   styleUrl: './autocompletar-localidades.scss',
   providers: [
-      {provide: SERVICIO_AUTOCOMPLETAR_TOKEN, useClass: LocalidadesService},
-      AutocompletarStore,
-    ],
+    { provide: SERVICIO_AUTOCOMPLETAR_TOKEN, useClass: LocalidadesService },
+    AutocompletarStore,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AutocompletarLocalidades {
@@ -23,7 +23,7 @@ export class AutocompletarLocalidades {
   readonly idProv = input<number | null>(null);
   readonly idLoc = output<number | null>();
   readonly selectedId = input<number | null>(null);
-  
+
 
 
   constructor() {
@@ -37,11 +37,13 @@ export class AutocompletarLocalidades {
 
     effect(() => {
       const selectedId = this.selectedId();
+      console.log('AutocompletarRetornaId Localidad - selectedId cambiado:', selectedId);
       untracked(() => this.store.setSelectedId(selectedId));
+      console.log('store Localidad SelectedId después de setear:', this.store.selectedId());
     });
 
-    
+
   }
-  
+
 
 }

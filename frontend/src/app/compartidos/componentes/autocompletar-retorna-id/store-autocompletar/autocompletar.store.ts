@@ -67,7 +67,7 @@ export const AutocompletarStore = signalStore(
     const errors = computed(() => {
       if (hayError()) {
         const listaErrores: string[] = [];
-        
+
         // if (hayResourceByIdError()) {
         //   listaErrores.push((resourceById.error()?.cause as HttpErrorResponse)?.error as string ?? 'Error desconocido');
         // }
@@ -81,10 +81,10 @@ export const AutocompletarStore = signalStore(
     const cantidadRegistros = computed(() => store.resourceAll.value().length);
     const noHayRegistros = computed(() => cantidadRegistros() === 0);
     const hayRegistros = computed(() => cantidadRegistros() > 0);
-    const statusNoValido = computed(() => store.formControlSignal.status()() !== 'VALID');
+    const statusNoValido = computed(() => store.formControlSignal.status()() === 'INVALID');
 
-    
-    const statusValido = computed(() => store.formControlSignal.status()() === 'VALID');
+
+    const statusValido = computed(() => store.formControlSignal.status()() !== 'INVALID');
     const hayKeyword = computed(() => store.keyword().length > 0);
 
     const hayQueReseterar = computed(() => (statusNoValido() || noHayRegistros()
@@ -137,6 +137,8 @@ export const AutocompletarStore = signalStore(
             cantidadRegistros: store.cantidadRegistros(),
             modelId: store.modelId()
           }); */
+
+          console.log('Reseteando autocompletar porque el form es inválido o no hay registros');
           untracked(() => {
             store.resetKeyword();
             store.setModelId(null);
@@ -149,8 +151,10 @@ export const AutocompletarStore = signalStore(
 
       effect(() => {
         const idDependenciaPadre = store.idDependenciaPadre();
+        const haySelectedId = store.haySelectedId();
 
-        if (idDependenciaPadre !== null && store.formControlSignal.value()()?.dependenciaId !== idDependenciaPadre) {
+        if (idDependenciaPadre !== null && store.formControlSignal.value()()?.dependenciaId !== idDependenciaPadre && !haySelectedId) {
+          console.log('Cambiando dependenciaIdPadre, reseteando autocompletar');
           untracked(() => {
             store.resetKeyword();
             store.setModelId(null);
@@ -161,6 +165,8 @@ export const AutocompletarStore = signalStore(
 
       effect(() => {
         const item = store.selectedItem();
+        const haySelectedId = store.haySelectedId();
+        const keyword = store.keyword();
         if (item !== null && item[0].id !== store.modelId()) {
           //console.log('Seteando modelId desde selectedItem', item);
           untracked(() => {
@@ -169,10 +175,16 @@ export const AutocompletarStore = signalStore(
             store.setKeyword(item[0].descripcion);
           });
         }
+
+        if (haySelectedId && item !== null && keyword !== item[0].descripcion) {
+          untracked(() => {
+            store.setSelectedId(null);
+            store.setModelId(null);
+            store._resourceAll.reload();
+          });
+        }
+ 
       });
-      
-      //PENSAR COMO HACER PARA QUE CUANDO SE VUELVE A ESCRIBIR LA KEYWORD, SE LIMPIE EL SELECTEDID Y EL MODELID
-      
 
     },
     onDestroy: () => {
