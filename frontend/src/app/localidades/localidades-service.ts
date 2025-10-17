@@ -20,7 +20,6 @@ export class LocalidadesService implements IServiceAutocompletar<LocalidadAutoco
     locDescripcion: () => string | null,
     injector: Injector = inject(Injector),
     provinciaId?: () => number | null,
-    selectedId?: () => number | null
   ): ResourceRef<LocalidadAutocompletarDTO[]> {
     return rxResource<LocalidadAutocompletarDTO[], HttpParams>({
       params: () => buildQueryParams({
@@ -29,17 +28,6 @@ export class LocalidadesService implements IServiceAutocompletar<LocalidadAutoco
       }),
       stream: (options) => {
         const prov = options.params.get('params[provId]');
-        const desc = (options.params.get('params[locDescripcion]') ?? '').trim();
-        const selId = selectedId?.() ?? null;
-
-        if (selId !== null) {
-          return this.http.get<LocalidadDTO>(`${this.urlBase}/${selId}`).pipe(
-            map(loc => ([{
-            id: loc.locId,
-            descripcion: loc.locDescripcion,
-            dependenciaId: loc.provincia.provId
-          }] as LocalidadAutocompletarDTO[])));
-        }
 
         if (/* desc === '' ||  */prov === '') {
           return of([] as LocalidadAutocompletarDTO[]);

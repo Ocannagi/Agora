@@ -12,7 +12,7 @@ export const AutocompletarStore = signalStore(
   withProps((store) => {
     const _injector = inject(Injector);
     const _service = inject(SERVICIO_AUTOCOMPLETAR_TOKEN) as IServiceAutocompletar<IAutocompletarDTO>;
-    const _resourceAll = _service.autocompletarResource(store.keyword, _injector, store.idDependenciaPadre, store.selectedId);
+    const _resourceAll = _service.autocompletarResource(store.keyword, _injector, store.idDependenciaPadre);
     // const _resourceById = _service.getByIdAutocompletarResource(store.modelId, _injector);
     // const resourceById = _resourceById.asReadonly();
     const resourceAll = _resourceAll.asReadonly();
@@ -30,7 +30,6 @@ export const AutocompletarStore = signalStore(
     const setIdDependenciaPadre = (id: number | null) => patchState(store, { idDependenciaPadre: id });
     const setModelId = (id: number | null) => patchState(store, { modelId: id });
     const setFormControlSignal = (formControlSignal: FormControlSignal<IAutocompletarDTO | null>) => patchState(store, { formControlSignal });
-    const setSelectedId = (id: number | null) => patchState(store, { selectedId: id });
     const resetStore = () => patchState(store, autocompletarInitialState);
     const resetKeyword = () => patchState(store, { keyword: '' });
 
@@ -39,7 +38,6 @@ export const AutocompletarStore = signalStore(
       setIdDependenciaPadre,
       setModelId,
       setFormControlSignal,
-      setSelectedId,
       resetStore,
       resetKeyword
     };
@@ -48,8 +46,6 @@ export const AutocompletarStore = signalStore(
 
     const resourceAll = store.resourceAll;
     //const resourceById = store.resourceById;
-
-    const haySelectedId = computed(() => store.selectedId !== null && store.selectedId !== undefined && store.selectedId() !== null && store.selectedId() !== undefined);
 
     const hayResourceAllError = computed(() => resourceAll === null || resourceAll.status() === 'error');
     //const hayResourceByIdError = computed(() => haySelectedId() && resourceById.status() === 'error');
@@ -91,19 +87,11 @@ export const AutocompletarStore = signalStore(
       || store.formControlSignal.value()() === null)
       && store.keyword() !== '' && store.modelId() !== null);
 
-    const selectedItem = computed(() => {
-      if (haySelectedId() && /*resourceById*/ resourceAll.status() === 'resolved' && resourceAll.hasValue() && cantidadRegistros() === 1) {
-        return /*resourceById*/ resourceAll.value();
-      }
-      return null;
-    });
-
     return {
       hayError,
       errors,
       cantidadRegistros,
       noHayRegistros,
-      haySelectedId,
       hayRegistros,
       hayQueReseterar,
       hayResourceAllError,
@@ -111,7 +99,6 @@ export const AutocompletarStore = signalStore(
       statusValido,
       statusNoValido,
       hayKeyword,
-      selectedItem
     }
   }),
   withHooks(store => ({
@@ -151,9 +138,8 @@ export const AutocompletarStore = signalStore(
 
       effect(() => {
         const idDependenciaPadre = store.idDependenciaPadre();
-        const haySelectedId = store.haySelectedId();
 
-        if (idDependenciaPadre !== null && store.formControlSignal.value()()?.dependenciaId !== idDependenciaPadre && !haySelectedId) {
+        if (idDependenciaPadre !== null && store.formControlSignal.value()()?.dependenciaId !== idDependenciaPadre) {
           console.log('Cambiando dependenciaIdPadre, reseteando autocompletar');
           untracked(() => {
             store.resetKeyword();
@@ -161,29 +147,6 @@ export const AutocompletarStore = signalStore(
             store.formControlSignal.value().set(null);
           });
         }
-      });
-
-      effect(() => {
-        const item = store.selectedItem();
-        const haySelectedId = store.haySelectedId();
-        const keyword = store.keyword();
-        if (item !== null && item[0].id !== store.modelId()) {
-          //console.log('Seteando modelId desde selectedItem', item);
-          untracked(() => {
-            store.formControlSignal.value().set(item[0]);
-            store.setModelId(item[0].id);
-            store.setKeyword(item[0].descripcion);
-          });
-        }
-
-        if (haySelectedId && item !== null && keyword !== item[0].descripcion) {
-          untracked(() => {
-            store.setSelectedId(null);
-            store.setModelId(null);
-            store._resourceAll.reload();
-          });
-        }
- 
       });
 
     },

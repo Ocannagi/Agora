@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, output, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, model, output, untracked } from '@angular/core';
 import { AutocompletarRetornaId } from "../../compartidos/componentes/autocompletar-retorna-id/autocompletar-retorna-id";
 import { AutocompletarStore } from '../../compartidos/componentes/autocompletar-retorna-id/store-autocompletar/autocompletar.store';
 import { SERVICIO_AUTOCOMPLETAR_TOKEN } from '../../compartidos/proveedores/tokens';
@@ -18,7 +18,7 @@ import { ProvinciasService } from '../provincias-service';
 export class AutocompletarProvincias {
   readonly store = inject(AutocompletarStore);
   readonly idProv = output<number | null>();
-  readonly selectedId = input<number | null>(null);
+  readonly keyword = model<string>('');
 
   constructor() {
     effect(() => {
@@ -28,10 +28,10 @@ export class AutocompletarProvincias {
     });
 
     effect(() => {
-      const selectedId = this.selectedId();
-      console.log('AutocompletarRetornaId Provincia - selectedId cambiado:', selectedId);
-      untracked(() => this.store.setSelectedId(selectedId));
+      const keyword = this.keyword();
+      this.store.setKeyword(keyword);
     });
+
   }
 
 }

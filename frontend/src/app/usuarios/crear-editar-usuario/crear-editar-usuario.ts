@@ -51,7 +51,7 @@ export class CrearEditarUsuario {
 
     if (this.esEdicion()) {
       const userRes = this.usuarioByIdResource;
-      if (userRes.isLoading())
+      if (userRes?.isLoading())
         return true;
 
       // const tipoUserRes = this.tipoUsuarioByIdResource;
@@ -72,7 +72,7 @@ export class CrearEditarUsuario {
 
     if (this.esEdicion()) {
       const userRes = this.usuarioByIdResource;
-      if (userRes.status() === 'error')
+      if (userRes?.status() === 'error')
         return true;
 
       // const tipoUserRes = this.tipoUsuarioByIdResource;
@@ -95,8 +95,8 @@ export class CrearEditarUsuario {
         lista.push(this.#domService.postError()!);
       if (this.#usrService.postError() !== null)
         lista.push(this.#usrService.postError()!);
-      if (this.esEdicion() && this.usuarioByIdResource.status() === 'error') {
-        const wrapped = this.usuarioByIdResource.error();
+      if (this.esEdicion() && this.usuarioByIdResource?.status() === 'error') {
+        const wrapped = this.usuarioByIdResource?.error();
         const httpError = wrapped?.cause as HttpErrorResponse;
         console.log('HttpErrorResponse real:', httpError);
         lista.push(httpError?.error as string ?? httpError?.message ?? wrapped?.message ?? 'Error desconocido');
@@ -111,7 +111,10 @@ export class CrearEditarUsuario {
       return [];
   });
 
-  protected readonly maxCaracteresDescripcion = signal(500);
+  readonly maxCaracteresDescripcion = signal(500);
+
+  readonly provinciaEditDescripcion = signal<string>('');
+  readonly localidadEditDescripcion = signal<string>('');
 
   //SERVICES & INYECCIONES
   #fb = inject(FormBuilder);
@@ -128,7 +131,7 @@ export class CrearEditarUsuario {
 
   protected tipoUsuarioResource = this.#tipoUsrService.tiposUsuarioResource();
 
-  protected usuarioByIdResource = this.#usrService.getByIdResource(this.id, this.#injector).asReadonly();
+  protected usuarioByIdResource = this.#usrService.getByIdResource(this.id, this.#injector);
 
   //protected tipoUsuarioByIdResource : Resource<TipoUsuarioDTO>;
 
@@ -216,13 +219,14 @@ export class CrearEditarUsuario {
         //console.log('tipoUsuarioByIdResource value:', tipoUserRes.value());
         console.log('usuarioByIdResource value:', userRes.value());
 
-        if (userRes.status() === 'resolved' /* && tipoUserRes.status() === 'resolved' */
-          && userRes.value().usrId !== undefined && userRes.value().usrId !== null
+        if (userRes?.status() === 'resolved' /* && tipoUserRes.status() === 'resolved' */
+          && userRes?.value().usrId !== undefined && userRes?.value().usrId !== null
           /* && tipoUserRes.value().ttuTipoUsuario !== undefined && tipoUserRes.value().ttuTipoUsuario !== null */) {
           untracked(() => {
             this.mapearUsuarioDTOAFormulario(userRes.value());
             this.mapearDomicilioDTOAFormulario(userRes.value().domicilio);
-            //this.ctrlTipoUsuarioSignal.disabled.set(true);
+            this.ctrlTipoUsuarioSignal.disabled.set(true);
+            this.usuarioByIdResource?.destroy();
 
           });
         }
@@ -355,13 +359,8 @@ export class CrearEditarUsuario {
       domDepto: dom.domDepto,
     });
 
-    console.log('Provincia al mapear:', dom.localidad.provincia.provId);
-    this.ctrlProvinciaSignal.value.set(dom.localidad.provincia.provId);
-    console.log('valor del ctrlProvinciaSignal:', this.ctrlProvinciaSignal.value());
-
-    console.log('Localidad al mapear:', dom.localidad.locId);
-    this.ctrlLocalidadSignal.value.set(dom.localidad.locId);
-    console.log('valor del ctrlLocalidadSignal:', this.ctrlLocalidadSignal.value());
+    this.provinciaEditDescripcion.set(dom.localidad.provincia.provDescripcion);
+    this.localidadEditDescripcion.set(dom.localidad.locDescripcion);
 
     
   }

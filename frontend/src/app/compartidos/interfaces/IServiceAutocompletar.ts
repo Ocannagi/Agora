@@ -5,7 +5,6 @@ export interface IServiceAutocompletar<IAutocompletarDTO> {
     keyword: () => string | null,
     injector: Injector,
     idDependenciaPadre?: () => number | null,
-    selectedId?: () => number | null
   ) => ResourceRef<IAutocompletarDTO[]>;
 
   //getByIdAutocompletarResource: (id: () => number | null, injector: Injector) => ResourceRef<IAutocompletarDTO>;

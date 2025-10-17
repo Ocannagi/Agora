@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, output, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, model, output, untracked } from '@angular/core';
 import { MatInputModule } from "@angular/material/input";
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -22,7 +22,7 @@ export class AutocompletarLocalidades {
   readonly store = inject(AutocompletarStore);
   readonly idProv = input<number | null>(null);
   readonly idLoc = output<number | null>();
-  readonly selectedId = input<number | null>(null);
+  readonly keyword = model<string>('');
 
 
 
@@ -36,12 +36,9 @@ export class AutocompletarLocalidades {
     });
 
     effect(() => {
-      const selectedId = this.selectedId();
-      console.log('AutocompletarRetornaId Localidad - selectedId cambiado:', selectedId);
-      untracked(() => this.store.setSelectedId(selectedId));
-      console.log('store Localidad SelectedId después de setear:', this.store.selectedId());
+      const keyword = this.keyword();
+      this.store.setKeyword(keyword);
     });
-
 
   }
 
