@@ -108,12 +108,12 @@
 
       <app-autocompletar-provincias
         (idProv)="ctrlProvinciaSignal.value.set($event)"
-        [(keyword)]="provinciaEditDescripcion"
+        [keywordExterno]="provinciaEditDescripcion()"
       />
       <app-autocompletar-localidades
         [idProv]="ctrlProvinciaSignal.value()"
         (idLoc)="ctrlLocalidadSignal.value.set($event)"
-        [(keyword)]="localidadEditDescripcion"
+        [keywordExterno]="localidadEditDescripcion()"
       ></app-autocompletar-localidades>
 
       <mat-form-field appearance="fill">

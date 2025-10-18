@@ -159,7 +159,6 @@ export const AutenticacionStore = signalStore(
     ),
     withHooks(store => ({
         onInit(){
-            console.log('Inicializando Store autenticación');
 
             const persisted : Signal<PersistedAutenticacionSlice> = computed(() => ({ jwt: store.jwt() }));
             const saved = localStorage.getItem(store._seguridadService.keyToken);
@@ -182,7 +181,7 @@ export const AutenticacionStore = signalStore(
             });
         },
         onDestroy(){
-            console.log('Destruyendo Store autenticación');
+
         }
     }))
     

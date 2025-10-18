@@ -40,13 +40,14 @@ export class ProvinciasService implements IServiceAutocompletar<ProvinciaAutocom
     });
   };
 
-  /* public getByIdAutocompletarResource(id: () => number | null, injector: Injector = inject(Injector)): ResourceRef<ProvinciaAutocompletarDTO> {
+  public getByIdAutocompletarResource(id: () => number | null, injector: Injector = inject(Injector)): ResourceRef<ProvinciaAutocompletarDTO> {
       return rxResource<ProvinciaAutocompletarDTO, number | null>({
-        stream: () => {
-          if(id() === null){
+        params: () => id(),
+        stream: (options) => {
+          if (options.params === null) {
             return of({} as ProvinciaAutocompletarDTO);
           }
-          return this.http.get<ProvinciaDTO>(`${this.urlBase}/${id()}`).pipe(
+          return this.http.get<ProvinciaDTO>(`${this.urlBase}/${options.params}`).pipe(
             map(prov => ({
               id: prov.provId,
               descripcion: prov.provDescripcion,
@@ -58,5 +59,5 @@ export class ProvinciasService implements IServiceAutocompletar<ProvinciaAutocom
         injector: injector
       });
     }
- */
+
 }

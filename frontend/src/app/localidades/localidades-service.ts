@@ -48,13 +48,14 @@ export class LocalidadesService implements IServiceAutocompletar<LocalidadAutoco
     });
   };
 
-/*   public getByIdAutocompletarResource(id: () => number | null, injector: Injector = inject(Injector)): ResourceRef<LocalidadAutocompletarDTO> {
+  public getByIdAutocompletarResource(id: () => number | null, injector: Injector = inject(Injector)): ResourceRef<LocalidadAutocompletarDTO> {
     return rxResource<LocalidadAutocompletarDTO, number | null>({
-      stream: () => {
-        if(id() === null){
+      params: () => id(),
+      stream: (options) => {
+        if (options.params === null) {
           return of({} as LocalidadAutocompletarDTO);
         }
-        return this.http.get<LocalidadDTO>(`${this.urlBase}/${id()}`).pipe(
+        return this.http.get<LocalidadDTO>(`${this.urlBase}/${options.params}`).pipe(
           map(loc => ({
             id: loc.locId,
             descripcion: loc.locDescripcion,
@@ -65,5 +66,5 @@ export class LocalidadesService implements IServiceAutocompletar<LocalidadAutoco
       defaultValue: {} as LocalidadAutocompletarDTO,
       injector: injector
     });
-  } */
+  }
 }

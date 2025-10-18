@@ -98,7 +98,6 @@ export class CrearEditarUsuario {
       if (this.esEdicion() && this.usuarioByIdResource?.status() === 'error') {
         const wrapped = this.usuarioByIdResource?.error();
         const httpError = wrapped?.cause as HttpErrorResponse;
-        console.log('HttpErrorResponse real:', httpError);
         lista.push(httpError?.error as string ?? httpError?.message ?? wrapped?.message ?? 'Error desconocido');
       }
       // if (this.esEdicion() && this.tipoUsuarioByIdResource.status() === 'error') {
@@ -203,25 +202,23 @@ export class CrearEditarUsuario {
       if (!reqMatricula && (this.ctrlMatriculaSignal.value() ?? '') !== '') {
         untracked(() => this.ctrlMatriculaSignal.value.set(''));
       }
-      console.log('status matricula', this.ctrlMatriculaSignal.status());
+
     });
 
     effect(() => {
-      console.log("esEdicion:", this.esEdicion());
-      console.log("id:", this.id());
+
       if (this.esEdicion()) {
 
-        console.log('Cargando usuario y tipo usuario para edición...');
 
         const userRes = this.usuarioByIdResource;
-        //const tipoUserRes = this.tipoUsuarioByIdResource;
 
-        //console.log('tipoUsuarioByIdResource value:', tipoUserRes.value());
-        console.log('usuarioByIdResource value:', userRes.value());
 
-        if (userRes?.status() === 'resolved' /* && tipoUserRes.status() === 'resolved' */
+
+
+
+        if (userRes?.status() === 'resolved'
           && userRes?.value().usrId !== undefined && userRes?.value().usrId !== null
-          /* && tipoUserRes.value().ttuTipoUsuario !== undefined && tipoUserRes.value().ttuTipoUsuario !== null */) {
+) {
           untracked(() => {
             this.mapearUsuarioDTOAFormulario(userRes.value());
             this.mapearDomicilioDTOAFormulario(userRes.value().domicilio);
@@ -261,10 +258,10 @@ export class CrearEditarUsuario {
       const domCreacionEd = this.formDomicilio.value as DomicilioCreacionDTO;
       this.#domService.create(domCreacionEd).pipe(
         switchMap((domId: number) => {
-          console.log('domId tras crear domicilio: ', domId);
+
           // Luego de crear el domicilio, editar el usuario
           const usrCreacionEd = this.mapearFormularioAUsuarioCreacion(domId);
-          console.log('Editando usuario: ', usrCreacionEd);
+
           return this.#usrService.update(this.id()!, usrCreacionEd);
         }),
         takeUntilDestroyed(this.#destroyRef)).subscribe({
@@ -276,7 +273,6 @@ export class CrearEditarUsuario {
           },
           error: (err: HttpErrorResponse) => {
             console.error('Error en la edición del usuario: ', err);
-            //this.#usrService.patchError.set(String(err.error ?? 'Error desconocido al editar usuario.'));
           }
         });
     } else {
@@ -284,21 +280,18 @@ export class CrearEditarUsuario {
       const domCreacion = this.formDomicilio.value as DomicilioCreacionDTO;
       this.#domService.create(domCreacion).pipe(
         switchMap((domId: number) => {
-          console.log('domId tras crear domicilio: ', domId);
-          // Luego de crear el domicilio, crear el usuario
+
           const usrCreacion = this.mapearFormularioAUsuarioCreacion(domId);
-          console.log('Creando usuario: ', usrCreacion);
+
           return this.#usrService.create(usrCreacion);
 
         }),
         takeUntilDestroyed(this.#destroyRef)).subscribe({
           next: () => {
             this.#authStore.login({ usrEmail: this.formUsuario.get('usrEmail')?.value!, usrPassword: this.formUsuario.get('usrPassword')?.value! } as CredencialesUsuarioDTO);
-            //this.#router.navigate(['/login']);
           },
           error: (err: HttpErrorResponse) => {
             console.error('Error en la creación del usuario: ', err);
-            //this.#usrService.postError.set(String(err.error ?? 'Error desconocido al crear usuario.'));
           }
         });
     }
@@ -337,17 +330,11 @@ export class CrearEditarUsuario {
       usrPassword: null,
     });
 
-    //console.log('Tipo usuario al mapear:', this.tipoUsuarioByIdResource.value());
-
     const tipoUsr = untracked(() => this.tipoUsuarioResource.value()?.find(t => t.ttuTipoUsuario === user.usrTipoUsuario) ?? null);
     
     this.ctrlTipoUsuarioSignal.value.set(tipoUsr);
 
-    // this.formUsuario.get('usrTipoUsuario')?.setValue(this.tipoUsuarioByIdResource.value());
-    // console.log('Control tipo usuario tras setValue:', this.formUsuario.get('usrTipoUsuario')?.value);
-    // this.formUsuario.patchValue({
-    //   usrTipoUsuario: this.tipoUsuarioByIdResource?.value()
-    // });
+
   }
 
   private mapearDomicilioDTOAFormulario(dom: DomicilioDTO) {

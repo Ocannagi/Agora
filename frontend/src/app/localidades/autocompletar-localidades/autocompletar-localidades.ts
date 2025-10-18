@@ -22,11 +22,13 @@ export class AutocompletarLocalidades {
   readonly store = inject(AutocompletarStore);
   readonly idProv = input<number | null>(null);
   readonly idLoc = output<number | null>();
-  readonly keyword = model<string>('');
+  readonly keywordExterno = input<string>('');
 
 
 
   constructor() {
+    this.store.setHayDependenciaPadre(true);
+
     effect(() => {
       const idProv = this.idProv();
       const idLoc = this.store.modelId();
@@ -36,8 +38,8 @@ export class AutocompletarLocalidades {
     });
 
     effect(() => {
-      const keyword = this.keyword();
-      this.store.setKeyword(keyword);
+      const keywordExterno = this.keywordExterno();
+      untracked(() => this.store.setKeywordExterno(keywordExterno));
     });
 
   }

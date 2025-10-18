@@ -18,7 +18,7 @@ import { ProvinciasService } from '../provincias-service';
 export class AutocompletarProvincias {
   readonly store = inject(AutocompletarStore);
   readonly idProv = output<number | null>();
-  readonly keyword = model<string>('');
+  readonly keywordExterno = input<string>('');
 
   constructor() {
     effect(() => {
@@ -28,8 +28,8 @@ export class AutocompletarProvincias {
     });
 
     effect(() => {
-      const keyword = this.keyword();
-      this.store.setKeyword(keyword);
+      const keywordExterno = this.keywordExterno();
+      untracked(() => this.store.setKeywordExterno(keywordExterno));
     });
 
   }

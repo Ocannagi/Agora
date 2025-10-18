@@ -4,10 +4,12 @@
         <mat-label>{{label()}}</mat-label>
         <input #SearchBox type="text" placeholder="{{placeholder()}}" matInput [formControl]="control"
             [matAutocomplete]="auto"
-            (input)="store.setKeyword(SearchBox.value)" (click)="store.noHayRegistros() && store.hayKeyword() ? store.resetKeyword() : null" 
+            #autoTrigger="matAutocompleteTrigger"
+            (input)="store.setKeyword(SearchBox.value)" 
+            (click)="store.noHayRegistros() && store.hayKeyword() ? store.resetKeyword() : null" 
             (blur)="store.hayRegistros() && store.statusNoValido() ? store.resetKeyword() : null"/>
         <mat-error>{{obtenerErrorCampo(label())}}</mat-error>
-        <mat-autocomplete requireSelection="true" autoActiveFirstOption  #auto
+        <mat-autocomplete requireSelection="true" autoActiveFirstOption autoSelectActiveOption #auto
         [displayWith]="displayText"
         (optionSelected)="store.setModelId($event.option.value.id)">
         @if(!store.hayError()) {
