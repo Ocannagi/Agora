@@ -40,9 +40,10 @@ class UsuariosController extends BaseController
         $mysqli = $this->dbConnection->conectarBD();
         try {
             $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::soporteTecnicoToArray());
-            if (is_array($paginado)){
-                if(array_key_exists('pagina', $paginado) && array_key_exists('registrosPorPagina', $paginado)) {
-                    if(!Input::esNotNullVacioBlanco($paginado['pagina']) || !Input::esNotNullVacioBlanco($paginado['registrosPorPagina'])){
+            
+            if (is_array($paginado)) {
+                if (array_key_exists('pagina', $paginado) && array_key_exists('registrosPorPagina', $paginado)) {
+                    if (!Input::esNotNullVacioBlanco($paginado['pagina']) || !Input::esNotNullVacioBlanco($paginado['registrosPorPagina'])) {
                         throw new InvalidArgumentException("Los parámetros 'pagina' y 'registrosPorPagina' no pueden estar vacíos.");
                     }
 
@@ -55,10 +56,14 @@ class UsuariosController extends BaseController
                     $offset = ($pagina - 1) * $paginado['registrosPorPagina'];
 
                     // Obtener total de registros
-                    
+
                     $total = Querys::obtenerCount(link: $mysqli, base: "usuario", where: "usrFechaBaja is NULL", msg: "obtener el total de usuarios para paginado");
                     $query = "SELECT usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario FROM usuario WHERE usrFechaBaja is NULL LIMIT $registrosPorPagina OFFSET $offset";
+                    
+                    
+                    
                     $arrayUsuarios = $this->getInterno(query: $query, classDTO: UsuarioMinDTO::class, linkExterno: $mysqli);
+
                     $paginadoResponseDTO = new PaginadoResponseDTO([
                         'totalRegistros' => $total,
                         'paginaActual' => $pagina,
@@ -67,18 +72,14 @@ class UsuariosController extends BaseController
                     ]);
 
                     Output::outputJson($paginadoResponseDTO);
-
-
                 } else {
                     throw new InvalidArgumentException("Faltan los parámetros 'pagina' o 'registrosPorPagina'.");
                 }
-
-            }
-            else{
+            } else {
                 throw new InvalidArgumentException("El paginado debe ser un array asociativo.");
             }
-            
-            
+
+
             settype($paginado, 'integer');
             $offset = ($paginado - 1) * 10;
             return parent::get(query: "SELECT usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario FROM usuario WHERE usrFechaBaja is NULL LIMIT 10 OFFSET $offset", classDTO: UsuarioMinDTO::class);
@@ -155,6 +156,7 @@ class UsuariosController extends BaseController
     {
         $mysqli = $this->dbConnection->conectarBD();
         try {
+            $mysqli->begin_transaction(); // Iniciar transacción
             $data = Input::getArrayBody(msgEntidad: "el usuario");
 
             $this->usuariosValidacionService->validarType(className: UsuarioCreacionDTO::class, datos: $data);
@@ -173,8 +175,30 @@ class UsuariosController extends BaseController
                         $usuarioCreacionDTO->usrTipoUsuario, $usuarioCreacionDTO->usrMatricula, {$usuarioCreacionDTO->domicilio->domId}, $usuarioCreacionDTO->usrFechaNacimiento, $usuarioCreacionDTO->usrDescripcion, $usuarioCreacionDTO->usrEmail,
                         $hashPassword)";
 
-            return parent::post(query: $query, link: $mysqli);
+            $resultado = $mysqli->query($query);
+            if ($resultado === false) {
+                $error = $mysqli->error;
+                throw new mysqli_sql_exception(code: 500, message: 'Falló la consulta: ' . $error);
+            }
+
+            $usrId = $mysqli->insert_id;
+
+            $queryUsrDom = "INSERT INTO usuariodomicilio (udomUsr, udomDom) VALUES ($usrId, {$usuarioCreacionDTO->domicilio->domId})";
+
+            $resultadoUsrDom = $mysqli->query($queryUsrDom);
+            if ($resultadoUsrDom === false) {
+                $error = $mysqli->error;
+                throw new mysqli_sql_exception(code: 500, message: 'Falló la consulta: ' . $error);
+            }
+
+            $mysqli->commit(); // Confirmar transacción si todo sale bien
+            Output::outputJson(['id' => $usrId]);
         } catch (\Throwable $th) {
+
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                $mysqli->rollback(); // Revertir transacción en caso de error
+            }
+
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
@@ -191,11 +215,12 @@ class UsuariosController extends BaseController
         }
     }
 
-
+    //TODO: Agregar modificación a UsuariosDomicilio al modificar usuario
     public function patchUsuarios($id)
     {
         $mysqli = $this->dbConnection->conectarBD();
         try {
+            $mysqli->begin_transaction(); // Iniciar transacción
             $this->securityService->requireLogin(tipoUsurio: null);
             settype($id, 'integer');
 
@@ -220,8 +245,32 @@ class UsuariosController extends BaseController
             usrScoring = $usuarioDTO->usrScoring, usrEmail = $usuarioDTO->usrEmail,
             usrPassword = $hashPassword WHERE usrId = $usuarioDTO->usrId AND usrFechaBaja IS NULL";
 
-            return parent::patch($query, $mysqli);
+            $resultado = $mysqli->query($query);
+            if ($resultado === false) {
+                $error = $mysqli->error;
+                throw new mysqli_sql_exception(code: 500, message: 'Falló la consulta: ' . $error);
+            }
+
+            if (!Querys::existeEnBD(link: $mysqli, query: "SELECT 1 FROM usuariodomicilio WHERE udomUsr = $id AND udomDom = {$usuarioDTO->domicilio->domId} AND udomFechaBaja IS NULL", msg: "verificar existencia de usuario domicilio")) {
+                $query = "INSERT INTO usuariodomicilio (udomUsr, udomDom) VALUES ($id, {$usuarioDTO->domicilio->domId})";
+                $resultado = $mysqli->query($query);
+                if ($resultado === false) {
+                    $error = $mysqli->error;
+                    throw new mysqli_sql_exception(code: 500, message: 'Falló la consulta: ' . $error);
+                }
+            }
+
+            $mysqli->commit(); // Confirmar transacción si todo sale bien
+            $ret = [];
+            Output::outputJson($ret, 201);
+
+            
         } catch (\Throwable $th) {
+
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                $mysqli->rollback(); // Revertir transacción en caso de error
+            }
+
             if ($th instanceof InvalidArgumentException) {
                 Output::outputError(400, $th->getMessage());
             } elseif ($th instanceof mysqli_sql_exception) {
@@ -280,7 +329,7 @@ class UsuariosController extends BaseController
             $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::soporteTecnicoToArray());
             settype($id, 'integer');
 
-            if(Querys::existeEnBD(link: $mysqli, query: "SELECT 1 FROM antiguedadalaventa WHERE aavUsrIdVendedor = $id AND aavFechaRetiro IS NULL AND aavHayVenta = FALSE", msg: "comprobar si el usuario tiene antigüedades a la venta sin retirar en la base de datos."))
+            if (Querys::existeEnBD(link: $mysqli, query: "SELECT 1 FROM antiguedadalaventa WHERE aavUsrIdVendedor = $id AND aavFechaRetiro IS NULL AND aavHayVenta = FALSE", msg: "comprobar si el usuario tiene antigüedades a la venta sin retirar en la base de datos."))
                 throw new CustomException(code: 400, message: "No se puede eliminar el usuario porque tiene antigüedades a la venta sin retirar en la base de datos.");
 
             return parent::delete(queryBusqueda: "SELECT usrId FROM usuario WHERE usrId=$id AND usrFechaBaja IS NULL", queryBajaLogica: "UPDATE usuario SET usrFechaBaja = CURRENT_TIMESTAMP() WHERE usrId=$id");

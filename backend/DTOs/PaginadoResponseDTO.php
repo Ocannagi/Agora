@@ -25,7 +25,7 @@ class PaginadoResponseDTO implements IDTO
         }
         if (array_key_exists('arrayEntidad', $data) && is_array($data['arrayEntidad'])) {
             $this->arrayEntidad = [];
-            foreach ($data['datos'] as $item) {
+            foreach ($data['arrayEntidad'] as $item) {
                 if ($item instanceof IDTO) {
                     $this->arrayEntidad[] = $item;
                 }
