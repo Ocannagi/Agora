@@ -57,9 +57,19 @@ export class AutocompletarRetornaId<T extends IAutocompletarDTO> {
       if (hayKeywordExterno && dependenciaPadreResuelta) {
         if (resourceAllStatusResolved) {
           const opciones = resourceAll.value();
-          if (opciones.length !== 1) return;
 
-          const unico = opciones[0];
+          if (opciones.length === 0) {
+            return;
+          }
+          
+          let unico : IAutocompletarDTO;
+          if (opciones.length !== 1){
+            unico = opciones.find(o => o.descripcion.toLowerCase() === this.store.keywordExterno().toLowerCase())!;
+          }
+          else{
+            unico = opciones[0];
+          }
+
           untracked(() => {
             this.control.setValue(unico);
             this.store.setModelId(unico.id);

@@ -14,14 +14,15 @@ export class TiposUsuarioService {
   private urlBase = environment.apiURL + '/TiposUsuario';
   private http = inject(HttpClient);
 
-  public tiposUsuarioResource(injector: Injector = inject(Injector)): Resource<TipoUsuarioDTO[]> {
-    return httpResource<TipoUsuarioDTO[]>(
-      () => ({
-        url: `${this.urlBase}`
-      }),
-      { defaultValue: [], injector: injector }
-    ).asReadonly();
-  }
+  public tiposUsuarioResource(injector: Injector = inject(Injector)): ResourceRef<TipoUsuarioDTO[]> {
+    return rxResource<TipoUsuarioDTO[],null>({
+      stream: () => {
+        return this.http.get<TipoUsuarioDTO[]>(this.urlBase);
+      },
+      defaultValue: [],
+      injector: injector
+    });
+  } 
 
   public getByIdResource(user: () => UsuarioDTO, injector: Injector = inject(Injector)) : ResourceRef<TipoUsuarioDTO> {
     return rxResource<TipoUsuarioDTO, HttpParams>({

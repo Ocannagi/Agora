@@ -53,62 +53,49 @@ export class CrearEditarUsuario {
       const userRes = this.usuarioByIdResource;
       if (userRes?.isLoading())
         return true;
-
-      // const tipoUserRes = this.tipoUsuarioByIdResource;
-      // if (tipoUserRes.isLoading())
-      //   return true;
     }
 
     return false;
   });
 
-  readonly hayErrores = computed(() => {
-    const tipoRes = this.tipoUsuarioResource;
-    if (!tipoRes || tipoRes.status() === 'error')
-      return true;
-
-    if (this.#domService.postError() || this.#usrService.postError())
-      return true;
-
-    if (this.esEdicion()) {
-      const userRes = this.usuarioByIdResource;
-      if (userRes?.status() === 'error')
-        return true;
-
-      // const tipoUserRes = this.tipoUsuarioByIdResource;
-      // if (tipoUserRes.status() === 'error')
-      //   return true;
-    }
-
-    return false;
-  });
 
   readonly errores = computed(() => {
-    if (this.hayErrores()) {
-      const lista: string[] = [];
-      if (this.tipoUsuarioResource?.status() === 'error') {
-        const wrapped = this.tipoUsuarioResource.error();
-        const httpError = wrapped?.cause as HttpErrorResponse;
-        lista.push(httpError?.error as string ?? wrapped?.message ?? 'Error desconocido');
-      }
-      if (this.#domService.postError() !== null)
-        lista.push(this.#domService.postError()!);
-      if (this.#usrService.postError() !== null)
-        lista.push(this.#usrService.postError()!);
-      if (this.esEdicion() && this.usuarioByIdResource?.status() === 'error') {
-        const wrapped = this.usuarioByIdResource?.error();
-        const httpError = wrapped?.cause as HttpErrorResponse;
-        lista.push(httpError?.error as string ?? httpError?.message ?? wrapped?.message ?? 'Error desconocido');
-      }
-      // if (this.esEdicion() && this.tipoUsuarioByIdResource.status() === 'error') {
-      //   const wrapped = this.tipoUsuarioByIdResource.error();
-      //   const httpError = wrapped?.cause as HttpErrorResponse;
-      //   lista.push(httpError?.error as string ?? httpError?.message ?? wrapped?.message ?? 'Error desconocido');
-      // }
-      return lista;
-    } else
-      return [];
+    const lista: string[] = [];
+
+    if (this.tipoUsuarioResource?.status() === 'error') {
+      const wrapped = this.tipoUsuarioResource.error();
+      const httpError = wrapped?.cause as HttpErrorResponse;
+      lista.push(httpError?.error as string ?? wrapped?.message ?? 'Error desconocido');
+    }
+    if (this.#domService.postError() !== null)
+      lista.push(this.#domService.postError()!);
+    if (this.#usrService.postError() !== null)
+      lista.push(this.#usrService.postError()!);
+    if (this.esEdicion() && this.usuarioByIdResource?.status() === 'error') {
+      const wrapped = this.usuarioByIdResource?.error();
+      const httpError = wrapped?.cause as HttpErrorResponse;
+      lista.push(httpError?.error as string ?? httpError?.message ?? wrapped?.message ?? 'Error desconocido');
+    }
+    if (this.esEdicion() && this.#usrService.patchError() !== null) {
+      lista.push(this.#usrService.patchError()!);
+    }
+
+    return lista;
+
   });
+
+  readonly tieneErrores = computed(() => this.errores().length > 0);
+
+  readonly isReadyCargaFormulario = computed(() => {
+    const userRes = this.usuarioByIdResource;
+    const tipoRes = this.tipoUsuarioResource;
+    const esEdicion = this.esEdicion();
+
+    return esEdicion && userRes?.status() === 'resolved'
+      && userRes?.value().usrId !== undefined && userRes?.value().usrId !== null
+      && tipoRes.status() === 'resolved'
+      && tipoRes.value().length > 0
+  })
 
   readonly maxCaracteresDescripcion = signal(500);
 
@@ -207,32 +194,22 @@ export class CrearEditarUsuario {
 
     effect(() => {
 
-      if (this.esEdicion()) {
-
-
+      if (this.isReadyCargaFormulario()) {
         const userRes = this.usuarioByIdResource;
 
-
-
-
-
-        if (userRes?.status() === 'resolved'
-          && userRes?.value().usrId !== undefined && userRes?.value().usrId !== null
-) {
-          untracked(() => {
-            this.mapearUsuarioDTOAFormulario(userRes.value());
-            this.mapearDomicilioDTOAFormulario(userRes.value().domicilio);
-            this.ctrlTipoUsuarioSignal.disabled.set(true);
-            this.usuarioByIdResource?.destroy();
-
-          });
-        }
+        untracked(() => {
+          this.mapearUsuarioDTOAFormulario(userRes.value());
+          this.mapearDomicilioDTOAFormulario(userRes.value().domicilio);
+          this.ctrlTipoUsuarioSignal.disabled.set(true);
+          this.usuarioByIdResource?.destroy();
+        });
       }
     });
 
     this.#destroyRef.onDestroy(() => {
       this.#domService.postError.set(null);
       this.#usrService.postError.set(null);
+      this.#usrService.patchError.set(null);
     });
 
   }
@@ -267,11 +244,13 @@ export class CrearEditarUsuario {
         takeUntilDestroyed(this.#destroyRef)).subscribe({
           next: () => {
             if (this.#authStore.usrId() === this.id()!) {
+              console.log('Usuario editado correctamente');
               this.#authStore.login({ usrEmail: this.formUsuario.get('usrEmail')?.value!, usrPassword: this.formUsuario.get('usrPassword')?.value! } as CredencialesUsuarioDTO);
             }
             this.#router.navigate(['/usuarios']);
           },
           error: (err: HttpErrorResponse) => {
+            console.log('signalError', this.#usrService.patchError());
             console.error('Error en la edición del usuario: ', err);
           }
         });
@@ -330,8 +309,10 @@ export class CrearEditarUsuario {
       usrPassword: null,
     });
 
+    //console.log('TipoUsuarioDTO buscado para el usuario editado:', this.tipoUsuarioResource.value());
+
     const tipoUsr = untracked(() => this.tipoUsuarioResource.value()?.find(t => t.ttuTipoUsuario === user.usrTipoUsuario) ?? null);
-    
+
     this.ctrlTipoUsuarioSignal.value.set(tipoUsr);
 
 
@@ -349,7 +330,7 @@ export class CrearEditarUsuario {
     this.provinciaEditDescripcion.set(dom.localidad.provincia.provDescripcion);
     this.localidadEditDescripcion.set(dom.localidad.locDescripcion);
 
-    
+
   }
 
   ConsoleValidFormulario() {
