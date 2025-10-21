@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, Injector, input, numberAttribute, Resource, ResourceRef, signal, untracked } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ValidaControlForm } from '../../compartidos/servicios/valida-control-form';
-import { CredencialesUsuarioDTO, TipoUsuarioDTO } from '../../seguridad/seguridadDTO';
+import { CredencialesUsuarioDTO, TipoUsuarioDTO } from '../../seguridad/modelo/seguridadDTO';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';

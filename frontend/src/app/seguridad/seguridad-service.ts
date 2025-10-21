@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../environments/environment.development';
 import { tap } from 'rxjs/internal/operators/tap';
 import { Observable } from 'rxjs';
-import { CredencialesUsuarioDTO, KeysClaimDTO, RespuestaAutenticacionDTO } from './seguridadDTO';
+import { CredencialesUsuarioDTO, KeysClaimDTO, RespuestaAutenticacionDTO } from './modelo/seguridadDTO';
 
 @Injectable({
   providedIn: 'root'

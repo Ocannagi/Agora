@@ -1,6 +1,6 @@
 import { deepComputed, patchState, signalStore, withComputed, withHooks, withMethods, withProps, withState } from "@ngrx/signals";
 import { computed, effect, inject, Injector, Signal } from "@angular/core";
-import { ClaimDTO, CredencialesUsuarioDTO, KeysClaimDTO, TipoUsuarioEnum } from "../seguridadDTO";
+import { ClaimDTO, CredencialesUsuarioDTO, KeysClaimDTO, TipoUsuarioEnum } from "../modelo/seguridadDTO";
 import { SeguridadService } from "../seguridad-service";
 import { autenticacionInitialState, PersistedAutenticacionSlice } from "./autenticacion.slice";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";

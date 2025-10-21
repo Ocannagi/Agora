@@ -1,7 +1,7 @@
 import { afterNextRender, ChangeDetectionStrategy, Component, effect, ElementRef, inject, Injector, input, untracked, viewChild } from '@angular/core';
 import { ValidaControlForm } from '../../servicios/valida-control-form';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IAutocompletarDTO } from '../../interfaces/IAutocompletarDTO';
+import { IAutocompletarDTO } from '../../modelo/IAutocompletarDTO';
 import { formControlSignal } from '../../funciones/formToSignal';
 import { MostrarErrores } from "../mostrar-errores/mostrar-errores";
 import { MatInputModule } from "@angular/material/input";

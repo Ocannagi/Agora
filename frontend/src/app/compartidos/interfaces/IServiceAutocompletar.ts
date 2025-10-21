@@ -1,4 +1,4 @@
-import { Injector, Resource, ResourceRef } from "@angular/core";
+import { Injector, ResourceRef } from "@angular/core";
 
 export interface IServiceAutocompletar<IAutocompletarDTO> {
   autocompletarResource: (
@@ -6,6 +6,4 @@ export interface IServiceAutocompletar<IAutocompletarDTO> {
     injector: Injector,
     idDependenciaPadre?: () => number | null,
   ) => ResourceRef<IAutocompletarDTO[]>;
-
-  //getByIdAutocompletarResource: (id: () => number | null, injector: Injector) => ResourceRef<IAutocompletarDTO>;
 }

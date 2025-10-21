@@ -1,7 +1,7 @@
 import { signal } from "@angular/core";
 import { FormControlSignal } from "../../../funciones/formToSignal";
 import { FormControl } from "@angular/forms";
-import { IAutocompletarDTO } from "../../../interfaces/IAutocompletarDTO";
+import { IAutocompletarDTO } from "../../../modelo/IAutocompletarDTO";
 
 
 export interface AutocompletarSlice {

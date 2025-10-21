@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MostrarErrores } from "../../compartidos/componentes/mostrar-errores/mostrar-errores";
-import { CredencialesUsuarioDTO } from '../seguridadDTO';
+import { CredencialesUsuarioDTO } from '../modelo/seguridadDTO';
 import { ValidaControlForm } from '../../compartidos/servicios/valida-control-form';
 
 @Component({

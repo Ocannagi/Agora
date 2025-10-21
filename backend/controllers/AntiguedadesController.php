@@ -10,6 +10,7 @@ class AntiguedadesController extends BaseController
     use TraitGetInterno; // Trait para métodos internos de obtención
     use TraitGetByIdInterno; // Trait para métodos internos de obtención por ID
     use TraitCambiarEstadoAntiguedad; // Trait para cambiar el estado de una antiguedad
+    use TraitGetPaginado; // Trait para obtener paginado
 
     private ValidacionServiceBase $antiguedadesValidacionService;
     private ISecurity $securityService;
@@ -146,6 +147,49 @@ class AntiguedadesController extends BaseController
     }
 
     /** FIN DE SECCION */
+
+    public function getAntiguedadesPaginado($paginado)
+    {
+        $mysqli = $this->dbConnection->conectarBD();
+        
+        try {
+            $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
+
+            $query = "SELECT antId, antDescripcion, antFechaEstado, antTipoEstado
+                        ,perId, perDescripcion
+                        ,scatId, catId, catDescripcion, scatDescripcion
+                        ,usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario, usrRazonSocialFantasia,usrDescripcion,usrScoring,usrCuitCuil,usrMatricula
+                        ,domId, domCPA, domCalleRuta, domNroKm, domPiso, domDepto
+                        ,locId, locDescripcion, provId, provDescripcion
+                    FROM antiguedad
+                    INNER JOIN periodo ON antPerId = perId
+                    INNER JOIN subcategoria ON antScatId = scatId
+                    INNER JOIN categoria ON scatCatId = catId
+                    INNER JOIN usuario ON antUsrId = usrId
+                    INNER JOIN domicilio ON usrDomicilio = domId
+                    INNER JOIN localidad ON locId = domLocId
+                    INNER JOIN provincia ON provId = locProvId
+                  WHERE antTipoEstado <>'RN'
+                  AND usrId = {$claimDTO->usrId}";
+
+            $this->getPaginado($paginado, $mysqli, "antiguedad", "antTipoEstado <>'RN' AND antUsrId = {$claimDTO->usrId}", "obtener el total de antigüedades para paginado", $query, AntiguedadDTO::class);
+
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
+                $mysqli->close(); // Cerrar la conexión a la base de datos
+            }
+        }
+    }
 
     public function getAntiguedades()
     {

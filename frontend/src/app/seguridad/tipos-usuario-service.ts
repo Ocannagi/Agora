@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams, httpResource } from '@angular/common/http';
 import { inject, Injectable, Injector, Resource, ResourceRef } from '@angular/core';
 
-import { TipoUsuarioDTO } from './seguridadDTO';
+import { TipoUsuarioDTO } from './modelo/seguridadDTO';
 import { environment } from '../environments/environment.development';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { UsuarioDTO } from '../usuarios/modelo/usuarioDTO';

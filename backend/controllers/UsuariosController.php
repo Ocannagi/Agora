@@ -11,6 +11,7 @@ class UsuariosController extends BaseController
     private ISecurity $securityService;
 
     use TraitGetInterno;
+    use traitGetPaginado;
 
     private static $instancia = null; // La única instancia de la clase
 
@@ -38,51 +39,12 @@ class UsuariosController extends BaseController
     public function getUsuariosPaginado($paginado)
     {
         $mysqli = $this->dbConnection->conectarBD();
+        $query = "SELECT usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario FROM usuario WHERE usrFechaBaja is NULL";
         try {
             $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::soporteTecnicoToArray());
             
-            if (is_array($paginado)) {
-                if (array_key_exists('pagina', $paginado) && array_key_exists('registrosPorPagina', $paginado)) {
-                    if (!Input::esNotNullVacioBlanco($paginado['pagina']) || !Input::esNotNullVacioBlanco($paginado['registrosPorPagina'])) {
-                        throw new InvalidArgumentException("Los parámetros 'pagina' y 'registrosPorPagina' no pueden estar vacíos.");
-                    }
-
-                    settype($paginado['pagina'], 'integer');
-                    settype($paginado['registrosPorPagina'], 'integer');
-
-                    $pagina = $paginado['pagina'];
-                    $registrosPorPagina = $paginado['registrosPorPagina'];
-
-                    $offset = ($pagina - 1) * $paginado['registrosPorPagina'];
-
-                    // Obtener total de registros
-
-                    $total = Querys::obtenerCount(link: $mysqli, base: "usuario", where: "usrFechaBaja is NULL", msg: "obtener el total de usuarios para paginado");
-                    $query = "SELECT usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario FROM usuario WHERE usrFechaBaja is NULL LIMIT $registrosPorPagina OFFSET $offset";
-                    
-                    
-                    
-                    $arrayUsuarios = $this->getInterno(query: $query, classDTO: UsuarioMinDTO::class, linkExterno: $mysqli);
-
-                    $paginadoResponseDTO = new PaginadoResponseDTO([
-                        'totalRegistros' => $total,
-                        'paginaActual' => $pagina,
-                        'registrosPorPagina' => $registrosPorPagina,
-                        'arrayEntidad' => $arrayUsuarios
-                    ]);
-
-                    Output::outputJson($paginadoResponseDTO);
-                } else {
-                    throw new InvalidArgumentException("Faltan los parámetros 'pagina' o 'registrosPorPagina'.");
-                }
-            } else {
-                throw new InvalidArgumentException("El paginado debe ser un array asociativo.");
-            }
-
-
-            settype($paginado, 'integer');
-            $offset = ($paginado - 1) * 10;
-            return parent::get(query: "SELECT usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario FROM usuario WHERE usrFechaBaja is NULL LIMIT 10 OFFSET $offset", classDTO: UsuarioMinDTO::class);
+            $this->getPaginado($paginado, $mysqli, "usuario", "usrFechaBaja is NULL", "obtener el total de usuarios para paginado", $query, UsuarioMinDTO::class);
+           
         } catch (\Throwable $th) {
             if ($th instanceof mysqli_sql_exception) {
                 Output::outputError(500, "Error en la base de datos: " . $th->getMessage());

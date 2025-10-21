@@ -1,0 +1,17 @@
+@if(!listado()){
+
+    <app-cargando/>
+
+} @else if (listado().length === 0){
+
+    <div #msgVacio>
+        <ng-content select="[msgVacio]"></ng-content>
+    </div>
+
+    @if(!msgVacio.innerHTML.trim()){
+        <p>No hay elementos para mostrar</p>
+    } 
+
+} @else {
+    <ng-content select="[contenido]"></ng-content>
+}

@@ -1,6 +1,7 @@
+import { IIndiceEntidadDTO } from "../../compartidos/modelo/IIndiceEntidadDTO";
 import { DomicilioDTO } from "../../domicilios/modelo/domicilioDTO";
 
-export interface UsuarioDTO {
+export interface UsuarioDTO extends Object {
   usrId: number;                       // Identificador único
   usrDni: string;                      // DNI
   usrApellido: string;                 // Apellido
@@ -17,7 +18,7 @@ export interface UsuarioDTO {
   usrPassword: string;                 // Password (considerar no exponer en UI)
 }
 
-export interface UsuarioCreacionDTO {
+export interface UsuarioCreacionDTO extends Object {
   usrDni: string;                      // DNI
   usrApellido: string;                 // Apellido
   usrNombre: string;                   // Nombre
@@ -31,4 +32,16 @@ export interface UsuarioCreacionDTO {
   usrScoring: number;                  // Puntuación
   usrEmail: string;                    // Email
   usrPassword: string;                 // Password (considerar no exponer en UI)
+}
+
+export interface UsuarioMinDTO {
+  usrId: number;
+  usrApellido: string;
+  usrNombre: string;
+  usrEmail: string;
+  usrTipoUsuario: string;
+}
+
+export interface UsuarioIndiceDTO extends IIndiceEntidadDTO, UsuarioMinDTO {
+
 }

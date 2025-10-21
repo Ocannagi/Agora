@@ -4,7 +4,7 @@ import { computed, effect, inject, Injector, untracked } from "@angular/core";
 import { IServiceAutocompletar } from "../../../interfaces/IServiceAutocompletar";
 import { SERVICIO_AUTOCOMPLETAR_TOKEN } from "../../../proveedores/tokens";
 import { FormControlSignal } from "../../../funciones/formToSignal";
-import { IAutocompletarDTO } from "../../../interfaces/IAutocompletarDTO";
+import { IAutocompletarDTO } from "../../../modelo/IAutocompletarDTO";
 import { HttpErrorResponse } from "@angular/common/http";
 
 export const AutocompletarStore = signalStore(

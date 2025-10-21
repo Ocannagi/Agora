@@ -11,6 +11,12 @@
             Buscar Antigüedades</a>
     </div>
 
+    <app-autorizado [esAutorizado]="store.isCompradorVendedor()">
+        <ng-container autorizado>
+            <a mat-button routerLink="/misantiguedades">Mis Antigüedades</a>
+        </ng-container>
+    </app-autorizado>
+
     <app-autorizado [esAutorizado]="store.isSoporteTecnico()">
         <ng-container autorizado>
             <div>
@@ -30,7 +36,7 @@
             </div>
 
             <div>
-                <a mat-button routerLink="/">Usuarios</a>
+                <a mat-button routerLink="/usuarios">Usuarios</a>
             </div>
         </ng-container>
     </app-autorizado>

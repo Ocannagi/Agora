@@ -19,6 +19,13 @@ html {
   ));
 }
 
+$theme: mat.define-theme();
+
+html {
+  @include mat.all-component-themes($theme);
+  @include mat.color-variants-backwards-compatibility($theme);
+}
+
 body {
   // Default the application to a light color theme. This can be changed to
   // `dark` to enable the dark color theme, or to `light dark` to defer to the
@@ -66,4 +73,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mat-mdc-input-element:-moz-autofill {
   box-shadow: 0 0 0 1000px transparent inset !important;
   -moz-text-fill-color: currentColor !important;
+}
+
+.indice-elementos{
+    margin-top: 1rem;
+}
+
+.indice-elementos a{
+    margin-right: 1rem;
 }

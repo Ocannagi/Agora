@@ -39,10 +39,15 @@ export class DomiciliosService {
     );
   }
 
-  public getByIdResource(id : number, injector: Injector = inject(Injector)) : ResourceRef<DomicilioDTO> {
-    return rxResource<DomicilioDTO, HttpParams>({
-      params: () => new HttpParams().set('id', id),
-      stream: (options) => this.http.get<DomicilioDTO>(this.urlBase, { params: options.params }),
+  public getByIdResource(id: () => number | null, injector: Injector = inject(Injector)): ResourceRef<DomicilioDTO> {
+    return rxResource<DomicilioDTO, number | null>({
+      params: () => id(),
+      stream: (options) => {
+        if (options.params === null) {
+          return of({} as DomicilioDTO);
+        }
+        return this.http.get<DomicilioDTO>(this.urlBase + '/' + options.params!);
+      },
       defaultValue: {} as DomicilioDTO,
       injector: injector
     });

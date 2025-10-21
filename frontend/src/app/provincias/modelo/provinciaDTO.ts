@@ -1,4 +1,4 @@
-import { IAutocompletarDTO } from "../../compartidos/interfaces/IAutocompletarDTO";
+import { IAutocompletarDTO } from "../../compartidos/modelo/IAutocompletarDTO";
 
 export interface ProvinciaDTO {
   provId: number;

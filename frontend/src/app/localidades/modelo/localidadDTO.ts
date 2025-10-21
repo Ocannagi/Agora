@@ -1,4 +1,4 @@
-import { IAutocompletarDTO } from '../../compartidos/interfaces/IAutocompletarDTO';
+import { IAutocompletarDTO } from '../../compartidos/modelo/IAutocompletarDTO';
 import { ProvinciaDTO } from '../../provincias/modelo/provinciaDTO';
 
 export interface LocalidadDTO {
