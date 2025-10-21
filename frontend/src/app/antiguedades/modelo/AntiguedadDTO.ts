@@ -44,12 +44,12 @@ export interface AntiguedadDTO {
 
 // Equivalente a AntiguedadCreacionDTO.php
 export interface AntiguedadCreacionDTO {
-  periodo: PeriodoDTO;
-  subcategoria: SubcategoriaDTO;
+  perId: number;
+  scatId: number;
   antDescripcion: string;
-  usuario: UsuarioDTO;
+  usrId: number;
   // En PHP tiene valor por defecto (RetiradoDisponible). En el frontend puede omitirse.
-  tipoEstado?: TipoEstadoEnum;
+  //tipoEstado?: TipoEstadoEnum;
 }
 
 export interface AntiguedadIndiceDTO  extends AntiguedadDTO, IIndiceEntidadDTO {
