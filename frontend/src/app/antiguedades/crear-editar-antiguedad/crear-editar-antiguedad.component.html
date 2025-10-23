@@ -1,1 +1,27 @@
-<p>crear-editar-antiguedad works!</p>
+<h2>{{titulo()}}</h2>
+
+<app-mostrar-errores [errores]="errores()" ></app-mostrar-errores>
+
+@if (esCargando()){
+    <app-cargando />
+} @else{
+
+    <div class="form-grid">
+
+        <app-autocompletar-periodos/>
+
+        <app-autocompletar-categorias/>
+
+        <app-autocompletar-subcategorias/>
+
+        <mat-form-field appearance="fill" class="col-span-2">
+            <mat-label>Describe la antigüedad</mat-label>
+            <textarea #descripcion [maxLength]="maxCaracteresDescripcion()" matInput formControlName="antDescripcion" placeholder="Describe sus características, el año de creación, etc."></textarea>
+            <mat-hint>{{descripcion.value.length}}/{{maxCaracteresDescripcion()}} caracteres</mat-hint>
+            <mat-error>{{obtenerErrorAntDescripcion()}}</mat-error>
+        </mat-form-field>
+
+    </div>
+
+
+}

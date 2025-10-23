@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 12-09-2025 a las 03:23:10
+-- Tiempo de generación: 23-10-2025 a las 04:11:27
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -29,7 +29,6 @@ USE `agora`;
 -- Estructura de tabla para la tabla `antiguedad`
 --
 -- Creación: 17-08-2025 a las 04:05:01
--- Última actualización: 11-09-2025 a las 21:23:58
 --
 
 DROP TABLE IF EXISTS `antiguedad`;
@@ -72,7 +71,6 @@ INSERT INTO `antiguedad` (`antId`, `antScatId`, `antPerId`, `antDescripcion`, `a
 -- Estructura de tabla para la tabla `antiguedadalaventa`
 --
 -- Creación: 10-09-2025 a las 01:42:46
--- Última actualización: 11-09-2025 a las 21:23:58
 --
 
 DROP TABLE IF EXISTS `antiguedadalaventa`;
@@ -141,7 +139,6 @@ INSERT INTO `categoria` (`catId`, `catDescripcion`, `catFechaBaja`) VALUES
 -- Estructura de tabla para la tabla `compraventa`
 --
 -- Creación: 09-09-2025 a las 14:02:28
--- Última actualización: 11-09-2025 a las 21:23:58
 --
 
 DROP TABLE IF EXISTS `compraventa`;
@@ -177,7 +174,6 @@ INSERT INTO `compraventa` (`covId`, `covUsrComprador`, `covDomDestino`, `covFech
 -- Estructura de tabla para la tabla `compraventadetalle`
 --
 -- Creación: 09-09-2025 a las 14:03:18
--- Última actualización: 12-09-2025 a las 01:15:10
 --
 
 DROP TABLE IF EXISTS `compraventadetalle`;
@@ -242,7 +238,9 @@ INSERT INTO `domicilio` (`domId`, `domLocId`, `domCPA`, `domCalleRuta`, `domNroK
 (3, 1, 'B1900ALB', 'Calle 47', 1234, NULL, NULL, '2025-05-11 18:00:31', NULL),
 (4, 29, 'C1066AAW', 'Bolivar', 1131, NULL, NULL, '2025-05-11 18:00:31', NULL),
 (5, 17, 'M5602BAG', 'Juan José Castelli', 353, '1', 'A', '2025-05-11 21:37:57', NULL),
-(7, 17, 'M5602BAG', 'Juan José Castelli', 353, NULL, NULL, '2025-06-01 21:35:28', NULL);
+(7, 17, 'M5602BAG', 'Juan José Castelli', 353, NULL, NULL, '2025-06-01 21:35:28', NULL),
+(8, 10, 'M1234KKK', 'Siempre Viva', 999, '5', 'G', '2025-10-14 00:04:39', NULL),
+(13, 1, 'C1406DEH', '4', 12, '9', 'A', '2025-10-20 01:01:43', NULL);
 
 -- --------------------------------------------------------
 
@@ -463,7 +461,6 @@ INSERT INTO `subcategoria` (`scatId`, `scatCatId`, `scatDescripcion`, `scatFecha
 -- Estructura de tabla para la tabla `tasaciondigital`
 --
 -- Creación: 17-08-2025 a las 04:05:01
--- Última actualización: 11-09-2025 a las 21:23:58
 --
 
 DROP TABLE IF EXISTS `tasaciondigital`;
@@ -504,7 +501,6 @@ INSERT INTO `tasaciondigital` (`tadId`, `tadUsrTasId`, `tadUsrPropId`, `tadAntId
 -- Estructura de tabla para la tabla `tasacioninsitu`
 --
 -- Creación: 17-08-2025 a las 04:05:01
--- Última actualización: 11-09-2025 a las 21:23:58
 --
 
 DROP TABLE IF EXISTS `tasacioninsitu`;
@@ -629,7 +625,6 @@ INSERT INTO `tipousuario` (`ttuTipoUsuario`, `ttuDescripcion`, `ttuRequiereMatri
 -- Estructura de tabla para la tabla `tokens`
 --
 -- Creación: 17-08-2025 a las 04:05:01
--- Última actualización: 12-09-2025 a las 00:32:55
 --
 
 DROP TABLE IF EXISTS `tokens`;
@@ -647,11 +642,8 @@ CREATE TABLE `tokens` (
 --
 
 INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTc2MzgxNjF9.c6LFvNOZurU1lLq22YL7aByrDz3BLPYGmguU9CxX0Mmh_xdGlQcw3o8ei1xYP07N-_tROwbpGWxSgWRdks8UeQ', '2025-09-11 20:49:21'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTc2MzgxNzl9.Mj5bQuGnla5NTuZJtFRZHyEse9_07dqG7oymN27NO4jV1rZarVwN_wJz_kUTyjlnGabJ8wimjpJoIoszF_iPuw', '2025-09-11 20:49:39'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NSwidXNyTm9tYnJlIjoiQWRyaWFuYSBNYXJpZWwiLCJ1c3JUaXBvVXN1YXJpbyI6IlVHIiwiZXhwIjoxNzU3NjM4MjgxfQ.vF9P-zKJB_oqbD4NsZHvhK7hUE5Nkoh0nfYdDktu_J5XKeeya-TKHlUB_q5HzOCz6zYQkXHWhnzj4vOeiumyXw', '2025-09-11 20:51:21'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTc2Mzk2MDN9.2OC4I2MpkWWl_x9WRMpjiWSdQVdMjuaB11wUeCU1ucMW727ulD0I8IbJvN0LtLnZOrixvgwb6OkBeOwdGmM_Qg', '2025-09-11 21:13:23'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NTc2NDA3NzV9.Qzfi91ctouqcMLGNPjFO7pGzbX0CE8gWhEEUXkUHGrMte9H-a9B2FbmRQnHmISSXV7BqOs4FHOtF-tE-yk5NZQ', '2025-09-11 21:32:55');
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NSwidXNyTm9tYnJlIjoiQWRyaWFuYSBNYXJpZWwiLCJ1c3JUaXBvVXN1YXJpbyI6IlVHIiwiZXhwIjoxNzYxMDE5NTQxfQ.AzTt8ADYiCddX4lCxsmWwkjoFU3pq17fE4S_gO-QMeSr5Kk7H7U4PlDvRiKMJKwED2rOLztygvMjI2lSp8LPNQ', '2025-10-21 00:05:41'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NSwidXNyTm9tYnJlIjoiQWRyaWFuYSBNYXJpZWwiLCJ1c3JUaXBvVXN1YXJpbyI6IlVHIiwiZXhwIjoxNzYxMDE5OTAxfQ.abL8PHgwDA4l42741mquA8-bAwgl7az1sfSvYgo9Z6EE0ZJHGJg8LsGuoOS_BqW6qhvUmdk7FmIy63HJP9qUrA', '2025-10-21 00:11:41');
 
 -- --------------------------------------------------------
 
@@ -694,11 +686,13 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonSocialFantasia`, `usrCuitCuil`, `usrTipoUsuario`, `usrMatricula`, `usrDomicilio`, `usrFechaNacimiento`, `usrDescripcion`, `usrScoring`, `usrEmail`, `usrPassword`, `usrFechaInsert`, `usrFechaBaja`) VALUES
-(1, '33698895', 'Gómez Ivaldi', 'Nicolás Alejandro', NULL, NULL, 'ST', NULL, 1, '1988-03-29', 'Soy uno de los creadores de esta WebApi AAABQ.', 10, 'nicoivaldi@agora.com', '$2y$10$lo551SYnW8GcnfIxIJK.zOoJlwMP4BuJr3dDJfctmv.SLC9LAmPCy', '2024-07-07 18:38:07', NULL),
+(1, '33698895', 'Gómez Ivaldi', 'Nicolás Alejandro', NULL, NULL, 'ST', NULL, 1, '1988-03-29', 'Soy uno de los creadores de esta WebApi.', 0, 'nicoivaldi@agora.com', '$2y$10$jA79h6pSsRRhYnxts.57ru4ILsQwMYyXt5pEbuDyHoOyw0/OHR.Yi', '2024-07-07 18:38:07', NULL),
 (2, '33286958', 'Sosa Leonetti', 'Cristian Javier', NULL, NULL, 'UG', NULL, 2, '1988-02-08', NULL, 0, 'sleonetti@gmail.com', '$2y$10$HjR2rlPfne0GyNXGJ41jU.EiCfvVpMpQ5cOvRbitoynkYeMaEGnM.', '2024-07-08 14:42:43', NULL),
 (3, '29741295', 'Galíndez', 'Gustavo', 'Tasaciones Galíndez Jumbo SH', '30708772964', 'UT', '123456', 3, '1984-01-01', 'Tasamos el valor de sus afectos al mejor precio de Mercado.', 50, 'gusgalindez@tasgalindez.com', '$2y$10$U9YS.OMtjMhnOzAUWovHv.uQo38bb3dva9qDUmq48w5fBZW0NVsyq', '2024-07-10 16:18:01', NULL),
 (4, '27965368', 'Rolón', 'Karina', 'Paraíso Antigüedades SA', '30123456781', 'UA', '95874L', 4, '1982-06-12', 'Compra y Venta de antigüedades. Tasamos.', 60, 'krolon@paraiso.com', '$2y$10$Os4S45NKUqrBnLYDqALpYewr8CBMbKx8n4dNm9FTLhg7ySVxgcTx2', '2024-07-10 16:18:01', NULL),
-(5, '13355922', 'Recondo', 'Adriana Mariel', NULL, NULL, 'UG', NULL, 1, '1959-07-09', NULL, 0, 'recondomariel@uol.com', '$2y$10$n6.BF3HUDCMABqY7iRHOOuhPw..8nlE.cws7vSjmyIRNuYee1iXZu', '2025-06-01 21:32:15', NULL);
+(5, '13355922', 'Recondo', 'Adriana Mariel', NULL, NULL, 'UG', NULL, 1, '1959-07-09', NULL, 0, 'recondomariel@uol.com', '$2y$10$n6.BF3HUDCMABqY7iRHOOuhPw..8nlE.cws7vSjmyIRNuYee1iXZu', '2025-06-01 21:32:15', NULL),
+(7, '40526987', 'Casado', 'Manuel', NULL, NULL, 'UG', NULL, 3, '2002-02-14', 'Prueba QA', 0, 'mcasado@gmail.com', '$2y$10$sFyDIh548JJGZo9HS7c8pOTEOPatGXr6s6we7GiYQfstuQQNIJjv6', '2025-10-14 00:00:58', NULL),
+(8, '54808315', 'Cualquiera', 'Tomás', 'SoyCoto', '30548083156', 'UT', 'lalalalalalalallawqw', 8, '1997-04-25', 'Tasador QA', 0, 'cualquiera@gmail.com', '$2y$10$m84itGDq78nLDedWrQ5ziOcZzWx4owEfYHcK/tKI9DPGgL.Xxu/g.', '2025-10-14 00:06:56', NULL);
 
 -- --------------------------------------------------------
 
@@ -735,7 +729,8 @@ INSERT INTO `usuariodomicilio` (`udomId`, `udomUsr`, `udomDom`, `udomFechaInsert
 (3, 2, 2, '2025-07-27 14:49:46', NULL),
 (4, 3, 3, '2025-07-27 14:49:46', NULL),
 (5, 4, 4, '2025-07-27 14:49:46', NULL),
-(7, 4, 5, '2025-07-28 20:16:24', NULL);
+(7, 4, 5, '2025-07-28 20:16:24', NULL),
+(8, 1, 13, '2025-10-20 01:01:43', NULL);
 
 -- --------------------------------------------------------
 
@@ -963,7 +958,7 @@ ALTER TABLE `compraventadetalle`
 -- AUTO_INCREMENT de la tabla `domicilio`
 --
 ALTER TABLE `domicilio`
-  MODIFY `domId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `domId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `imagenantiguedad`
@@ -1011,13 +1006,13 @@ ALTER TABLE `tasacioninsitu`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `usrId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `usrId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `usuariodomicilio`
 --
 ALTER TABLE `usuariodomicilio`
-  MODIFY `udomId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `udomId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `usuariotasadorhabilidad`

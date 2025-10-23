@@ -31,6 +31,93 @@ class SubcategoriasController extends BaseController
     // Método para evitar la clonación del objeto
     private function __clone() {}
 
+    /** SECCION DE MÉTODOS CON getSubcategoriasByParams */
+
+    public function getSubcategoriasByParams($params)
+    {
+        $mysqli = $this->dbConnection->conectarBD();
+        try {
+            if (is_array($params)) {
+                if(array_key_exists('catId', $params) && array_key_exists('scatDescripcion', $params)) {
+                    $catId = null;
+                    $scatDescripcion = null;
+
+                    if (Input::esNotNullVacioBlanco($params['catId'])) {
+                        settype($params['catId'], 'integer');
+                        $catId = $params['catId'];
+                    }
+                    if (Input::esNotNullVacioBlanco($params['scatDescripcion'])) {
+                        settype($params['scatDescripcion'], 'string');
+                        $scatDescripcion = $params['scatDescripcion'];
+                    }
+
+                    return $this->getSubcategoriasByFiltros($mysqli, $catId, $scatDescripcion);
+
+                } else {
+                    throw new InvalidArgumentException("No se enviaron los parámetros necesarios");
+                }
+
+            } else {
+                throw new InvalidArgumentException("Los parámetros deben ser un array asociativo.");
+            }
+        } catch (\Throwable $th) {
+            if ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                // Cierra la conexión a la base de datos si se creó en este método.
+                $mysqli->close();
+            }
+        }
+    }
+
+    private function getSubcategoriasByFiltros(mysqli $mysqli, ?int $catId, ?string $scatDescripcion)
+    {
+        try {
+            //$this->securityService->requireLogin(null);
+
+            $whereClauses = [];
+            if (!is_null($catId)) {
+                $whereClauses[] = "catId = $catId";
+            }
+            if (!is_null($scatDescripcion)) {
+                $scatDescripcion = $mysqli->real_escape_string($scatDescripcion);
+                $whereClauses[] = "scatDescripcion LIKE '%$scatDescripcion%'";
+            }
+
+            $whereSQL = "";
+            if (count($whereClauses) > 0) {
+                $whereSQL = " AND " . implode(" AND ", $whereClauses);
+            }
+
+            $query =   "SELECT scatId, scatDescripcion, catId, catDescripcion
+                    FROM subcategoria
+                    INNER JOIN categoria ON scatCatId = catId
+                    WHERE scatFechaBaja is NULL" . $whereSQL . "
+                    ORDER BY scatDescripcion ASC";
+
+
+            return parent::get(query: $query, classDTO: SubcategoriaDTO::class);
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
+    }
+
     public function getSubcategorias()
     {
         try {

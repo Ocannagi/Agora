@@ -1,7 +1,7 @@
 import { IIndiceEntidadDTO } from "../../compartidos/modelo/IIndiceEntidadDTO";
-import { ImagenAntiguedadDTO } from "../../ImagenesAntiguedad/modelo/ImagenAntiguedadDTO";
+import { ImagenAntiguedadDTO } from "../../imagenes-antiguedad/modelo/ImagenAntiguedadDTO";
 import { PeriodoDTO } from "../../periodos/modelo/PeriodoDTO";
-import { SubcategoriaDTO } from "../../subcategoria/modelo/subcategoriaDTO";
+import { SubcategoriaDTO } from "../../subcategorias/modelo/subcategoriaDTO";
 import { UsuarioDTO } from "../../usuarios/modelo/usuarioDTO";
 
 // Equivalente TS de TipoEstadoEnum.php

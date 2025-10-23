@@ -31,6 +31,84 @@ class CategoriasController extends BaseController
     // Método para evitar la clonación del objeto
     private function __clone() {}
 
+    /** SECCION DE MÉTODOS CON getCategoriasByParams */
+
+    public function getCategoriasByParams($params)
+    {
+        $mysqli = $this->dbConnection->conectarBD();
+        try {
+            if (is_array($params)) {
+                if (array_key_exists('catDescripcion', $params)) {
+                    $catDescripcion = null;
+
+                    if (Input::esNotNullVacioBlanco($params['catDescripcion'])) {
+                        settype($params['catDescripcion'], 'string');
+                        $catDescripcion = $params['catDescripcion'];
+                    }
+
+                    return $this->getCategoriasByFiltros($mysqli, $catDescripcion);
+
+                } else {
+                    throw new InvalidArgumentException("No se enviaron los parámetros necesarios");
+                }
+
+            } else {
+                throw new InvalidArgumentException("Los parámetros deben ser un array asociativo.");
+            }
+        } catch (\Throwable $th) {
+            if ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) {
+                // Cierra la conexión a la base de datos si se creó en este método.
+                $mysqli->close();
+            }
+        }
+    }
+
+    private function getCategoriasByFiltros(mysqli $mysqli, ?string $catDescripcion)
+    {
+        try {
+            //$this->securityService->requireLogin(null);
+
+            $whereClauses = [];
+
+            if (!is_null($catDescripcion)) {
+                $catDescripcion = $mysqli->real_escape_string($catDescripcion);
+                $whereClauses[] = "catDescripcion LIKE '%$catDescripcion%'";
+            }
+            
+            $whereSQL = "";
+            if (count($whereClauses) > 0) {
+                $whereSQL = " AND " . implode(" AND ", $whereClauses);
+            }
+
+            $query =   "SELECT catId, catDescripcion
+                        FROM categoria 
+                        WHERE catFechaBaja is NULL" . $whereSQL;
+            $query .= " ORDER BY catDescripcion ASC";
+            
+            return parent::get(query: $query, classDTO: CategoriaDTO::class);
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        }
+    }
+
     public function getCategorias()
     {
         try {
