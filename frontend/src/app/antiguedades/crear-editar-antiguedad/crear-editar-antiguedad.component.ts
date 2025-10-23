@@ -1,3 +1,4 @@
+import { AntiguedadCreacionDTO } from './../modelo/AntiguedadDTO';
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, Injector, input, signal } from '@angular/core';
 import { numberAttributeOrNull } from '../../compartidos/funciones/transform';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -18,6 +19,8 @@ import { AutocompletarSubcategorias } from "../../subcategorias/autocompletar-su
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
+import { switchMap, take } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-crear-editar-antiguedad',
@@ -28,7 +31,7 @@ import { MatButtonModule } from '@angular/material/button';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CrearEditarAntiguedadComponent {
-  
+
   //INPUTS
   readonly id = input(null, { transform: numberAttributeOrNull });
 
@@ -94,15 +97,17 @@ export class CrearEditarAntiguedadComponent {
   readonly periodoEditDescripcion = signal<string>('');
   readonly categoriaEditDescripcion = signal<string>('');
   readonly subcategoriaEditDescripcion = signal<string>('');
-  
+
   readonly isAllValid = computed(() => {
     return this.antDescripcionFormControlSignal.status() === 'VALID'
-        && this.antDescripcionFormControlSignal.value() !== null && this.antDescripcionFormControlSignal.value()!.trim().length > 0
-        && this.perId() !== null
-        && this.scatId() !== null
-        && this.usrId() !== null
-        && this.imagenes().length > 0;
+      && this.antDescripcionFormControlSignal.value() !== null && this.antDescripcionFormControlSignal.value()!.trim().length > 0
+      && this.perId() !== null
+      && this.scatId() !== null
+      && this.usrId() !== null
+      && this.imagenes().length > 0;
   });
+
+  readonly isNotAllValid = computed(() => !this.isAllValid());
 
   //RESOURCES
 
@@ -118,6 +123,42 @@ export class CrearEditarAntiguedadComponent {
 
   obtenerErrorAntDescripcion(): string | null {
     return this.#vcf.obtenerErrorControl(this.antDescripcion, 'descripción de la antigüedad', true);
+  }
+
+  protected onSubmit() {
+    if (this.isNotAllValid()) {
+      this.antDescripcion.markAsTouched();
+      return;
+    }
+
+    if (this.esEdicion()) {
+      //editar
+    } else {
+      //crear
+      const nuevaAntiguedad : AntiguedadCreacionDTO = {
+        perId: this.perId()!,
+        scatId: this.scatId()!,
+        antDescripcion: this.antDescripcionFormControlSignal.value()!.trim(),
+        usrId: this.usrId()!,
+      }
+
+      this.#antService.create(nuevaAntiguedad).pipe(
+        switchMap((antId : number) => {
+          const archivos = this.imagenes();
+          return this.#imgService.create(archivos, antId);
+        }),
+        takeUntilDestroyed(this.#destroyRef)
+      ).subscribe({
+        next: (imgIds: number[]) => {
+          this.#router.navigate(['/antiguedades']);
+        },
+        error: (err) => {
+          // Los errores ya se manejan en los signals de los servicios
+          console.error('Error al crear la antigüedad o subir las imágenes:', err);
+        }
+      });
+      
+    }
   }
 
 

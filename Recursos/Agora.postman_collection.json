@@ -301,12 +301,20 @@
 									"});\r",
 									"\r",
 									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an object that have a property \"jwt\" that is a \"array that is empty\"`, function () {\r",
-									"    pm.expect(jsonData).to.have.own.property('jwt').that.is.a('array').that.is.empty;\r",
+									"    pm.expect(jsonData).to.have.own.property('jwt').that.is.a('string').that.is.empty;\r",
 									"});\r",
 									""
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -575,6 +583,29 @@
 							"body": null
 						}
 					]
+				},
+				{
+					"name": "getUsuariosPaginado",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Usuarios&paginado[pagina]=2&paginado[registrosPorPagina]=2",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Usuarios&paginado[pagina]=2&paginado[registrosPorPagina]=2"
+							]
+						}
+					},
+					"response": []
 				},
 				{
 					"name": "postUsuarios",
@@ -1385,6 +1416,36 @@
 							],
 							"path": [
 								"TiposUsuario"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getTiposUsuarioById",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Domicilios/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Domicilios",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
 							]
 						}
 					},
@@ -2860,6 +2921,29 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "getLocalidadesByAutocompletar Copy",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Provincias&params[provDescripcion]=tuc",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Provincias&params[provDescripcion]=tuc"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -2954,6 +3038,29 @@
 									"key": "id",
 									"value": "3"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getLocalidadesByAutocompletar",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Localidades&params[provId]=2&params[locDescripcion]=a",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Localidades&params[provId]=2&params[locDescripcion]=a"
 							]
 						}
 					},
@@ -3839,6 +3946,29 @@
 							],
 							"path": [
 								"Antiguedades&params[antDescripcion]=circa"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAntiguedadesPaginado",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Antiguedades&paginado[pagina]=1&paginado[registrosPorPagina]=5",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Antiguedades&paginado[pagina]=1&paginado[registrosPorPagina]=5"
 							]
 						}
 					},
@@ -5108,12 +5238,224 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "patchComprasVentas",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"covDomDestino\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/ComprasVentas/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"ComprasVentas",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteComprasVentas",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/ComprasVentas/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"ComprasVentas",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
 		{
 			"name": "VentasDetalle",
-			"item": [],
+			"item": [
+				{
+					"name": "getVentasDetalle",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData;\r",
+									"try{\r",
+									"    jsonData = pm.response.json();\r",
+									"}\r",
+									"catch(e){\r",
+									"    jsonData = pm.response.text();\r",
+									"}\r",
+									"\r",
+									"let conParam = '';\r",
+									"\r",
+									"if(pm.request.url.path[3]){\r",
+									"    if (!isNaN(pm.request.url.path[3]))\r",
+									"        conParam = 'ById'\r",
+									"    else\r",
+									"        conParam = ByParams\r",
+									"}\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Status code is 200`, function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body is an array`, function () {\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(`${pm.request.method.toLowerCase()}${pm.request.url.path[2]}${conParam} - Body have an array with an object that have a property \"antId\" that is a \"number\"`, function () {\r",
+									"    pm.expect(jsonData[0]).to.have.own.property('antId').that.is.a('number');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/VentasDetalle",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"VentasDetalle"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getVentasDetalleById",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/VentasDetalle/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"VentasDetalle",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patchVentasDetalle",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cvdFechaEntregaReal\": \"2025-09-11\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/VentasDetalle/:id",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"VentasDetalle",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
 			"description": "Este controller solo tiene Get y Patch, y devuelve un DTO que NO tiene correlación con una clase del Modelo"
 		}
 	]

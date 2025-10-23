@@ -23,5 +23,14 @@
 
     </div>
 
+    <div class="contenedor-botones">
+        <button type="button" mat-flat-button [disabled]="isNotAllValid()" (click)="onSubmit()">Guardar cambios</button>
+        <a mat-stroked-button routerLink="">Cancelar</a>
+        <!-- <button type="button" mat-stroked-button (click)="ConsoleValidFormulario()">Prueba formulario</button> -->
+    </div>
+
+
+<app-mostrar-errores [errores]="errores()" ></app-mostrar-errores>
+
 
 }

@@ -160,7 +160,7 @@ class ImagenesAntiguedadController extends BaseController
                 if (!$stmt->execute()) {
                     throw new mysqli_sql_exception("Error al insertar la imagen de antigüedad: " . $stmt->error);
                 }
-                $ids[] = $mysqli->insert_id; // Guardar el ID de la imagen insertada
+                $ids[] = (int) $mysqli->insert_id; // Guardar el ID de la imagen insertada
             }
 
             $mysqli->commit(); // Confirmar la transacción
