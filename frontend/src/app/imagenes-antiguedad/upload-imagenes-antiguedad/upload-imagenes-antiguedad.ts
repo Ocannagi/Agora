@@ -125,9 +125,8 @@ export class UploadImagenesAntiguedad {
           errs.push(`El archivo ${f.name} supera los ${this.maxBytes / 1000} KB.`);
           continue;
         }
-        // Evitar duplicados (por name+size+lastModified)
-        const dup = actuales.some(a => a.name === f.name && a.size === f.size && a.lastModified === f.lastModified)
-                 || agregables.some(a => a.name === f.name && a.size === f.size && a.lastModified === f.lastModified);
+        // Evitar duplicados (por name)
+        const dup = actuales.some(a => a.name === f.name) || agregables.some(a => a.name === f.name);
         if (dup) continue;
 
         agregables.push(f);

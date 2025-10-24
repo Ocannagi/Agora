@@ -34,6 +34,38 @@ export class CrearEditarAntiguedadComponent {
   //INPUTS
   readonly id = input(null, { transform: numberAttributeOrNull });
 
+  //SERVICES & INYECCIONES
+  #fb = inject(FormBuilder);
+  #vcf = inject(ValidaControlForm);
+  #destroyRef = inject(DestroyRef);
+  #injector = inject(Injector);
+  #router = inject(Router);
+  #authStore = inject(AutenticacionStore);
+  #antService = inject(AntiguedadesService);
+  #imgService = inject(ImagenesAntiguedadService);
+
+
+  //FORMULARIO
+  protected antDescripcion = this.#fb.control<string>('', { validators: [Validators.required, Validators.minLength(1), Validators.maxLength(500)], updateOn: 'change' })
+  readonly antDescripcionFormControlSignal = formControlSignal(this.antDescripcion, this.#injector);
+
+  //RESOURCES
+
+  protected antiguedadByIdResource = this.#antService.getByIdResource(this.id, this.#injector);
+
+  //SIGNALS
+
+  readonly perId = signal<number | null>(null);
+  readonly catId = signal<number | null>(null);
+  readonly scatId = signal<number | null>(null);
+  readonly usrId = signal<number | null>(this.#authStore.usrId());
+  readonly imagenes = signal<File[]>([]);
+
+  readonly maxCaracteresDescripcion = signal(500);
+  readonly periodoEditDescripcion = signal<string>('');
+  readonly categoriaEditDescripcion = signal<string>('');
+  readonly subcategoriaEditDescripcion = signal<string>('');
+
   //COMPUTED
   readonly esEdicion = computed(() => this.id() !== null && this.id() !== undefined);
   readonly esNuevo = computed(() => !this.esEdicion());
@@ -49,12 +81,19 @@ export class CrearEditarAntiguedadComponent {
     return false;
   });
 
+  readonly isReadyToEdit = computed(() => {
+    const esEdicion = this.esEdicion();
+    const antRes = this.antiguedadByIdResource;
+    
+    return esEdicion && antRes.status() === 'resolved';
+  });
+
   readonly errores = computed(() => {
     const lista: string[] = [];
 
     if (this.#antService.postError() !== null)
       lista.push(this.#antService.postError()!);
-    if(this.#imgService.postError() !== null)
+    if (this.#imgService.postError() !== null)
       lista.push(this.#imgService.postError()!);
     if (this.esEdicion() && this.antiguedadByIdResource?.status() === 'error') {
       const wrapped = this.antiguedadByIdResource?.error();
@@ -71,35 +110,6 @@ export class CrearEditarAntiguedadComponent {
 
   readonly tieneErrores = computed(() => this.errores().length > 0);
 
-  //SERVICES & INYECCIONES
-  #fb = inject(FormBuilder);
-  #vcf = inject(ValidaControlForm);
-  #destroyRef = inject(DestroyRef);
-  #injector = inject(Injector);
-  #router = inject(Router);
-  #authStore = inject(AutenticacionStore);
-  #antService = inject(AntiguedadesService);
-  #imgService = inject(ImagenesAntiguedadService);
-
-
-  //FORMULARIO
-  protected antDescripcion = this.#fb.control<string>('', { validators: [Validators.required, Validators.minLength(1), Validators.maxLength(500)], updateOn: 'change' })
-  readonly antDescripcionFormControlSignal = formControlSignal(this.antDescripcion, this.#injector);
-
-  //SIGNALS
-
-
-  readonly perId = signal<number | null>(null);
-  readonly catId = signal<number | null>(null);
-  readonly scatId = signal<number | null>(null);
-  readonly usrId = signal<number | null>(this.#authStore.usrId());
-  readonly imagenes = signal<File[]>([]);
-
-  readonly maxCaracteresDescripcion = signal(500);
-  readonly periodoEditDescripcion = signal<string>('');
-  readonly categoriaEditDescripcion = signal<string>('');
-  readonly subcategoriaEditDescripcion = signal<string>('');
-
   readonly isAllValid = computed(() => {
     return this.antDescripcionFormControlSignal.status() === 'VALID'
       && this.antDescripcionFormControlSignal.value() !== null && this.antDescripcionFormControlSignal.value()!.trim().length > 0
@@ -110,10 +120,6 @@ export class CrearEditarAntiguedadComponent {
   });
 
   readonly isNotAllValid = computed(() => !this.isAllValid());
-
-  //RESOURCES
-
-  protected antiguedadByIdResource = this.#antService.getByIdResource(this.id, this.#injector);
 
 
   constructor() {
@@ -148,7 +154,7 @@ export class CrearEditarAntiguedadComponent {
       //editar
     } else {
       //crear
-      const nuevaAntiguedad : AntiguedadCreacionDTO = {
+      const nuevaAntiguedad: AntiguedadCreacionDTO = {
         perId: this.perId()!,
         scatId: this.scatId()!,
         antDescripcion: this.antDescripcionFormControlSignal.value()!.trim(),
@@ -156,7 +162,7 @@ export class CrearEditarAntiguedadComponent {
       }
 
       this.#antService.create(nuevaAntiguedad).pipe(
-        switchMap((antId : number) => {
+        switchMap((antId: number) => {
           const archivos = this.imagenes();
           return this.#imgService.create(archivos, antId);
         }),
@@ -170,7 +176,7 @@ export class CrearEditarAntiguedadComponent {
           console.error('Error al crear la antigüedad o subir las imágenes:', err);
         }
       });
-      
+
     }
   }
 
