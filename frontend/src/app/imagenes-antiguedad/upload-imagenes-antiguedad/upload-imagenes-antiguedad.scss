@@ -1,0 +1,132 @@
+// Paleta magenta–violeta–lila
+$magenta: #d81b60;
+$violeta: #7b1fa2;
+$lila: #ce93d8;
+$lila-10: rgba(206, 147, 216, 0.1);
+$lila-20: rgba(206, 147, 216, 0.2);
+
+.upload-container, .orden-container {
+  margin-block: 16px;
+
+  h3 {
+    color: $violeta;
+    margin: 8px 0 12px;
+    font-weight: 600;
+  }
+}
+
+.dropzone {
+  border: 2px dashed $violeta;
+  border-radius: 12px;
+  padding: 28px;
+  text-align: center;
+  background: $lila-10;
+  transition: .2s ease;
+  cursor: pointer;
+
+  &.drag-over {
+    background: $lila-20;
+    border-color: $magenta;
+    box-shadow: 0 0 0 4px rgba($magenta, .15) inset;
+  }
+
+  .dropzone-content {
+    display: grid;
+    place-items: center;
+    gap: 8px;
+
+    mat-icon {
+      color: $magenta;
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+    }
+    .hint { color: $violeta; opacity: .8; }
+    .restricciones { color: $violeta; opacity: .8; font-size: .875rem; }
+  }
+}
+
+.errores {
+  margin: 10px 0 0;
+  padding-left: 20px;
+  color: #c62828;
+
+  li { margin: 2px 0; }
+}
+
+.thumb-list {
+  display: flex;             // LISTA VERTICAL
+  flex-direction: column;    // una thumb debajo de la otra
+  gap: 10px;
+}
+
+.thumb-item {
+  display: grid;
+  grid-template-columns: 28px 64px 1fr auto; // handle | thumb | info | borrar
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid $lila;
+  border-radius: 10px;
+  background: #fff;
+  width: 100%;
+
+  &.placeholder {
+    opacity: .4;
+    border-style: dashed;
+  }
+
+  .drag-handle {
+    display: grid;
+    place-items: center;
+    color: $violeta;
+    cursor: grab;
+  }
+
+  img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 0 0 2px $lila-10;
+  }
+
+  .thumb-info {
+    min-width: 0;
+    .name {
+      font-weight: 600;
+      color: $violeta;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .size { font-size: .8rem; color: #666; }
+  }
+
+  .btn-remove { color: $magenta; }
+}
+
+// Preview mientras se arrastra
+.drag-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: #fff;
+  border: 1px solid $lila;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.2);
+
+  img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+  span { color: $violeta; font-weight: 600; }
+}
+
+// Mejora visual mientras se arrastra
+.cdk-drop-list.cdk-drop-list-dragging .thumb-item:not(.cdk-drag-placeholder) {
+  transition: transform .15s ease;
+}

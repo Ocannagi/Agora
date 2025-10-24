@@ -1,5 +1,5 @@
 import { AntiguedadCreacionDTO } from './../modelo/AntiguedadDTO';
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, Injector, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, Injector, input, signal } from '@angular/core';
 import { numberAttributeOrNull } from '../../compartidos/funciones/transform';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ValidaControlForm } from '../../compartidos/servicios/valida-control-form';
@@ -8,8 +8,6 @@ import { AutenticacionStore } from '../../seguridad/store/autenticacion.store';
 import { MostrarErrores } from "../../compartidos/componentes/mostrar-errores/mostrar-errores";
 import { Cargando } from "../../compartidos/componentes/cargando/cargando";
 import { formControlSignal } from '../../compartidos/funciones/formToSignal';
-import { PeriodosService } from '../../periodos/periodos-service';
-import { CategoriasService } from '../../categorias/categorias-service';
 import { AntiguedadesService } from '../antiguedades-service';
 import { ImagenesAntiguedadService } from '../../imagenes-antiguedad/imagenes-antiguedad-service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -21,11 +19,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { switchMap, take } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { UploadImagenesAntiguedad } from "../../imagenes-antiguedad/upload-imagenes-antiguedad/upload-imagenes-antiguedad";
 
 @Component({
   selector: 'app-crear-editar-antiguedad',
   standalone: true,
-  imports: [MostrarErrores, Cargando, AutocompletarPeriodos, AutocompletarCategorias, AutocompletarSubcategorias, MatButtonModule, RouterLink, MatFormFieldModule, ReactiveFormsModule, MatInputModule],
+  imports: [MostrarErrores, Cargando, AutocompletarPeriodos, AutocompletarCategorias, AutocompletarSubcategorias, MatButtonModule, RouterLink, MatFormFieldModule, ReactiveFormsModule, MatInputModule, UploadImagenesAntiguedad],
   templateUrl: './crear-editar-antiguedad.component.html',
   styleUrl: './crear-editar-antiguedad.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -55,6 +54,8 @@ export class CrearEditarAntiguedadComponent {
 
     if (this.#antService.postError() !== null)
       lista.push(this.#antService.postError()!);
+    if(this.#imgService.postError() !== null)
+      lista.push(this.#imgService.postError()!);
     if (this.esEdicion() && this.antiguedadByIdResource?.status() === 'error') {
       const wrapped = this.antiguedadByIdResource?.error();
       const httpError = wrapped?.cause as HttpErrorResponse;
@@ -89,6 +90,7 @@ export class CrearEditarAntiguedadComponent {
 
 
   readonly perId = signal<number | null>(null);
+  readonly catId = signal<number | null>(null);
   readonly scatId = signal<number | null>(null);
   readonly usrId = signal<number | null>(this.#authStore.usrId());
   readonly imagenes = signal<File[]>([]);
@@ -116,13 +118,24 @@ export class CrearEditarAntiguedadComponent {
 
   constructor() {
 
+    effect(() => {
+      const img = this.imagenes();
+      console.log('Imágenes seleccionadas:', img);
+    });
+
+    this.#destroyRef.onDestroy(() => {
+      this.#antService.postError.set(null);
+      this.#antService.patchError.set(null);
+      this.#imgService.postError.set(null);
+    });
+
 
   }
 
   // MÉTODOS Y EVENTOS
 
   obtenerErrorAntDescripcion(): string | null {
-    return this.#vcf.obtenerErrorControl(this.antDescripcion, 'descripción de la antigüedad', true);
+    return this.#vcf.obtenerErrorControl(this.antDescripcion, 'descripción de la antigüedad');
   }
 
   protected onSubmit() {
@@ -150,7 +163,7 @@ export class CrearEditarAntiguedadComponent {
         takeUntilDestroyed(this.#destroyRef)
       ).subscribe({
         next: (imgIds: number[]) => {
-          this.#router.navigate(['/antiguedades']);
+          this.#router.navigate(['/misantiguedades']);
         },
         error: (err) => {
           // Los errores ya se manejan en los signals de los servicios

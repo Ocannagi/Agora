@@ -32,6 +32,16 @@ export const routes: Routes = [
         title: "Mis Antigüedades",
     },
     {
+        path: 'antiguedades/crear',
+        loadComponent: () => import(/* webpackChunkName: "crear-editar-antiguedad" */ './antiguedades/crear-editar-antiguedad/crear-editar-antiguedad.component').then(m => m.CrearEditarAntiguedadComponent),
+        title: "Crear Antigüedad",
+    },
+    {
+        path: 'antiguedades/editar/:id',
+        loadComponent: () => import(/* webpackChunkName: "crear-editar-antiguedad" */ './antiguedades/crear-editar-antiguedad/crear-editar-antiguedad.component').then(m => m.CrearEditarAntiguedadComponent),
+        title: "Editar Antigüedad",
+    },
+    {
         path:'**', //Wild card : Atrapa cualquier ruta de tu dominio. SIEMPRE DEBE IR AL FINAL, ya que el buscador de rutas es secuencial, empieza en el index 0 de este array de rutes y devuelve la primera coincidencia
         redirectTo: '',
         title:'Error 404'

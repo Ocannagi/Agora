@@ -8,18 +8,24 @@
 
     <div class="form-grid">
 
-        <app-autocompletar-periodos/>
+        <app-autocompletar-periodos (idPer)="perId.set($event)"/>
 
-        <app-autocompletar-categorias/>
+        <app-autocompletar-categorias (idCat)="catId.set($event)"/>
 
-        <app-autocompletar-subcategorias/>
+        <app-autocompletar-subcategorias [idCat]="catId()" (idScat)="scatId.set($event)"/>
 
         <mat-form-field appearance="fill" class="col-span-2">
             <mat-label>Describe la antigüedad</mat-label>
-            <textarea #descripcion [maxLength]="maxCaracteresDescripcion()" matInput formControlName="antDescripcion" placeholder="Describe sus características, el año de creación, etc."></textarea>
+            <textarea #descripcion [maxLength]="maxCaracteresDescripcion()" matInput [formControl]="antDescripcion" placeholder="Describe sus características, el año de creación, etc."></textarea>
             <mat-hint>{{descripcion.value.length}}/{{maxCaracteresDescripcion()}} caracteres</mat-hint>
             <mat-error>{{obtenerErrorAntDescripcion()}}</mat-error>
         </mat-form-field>
+
+        <app-upload-imagenes-antiguedad
+            [(arrayImgFiles)]="imagenes"
+        />
+
+        
 
     </div>
 

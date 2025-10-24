@@ -1,0 +1,76 @@
+<!-- Zona de carga (Drag & Drop) -->
+<section class="upload-container">
+  <h3>Subir imágenes</h3>
+
+  <div class="dropzone"
+       [class.drag-over]="isDragOver()"
+       (dragover)="onDragOver($event)"
+       (dragleave)="onDragLeave($event)"
+       (drop)="onDrop($event)">
+
+    <div class="dropzone-content">
+      <mat-icon>cloud_upload</mat-icon>
+      <p>Arrastra aquí tus imágenes</p>
+      <p class="hint">o</p>
+      <label class="btn-file">
+        <input #fileInput type="file"
+               hidden
+               multiple
+               accept=".jpg,.jpeg,.png,.gif"
+               (change)="onFileInputChange($event)"/>
+        <button mat-flat-button color="primary" (click)="fileInput.click()">Seleccionar archivos</button>
+      </label>
+      <p class="restricciones">Máx: 5 archivos · 200KB c/u · JPEG/PNG/GIF</p>
+    </div>
+  </div>
+
+  <app-mostrar-errores [errores]="errores()"></app-mostrar-errores>
+</section>
+
+@if (previews().length) {
+  <section class="orden-container">
+    <h3>Ordenar imágenes</h3>
+    <h4>La primera imagen será la portada: <span style="color: darkmagenta;">{{ previews()[0]?.name }}</span></h4>
+    <p>Arrastra y suelta para reordenar las imágenes</p>
+
+    <div cdkDropList
+         class="thumb-list"
+         [cdkDropListData]="arrayImgFiles()"
+         cdkDropListOrientation="vertical"
+         (cdkDropListDropped)="onReorder($event)">
+
+      @for (p of previews(); track $index) {
+        <div class="thumb-item"
+             cdkDrag
+             (cdkDragEntered)="onDragEntered($index)">
+
+          <div class="drag-handle" cdkDragHandle>
+            <mat-icon>drag_indicator</mat-icon>
+          </div>
+
+          <img [src]="p.url" [alt]="p.name"/>
+
+          <div class="thumb-info">
+            <div class="name" [title]="p.name">{{ p.name }}</div>
+            <div class="size">{{ p.size }} bytes</div>
+          </div>
+
+          <button mat-icon-button class="btn-remove" (click)="eliminar($index)" aria-label="Eliminar">
+            <mat-icon>delete</mat-icon>
+          </button>
+
+          <ng-template cdkDragPreview>
+            <div class="drag-preview">
+              <img [src]="p.url" [alt]="p.name"/>
+              <span>{{ p.name }}</span>
+            </div>
+          </ng-template>
+
+          <ng-template cdkDragPlaceholder>
+            <div class="thumb-item placeholder"></div>
+          </ng-template>
+        </div>
+      }
+    </div>
+  </section>
+}
