@@ -1,5 +1,5 @@
-import { AntiguedadCreacionDTO } from './../modelo/AntiguedadDTO';
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, Injector, input, signal } from '@angular/core';
+import { AntiguedadCreacionDTO, AntiguedadDTO } from './../modelo/AntiguedadDTO';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, Injector, input, signal, untracked } from '@angular/core';
 import { numberAttributeOrNull } from '../../compartidos/funciones/transform';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ValidaControlForm } from '../../compartidos/servicios/valida-control-form';
@@ -20,6 +20,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { switchMap, take } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UploadImagenesAntiguedad } from "../../imagenes-antiguedad/upload-imagenes-antiguedad/upload-imagenes-antiguedad";
+import { ImagenAntiguedadDTO } from '../../imagenes-antiguedad/modelo/ImagenAntiguedadDTO';
 
 @Component({
   selector: 'app-crear-editar-antiguedad',
@@ -52,6 +53,7 @@ export class CrearEditarAntiguedadComponent {
   //RESOURCES
 
   protected antiguedadByIdResource = this.#antService.getByIdResource(this.id, this.#injector);
+  protected imagenesAntiguedadByAntIdResource = this.#imgService.getByDependenciaIdResource(this.id, this.#injector);
 
   //SIGNALS
 
@@ -74,6 +76,9 @@ export class CrearEditarAntiguedadComponent {
   readonly esCargando = computed(() => {
     if (this.esEdicion()) {
       const antiguedadRes = this.antiguedadByIdResource;
+      const imagenesRes = this.imagenesAntiguedadByAntIdResource;
+      if (imagenesRes?.isLoading())
+        return true;  
       if (antiguedadRes?.isLoading())
         return true;
     }
@@ -84,8 +89,9 @@ export class CrearEditarAntiguedadComponent {
   readonly isReadyToEdit = computed(() => {
     const esEdicion = this.esEdicion();
     const antRes = this.antiguedadByIdResource;
+    const imgRes = this.imagenesAntiguedadByAntIdResource;
     
-    return esEdicion && antRes.status() === 'resolved';
+    return esEdicion && antRes.status() === 'resolved' && imgRes.status() === 'resolved';
   });
 
   readonly errores = computed(() => {
@@ -97,6 +103,11 @@ export class CrearEditarAntiguedadComponent {
       lista.push(this.#imgService.postError()!);
     if (this.esEdicion() && this.antiguedadByIdResource?.status() === 'error') {
       const wrapped = this.antiguedadByIdResource?.error();
+      const httpError = wrapped?.cause as HttpErrorResponse;
+      lista.push(httpError?.error as string ?? httpError?.message ?? wrapped?.message ?? 'Error desconocido');
+    }
+    if( this.esEdicion() && this.imagenesAntiguedadByAntIdResource?.status() === 'error') {
+      const wrapped = this.imagenesAntiguedadByAntIdResource?.error();
       const httpError = wrapped?.cause as HttpErrorResponse;
       lista.push(httpError?.error as string ?? httpError?.message ?? wrapped?.message ?? 'Error desconocido');
     }
@@ -129,6 +140,20 @@ export class CrearEditarAntiguedadComponent {
       console.log('Imágenes seleccionadas:', img);
     });
 
+    effect(() => {
+      if (this.isReadyToEdit()) {
+        const ant = this.antiguedadByIdResource;
+        const img = this.imagenesAntiguedadByAntIdResource;
+        untracked(() => {
+          this.mapearAntiguedadData(ant.value())
+          this.mapearImagenesData(img.value());
+
+        });
+      }
+    });
+
+
+
     this.#destroyRef.onDestroy(() => {
       this.#antService.postError.set(null);
       this.#antService.patchError.set(null);
@@ -136,6 +161,15 @@ export class CrearEditarAntiguedadComponent {
     });
 
 
+  }
+  mapearImagenesData(arg0: ImagenAntiguedadDTO[]) {
+    throw new Error('Method not implemented.');
+  }
+  mapearAntiguedadData(antiguedad: AntiguedadDTO) {
+    this.antDescripcionFormControlSignal.value.set(antiguedad.antDescripcion);
+    this.periodoEditDescripcion.set(antiguedad.periodo.perDescripcion);
+    this.categoriaEditDescripcion.set(antiguedad.subcategoria.categoria.catDescripcion);
+    this.subcategoriaEditDescripcion.set(antiguedad.subcategoria.scatDescripcion);
   }
 
   // MÉTODOS Y EVENTOS
