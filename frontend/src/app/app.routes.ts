@@ -27,7 +27,7 @@ export const routes: Routes = [
         title: "Editar Usuario",
     },
     {
-        path: 'misantiguedades',
+        path: 'antiguedades',
         loadComponent: () => import(/* webpackChunkName: "indice-antiguedades" */ './antiguedades/indice-antiguedades/indice-antiguedades').then(m => m.IndiceAntiguedades),
         title: "Mis Antigüedades",
     },

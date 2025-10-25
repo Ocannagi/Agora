@@ -5,7 +5,7 @@ $lila: #ce93d8;
 $lila-10: rgba(206, 147, 216, 0.1);
 $lila-20: rgba(206, 147, 216, 0.2);
 
-.upload-container, .orden-container {
+.orden-container {
   margin-block: 16px;
 
   h3 {
@@ -15,38 +15,7 @@ $lila-20: rgba(206, 147, 216, 0.2);
   }
 }
 
-.dropzone {
-  border: 2px dashed $violeta;
-  border-radius: 12px;
-  padding: 28px;
-  text-align: center;
-  background: $lila-10;
-  transition: .2s ease;
-  cursor: pointer;
-
-  &.drag-over {
-    background: $lila-20;
-    border-color: $magenta;
-    box-shadow: 0 0 0 4px rgba($magenta, .15) inset;
-  }
-
-  .dropzone-content {
-    display: grid;
-    place-items: center;
-    gap: 8px;
-
-    mat-icon {
-      color: $magenta;
-      font-size: 40px;
-      width: 40px;
-      height: 40px;
-    }
-    .hint { color: $violeta; opacity: .8; }
-    .restricciones { color: $violeta; opacity: .8; font-size: .875rem; }
-  }
-}
-
-/* .thumb-list {
+.thumb-list {
   display: flex;             // LISTA VERTICAL
   flex-direction: column;    // una thumb debajo de la otra
   gap: 10px;
@@ -121,4 +90,4 @@ $lila-20: rgba(206, 147, 216, 0.2);
 // Mejora visual mientras se arrastra
 .cdk-drop-list.cdk-drop-list-dragging .thumb-item:not(.cdk-drag-placeholder) {
   transition: transform .15s ease;
-} */
+}

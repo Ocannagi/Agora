@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>Agregar más imágenes a la Antigüedad</h2>
+<mat-dialog-content>
+    <app-upload-imagenes-antiguedad
+        [(arrayImgFiles)]="arrayImgFiles"
+        [arrayNameImgExistentes]="arrayNameImgExistentes()"
+    />
+</mat-dialog-content>
+<mat-dialog-actions>
+  <div class="contenedor-botones">
+    <button
+      type="button"
+      mat-flat-button
+      [disabled]="arrayImgFiles().length === 0"
+      [swal]="{
+        title: '¿Estás seguro?',
+        text: 'Se guardarán más imágenes a la antigüedad.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Cancelar'
+      }"
+      (confirm)="onConfirmSwal()"
+    >
+      Guardar
+    </button>
+    <button type="button" mat-stroked-button (click)="Cancelar()" cdkFocusInitial>Cancelar</button>
+  </div>
+</mat-dialog-actions>

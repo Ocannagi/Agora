@@ -1,15 +1,17 @@
-import { ChangeDetectionStrategy, Component, effect, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, signal, computed, input } from '@angular/core';
 import { model } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MostrarErrores } from "../../compartidos/componentes/mostrar-errores/mostrar-errores";
+import { ListaImagenesFile } from "../lista-imagenes-file/lista-imagenes-file";
+import { MAX_IMG_ANTIGUEDAD } from '../feautures';
 
 @Component({
   selector: 'app-upload-imagenes-antiguedad',
   standalone: true,
-  imports: [CommonModule, DragDropModule, MatIconModule, MatButtonModule, MostrarErrores],
+  imports: [CommonModule, DragDropModule, MatIconModule, MatButtonModule, MostrarErrores, ListaImagenesFile],
   templateUrl: './upload-imagenes-antiguedad.html',
   styleUrl: './upload-imagenes-antiguedad.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -17,9 +19,20 @@ import { MostrarErrores } from "../../compartidos/componentes/mostrar-errores/mo
 export class UploadImagenesAntiguedad {
   // Model con el array de archivos en el orden elegido por el usuario
   readonly arrayImgFiles = model<File[]>([]);
+  // Input signal: SIEMPRE leer con this.arrayNameImgExistentes()
+  readonly arrayNameImgExistentes = input<string[]>([]);
+
+
+  // Cantidad de imágenes previas existentes (leer el signal)
+  readonly ImgPreviosCount = computed(() => this.arrayNameImgExistentes().length);
+
+  readonly hayImgPrevias = computed(() => this.ImgPreviosCount() > 0);
+  readonly esEdicion = computed(() => this.hayImgPrevias());
 
   // Configuración de validación
-  private readonly maxFiles = 5;
+  private readonly maxFiles = MAX_IMG_ANTIGUEDAD;
+  // Clamp a 0 para evitar negativos
+  private readonly maxNewFiles = computed(() => Math.max(0, this.maxFiles - this.ImgPreviosCount()));
   private readonly maxBytes = 200_000; // 200 KB
   private readonly allowedTypes = new Set(['image/jpeg', 'image/png', 'image/gif']);
 
@@ -27,31 +40,18 @@ export class UploadImagenesAntiguedad {
   readonly isDragOver = signal(false);
   readonly errores = signal<string[]>([]);
 
-  // índice del ítem sobre el que se está “entrando” con el drag
-  private lastEnteredIndex: number | null = null;
 
-  // Thumbnails (Object URLs) con cleanup automático
-  readonly previews = computed(() => {
-    const files = this.arrayImgFiles();
-    return files.map(f => ({
-      name: f.name,
-      size: f.size,
-      type: f.type,
-      url: URL.createObjectURL(f)
-    }));
-  });
-
-  // Revocar URLs previas para evitar memory leaks
   constructor() {
-    let lastUrls: string[] = [];
-    effect((onCleanup) => {
-      const curr = this.previews().map(p => p.url);
-      onCleanup(() => {
-        lastUrls.forEach(u => URL.revokeObjectURL(u));
-        lastUrls = curr;
-      });
+
+    console.log('arrayNameImgExistentes', this.arrayNameImgExistentes());
+    // Limpiar errores al cambiar los archivos
+    effect(() => {
+      this.arrayImgFiles();
+      this.errores.set([]);
     });
+    
   }
+
 
   // Arrastrar/soltar en la zona de carga
   protected onDragOver(event: DragEvent) {
@@ -71,50 +71,28 @@ export class UploadImagenesAntiguedad {
 
   // Selección por input
   protected onFileInputChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (!input.files) return;
-    this.procesarArchivos(input.files);
-    input.value = ''; // permite volver a seleccionar los mismos archivos
-  }
-
-  // Elimina un archivo por índice
-  protected eliminar(idx: number) {
-    const arr = [...this.arrayImgFiles()];
-    arr.splice(idx, 1);
-    this.arrayImgFiles.set(arr);
-  }
-
-  // Reordenar en la lista de previews usando el índice del ítem sobre el que se soltó
-  protected onReorder(event: CdkDragDrop<File[]>) {
-    const arr = [...this.arrayImgFiles()];
-    // Si no se registró enter en ningún ítem (fallback), usar currentIndex del evento
-    let targetIndex = (this.lastEnteredIndex ?? event.currentIndex);
-    // saneo de límites
-    targetIndex = Math.max(0, Math.min(targetIndex, arr.length - 1));
-
-    moveItemInArray(arr, event.previousIndex, targetIndex);
-    this.arrayImgFiles.set(arr);
-
-    // limpiar estado
-    this.lastEnteredIndex = null;
-  }
-
-  // Se dispara cuando el drag entra en un ítem de la lista
-  protected onDragEntered(index: number) {
-    this.lastEnteredIndex = index;
+    const inputEl = event.target as HTMLInputElement;
+    if (!inputEl.files) return;
+    this.procesarArchivos(inputEl.files);
+    inputEl.value = ''; // permite volver a seleccionar los mismos archivos
   }
 
   // Valida y agrega archivos al model
   private procesarArchivos(fileList: FileList | File[]) {
     const actuales = [...this.arrayImgFiles()];
     const nuevos = Array.from(fileList);
+    // Leer el input signal y asegurar iterable
+    const existentes = [...(this.arrayNameImgExistentes() ?? [])];
 
     const errs: string[] = [];
     const agregables: File[] = [];
 
     // No superar cantidad máxima (considerando los actuales)
-    if (actuales.length >= this.maxFiles) {
-      errs.push(`No puedes subir más de ${this.maxFiles} archivos.`);
+    if (actuales.length >= this.maxNewFiles()) {
+      let msg = `No puedes subir más de ${this.maxFiles} archivos en total.`;
+      if (this.hayImgPrevias())
+        msg += ` Solo puedes subir ${this.maxNewFiles()} archivos nuevos.`;
+      errs.push(msg);
     } else {
       for (const f of nuevos) {
         if (!this.allowedTypes.has(f.type)) {
@@ -125,14 +103,16 @@ export class UploadImagenesAntiguedad {
           errs.push(`El archivo ${f.name} supera los ${this.maxBytes / 1000} KB.`);
           continue;
         }
-        // Evitar duplicados (por name)
-        const dup = actuales.some(a => a.name === f.name) || agregables.some(a => a.name === f.name);
+        // Evitar duplicados por nombre (en actuales, en agregables y en existentes)
+        const dup = actuales.some(a => a.name === f.name)
+          || agregables.some(a => a.name === f.name)
+          || existentes.some(e => e === f.name);
         if (dup) continue;
 
         agregables.push(f);
 
         // Si al agregar excede el máximo, corta
-        if (actuales.length + agregables.length >= this.maxFiles) break;
+        if (actuales.length + agregables.length >= this.maxNewFiles()) break;
       }
     }
 

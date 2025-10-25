@@ -8,11 +8,11 @@
 
     <div class="form-grid">
 
-        <app-autocompletar-periodos (idPer)="perId.set($event)"/>
+        <app-autocompletar-periodos (idPer)="perId.set($event)" [keywordExterno]="periodoEditDescripcion()"/>
 
-        <app-autocompletar-categorias (idCat)="catId.set($event)"/>
+        <app-autocompletar-categorias (idCat)="catId.set($event)" [keywordExterno]="categoriaEditDescripcion()"/>
 
-        <app-autocompletar-subcategorias [idCat]="catId()" (idScat)="scatId.set($event)"/>
+        <app-autocompletar-subcategorias [idCat]="catId()" (idScat)="scatId.set($event)" [keywordExterno]="subcategoriaEditDescripcion()"/>
 
         <mat-form-field appearance="fill" class="col-span-2">
             <mat-label>Describe la antigüedad</mat-label>
@@ -21,17 +21,27 @@
             <mat-error>{{obtenerErrorAntDescripcion()}}</mat-error>
         </mat-form-field>
 
-        <app-upload-imagenes-antiguedad
-            [(arrayImgFiles)]="imagenes"
-        />
-
-        
+        @if(esEdicion()){
+            <app-lista-imagenes-dto [(arrayImagenes)]="imagenesDTO"/>
+            <div class="btnAgregarImagenesContainer">
+                <button type="button" mat-flat-button
+                    (click)="openDialog()"
+                    [disabled]="deshabilitarAgregarImagenes()"
+                    [class.disabled]="deshabilitarAgregarImagenes()">Agregar más imágenes</button>
+            </div>
+            <br/>
+        }@else {
+            <app-upload-imagenes-antiguedad
+            [(arrayImgFiles)]="imagenesFiles"
+            [arrayNameImgExistentes]="arrayNameImgExistentes()"
+            />
+        }
 
     </div>
 
     <div class="contenedor-botones">
         <button type="button" mat-flat-button [disabled]="isNotAllValid()" (click)="onSubmit()">Guardar cambios</button>
-        <a mat-stroked-button routerLink="">Cancelar</a>
+        <a mat-stroked-button routerLink="/antiguedades">Cancelar</a>
         <!-- <button type="button" mat-stroked-button (click)="ConsoleValidFormulario()">Prueba formulario</button> -->
     </div>
 

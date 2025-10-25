@@ -1,0 +1,57 @@
+@if (previews().length) {
+  <section class="orden-container">
+    <h3>Ordenar imágenes</h3>
+    <h4>La primera imagen será la portada: <span style="color: darkmagenta;">{{ previews()[0].name }}</span></h4>
+    <p>Arrastra y suelta para reordenar las imágenes</p>
+
+    <div cdkDropList
+         class="thumb-list"
+         [cdkDropListData]="arrayImagenes()"
+         cdkDropListOrientation="vertical"
+         (cdkDropListDropped)="onReorder($event)">
+
+      @for (p of previews(); track p.id) {
+        <div class="thumb-item"
+             cdkDrag
+             (cdkDragEntered)="onDragEntered($index)">
+
+          <div class="drag-handle" cdkDragHandle>
+            <mat-icon>drag_indicator</mat-icon>
+          </div>
+
+          <img [src]="p.url" [alt]="p.name"/>
+
+          <div class="thumb-info">
+            <div class="name" [title]="p.name">{{ p.name }}</div>
+            <!-- No se muestra size ni type para DTO -->
+          </div>
+
+          <button mat-icon-button class="btn-remove"
+          [swal]="{ title: '¿Estás seguro?',
+                    text: 'La imagen será eliminada permanentemente.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Eliminar',
+                    cancelButtonText: 'Cancelar' }"
+                    (confirm)="eliminar($index, p.id)"
+                    aria-label="Eliminar">
+            <mat-icon>delete</mat-icon>
+          </button>
+
+          <ng-template cdkDragPreview>
+            <div class="drag-preview">
+              <img [src]="p.url" [alt]="p.name"/>
+              <span>{{ p.name }}</span>
+            </div>
+          </ng-template>
+
+          <ng-template cdkDragPlaceholder>
+            <div class="thumb-item placeholder"></div>
+          </ng-template>
+        </div>
+      }
+    </div>
+  </section>
+
+  <app-mostrar-errores [errores]="errores()"></app-mostrar-errores>
+}

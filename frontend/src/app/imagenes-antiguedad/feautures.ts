@@ -1,0 +1,1 @@
+export const MAX_IMG_ANTIGUEDAD = 5;

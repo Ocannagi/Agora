@@ -21,11 +21,16 @@ import { switchMap, take } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UploadImagenesAntiguedad } from "../../imagenes-antiguedad/upload-imagenes-antiguedad/upload-imagenes-antiguedad";
 import { ImagenAntiguedadDTO } from '../../imagenes-antiguedad/modelo/ImagenAntiguedadDTO';
+import { ListaImagenesDto } from "../../imagenes-antiguedad/lista-imagenes-dto/lista-imagenes-dto";
+import { MatDialog } from '@angular/material/dialog';
+import { Dialog } from '@angular/cdk/dialog';
+import { DialogImagenesAntiguedadUpload } from '../../imagenes-antiguedad/dialog-imagenes-antiguedad-upload/dialog-imagenes-antiguedad-upload';
+import { MAX_IMG_ANTIGUEDAD } from '../../imagenes-antiguedad/feautures';
 
 @Component({
   selector: 'app-crear-editar-antiguedad',
   standalone: true,
-  imports: [MostrarErrores, Cargando, AutocompletarPeriodos, AutocompletarCategorias, AutocompletarSubcategorias, MatButtonModule, RouterLink, MatFormFieldModule, ReactiveFormsModule, MatInputModule, UploadImagenesAntiguedad],
+  imports: [MostrarErrores, Cargando, AutocompletarPeriodos, AutocompletarCategorias, AutocompletarSubcategorias, MatButtonModule, RouterLink, MatFormFieldModule, ReactiveFormsModule, MatInputModule, UploadImagenesAntiguedad, ListaImagenesDto],
   templateUrl: './crear-editar-antiguedad.component.html',
   styleUrl: './crear-editar-antiguedad.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -34,6 +39,7 @@ export class CrearEditarAntiguedadComponent {
 
   //INPUTS
   readonly id = input(null, { transform: numberAttributeOrNull });
+  private MaxImgAntiguedad = MAX_IMG_ANTIGUEDAD;
 
   //SERVICES & INYECCIONES
   #fb = inject(FormBuilder);
@@ -44,6 +50,7 @@ export class CrearEditarAntiguedadComponent {
   #authStore = inject(AutenticacionStore);
   #antService = inject(AntiguedadesService);
   #imgService = inject(ImagenesAntiguedadService);
+  #dialog = inject(MatDialog); // Inyectar el servicio de diálogo (Modal)
 
 
   //FORMULARIO
@@ -61,7 +68,8 @@ export class CrearEditarAntiguedadComponent {
   readonly catId = signal<number | null>(null);
   readonly scatId = signal<number | null>(null);
   readonly usrId = signal<number | null>(this.#authStore.usrId());
-  readonly imagenes = signal<File[]>([]);
+  readonly imagenesFiles = signal<File[]>([]);
+  readonly imagenesDTO = signal<ImagenAntiguedadDTO[]>([]);
 
   readonly maxCaracteresDescripcion = signal(500);
   readonly periodoEditDescripcion = signal<string>('');
@@ -69,9 +77,11 @@ export class CrearEditarAntiguedadComponent {
   readonly subcategoriaEditDescripcion = signal<string>('');
 
   //COMPUTED
+  readonly arrayNameImgExistentes = computed(() => this.imagenesDTO().length > 0 ? this.imagenesDTO().map(img => img.imaNombreArchivo) : []);
   readonly esEdicion = computed(() => this.id() !== null && this.id() !== undefined);
   readonly esNuevo = computed(() => !this.esEdicion());
   readonly titulo = computed(() => this.esEdicion() ? 'Editar Antigüedad' : 'Registrar nueva Antigüedad');
+  readonly deshabilitarAgregarImagenes = computed(() => this.imagenesDTO().length >= this.MaxImgAntiguedad);
 
   readonly esCargando = computed(() => {
     if (this.esEdicion()) {
@@ -127,7 +137,7 @@ export class CrearEditarAntiguedadComponent {
       && this.perId() !== null
       && this.scatId() !== null
       && this.usrId() !== null
-      && this.imagenes().length > 0;
+      && this.imagenesFiles().length > 0;
   });
 
   readonly isNotAllValid = computed(() => !this.isAllValid());
@@ -136,7 +146,7 @@ export class CrearEditarAntiguedadComponent {
   constructor() {
 
     effect(() => {
-      const img = this.imagenes();
+      const img = this.imagenesFiles();
       console.log('Imágenes seleccionadas:', img);
     });
 
@@ -146,8 +156,7 @@ export class CrearEditarAntiguedadComponent {
         const img = this.imagenesAntiguedadByAntIdResource;
         untracked(() => {
           this.mapearAntiguedadData(ant.value())
-          this.mapearImagenesData(img.value());
-
+          this.imagenesDTO.set(img.value());
         });
       }
     });
@@ -162,10 +171,9 @@ export class CrearEditarAntiguedadComponent {
 
 
   }
-  mapearImagenesData(arg0: ImagenAntiguedadDTO[]) {
-    throw new Error('Method not implemented.');
-  }
+
   mapearAntiguedadData(antiguedad: AntiguedadDTO) {
+    console.log('Mapeando datos de la antigüedad para edición:', antiguedad);
     this.antDescripcionFormControlSignal.value.set(antiguedad.antDescripcion);
     this.periodoEditDescripcion.set(antiguedad.periodo.perDescripcion);
     this.categoriaEditDescripcion.set(antiguedad.subcategoria.categoria.catDescripcion);
@@ -176,6 +184,33 @@ export class CrearEditarAntiguedadComponent {
 
   obtenerErrorAntDescripcion(): string | null {
     return this.#vcf.obtenerErrorControl(this.antDescripcion, 'descripción de la antigüedad');
+  }
+
+  protected openDialog(): void {
+    const dialogRef = this.#dialog.open(DialogImagenesAntiguedadUpload, {
+      disableClose: true,
+      data: { arrayNameImgExistentes: this.arrayNameImgExistentes() },
+    });
+
+    const subscription = dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      if (result !== undefined) {
+        this.#imgService.create(result, this.id()!).pipe(
+          takeUntilDestroyed(this.#destroyRef)
+        ).subscribe({
+          next: () => {
+            this.imagenesAntiguedadByAntIdResource.reload();
+          },
+          error: (err) => {
+            console.error('Error al subir imágenes:', err);
+          }
+        });
+      }
+    });
+
+    this.#destroyRef.onDestroy(() => {
+      subscription.unsubscribe();
+    });
   }
 
   protected onSubmit() {
@@ -197,13 +232,13 @@ export class CrearEditarAntiguedadComponent {
 
       this.#antService.create(nuevaAntiguedad).pipe(
         switchMap((antId: number) => {
-          const archivos = this.imagenes();
+          const archivos = this.imagenesFiles();
           return this.#imgService.create(archivos, antId);
         }),
         takeUntilDestroyed(this.#destroyRef)
       ).subscribe({
         next: (imgIds: number[]) => {
-          this.#router.navigate(['/misantiguedades']);
+          this.#router.navigate(['/antiguedades']);
         },
         error: (err) => {
           // Los errores ya se manejan en los signals de los servicios
