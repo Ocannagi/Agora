@@ -1,5 +1,5 @@
-import { AntiguedadCreacionDTO, AntiguedadDTO } from './../modelo/AntiguedadDTO';
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, Injector, input, signal, untracked } from '@angular/core';
+import { AntiguedadCreacionDTO, AntiguedadDTO, TipoEstado, TipoEstadoEnum } from './../modelo/AntiguedadDTO';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, Injector, input, signal } from '@angular/core';
 import { numberAttributeOrNull } from '../../compartidos/funciones/transform';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ValidaControlForm } from '../../compartidos/servicios/valida-control-form';
@@ -17,20 +17,23 @@ import { AutocompletarSubcategorias } from "../../subcategorias/autocompletar-su
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
-import { switchMap, take } from 'rxjs';
+import { switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UploadImagenesAntiguedad } from "../../imagenes-antiguedad/upload-imagenes-antiguedad/upload-imagenes-antiguedad";
-import { ImagenAntiguedadDTO } from '../../imagenes-antiguedad/modelo/ImagenAntiguedadDTO';
+import { ImagenAntiguedadDTO, ImagenAntiguedadOrdenDTO, ImagenesAntiguedadReordenarDTO } from '../../imagenes-antiguedad/modelo/ImagenAntiguedadDTO';
 import { ListaImagenesDto } from "../../imagenes-antiguedad/lista-imagenes-dto/lista-imagenes-dto";
 import { MatDialog } from '@angular/material/dialog';
-import { Dialog } from '@angular/cdk/dialog';
 import { DialogImagenesAntiguedadUpload } from '../../imagenes-antiguedad/dialog-imagenes-antiguedad-upload/dialog-imagenes-antiguedad-upload';
 import { MAX_IMG_ANTIGUEDAD } from '../../imagenes-antiguedad/feautures';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-crear-editar-antiguedad',
   standalone: true,
-  imports: [MostrarErrores, Cargando, AutocompletarPeriodos, AutocompletarCategorias, AutocompletarSubcategorias, MatButtonModule, RouterLink, MatFormFieldModule, ReactiveFormsModule, MatInputModule, UploadImagenesAntiguedad, ListaImagenesDto],
+  imports: [MostrarErrores, Cargando, AutocompletarPeriodos,
+    AutocompletarCategorias, AutocompletarSubcategorias, MatButtonModule,
+    RouterLink, MatFormFieldModule, ReactiveFormsModule, MatInputModule,
+    UploadImagenesAntiguedad, ListaImagenesDto, MatCheckboxModule],
   templateUrl: './crear-editar-antiguedad.component.html',
   styleUrl: './crear-editar-antiguedad.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -51,6 +54,7 @@ export class CrearEditarAntiguedadComponent {
   #antService = inject(AntiguedadesService);
   #imgService = inject(ImagenesAntiguedadService);
   #dialog = inject(MatDialog); // Inyectar el servicio de diálogo (Modal)
+  readonly TipoEstadoFx = TipoEstado;
 
 
   //FORMULARIO
@@ -68,8 +72,11 @@ export class CrearEditarAntiguedadComponent {
   readonly catId = signal<number | null>(null);
   readonly scatId = signal<number | null>(null);
   readonly usrId = signal<number | null>(this.#authStore.usrId());
+  readonly tipoEstadoValue = signal<string>('');
   readonly imagenesFiles = signal<File[]>([]);
   readonly imagenesDTO = signal<ImagenAntiguedadDTO[]>([]);
+  readonly antiguedadModelo = signal<AntiguedadDTO | null>(null);
+  readonly imagenesModelo = signal<ImagenAntiguedadDTO[] | null>(null);
 
   readonly maxCaracteresDescripcion = signal(500);
   readonly periodoEditDescripcion = signal<string>('');
@@ -78,17 +85,27 @@ export class CrearEditarAntiguedadComponent {
 
   //COMPUTED
   readonly arrayNameImgExistentes = computed(() => this.imagenesDTO().length > 0 ? this.imagenesDTO().map(img => img.imaNombreArchivo) : []);
+  readonly tipoEstadoKey = computed(() => {
+    const key = this.TipoEstadoFx.obtenerKeyPorValor(TipoEstadoEnum, this.tipoEstadoValue() as typeof TipoEstadoEnum[keyof typeof TipoEstadoEnum]);
+    return key ?? '';
+  });
   readonly esEdicion = computed(() => this.id() !== null && this.id() !== undefined);
   readonly esNuevo = computed(() => !this.esEdicion());
   readonly titulo = computed(() => this.esEdicion() ? 'Editar Antigüedad' : 'Registrar nueva Antigüedad');
   readonly deshabilitarAgregarImagenes = computed(() => this.imagenesDTO().length >= this.MaxImgAntiguedad);
+
+
+  readonly isAlaVenta = computed(() => {
+    const tipoEstadoEnum = TipoEstado.convertStringToEnum(this.tipoEstadoValue());
+    return tipoEstadoEnum ? TipoEstado.isAlaVenta(tipoEstadoEnum) : false;
+  });
 
   readonly esCargando = computed(() => {
     if (this.esEdicion()) {
       const antiguedadRes = this.antiguedadByIdResource;
       const imagenesRes = this.imagenesAntiguedadByAntIdResource;
       if (imagenesRes?.isLoading())
-        return true;  
+        return true;
       if (antiguedadRes?.isLoading())
         return true;
     }
@@ -100,7 +117,7 @@ export class CrearEditarAntiguedadComponent {
     const esEdicion = this.esEdicion();
     const antRes = this.antiguedadByIdResource;
     const imgRes = this.imagenesAntiguedadByAntIdResource;
-    
+
     return esEdicion && antRes.status() === 'resolved' && imgRes.status() === 'resolved';
   });
 
@@ -116,13 +133,16 @@ export class CrearEditarAntiguedadComponent {
       const httpError = wrapped?.cause as HttpErrorResponse;
       lista.push(httpError?.error as string ?? httpError?.message ?? wrapped?.message ?? 'Error desconocido');
     }
-    if( this.esEdicion() && this.imagenesAntiguedadByAntIdResource?.status() === 'error') {
+    if (this.esEdicion() && this.imagenesAntiguedadByAntIdResource?.status() === 'error') {
       const wrapped = this.imagenesAntiguedadByAntIdResource?.error();
       const httpError = wrapped?.cause as HttpErrorResponse;
       lista.push(httpError?.error as string ?? httpError?.message ?? wrapped?.message ?? 'Error desconocido');
     }
     if (this.esEdicion() && this.#antService.patchError() !== null) {
       lista.push(this.#antService.patchError()!);
+    }
+    if (this.esEdicion() && this.#imgService.patchError() !== null) {
+      lista.push(this.#imgService.patchError()!);
     }
 
     return lista;
@@ -137,10 +157,26 @@ export class CrearEditarAntiguedadComponent {
       && this.perId() !== null
       && this.scatId() !== null
       && this.usrId() !== null
-      && this.imagenesFiles().length > 0;
+      && (this.esEdicion() ? this.imagenesDTO().length > 0 : this.imagenesFiles().length > 0);
   });
 
   readonly isNotAllValid = computed(() => !this.isAllValid());
+
+  readonly isSomethingChange = computed(() => {
+    // Comparación profunda de imágenes y resto de campos
+    if (this.antiguedadModelo() === null) return false;
+
+    const ant = this.antiguedadModelo()!;
+    const descCambio = ant.antDescripcion !== this.antDescripcionFormControlSignal.value()!.trim();
+    const perCambio = ant.periodo.perId !== this.perId();
+    const scatCambio = ant.subcategoria.scatId !== this.scatId();
+    const imgsCambio = !this.arraysImagenesIguales(this.imagenesDTO(), this.imagenesModelo());
+    //const imgsNewCambio = this.imagenesDTO().length !== ant.imagenes?.length;
+
+    return descCambio || perCambio || scatCambio || imgsCambio; // || imgsNewCambio;
+  });
+
+  readonly EsEdicionYNoHayCambios = computed(() => this.esEdicion() && !this.isSomethingChange());
 
 
   constructor() {
@@ -152,12 +188,13 @@ export class CrearEditarAntiguedadComponent {
 
     effect(() => {
       if (this.isReadyToEdit()) {
+        console.log('Is ready to edit - mapeando datos de antigüedad e imágenes');
         const ant = this.antiguedadByIdResource;
         const img = this.imagenesAntiguedadByAntIdResource;
-        untracked(() => {
-          this.mapearAntiguedadData(ant.value())
-          this.imagenesDTO.set(img.value());
-        });
+        this.antiguedadModelo.set(ant.value());
+        this.imagenesModelo.set(img.value());
+        this.mapearAntiguedadData(ant.value());
+        this.imagenesDTO.set(img.value());
       }
     });
 
@@ -167,14 +204,15 @@ export class CrearEditarAntiguedadComponent {
       this.#antService.postError.set(null);
       this.#antService.patchError.set(null);
       this.#imgService.postError.set(null);
+      this.#imgService.patchError.set(null);
     });
 
 
   }
 
   mapearAntiguedadData(antiguedad: AntiguedadDTO) {
-    console.log('Mapeando datos de la antigüedad para edición:', antiguedad);
-    this.antDescripcionFormControlSignal.value.set(antiguedad.antDescripcion);
+    this.tipoEstadoValue.set(antiguedad.tipoEstado);
+    this.antDescripcion.setValue(antiguedad.antDescripcion);
     this.periodoEditDescripcion.set(antiguedad.periodo.perDescripcion);
     this.categoriaEditDescripcion.set(antiguedad.subcategoria.categoria.catDescripcion);
     this.subcategoriaEditDescripcion.set(antiguedad.subcategoria.scatDescripcion);
@@ -220,7 +258,31 @@ export class CrearEditarAntiguedadComponent {
     }
 
     if (this.esEdicion()) {
-      //editar
+      const antiguedadEditada: AntiguedadCreacionDTO = {
+        perId: this.perId()!,
+        scatId: this.scatId()!,
+        antDescripcion: this.antDescripcionFormControlSignal.value()!.trim(),
+        usrId: this.usrId()!,
+      };
+
+      this.#antService.update(this.id()!, antiguedadEditada).pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        switchMap((_) => {
+          const imgDTO = this.imagenesDTO();
+          console.log('Imágenes actuales para reordenar:', imgDTO);
+          const reordenarDTO = this.mapearAImagenesAntiguedadReordenarDTO(this.id()!, imgDTO);
+          return this.#imgService.update(reordenarDTO);
+        })
+      ).subscribe({
+        next: () => {
+          this.#router.navigate(['/antiguedades']);
+        },
+        error: (err) => {
+          // Los errores ya se manejan en los signals de los servicios
+          console.error('Error al actualizar la antigüedad:', err);
+        }
+      });
+
     } else {
       //crear
       const nuevaAntiguedad: AntiguedadCreacionDTO = {
@@ -249,5 +311,36 @@ export class CrearEditarAntiguedadComponent {
     }
   }
 
+  private mapearAImagenesAntiguedadReordenarDTO(antId: number, imagenes: ImagenAntiguedadDTO[]): ImagenesAntiguedadReordenarDTO {
+    return {
+      antId,
+      imagenesAntiguedadOrden: imagenes.map(img => ({
+        imaId: img.imaId,
+        imaOrden: img.imaOrden
+      })) as ImagenAntiguedadOrdenDTO[]
+    };
+  }
+
+  // Comparación profunda de arrays de imágenes por identidad y orden
+  private arraysImagenesIguales(
+    a: ImagenAntiguedadDTO[] | null,
+    b: ImagenAntiguedadDTO[] | null
+  ): boolean {
+    // Si alguno es null/undefined, considerar diferentes
+    if (!a || !b) return false;
+    if (a.length !== b.length) return false;
+
+    // Importante: comparamos por posición para detectar reordenamientos
+    for (let i = 0; i < a.length; i++) {
+      const ai = a[i];
+      const bi = b[i];
+      if (ai.imaId !== bi.imaId) return false;
+      if (ai.imaOrden !== bi.imaOrden) return false;
+      // Si también querés validar metadatos visibles:
+      if (ai.imaNombreArchivo !== bi.imaNombreArchivo) return false;
+      if (ai.imaUrl !== bi.imaUrl) return false;
+    }
+    return true;
+  }
 
 }

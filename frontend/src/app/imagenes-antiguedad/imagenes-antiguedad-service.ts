@@ -1,5 +1,5 @@
 import { inject, Injectable, Injector, ResourceRef, signal } from '@angular/core';
-import { ImagenAntiguedadCreacionDTO, ImagenAntiguedadDTO } from './modelo/ImagenAntiguedadDTO';
+import { ImagenAntiguedadCreacionDTO, ImagenAntiguedadDTO, ImagenesAntiguedadReordenarDTO } from './modelo/ImagenAntiguedadDTO';
 import { IServiceCrudImagenes } from '../compartidos/interfaces/IServiceCrudImagenes';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { environment } from '../environments/environment.development';
@@ -10,11 +10,12 @@ import { rxResource } from '@angular/core/rxjs-interop';
 @Injectable({
   providedIn: 'root'
 })
-export class ImagenesAntiguedadService implements IServiceCrudImagenes<ImagenAntiguedadCreacionDTO, ImagenAntiguedadDTO> {
+export class ImagenesAntiguedadService implements IServiceCrudImagenes<ImagenAntiguedadCreacionDTO, ImagenAntiguedadDTO, ImagenesAntiguedadReordenarDTO> {
   private http = inject(HttpClient);
   private urlBase = environment.apiURL + '/ImagenesAntiguedad';
 
   readonly postError = signal<string | null>(null);
+  readonly patchError = signal<string | null>(null);
   readonly deleteError = signal<string | null>(null);
 
 
@@ -81,6 +82,16 @@ export class ImagenesAntiguedadService implements IServiceCrudImagenes<ImagenAnt
     // Fallback: relativa al origen actual (puede fallar en :4200 si no hay proxy)
     return '/' + path;
   }
+
+  public update(imgsAReordenar : ImagenesAntiguedadReordenarDTO): Observable<void> {
+      return this.http.patch<void>(`${this.urlBase}`, imgsAReordenar).pipe(
+        tap(() => this.patchError.set(null)),
+        catchError((err: HttpErrorResponse) => {
+          this.patchError.set(String(err.error ?? 'Error desconocido al editar usuario.'));
+          return throwError(() => err);
+        })
+      )
+    }
 
 
   public delete(id: number): Observable<[]> {

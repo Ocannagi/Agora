@@ -241,7 +241,8 @@ export class CrearEditarUsuario {
 
           return this.#usrService.update(this.id()!, usrCreacionEd);
         }),
-        takeUntilDestroyed(this.#destroyRef)).subscribe({
+        takeUntilDestroyed(this.#destroyRef)
+      ).subscribe({
           next: () => {
             if (this.#authStore.usrId() === this.id()!) {
               console.log('Usuario editado correctamente');

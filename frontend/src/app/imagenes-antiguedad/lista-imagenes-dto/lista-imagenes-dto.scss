@@ -64,7 +64,19 @@ $lila-20: rgba(206, 147, 216, 0.2);
     // No .size para DTO
   }
 
-  .btn-remove { color: $magenta; }
+  .btn-remove {
+    color: $magenta;
+    transition: color .2s ease, opacity .2s ease;
+
+    // Estilo cuando el botón está deshabilitado
+    &:disabled,
+    &[disabled] {
+      color: $lila;         // tono más suave dentro de la paleta
+      opacity: .6;          // reduce intensidad
+      cursor: not-allowed;  // cursor de “no permitido”
+      pointer-events: none; // evita interacción accidental
+    }
+  }
 }
 
 // Preview mientras se arrastra

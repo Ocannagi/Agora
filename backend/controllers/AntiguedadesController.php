@@ -354,6 +354,8 @@ class AntiguedadesController extends BaseController
                 }
             }
 
+             $antiguedadDTO->usuario->usrTipoUsuario = $claimDTO->usrTipoUsuario;
+
             $this->antiguedadesValidacionService->validarInput($mysqli, $antiguedadDTO);
             Input::escaparDatos($antiguedadDTO, $mysqli);
             Input::agregarComillas_ConvertNULLtoString($antiguedadDTO);

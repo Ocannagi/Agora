@@ -1,6 +1,7 @@
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, model } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip'; // <-- tooltip
 import { ImagenAntiguedadDTO } from '../modelo/ImagenAntiguedadDTO';
 import { MostrarErrores } from "../../compartidos/componentes/mostrar-errores/mostrar-errores";
 import { ImagenesAntiguedadService } from '../imagenes-antiguedad-service';
@@ -9,7 +10,7 @@ import { SwalDirective } from '@sweetalert2/ngx-sweetalert2';
 
 @Component({
   selector: 'app-lista-imagenes-dto',
-  imports: [DragDropModule, MatIconModule, MostrarErrores, SwalDirective],
+  imports: [DragDropModule, MatIconModule, MostrarErrores, SwalDirective, MatTooltipModule], // <-- agregar aquí
   templateUrl: './lista-imagenes-dto.html',
   styleUrl: './lista-imagenes-dto.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -38,6 +39,15 @@ export class ListaImagenesDto {
       url: i.imaUrl
     }));
   });
+
+
+
+  constructor() {
+
+    this.#destroyRef.onDestroy(() => {
+      this.#imgService.deleteError.set(null);
+    });
+  }
 
   // Reordenar la lista y actualizar imaOrden según la nueva posición
   protected onReorder(event: CdkDragDrop<ImagenAntiguedadDTO[]>) {
@@ -76,7 +86,7 @@ export class ListaImagenesDto {
     // Crear nuevas referencias para mantener inmutabilidad
     return arr.map((img, idx) => ({
       ...img,
-      imaOrden: idx
+      imaOrden: idx + 1 // Orden empieza en 1
     }));
   }
 }

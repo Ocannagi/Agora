@@ -26,17 +26,28 @@
             <!-- No se muestra size ni type para DTO -->
           </div>
 
-          <button mat-icon-button class="btn-remove"
-          [swal]="{ title: '¿Estás seguro?',
-                    text: 'La imagen será eliminada permanentemente.',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Eliminar',
-                    cancelButtonText: 'Cancelar' }"
-                    (confirm)="eliminar($index, p.id)"
-                    aria-label="Eliminar">
-            <mat-icon>delete</mat-icon>
-          </button>
+          <!-- Tooltip en el contenedor para que funcione cuando el botón está disabled -->
+          <span
+            matTooltip="Debe quedar al menos una imagen"
+            [matTooltipDisabled]="arrayImagenes().length > 1"
+            matTooltipPosition="above">
+            <button
+              [disabled]="arrayImagenes().length <= 1"
+              mat-icon-button
+              class="btn-remove"
+              [swal]="{
+                title: '¿Estás seguro?',
+                text: 'La imagen será eliminada permanentemente.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Eliminar',
+                cancelButtonText: 'Cancelar'
+              }"
+              (confirm)="eliminar($index, p.id)"
+              aria-label="Eliminar">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </span>
 
           <ng-template cdkDragPreview>
             <div class="drag-preview">
