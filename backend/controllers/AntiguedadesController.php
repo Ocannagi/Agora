@@ -45,13 +45,16 @@ class AntiguedadesController extends BaseController
         try {
             if (is_array($params)) {
 
-                if (array_key_exists('scatId', $params) || array_key_exists('catId', $params) || array_key_exists('perId', $params) || array_key_exists('usrId', $params) || array_key_exists('antDescripcion', $params) || array_key_exists('antTipoEstado', $params)) {
+                if (array_key_exists('scatId', $params) || array_key_exists('catId', $params) || array_key_exists('perId', $params)
+                    || array_key_exists('usrId', $params) || array_key_exists('antDescripcion', $params) || array_key_exists('antTipoEstado', $params)
+                    || array_key_exists('arrayAntTipoEstado', $params)) {
                     $scatId = null;
                     $catId = null;
                     $perId = null;
                     $usrId = null;
                     $antDescripcion = null;
                     $antTipoEstado = null;
+                    $arrayAntTipoEstado = null;
                     if (array_key_exists('scatId', $params)) {
                         $scatId = (int)$params['scatId'];
                     }
@@ -73,8 +76,23 @@ class AntiguedadesController extends BaseController
                             throw new InvalidArgumentException(code: 400, message: "El parámetro 'antTipoEstado' no es válido.");
                         }
                     }
+                    if (array_key_exists('arrayAntTipoEstado', $params)) {
+                        $arrayAntTipoEstado = $params['arrayAntTipoEstado'];
+                        if (!is_array($arrayAntTipoEstado) || empty($arrayAntTipoEstado)) {
+                            throw new InvalidArgumentException(code: 400, message: "El parámetro 'arrayAntTipoEstado' no es válido.");
+                        }
+                        foreach ($arrayAntTipoEstado as $tipoEstado) {
+                            if (!in_array($tipoEstado, array_map(fn($e) => $e->value, TipoEstadoEnum::cases()))) {
+                                throw new InvalidArgumentException(code: 400, message: "El parámetro 'arrayAntTipoEstado' contiene un valor no válido.");
+                            }
+                        }
+                    }
 
-                    return $this->getAntiguedadesByFiltros($mysqli ,$scatId, $catId, $perId, $usrId, $antDescripcion, $antTipoEstado);
+                    if($antTipoEstado !== null && $arrayAntTipoEstado !== null) {
+                        throw new InvalidArgumentException(code: 400, message: "No se pueden utilizar ambos parámetros 'antTipoEstado' y 'arrayAntTipoEstado' al mismo tiempo.");
+                    }
+
+                    return $this->getAntiguedadesByFiltros($mysqli ,$scatId, $catId, $perId, $usrId, $antDescripcion, $antTipoEstado, $arrayAntTipoEstado);
                 } else {
                     throw new InvalidArgumentException(code: 400, message: "No se recibieron parámetros válidos.");
                 }
@@ -99,7 +117,7 @@ class AntiguedadesController extends BaseController
         }
     }
 
-    private function getAntiguedadesByFiltros(mysqli $mysqli, ?int $scatId, ?int $catId, ?int $perId, ?int $usrId, ?string $antDescripcion, ?string $antTipoEstado): ?array
+    private function getAntiguedadesByFiltros(mysqli $mysqli, ?int $scatId, ?int $catId, ?int $perId, ?int $usrId, ?string $antDescripcion, ?string $antTipoEstado, ?array $arrayAntTipoEstado): ?array
     {
         $this->securityService->requireLogin(tipoUsurio: null);
 
@@ -136,6 +154,13 @@ class AntiguedadesController extends BaseController
         }
         if ($antTipoEstado != null) {
             $query .= " AND antTipoEstado = '$antTipoEstado'";
+        }
+        if ($arrayAntTipoEstado != null && is_array($arrayAntTipoEstado) && count($arrayAntTipoEstado) > 0) {
+            $estadosFormateados = array_map(function($estado) use ($mysqli) {
+                return "'" . $mysqli->real_escape_string($estado) . "'";
+            }, $arrayAntTipoEstado);
+            $estadosString = implode(", ", $estadosFormateados);
+            $query .= " AND antTipoEstado IN ($estadosString)";
         }
 
         $arrayAntiguedadesDTO = $this->getInterno(query: $query, classDTO: "AntiguedadDTO", linkExterno: $mysqli);

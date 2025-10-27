@@ -33,13 +33,28 @@ export const routes: Routes = [
     },
     {
         path: 'antiguedades/crear',
-        loadComponent: () => import(/* webpackChunkName: "crear-editar-antiguedad" */ './antiguedades/crear-editar-antiguedad/crear-editar-antiguedad.component').then(m => m.CrearEditarAntiguedadComponent),
+        loadComponent: () => import(/* webpackChunkName: "crear-editar-antiguedad" */ './antiguedades/crear-editar-antiguedad/crear-editar-antiguedad').then(m => m.CrearEditarAntiguedad),
         title: "Crear Antigüedad",
     },
     {
         path: 'antiguedades/editar/:id',
-        loadComponent: () => import(/* webpackChunkName: "crear-editar-antiguedad" */ './antiguedades/crear-editar-antiguedad/crear-editar-antiguedad.component').then(m => m.CrearEditarAntiguedadComponent),
+        loadComponent: () => import(/* webpackChunkName: "crear-editar-antiguedad" */ './antiguedades/crear-editar-antiguedad/crear-editar-antiguedad').then(m => m.CrearEditarAntiguedad),
         title: "Editar Antigüedad",
+    },
+    {
+        path: 'antiguedadesAlaVenta',
+        loadComponent: () => import(/* webpackChunkName: "indice-antiguedades-venta" */ './antiguedades-venta/indice-antiguedades-venta/indice-antiguedades-venta').then(m => m.IndiceAntiguedadesVenta),
+        title: "Antigüedades a la Venta",
+    },
+    {
+        path: 'antiguedadesAlaVenta/crear',
+        loadComponent: () => import(/* webpackChunkName: "crear-editar-antiguedad-venta" */ './antiguedades-venta/crear-editar-antiguedad-venta/crear-editar-antiguedad-venta').then(m => m.CrearEditarAntiguedadVenta),
+        title: "Publicar Antigüedad",
+    },
+    {
+        path: 'antiguedadesAlaVenta/editar/:id',
+        loadComponent: () => import(/* webpackChunkName: "crear-editar-antiguedad-venta" */ './antiguedades-venta/crear-editar-antiguedad-venta/crear-editar-antiguedad-venta').then(m => m.CrearEditarAntiguedadVenta),
+        title: "Editar publicación",
     },
     {
         path:'**', //Wild card : Atrapa cualquier ruta de tu dominio. SIEMPRE DEBE IR AL FINAL, ya que el buscador de rutas es secuencial, empieza en el index 0 de este array de rutes y devuelve la primera coincidencia

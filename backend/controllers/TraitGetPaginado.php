@@ -10,7 +10,12 @@ trait TraitGetPaginado
 
     public function getPaginado(mixed $paginado, mysqli $mysqli, string $baseCount, string $whereCount, string $msgCount, string $queryClassDTO, string $classDTO)
     {
+        $paginadoResponseDTO = $this->getPaginadoResponseDTO($paginado, $mysqli, $baseCount, $whereCount, $msgCount, $queryClassDTO, $classDTO);
+        Output::outputJson($paginadoResponseDTO);
+    }
 
+    public function getPaginadoResponseDTO(mixed $paginado, mysqli $mysqli, string $baseCount, string $whereCount, string $msgCount, string $queryClassDTO, string $classDTO) : PaginadoResponseDTO
+    {
         if (is_array($paginado)) {
             if (array_key_exists('pagina', $paginado) && array_key_exists('registrosPorPagina', $paginado)) {
                 if (!Input::esNotNullVacioBlanco($paginado['pagina']) || !Input::esNotNullVacioBlanco($paginado['registrosPorPagina'])) {
@@ -41,7 +46,7 @@ trait TraitGetPaginado
                     'arrayEntidad' => $arrayUsuarios
                 ]);
 
-                Output::outputJson($paginadoResponseDTO);
+                return $paginadoResponseDTO;
             } else {
                 throw new InvalidArgumentException("Faltan los parámetros 'pagina' o 'registrosPorPagina'.");
             }
@@ -49,4 +54,6 @@ trait TraitGetPaginado
             throw new InvalidArgumentException("El paginado debe ser un array asociativo.");
         }
     }
+
+
 }

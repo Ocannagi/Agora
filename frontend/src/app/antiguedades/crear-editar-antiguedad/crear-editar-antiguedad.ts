@@ -1,4 +1,4 @@
-import { AntiguedadCreacionDTO, AntiguedadDTO, TipoEstado, TipoEstadoEnum } from './../modelo/AntiguedadDTO';
+import { AntiguedadCreacionDTO, AntiguedadDTO, TipoEstado, TipoEstadoEnum } from '../modelo/AntiguedadDTO';
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, Injector, input, signal } from '@angular/core';
 import { numberAttributeOrNull } from '../../compartidos/funciones/transform';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -34,11 +34,11 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     AutocompletarCategorias, AutocompletarSubcategorias, MatButtonModule,
     RouterLink, MatFormFieldModule, ReactiveFormsModule, MatInputModule,
     UploadImagenesAntiguedad, ListaImagenesDto, MatCheckboxModule],
-  templateUrl: './crear-editar-antiguedad.component.html',
-  styleUrl: './crear-editar-antiguedad.component.scss',
+  templateUrl: './crear-editar-antiguedad.html',
+  styleUrl: './crear-editar-antiguedad.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CrearEditarAntiguedadComponent {
+export class CrearEditarAntiguedad {
 
   //INPUTS
   readonly id = input(null, { transform: numberAttributeOrNull });

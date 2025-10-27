@@ -175,7 +175,7 @@ trait TraitCambiarEstadoAntiguedad
 
     public function obtenerUsrIdAntiguedad(mysqli $linkExterno, int $antId): int
     {
-        $query = "SELECT antUsrId FROM antiguedad WHERE antId = {$antId} AND antFechaBaja IS NULL";
+        $query = "SELECT antUsrId FROM antiguedad WHERE antId = {$antId}";
         $resultado = $linkExterno->query($query);
         if ($resultado === false) {
             $error = $linkExterno->error;

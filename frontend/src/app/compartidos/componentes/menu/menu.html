@@ -13,28 +13,17 @@
 
     <app-autorizado [esAutorizado]="store.isCompradorVendedor()">
         <ng-container autorizado>
-            <a mat-button routerLink="/antiguedades">Mis Antigüedades</a>
+            <div>
+                <a mat-button routerLink="/antiguedades">Mis Antigüedades</a>
+            </div>
+            <div>
+                <a mat-button routerLink="/antiguedadesAlaVenta">Venta</a>
+            </div>
         </ng-container>
     </app-autorizado>
 
     <app-autorizado [esAutorizado]="store.isSoporteTecnico()">
         <ng-container autorizado>
-            <div>
-                <a mat-button routerLink="/">Géneros</a>
-            </div>
-        
-            <div>
-                <a mat-button routerLink="/">Actores</a>
-            </div>
-        
-            <div>
-                <a mat-button routerLink="/">Cines</a>
-            </div>
-        
-            <div>
-                <a mat-button routerLink="/">Crear Película</a>
-            </div>
-
             <div>
                 <a mat-button routerLink="/usuarios">Usuarios</a>
             </div>

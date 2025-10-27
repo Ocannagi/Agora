@@ -1,7 +1,7 @@
 import { inject, Injectable, Injector, ResourceRef, signal } from '@angular/core';
 import { IServicePaginado } from '../compartidos/interfaces/IServicePaginado';
 import { AntiguedadCreacionDTO, AntiguedadDTO, AntiguedadIndiceDTO } from './modelo/AntiguedadDTO';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { environment } from '../environments/environment.development';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { PaginadoResponseDTO } from '../compartidos/modelo/PaginadoResponseDTO';
@@ -10,6 +10,8 @@ import { map } from 'rxjs/internal/operators/map';
 import { buildQueryPaginado } from '../compartidos/funciones/queryPaginado';
 import { catchError, Observable, of, tap, throwError } from 'rxjs';
 import { RetornaId } from '../compartidos/modelo/RetornaId';
+import { buildQueryParams } from '../compartidos/funciones/queryParams';
+import { normalizarUrlImagen } from '../compartidos/funciones/normalizarUrlImagen';
 
 @Injectable({
   providedIn: 'root'
@@ -73,6 +75,36 @@ export class AntiguedadesService implements IServicePaginado<AntiguedadIndiceDTO
       },
       defaultValue: {} as AntiguedadDTO,
       injector: injector
+    });
+  }
+
+  public getByUsrIdHabilitadoVtaResource(usrId: () => number | null, injector: Injector = inject(Injector)): ResourceRef<AntiguedadDTO[]> {
+    return rxResource<AntiguedadDTO[], HttpParams>({
+      params: () => {
+        return buildQueryParams({ usrId: usrId?.() ?? '',
+                                  arrayAntTipoEstado: ['RD','TD','TI']
+         });
+      },
+      stream: ({ params }) => {
+        const usr = params.get('params[usrId]');
+        if (!usr) {
+          return of<AntiguedadDTO[]>([]);
+        }
+
+        return this.http.get<AntiguedadDTO[]>(this.urlBase, { params }).pipe(
+          map((antiguedades) =>
+            antiguedades.map(ant => ({
+              ...ant,
+              imagenes: ant.imagenes?.map(img => ({
+                ...img,
+                imaUrl: normalizarUrlImagen(img.imaUrl),
+              })),
+            }))
+          )
+        );
+      },
+      defaultValue: [],
+      injector
     });
   }
 

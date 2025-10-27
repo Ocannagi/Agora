@@ -1,0 +1,118 @@
+<!-- Título -->
+<h2 style="margin-top: 40px;">{{ titulo() }}</h2>
+
+<!-- Errores -->
+<app-mostrar-errores [errores]="errores()"></app-mostrar-errores>
+
+@if (esCargando()) {
+  <app-cargando />
+} @else {
+  <div class="form-grid">
+    @if (noEsEdicion()) {
+
+      <!-- Preview grande de la selección (arriba del select) -->
+      @if (selectedThumbUrl()) {
+        <div class="selected-thumb col-span-2">
+          <img
+            [ngSrc]="selectedThumbUrl()!"
+            width="220"
+            height="220"
+            alt="Portada de la antigüedad seleccionada"
+            priority
+          />
+        </div>
+      }
+
+      <!-- Botón debajo de la imagen, arriba del select, solo si hay selección -->
+      @if (antiguedadSeleccionadaId()) {
+        <div class="selected-actions col-span-2">
+          <button type="button" mat-stroked-button (click)="verEditarAntiguedad()">Ver/Editar</button>
+        </div>
+      }
+
+      <!-- Selección de Antigüedad existente -->
+      <mat-form-field appearance="fill" class="col-span-2">
+        <mat-label>Antigüedad a publicar</mat-label>
+        <mat-select [value]="antiguedadSeleccionadaId()" (valueChange)="antiguedadSeleccionadaId.set($event)">
+          <mat-option [value]="null">--Seleccione--</mat-option>
+          @for (ant of antiguedadesResource.value(); track ant.antId) {
+            <mat-option [value]="ant.antId">
+              <div class="option-with-thumb">
+                @if (thumbUrl(ant)) {
+                  <img [ngSrc]="thumbUrl(ant)!" width="28" height="28" alt="{{ ant.antDescripcion }}" />
+                } @else {
+                  <div class="thumb-placeholder" aria-hidden="true"></div>
+                }
+                <span class="text">{{ ant.antDescripcion }}</span>
+              </div>
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    } @else {
+      <div class="antiguedad-resumen">
+        <strong>Antigüedad:</strong> {{ nombreAntiguedadSeleccionada() }}
+      </div>
+      <div class="antiguedad-fecha">
+        <strong>Fecha de publicación:</strong> {{ fechaPublicacionAntiguedadSeleccionada() }}
+      </div>
+
+      @if (selectedThumbUrl()) {
+        <div class="selected-thumb col-span-2">
+          <img
+            [ngSrc]="selectedThumbUrl()!"
+            width="220"
+            height="220"
+            alt="Portada de la antigüedad"
+            priority
+          />
+        </div>
+      }
+
+      @if (antiguedadSeleccionadaId()) {
+        <div class="selected-actions col-span-2">
+          <button type="button" mat-stroked-button (click)="verEditarAntiguedad()">Ver/Editar</button>
+        </div>
+      }
+    }
+
+    <!-- Select de domicilio (reemplaza al formulario eliminado) -->
+    <mat-form-field appearance="fill" class="col-span-2">
+      <mat-label>Domicilio de origen</mat-label>
+      <mat-select [value]="selectedDomicilioId()" (valueChange)="selectedDomicilioId.set($event)">
+        <mat-option [value]="null">--Seleccione--</mat-option>
+        @if (usuariosDomiciliosResource.value().domicilios.length) {
+          @for (dom of usuariosDomiciliosResource.value().domicilios; track dom.domId) {
+            <mat-option [value]="dom.domId">{{ formatDomicilio(dom) }}</mat-option>
+          }
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Formulario de venta -->
+    <form class="venta-form" [formGroup]="formVenta" (ngSubmit)="$event.preventDefault()">
+      <mat-form-field appearance="fill">
+        <mat-label>Precio de venta</mat-label>
+        <input
+          matInput
+          type="number"
+          step="0.01"
+          formControlName="aavPrecioVenta" />
+        <mat-error>{{ obtenerErrorCampoVenta('aavPrecioVenta') }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" >
+        <mat-label>ID Tasación digital (opcional)</mat-label>
+        <input type="number" step="1" matInput formControlName="tadId" />
+        <mat-error>{{ obtenerErrorCampoVenta('tadId') }}</mat-error>
+      </mat-form-field>
+    </form>
+  </div>
+
+  <div class="contenedor-botones">
+    <button type="button" mat-flat-button [disabled]="isNotFormValid()" (click)="onSubmit()">Guardar</button>
+    <a mat-stroked-button routerLink="/antiguedadesAlaVenta">Cancelar</a>
+  </div>
+
+  <app-mostrar-errores [errores]="errores()"></app-mostrar-errores>
+}

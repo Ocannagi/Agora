@@ -168,9 +168,10 @@ class ImagenesAntiguedadValidacionService extends ValidacionFileServiceBase
 
     private function _validarMinMaxImagenes(ImagenesAntiguedadReordenarDTO $imagenesAntiguedadReordenarDTO): void
     {
-        if (count($imagenesAntiguedadReordenarDTO->imagenesAntiguedadOrden) < 2) {
+       //Se comenta porque bloquea el método patch de AntiguedadesController que se da en simultáneo con el Controller de ImagenesAntiguedad
+        /*  if (count($imagenesAntiguedadReordenarDTO->imagenesAntiguedadOrden) < 2) {
             throw new InvalidArgumentException(message: 'Se requiere al menos dos imágenes para reordenar.');
-        }
+        } */
 
         if (count($imagenesAntiguedadReordenarDTO->imagenesAntiguedadOrden) > MAX_FILES) {
             throw new InvalidArgumentException(message: 'El número máximo de imágenes para reordenar es ' . MAX_FILES . '.');

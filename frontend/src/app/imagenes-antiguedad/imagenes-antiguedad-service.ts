@@ -6,6 +6,7 @@ import { environment } from '../environments/environment.development';
 import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
 import { buildQueryParams } from '../compartidos/funciones/queryParams';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { normalizarUrlImagen } from '../compartidos/funciones/normalizarUrlImagen';
 
 @Injectable({
   providedIn: 'root'
@@ -56,31 +57,13 @@ export class ImagenesAntiguedadService implements IServiceCrudImagenes<ImagenAnt
         return this.http.get<ImagenAntiguedadDTO[]>(this.urlBase, { params: options.params }).pipe(
           map(arrayImg => arrayImg.map((img) => ({
             ...img,
-            imaUrl: this.normalizarUrlImagen(img.imaUrl),
+            imaUrl: normalizarUrlImagen(img.imaUrl),
           })))
         );
       },
       defaultValue: [] as ImagenAntiguedadDTO[],
       injector: injector
     });
-  }
-
-  private normalizarUrlImagen(url: string): string {
-    // Ya absoluta
-    if (/^https?:\/\//i.test(url)) return url;
-
-    // Limpieza de prefijos './' o '/' redundantes
-    const path = url.replace(/^[.\/]+/, '');
-
-    // Construir URL absoluta usando storageURL del entorno
-    const base = environment.storageURL;
-    if (base && base !== '...') {
-      const baseWithSlash = base.endsWith('/') ? base : base + '/';
-      return new URL(path, baseWithSlash).toString();
-    }
-
-    // Fallback: relativa al origen actual (puede fallar en :4200 si no hay proxy)
-    return '/' + path;
   }
 
   public update(imgsAReordenar : ImagenesAntiguedadReordenarDTO): Observable<void> {
