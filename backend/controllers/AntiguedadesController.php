@@ -194,10 +194,19 @@ class AntiguedadesController extends BaseController
                     INNER JOIN domicilio ON usrDomicilio = domId
                     INNER JOIN localidad ON locId = domLocId
                     INNER JOIN provincia ON provId = locProvId
-                  WHERE antTipoEstado <>'RN'
-                  AND usrId = {$claimDTO->usrId}";
+                  WHERE antTipoEstado <>'RN'";
+                  
 
-            $this->getPaginado($paginado, $mysqli, "antiguedad", "antTipoEstado <>'RN' AND antUsrId = {$claimDTO->usrId}", "obtener el total de antigüedades para paginado", $query, AntiguedadDTO::class);
+            $queryFiltro = "";
+            
+            if($this->isFiltrarPorUsrId($paginado)) {
+                $queryFiltro .= " AND antUsrId = {$claimDTO->usrId}";
+            }
+
+            $query .= $queryFiltro;
+
+
+            $this->getPaginado($paginado, $mysqli, "antiguedad", "antTipoEstado <>'RN'" . $queryFiltro, "obtener el total de antigüedades para paginado", $query, AntiguedadDTO::class);
 
         } catch (\Throwable $th) {
             if ($th instanceof mysqli_sql_exception) {

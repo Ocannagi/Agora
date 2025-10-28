@@ -37,18 +37,46 @@ trait TraitGetPaginado
 
 
 
-                $arrayUsuarios = $this->getInterno(query: $query, classDTO: $classDTO, linkExterno: $mysqli);
+                $arrayEntidad = $this->getInterno(query: $query, classDTO: $classDTO, linkExterno: $mysqli);
 
                 $paginadoResponseDTO = new PaginadoResponseDTO([
                     'totalRegistros' => $total,
                     'paginaActual' => $pagina,
                     'registrosPorPagina' => $registrosPorPagina,
-                    'arrayEntidad' => $arrayUsuarios
+                    'arrayEntidad' => $arrayEntidad
                 ]);
 
                 return $paginadoResponseDTO;
             } else {
                 throw new InvalidArgumentException("Faltan los parámetros 'pagina' o 'registrosPorPagina'.");
+            }
+        } else {
+            throw new InvalidArgumentException("El paginado debe ser un array asociativo.");
+        }
+    }
+
+    public function isFiltrarPorUsrId(mixed $paginado) : bool
+    {
+        if (is_array($paginado) && array_key_exists('filtrarPorUsrId', $paginado)) {
+            return filter_var($paginado['filtrarPorUsrId'], FILTER_VALIDATE_BOOLEAN);
+        }
+        return false; // Valor por defecto si no se proporciona
+    }
+
+    public function validatePaginadoSearch(mixed $paginado) : void
+    {
+        if (is_array($paginado)) {
+            if (!array_key_exists('searchWord', $paginado) || !Input::esNotNullVacioBlanco($paginado['searchWord'])) {
+                throw new InvalidArgumentException("El parámetro 'searchWord' es obligatorio y no puede estar vacío.");
+            }
+            if (!array_key_exists('pagina', $paginado) || !Input::esNotNullVacioBlanco($paginado['pagina'])) {
+                throw new InvalidArgumentException("El parámetro 'pagina' es obligatorio y no puede estar vacío.");
+            }
+            if (!array_key_exists('registrosPorPagina', $paginado) || !Input::esNotNullVacioBlanco($paginado['registrosPorPagina'])) {
+                throw new InvalidArgumentException("El parámetro 'registrosPorPagina' es obligatorio y no puede estar vacío.");
+            }
+            if (!array_key_exists('filtrarPorUsrId', $paginado) || !Input::esNotNullVacioBlanco($paginado['filtrarPorUsrId'])) {
+                throw new InvalidArgumentException("El parámetro 'filtrarPorUsrId' es obligatorio y no puede estar vacío.");
             }
         } else {
             throw new InvalidArgumentException("El paginado debe ser un array asociativo.");

@@ -20,3 +20,58 @@ app-autorizado{
   opacity: 1;
   cursor: default;
 }
+
+.buscador {
+  min-width: 300px;
+  max-width: 320px;
+  width: clamp(280px, 40vw, 560px);
+  margin-left: 8px;
+
+  --search-h: 28px;           // altura más chica
+  --search-radius: 16px;
+
+  .mat-mdc-form-field-wrapper { padding-bottom: 0; } // quita espacio inferior
+
+  .mdc-text-field--outlined {
+    height: var(--search-h);
+    align-items: center;
+    border-radius: var(--search-radius);
+    background: transparent;
+    transition: background-color .15s ease;
+  }
+
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing { border-color: transparent; }
+
+  /* Borde ovalado como los botones */
+  .mdc-notched-outline__leading { border-radius: 9999px 0 0 9999px; }
+  .mdc-notched-outline__trailing { border-radius: 0 9999px 9999px 0; }
+
+  /* Si no hay mat-label, quitá la muesca para mantener el óvalo */
+  .mdc-notched-outline--no-label .mdc-notched-outline__notch { border: 0; }
+
+  &:hover .mdc-text-field--outlined,
+  &:focus-within .mdc-text-field--outlined { background: rgba(0,0,0,.08); }
+
+  .mat-mdc-form-field-infix {
+    padding: 0 8px;
+    min-height: 0;             // permite achicar
+  }
+
+  .mat-mdc-input-element {
+    height: var(--search-h);
+    line-height: var(--search-h);
+    padding: 0 4px;
+    font-size: 0.875rem;       // texto un poco más chico
+  }
+
+  .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button {
+    width: var(--search-h);
+    height: var(--search-h);
+    line-height: var(--search-h);
+    border-radius: var(--search-radius);
+  }
+
+  .mat-mdc-form-field-subscript-wrapper { display: none; }
+}

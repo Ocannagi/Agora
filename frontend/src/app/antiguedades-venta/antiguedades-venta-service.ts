@@ -3,9 +3,9 @@ import { environment } from '../environments/environment.development';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AntiguedadALaVentaCreacionDTO, AntiguedadALaVentaDTO, AntiguedadALaVentaIndiceDTO } from './modelo/AntiguedadAlaVentaDTO';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { PaginadoRequestDTO } from '../compartidos/modelo/PaginadoRequestDTO';
+import { PaginadoRequestDTO, PaginadoRequestSearchDTO } from '../compartidos/modelo/PaginadoRequestDTO';
 import { PaginadoResponseDTO } from '../compartidos/modelo/PaginadoResponseDTO';
-import { buildQueryPaginado } from '../compartidos/funciones/queryPaginado';
+import { buildQueryPaginado, buildQueryPaginadoSearch } from '../compartidos/funciones/queryPaginado';
 import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
 import { RetornaId } from '../compartidos/modelo/RetornaId';
 import { IServicePaginado } from '../compartidos/interfaces/IServicePaginado';
@@ -55,6 +55,31 @@ export class AntiguedadesVentaService implements IServicePaginado<AntiguedadALaV
                   editar: `/antiguedadesAlaVenta/editar/${antiguedadVenta.aavId}`
                 }
               } as AntiguedadALaVentaIndiceDTO))
+            };
+            return indiceResponse;
+          }),
+        );
+      },
+      defaultValue: {} as PaginadoResponseDTO<AntiguedadALaVentaIndiceDTO>,
+      injector: injector
+    });
+  }
+
+  public getPaginadoSearch(paginado: () => PaginadoRequestSearchDTO, injector: Injector = inject(Injector)): ResourceRef<PaginadoResponseDTO<AntiguedadALaVentaDTO>> {
+    return rxResource<PaginadoResponseDTO<AntiguedadALaVentaDTO>, PaginadoRequestSearchDTO>({
+      params: () => paginado(),
+      stream: (options) => {
+        const params = buildQueryPaginadoSearch(options.params);
+        return this.http.get<PaginadoResponseDTO<AntiguedadALaVentaDTO>>(this.urlBase, { params }).pipe(
+          map(response => {
+            const indiceResponse: PaginadoResponseDTO<AntiguedadALaVentaDTO> = {
+              totalRegistros: response.totalRegistros,
+              paginaActual: response.paginaActual,
+              registrosPorPagina: response.registrosPorPagina,
+              arrayEntidad: response.arrayEntidad.map(antiguedadVenta => ({
+                ...antiguedadVenta,
+                aavFechaPublicacion : formatFechaDDMMYYYY(antiguedadVenta.aavFechaPublicacion),
+              } as AntiguedadALaVentaDTO))
             };
             return indiceResponse;
           }),

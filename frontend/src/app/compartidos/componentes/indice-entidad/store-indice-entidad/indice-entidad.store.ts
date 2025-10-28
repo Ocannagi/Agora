@@ -42,6 +42,9 @@ export const IndiceEntidadStore = signalStore(
             setPagina(event.pageIndex + 1);
             setRegistrosPorPagina(event.pageSize);
         };
+        const setFiltrarPorUsrId = (filtrarPorUsrId: boolean) => {
+            patchState(store, { paginado: { ...store.paginado(), filtrarPorUsrId } });
+        }
 
         const onBusy = () => patchState(store, { busy: true });
         const offBusy = () => patchState(store, { busy: false });
@@ -70,6 +73,7 @@ export const IndiceEntidadStore = signalStore(
             setPaginado,
             setPagina,
             setRegistrosPorPagina,
+            setFiltrarPorUsrId,
             setPageEvent,
             onBusy,
             offBusy,

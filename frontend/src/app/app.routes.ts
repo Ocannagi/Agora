@@ -57,6 +57,11 @@ export const routes: Routes = [
         title: "Editar publicación",
     },
     {
+        path: 'galeria',
+        loadComponent: () => import(/* webpackChunkName: "galeria" */ './galeria/galeria').then(m => m.Galeria),
+        title: "Galería",
+    },
+    {
         path:'**', //Wild card : Atrapa cualquier ruta de tu dominio. SIEMPRE DEBE IR AL FINAL, ya que el buscador de rutas es secuencial, empieza en el index 0 de este array de rutes y devuelve la primera coincidencia
         redirectTo: '',
         title:'Error 404'

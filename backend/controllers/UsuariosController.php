@@ -40,6 +40,15 @@ class UsuariosController extends BaseController
     {
         $mysqli = $this->dbConnection->conectarBD();
         $query = "SELECT usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario FROM usuario WHERE usrFechaBaja is NULL";
+        
+        //Se coloca por consistencia con el frontend, no es necesario para el caso de usuarios
+        if ($this->isFiltrarPorUsrId($paginado)) {
+            $claimDTO = $this->securityService->requireLogin(null);
+            $usrId = $claimDTO->usrId;
+            $query .= " AND usrId = $usrId";
+        }
+
+
         try {
             $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::soporteTecnicoToArray());
             

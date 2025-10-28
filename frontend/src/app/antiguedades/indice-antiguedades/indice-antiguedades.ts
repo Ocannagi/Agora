@@ -24,6 +24,7 @@ export class IndiceAntiguedades {
     this.store.setTitulo('Antigüedades');
     this.store.setPathCrear('/antiguedades/crear');
     this.store.setColumnasExtras(['tipoEstado']);
+    this.store.setFiltrarPorUsrId(true); // por default es true, pero prefiero explicitarlo
   }
 
 }

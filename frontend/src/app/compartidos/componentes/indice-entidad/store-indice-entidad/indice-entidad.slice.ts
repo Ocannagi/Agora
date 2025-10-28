@@ -17,7 +17,8 @@ export const IndiceEntidadInitialState: IndiceEntidadSlice = {
     columnasExtras: [],
     paginado: {
         pagina: 1,
-        registrosPorPagina: 5
+        registrosPorPagina: 5,
+        filtrarPorUsrId: true
     },
     busy: false
 };

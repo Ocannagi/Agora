@@ -129,6 +129,9 @@ if (count($parametros) > 0 && $metodo == 'get') {
 } else if (isset($_GET['paginado'] ) && $metodo == 'get') {
     $parametros = [$_GET['paginado']]; // debe ser un solo elemento
     $funcionNombre = $funcionNombre . 'Paginado';
+}  else if (isset($_GET['paginadoSearch'] ) && $metodo == 'get') {
+    $parametros = [$_GET['paginadoSearch']]; // debe ser un solo elemento
+    $funcionNombre = $funcionNombre . 'PaginadoSearch';
 }
 
 $controller = null;

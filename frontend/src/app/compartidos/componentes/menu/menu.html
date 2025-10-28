@@ -5,11 +5,18 @@
         </a>
     </span>
 
-    <div>
-        <a mat-button routerLink="/">
-            <mat-icon>search</mat-icon>
-            Buscar Antigüedades</a>
-    </div>
+    <!-- Buscador -->
+    <mat-form-field class="buscador" appearance="outline" floatLabel="auto">
+      <input
+        matInput
+        [formControl]="searchCtrl"
+        placeholder="Buscar antigüedades, períodos y más..."
+        aria-label="Buscar antigüedades"
+        (keyup.enter)="onSearch()" />
+      <button mat-icon-button matSuffix aria-label="Buscar" (click)="onSearch()">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
 
     <app-autorizado [esAutorizado]="store.isCompradorVendedor()">
         <ng-container autorizado>

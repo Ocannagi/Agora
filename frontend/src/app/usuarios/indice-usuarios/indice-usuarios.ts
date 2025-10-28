@@ -24,5 +24,6 @@ export class IndiceUsuarios {
     this.store.setTitulo('Usuarios');
     this.store.setPathCrear('/usuarios/crear');
     this.store.setColumnasExtras(['usrEmail', 'usrTipoUsuario']);
+    this.store.setFiltrarPorUsrId(false); // Los usuarios no se filtran por el usrId del usuario autenticado
   }
 }
