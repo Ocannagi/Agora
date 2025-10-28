@@ -6,6 +6,7 @@ class AntiguedadDTO implements IDTO
     public int $antId;
     public PeriodoDTO $periodo;
     public SubcategoriaDTO $subcategoria;
+    public string $antNombre;
     public string $antDescripcion;
     /**
      * @var ?ImagenAntiguedadDTO[]
@@ -45,6 +46,10 @@ class AntiguedadDTO implements IDTO
             if ($subcategoriaDTO !== null) {
                 $this->subcategoria = $subcategoriaDTO;
             }
+        }
+
+        if (array_key_exists('antNombre', $data)) {
+            $this->antNombre = (string)$data['antNombre'];
         }
 
         if (array_key_exists('antDescripcion', $data)) {

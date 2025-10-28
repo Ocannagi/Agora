@@ -50,6 +50,10 @@ trait TraitMapAntiguedadDTO
             }
         }
 
+        if (array_key_exists('antNombre', $data)) {
+            $this->antNombre = (string)$data['antNombre'];
+        }
+
         if (array_key_exists('antDescripcion', $data)) {
             $arrayAnt['antDescripcion'] = (string)$data['antDescripcion'];
         }

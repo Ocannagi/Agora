@@ -1,20 +1,22 @@
-import { patchState, signalStore, withComputed, withMethods, withProps, withState } from "@ngrx/signals";
+import { patchState, signalStore, withComputed, withHooks, withMethods, withProps, withState } from "@ngrx/signals";
 import { AntiguedadVentaInitialState } from "./antiguedad-venta.slice";
-import { computed, inject, Injector } from "@angular/core";
+import { computed, effect, inject, Injector } from "@angular/core";
 import { AntiguedadesVentaService } from "../antiguedades-venta-service";
 import { PaginadoRequestSearchDTO } from "../../compartidos/modelo/PaginadoRequestDTO";
 import { PageEvent } from "@angular/material/paginator";
 import { HttpErrorResponse } from "@angular/common/http";
+import { AntiguedadALaVentaDTO } from "../modelo/AntiguedadAlaVentaDTO";
+import { PaginadoResponseDTO } from "../../compartidos/modelo/PaginadoResponseDTO";
 
 
 export const AntiguedadVentaStore = signalStore(
-    {providedIn: 'root'},
+    { providedIn: 'root' },
     withState(AntiguedadVentaInitialState),
     withProps((store) => {
         const _injector = inject(Injector);
         const _service = inject(AntiguedadesVentaService);
         const _resourcePaginadoSearch = _service.getPaginadoSearch(
-            store.paginado,
+            store.paginadoRequest,
             _injector
         );
         const resourcePaginadoSearch = _resourcePaginadoSearch.asReadonly();
@@ -28,17 +30,20 @@ export const AntiguedadVentaStore = signalStore(
     }),
     withMethods((store) => {
 
-        const setPaginado = (paginado: PaginadoRequestSearchDTO) => patchState(store, { paginado });
-        const setPagina = (pagina: number) => patchState(store, { paginado: { ...store.paginado(), pagina } });
-        const setRegistrosPorPagina = (registrosPorPagina: number) => patchState(store, { paginado: { ...store.paginado(), registrosPorPagina } });
-        const setSearchWord = (searchWord: string) => patchState(store, { paginado: { ...store.paginado(), searchWord } });
+        const setPaginado = (paginado: PaginadoRequestSearchDTO) => patchState(store, { paginadoRequest: paginado });
+        const setPagina = (pagina: number) => patchState(store, { paginadoRequest: { ...store.paginadoRequest(), pagina } });
+        const setRegistrosPorPagina = (registrosPorPagina: number) => patchState(store, { paginadoRequest: { ...store.paginadoRequest(), registrosPorPagina } });
+        const setSearchWord = (searchWord: string) => patchState(store, { paginadoRequest: { ...store.paginadoRequest(), searchWord } });
         const setPageEvent = (event: PageEvent) => {
             setPagina(event.pageIndex + 1);
             setRegistrosPorPagina(event.pageSize);
         };
         const setFiltrarPorUsrId = (filtrarPorUsrId: boolean) => {
-            patchState(store, { paginado: { ...store.paginado(), filtrarPorUsrId } });
+            patchState(store, { paginadoRequest: { ...store.paginadoRequest(), filtrarPorUsrId } });
         }
+        const setPaginadoResponse = (paginadoResponse: PaginadoResponseDTO<AntiguedadALaVentaDTO>) => {
+            patchState(store, { paginadoResponse });
+        };
         const onBusy = () => patchState(store, { busy: true });
         const offBusy = () => patchState(store, { busy: false });
         const resetStore = () => patchState(store, AntiguedadVentaInitialState);
@@ -50,6 +55,7 @@ export const AntiguedadVentaStore = signalStore(
             setSearchWord,
             setPageEvent,
             setFiltrarPorUsrId,
+            setPaginadoResponse,
             onBusy,
             offBusy,
             resetStore
@@ -75,12 +81,25 @@ export const AntiguedadVentaStore = signalStore(
             return errores;
         });
 
+        const hayValores = computed(() => {
+            return store.paginadoResponse().arrayEntidad.length > 0;
+        });
+
         return {
             isCargando,
             resourcePagSearchStatusResolved,
             hayResourcePagSearchError,
             hayError,
-            errors
+            errors,
+            hayValores
         };
-    })
+    }),
+    withHooks(store => ({
+        onInit: () => {
+            effect(() => {
+                const valueSearch = store.resourcePaginadoSearch.value();
+                store.setPaginadoResponse(valueSearch);
+            });
+        },
+    }))
 );

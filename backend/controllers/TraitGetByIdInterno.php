@@ -11,7 +11,7 @@ define('QUERYS', [
                     LEFT JOIN provincia ON provId = locProvId
                     WHERE usrFechaBaja is NULL
                     AND usrId = %id",
-    'ANTIGUEDAD' => "SELECT antId, antDescripcion, antFechaEstado, antTipoEstado
+    'ANTIGUEDAD' => "SELECT antId, antNombre, antDescripcion, antFechaEstado, antTipoEstado
                         ,perId, perDescripcion
                         ,scatId, catId, catDescripcion, scatDescripcion
                         ,usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario, usrRazonSocialFantasia,usrDescripcion,usrScoring,usrCuitCuil,usrMatricula

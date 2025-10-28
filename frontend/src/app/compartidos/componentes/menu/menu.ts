@@ -29,8 +29,13 @@ export class Menu {
 
   protected onSearch(): void {
     const q = this.searchCtrl.value.trim();
-    this.#storeVenta.resetStore();
-    this.#storeVenta.setSearchWord(q);
-    this.router.navigate(['/'], { queryParams: q ? { q } : {} });
+    if(!q || q.length === 0) {
+      return;
+    }
+
+    if (q !== this.#storeVenta.paginadoRequest().searchWord) {
+      this.#storeVenta.setSearchWord(q);
+    }
+    this.router.navigate(['/galeria']);
   }
 }

@@ -36,6 +36,7 @@ class AntiguedadesValidacionService extends ValidacionServiceBase
 
         $this->validarPeriodo($antiguedad->periodo, $linkExterno);
         $this->validarSubcategoria($antiguedad->subcategoria, $linkExterno);
+        $this->validarNombre($antiguedad->antNombre);
         $this->validarDescripcion($antiguedad->antDescripcion);
         $this->validarUsuario($antiguedad->usuario, $linkExterno);
 
@@ -104,6 +105,13 @@ class AntiguedadesValidacionService extends ValidacionServiceBase
     {
         $query = "SELECT 1 FROM subcategoria WHERE scatId=$scatId AND scatFechaBaja IS NULL";
         return $this->_existeEnBD($linkExterno, $query, "obtener una subcategoría por id");
+    }
+
+    private function validarNombre(string $nombre)
+    {
+        if (!$this->_esStringLongitud($nombre, 1, 50)) {
+            throw new InvalidArgumentException(message: 'El Nombre de la antigüedad debe ser un string de al menos un caracter y un máximo de 50.');
+        }
     }
 
     private function validarDescripcion(string $descripcion)

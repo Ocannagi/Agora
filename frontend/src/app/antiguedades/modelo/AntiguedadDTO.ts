@@ -51,6 +51,7 @@ export interface AntiguedadDTO {
   antId: number;
   periodo: PeriodoDTO;
   subcategoria: SubcategoriaDTO;
+  antNombre: string;
   antDescripcion: string;
   imagenes?: ImagenAntiguedadDTO[] | null;
   usuario: UsuarioDTO;
@@ -62,6 +63,7 @@ export interface AntiguedadDTO {
 export interface AntiguedadCreacionDTO {
   perId: number;
   scatId: number;
+  antNombre: string;
   antDescripcion: string;
   usrId: number;
   // En PHP tiene valor por defecto (RetiradoDisponible). En el frontend puede omitirse.

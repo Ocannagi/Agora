@@ -1,0 +1,64 @@
+.galeria-wrapper {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px; // separa del menú superior
+}
+
+.grid {
+  display: flex;            // una debajo de la otra
+  flex-direction: column;
+  align-items: center;      // centradas
+  gap: 16px;
+}
+
+.card {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  width: clamp(280px, 92vw, 520px); // ancho fijo centrado
+
+  &.clickable {
+    cursor: pointer;
+    transition: box-shadow .15s ease, transform .15s ease;
+  }
+  &.clickable:hover,
+  &.clickable:focus-visible {
+    box-shadow: 0 3px 12px rgba(0,0,0,.2);
+    transform: translateY(-1px);
+  }
+}
+
+.media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2; /* 480x320 */
+  overflow: hidden;
+  border-radius: 8px 8px 0 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.media-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #eee;
+}
+
+.precio {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 4px 0;
+}
+
+.meta {
+  color: rgba(0,0,0,.6);
+  font-size: .85rem;
+}
+
+.loading {
+  padding: 24px;
+  text-align: center;
+}

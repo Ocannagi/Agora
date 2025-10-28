@@ -50,7 +50,7 @@ export class AntiguedadesVentaService implements IServicePaginado<AntiguedadALaV
                 ...antiguedadVenta,
                 aavFechaPublicacion : formatFechaDDMMYYYY(antiguedadVenta.aavFechaPublicacion),
                 id: antiguedadVenta.aavId,
-                nombre: antiguedadVenta.antiguedad.antDescripcion,
+                nombre: `${antiguedadVenta.antiguedad.antNombre} - ${antiguedadVenta.antiguedad.antDescripcion.substring(0, 30)}${antiguedadVenta.antiguedad.antDescripcion.length > 30 ? '...' : ''}`,
                 acciones: {
                   editar: `/antiguedadesAlaVenta/editar/${antiguedadVenta.aavId}`
                 }
@@ -70,6 +70,15 @@ export class AntiguedadesVentaService implements IServicePaginado<AntiguedadALaV
       params: () => paginado(),
       stream: (options) => {
         const params = buildQueryPaginadoSearch(options.params);
+        const searchWord = options.params.searchWord.trim();
+        if (searchWord.length === 0) {
+          return of({
+            totalRegistros: 0,
+            paginaActual: 1,
+            registrosPorPagina: 5,
+            arrayEntidad: []
+          });
+        }
         return this.http.get<PaginadoResponseDTO<AntiguedadALaVentaDTO>>(this.urlBase, { params }).pipe(
           map(response => {
             const indiceResponse: PaginadoResponseDTO<AntiguedadALaVentaDTO> = {
@@ -79,6 +88,13 @@ export class AntiguedadesVentaService implements IServicePaginado<AntiguedadALaV
               arrayEntidad: response.arrayEntidad.map(antiguedadVenta => ({
                 ...antiguedadVenta,
                 aavFechaPublicacion : formatFechaDDMMYYYY(antiguedadVenta.aavFechaPublicacion),
+                antiguedad: {
+                  ...antiguedadVenta.antiguedad,
+                  imagenes: antiguedadVenta.antiguedad.imagenes?.map(img => ({
+                    ...img,
+                    imaUrl: normalizarUrlImagen(img.imaUrl),
+                  }))
+                }
               } as AntiguedadALaVentaDTO))
             };
             return indiceResponse;

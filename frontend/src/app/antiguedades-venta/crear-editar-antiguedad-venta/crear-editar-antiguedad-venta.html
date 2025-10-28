@@ -39,11 +39,11 @@
             <mat-option [value]="ant.antId">
               <div class="option-with-thumb">
                 @if (thumbUrl(ant)) {
-                  <img [ngSrc]="thumbUrl(ant)!" width="28" height="28" alt="{{ ant.antDescripcion }}" />
+                  <img [ngSrc]="thumbUrl(ant)!" width="28" height="28" alt="{{ ant.antNombre }}" />
                 } @else {
                   <div class="thumb-placeholder" aria-hidden="true"></div>
                 }
-                <span class="text">{{ ant.antDescripcion }}</span>
+                <span class="text">{{ ant.antNombre }}</span>
               </div>
             </mat-option>
           }

@@ -4,6 +4,7 @@ class AntiguedadCreacionDTO implements ICreacionDTO
 {
     public PeriodoDTO $periodo;
     public SubcategoriaDTO $subcategoria;
+    public string $antNombre;
     public string $antDescripcion;
     public UsuarioDTO $usuario;
     public TipoEstadoEnum $tipoEstado = TipoEstadoEnum::RetiradoDisponible; // Por defecto, la antigüedad se crea como "Retirado disponible"
@@ -38,6 +39,10 @@ class AntiguedadCreacionDTO implements ICreacionDTO
             if ($subcategoriaDTO !== null) {
                 $this->subcategoria = $subcategoriaDTO;
             }
+        }
+
+        if (array_key_exists('antNombre', $data)) {
+            $this->antNombre = (string)$data['antNombre'];
         }
 
         if (array_key_exists('antDescripcion', $data)) {

@@ -49,7 +49,7 @@ export class AntiguedadesService implements IServicePaginado<AntiguedadIndiceDTO
               arrayEntidad: response.arrayEntidad.map(antiguedad => ({
                 ...antiguedad,
                 id: antiguedad.antId,
-                nombre: antiguedad.antDescripcion,
+                nombre: `${antiguedad.antNombre} - ${antiguedad.antDescripcion.substring(0, 30)}${antiguedad.antDescripcion.length > 30 ? '...' : ''}`,
                 acciones: {
                   editar: `/antiguedades/editar/${antiguedad.antId}`
                 }

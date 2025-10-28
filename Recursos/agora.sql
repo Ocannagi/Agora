@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 23-10-2025 a las 04:11:27
+-- Tiempo de generación: 28-10-2025 a las 02:07:10
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -29,6 +29,7 @@ USE `agora`;
 -- Estructura de tabla para la tabla `antiguedad`
 --
 -- Creación: 17-08-2025 a las 04:05:01
+-- Última actualización: 27-10-2025 a las 23:47:57
 --
 
 DROP TABLE IF EXISTS `antiguedad`;
@@ -60,10 +61,12 @@ CREATE TABLE `antiguedad` (
 --
 
 INSERT INTO `antiguedad` (`antId`, `antScatId`, `antPerId`, `antDescripcion`, `antUsrId`, `antFechaInsert`, `antTipoEstado`, `antFechaEstado`) VALUES
-(1, 7, 2, 'Vitrina Barroca circa 1656. Hermosos detalles en oro. Madera maciza de ébano. Dos puertas.', 4, '2025-05-24 19:41:04', 'RD', '2025-05-24 19:41:04'),
+(1, 7, 2, 'Vitrina Barroca circa 1656. Hermosos detalles en oro. Madera maciza de ébano. Dos puertas.', 4, '2025-05-24 19:41:04', 'VE', '2025-10-27 15:33:36'),
 (2, 3, 1, 'Hermosa escultura renacentista de un ángel. Mármol. Circa 1486.', 3, '2025-05-24 19:51:02', 'RD', '2025-05-24 19:51:02'),
 (3, 8, 4, 'Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C.', 5, '2025-06-01 21:37:12', 'CO', '2025-09-11 18:23:58'),
-(4, 6, 2, 'Armario Barroco. Es una preciosura', 5, '2025-06-16 15:24:14', 'TD', '2025-06-16 15:24:14');
+(4, 6, 2, 'Armario Barroco. Es una preciosura', 5, '2025-06-16 15:24:14', 'TD', '2025-06-16 15:24:14'),
+(5, 8, 2, 'Prueba con mesa de vidrio editada 3', 1, '2025-10-24 00:06:14', 'RD', '2025-10-24 00:11:34'),
+(6, 5, 3, 'Machu Pichu Pop Art y colorido. Qué más querés', 4, '2025-10-27 15:39:10', 'VE', '2025-10-27 20:47:57');
 
 -- --------------------------------------------------------
 
@@ -71,6 +74,7 @@ INSERT INTO `antiguedad` (`antId`, `antScatId`, `antPerId`, `antDescripcion`, `a
 -- Estructura de tabla para la tabla `antiguedadalaventa`
 --
 -- Creación: 10-09-2025 a las 01:42:46
+-- Última actualización: 27-10-2025 a las 23:47:57
 --
 
 DROP TABLE IF EXISTS `antiguedadalaventa`;
@@ -103,7 +107,10 @@ CREATE TABLE `antiguedadalaventa` (
 --
 
 INSERT INTO `antiguedadalaventa` (`aavId`, `aavAntId`, `aavUsrIdVendedor`, `aavDomOrigen`, `aavPrecioVenta`, `aavTadId`, `aavFechaPublicacion`, `aavFechaRetiro`, `aavHayVenta`) VALUES
-(1, 3, 2, 2, 781000000.13, 1, '2025-09-11 12:02:56', NULL, 1);
+(1, 3, 2, 2, 781000000.13, 1, '2025-09-11 12:02:56', NULL, 1),
+(2, 1, 4, 4, 1500632.25, NULL, '2025-10-27 14:39:46', '2025-10-27 15:26:54', 0),
+(3, 1, 4, 4, 1600342.23, NULL, '2025-10-27 15:33:36', NULL, 0),
+(4, 6, 4, 4, 5698895.35, NULL, '2025-10-27 20:47:57', NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -248,6 +255,7 @@ INSERT INTO `domicilio` (`domId`, `domLocId`, `domCPA`, `domCalleRuta`, `domNroK
 -- Estructura de tabla para la tabla `imagenantiguedad`
 --
 -- Creación: 17-08-2025 a las 04:05:01
+-- Última actualización: 27-10-2025 a las 19:05:51
 --
 
 DROP TABLE IF EXISTS `imagenantiguedad`;
@@ -273,7 +281,13 @@ CREATE TABLE `imagenantiguedad` (
 INSERT INTO `imagenantiguedad` (`imaId`, `imaAntId`, `imaUrl`, `imaNombreArchivo`, `imaFechaInsert`, `imaOrden`) VALUES
 (1, 3, '/storage/imagenesAntiguedad/antId3_1749426389_detalle-mesa-redonda-medieval.jpeg', 'detalle-mesa-redonda-medieval.jpg', '2025-06-08 20:46:29', 1),
 (2, 3, '/storage/imagenesAntiguedad/antId3_1749426389_tablaredonda.jpeg', 'tablaredonda.jpg', '2025-06-08 20:46:29', 2),
-(3, 4, '/storage/imagenesAntiguedad/antId4_1750099643_ArmarioBarroco.jpeg', 'ArmarioBarroco.jpg', '2025-06-16 15:47:23', 1);
+(3, 4, '/storage/imagenesAntiguedad/antId4_1750099643_ArmarioBarroco.jpeg', 'ArmarioBarroco.jpg', '2025-06-16 15:47:23', 1),
+(6, 5, '/storage/imagenesAntiguedad/antId5_1761275174_mesa_frente.jpeg', 'mesa_frente.jpg', '2025-10-24 00:06:14', 1),
+(14, 5, '/storage/imagenesAntiguedad/antId5_1761503766_mesa_en_angulo.jpeg', 'mesa_en_angulo.jpg', '2025-10-26 15:36:06', 3),
+(15, 5, '/storage/imagenesAntiguedad/antId5_1761503766_mesa_arriba.jpeg', 'mesa_arriba.jpg', '2025-10-26 15:36:06', 2),
+(18, 1, '/storage/imagenesAntiguedad/antId1_1761570676_vitrina.jpeg', 'vitrina.jpg', '2025-10-27 10:11:16', 1),
+(19, 6, '/storage/imagenesAntiguedad/antId6_1761590350_machuPichuPopArt.jpeg', 'machuPichuPopArt.jpg', '2025-10-27 15:39:10', 2),
+(20, 6, '/storage/imagenesAntiguedad/antId6_1761590350_rizky-irawan-macchu-picchu.jpeg', 'rizky-irawan-macchu-picchu.jpg', '2025-10-27 15:39:10', 1);
 
 -- --------------------------------------------------------
 
@@ -625,6 +639,7 @@ INSERT INTO `tipousuario` (`ttuTipoUsuario`, `ttuDescripcion`, `ttuRequiereMatri
 -- Estructura de tabla para la tabla `tokens`
 --
 -- Creación: 17-08-2025 a las 04:05:01
+-- Última actualización: 28-10-2025 a las 00:51:47
 --
 
 DROP TABLE IF EXISTS `tokens`;
@@ -642,8 +657,7 @@ CREATE TABLE `tokens` (
 --
 
 INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NSwidXNyTm9tYnJlIjoiQWRyaWFuYSBNYXJpZWwiLCJ1c3JUaXBvVXN1YXJpbyI6IlVHIiwiZXhwIjoxNzYxMDE5NTQxfQ.AzTt8ADYiCddX4lCxsmWwkjoFU3pq17fE4S_gO-QMeSr5Kk7H7U4PlDvRiKMJKwED2rOLztygvMjI2lSp8LPNQ', '2025-10-21 00:05:41'),
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6NSwidXNyTm9tYnJlIjoiQWRyaWFuYSBNYXJpZWwiLCJ1c3JUaXBvVXN1YXJpbyI6IlVHIiwiZXhwIjoxNzYxMDE5OTAxfQ.abL8PHgwDA4l42741mquA8-bAwgl7az1sfSvYgo9Z6EE0ZJHGJg8LsGuoOS_BqW6qhvUmdk7FmIy63HJP9qUrA', '2025-10-21 00:11:41');
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NjE2MTYzMDd9.jrN17-MTWSjZdkDgln5TyRGqI3NeZK2HlEGABvIrxZPy1Sx6-A0l87hIsE_qB_pgeiMBTAu2QcQOigagDwbswA', '2025-10-27 21:51:47');
 
 -- --------------------------------------------------------
 
@@ -928,13 +942,13 @@ ALTER TABLE `usuariotasadorhabilidad`
 -- AUTO_INCREMENT de la tabla `antiguedad`
 --
 ALTER TABLE `antiguedad`
-  MODIFY `antId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `antId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `antiguedadalaventa`
 --
 ALTER TABLE `antiguedadalaventa`
-  MODIFY `aavId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `aavId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `categoria`
@@ -964,7 +978,7 @@ ALTER TABLE `domicilio`
 -- AUTO_INCREMENT de la tabla `imagenantiguedad`
 --
 ALTER TABLE `imagenantiguedad`
-  MODIFY `imaId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `imaId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `localidad`

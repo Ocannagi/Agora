@@ -46,12 +46,13 @@ class AntiguedadesController extends BaseController
             if (is_array($params)) {
 
                 if (array_key_exists('scatId', $params) || array_key_exists('catId', $params) || array_key_exists('perId', $params)
-                    || array_key_exists('usrId', $params) || array_key_exists('antDescripcion', $params) || array_key_exists('antTipoEstado', $params)
+                    || array_key_exists('usrId', $params) || array_key_exists('antNombre', $params) || array_key_exists('antDescripcion', $params) || array_key_exists('antTipoEstado', $params)
                     || array_key_exists('arrayAntTipoEstado', $params)) {
                     $scatId = null;
                     $catId = null;
                     $perId = null;
                     $usrId = null;
+                    $antNombre = null;
                     $antDescripcion = null;
                     $antTipoEstado = null;
                     $arrayAntTipoEstado = null;
@@ -66,6 +67,9 @@ class AntiguedadesController extends BaseController
                     }
                     if (array_key_exists('usrId', $params)) {
                         $usrId = (int)$params['usrId'];
+                    }
+                    if (array_key_exists('antNombre', $params)) {
+                        $antNombre = (string)$params['antNombre'];
                     }
                     if (array_key_exists('antDescripcion', $params)) {
                         $antDescripcion = (string)$params['antDescripcion'];
@@ -92,7 +96,7 @@ class AntiguedadesController extends BaseController
                         throw new InvalidArgumentException(code: 400, message: "No se pueden utilizar ambos parámetros 'antTipoEstado' y 'arrayAntTipoEstado' al mismo tiempo.");
                     }
 
-                    return $this->getAntiguedadesByFiltros($mysqli ,$scatId, $catId, $perId, $usrId, $antDescripcion, $antTipoEstado, $arrayAntTipoEstado);
+                    return $this->getAntiguedadesByFiltros($mysqli ,$scatId, $catId, $perId, $usrId, $antNombre, $antDescripcion, $antTipoEstado, $arrayAntTipoEstado);
                 } else {
                     throw new InvalidArgumentException(code: 400, message: "No se recibieron parámetros válidos.");
                 }
@@ -117,11 +121,11 @@ class AntiguedadesController extends BaseController
         }
     }
 
-    private function getAntiguedadesByFiltros(mysqli $mysqli, ?int $scatId, ?int $catId, ?int $perId, ?int $usrId, ?string $antDescripcion, ?string $antTipoEstado, ?array $arrayAntTipoEstado): ?array
+    private function getAntiguedadesByFiltros(mysqli $mysqli, ?int $scatId, ?int $catId, ?int $perId, ?int $usrId, ?string $antNombre, ?string $antDescripcion, ?string $antTipoEstado, ?array $arrayAntTipoEstado): ?array
     {
         $this->securityService->requireLogin(tipoUsurio: null);
 
-        $query = "SELECT antId, antDescripcion, antFechaEstado, antTipoEstado
+        $query = "SELECT antId, antNombre, antDescripcion, antFechaEstado, antTipoEstado
                         ,perId, perDescripcion
                         ,scatId, catId, catDescripcion, scatDescripcion
                         ,usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario, usrRazonSocialFantasia,usrDescripcion,usrScoring,usrCuitCuil,usrMatricula
@@ -148,6 +152,10 @@ class AntiguedadesController extends BaseController
         if ($usrId != null) {
             $query .= " AND usrId = $usrId";
         }
+        if (Input::esNotNullVacioBlanco($antNombre)) {
+            $antNombre = $mysqli->real_escape_string($antNombre);
+            $query .= " AND antNombre LIKE '%$antNombre%'";
+        }
         if (Input::esNotNullVacioBlanco($antDescripcion)) {
             $antDescripcion = $mysqli->real_escape_string($antDescripcion);
             $query .= " AND antDescripcion LIKE '%$antDescripcion%'";
@@ -163,10 +171,10 @@ class AntiguedadesController extends BaseController
             $query .= " AND antTipoEstado IN ($estadosString)";
         }
 
-        $arrayAntiguedadesDTO = $this->getInterno(query: $query, classDTO: "AntiguedadDTO", linkExterno: $mysqli);
+        $arrayAntiguedadesDTO = $this->getInterno(query: $query, classDTO: AntiguedadDTO::class, linkExterno: $mysqli);
         foreach ($arrayAntiguedadesDTO as $antiguedadDTO) {
             $query = "SELECT imaId, imaUrl, imaAntId, imaOrden, imaNombreArchivo FROM imagenantiguedad WHERE imaAntId = {$antiguedadDTO->antId} ORDER BY imaOrden";
-            $antiguedadDTO->imagenes = $this->getInterno(query: $query, classDTO: "ImagenAntiguedadDTO", linkExterno: $mysqli);
+            $antiguedadDTO->imagenes = $this->getInterno(query: $query, classDTO: ImagenAntiguedadDTO::class, linkExterno: $mysqli);
         }
         Output::outputJson($arrayAntiguedadesDTO);
     }
@@ -180,7 +188,7 @@ class AntiguedadesController extends BaseController
         try {
             $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
 
-            $query = "SELECT antId, antDescripcion, antFechaEstado, antTipoEstado
+            $query = "SELECT antId, antNombre, antDescripcion, antFechaEstado, antTipoEstado
                         ,perId, perDescripcion
                         ,scatId, catId, catDescripcion, scatDescripcion
                         ,usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario, usrRazonSocialFantasia,usrDescripcion,usrScoring,usrCuitCuil,usrMatricula
@@ -230,7 +238,7 @@ class AntiguedadesController extends BaseController
         try {
             $this->securityService->requireLogin(tipoUsurio: null);
 
-            $query = "SELECT antId, antDescripcion, antFechaEstado, antTipoEstado
+            $query = "SELECT antId, antNombre, antDescripcion, antFechaEstado, antTipoEstado
                         ,perId, perDescripcion
                         ,scatId, catId, catDescripcion, scatDescripcion
                         ,usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario, usrRazonSocialFantasia,usrDescripcion,usrScoring,usrCuitCuil,usrMatricula
@@ -275,7 +283,7 @@ class AntiguedadesController extends BaseController
             settype($id, 'integer');
             $this->securityService->requireLogin(tipoUsurio: null);
 
-            $query = "SELECT antId, antDescripcion, antFechaEstado, antTipoEstado
+            $query = "SELECT antId, antNombre, antDescripcion, antFechaEstado, antTipoEstado
                         ,perId, perDescripcion
                         ,scatId, catId, catDescripcion, scatDescripcion
                         ,usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario, usrRazonSocialFantasia,usrDescripcion,usrScoring,usrCuitCuil,usrMatricula
@@ -338,8 +346,8 @@ class AntiguedadesController extends BaseController
             Input::escaparDatos($antiguedadCreacionDTO, $mysqli);
             Input::agregarComillas_ConvertNULLtoString($antiguedadCreacionDTO);
 
-            $query = "INSERT INTO antiguedad (antDescripcion, antPerId, antScatId, antUsrId)
-                  VALUES ($antiguedadCreacionDTO->antDescripcion, {$antiguedadCreacionDTO->periodo->perId}, {$antiguedadCreacionDTO->subcategoria->scatId}, {$antiguedadCreacionDTO->usuario->usrId})";
+            $query = "INSERT INTO antiguedad (antNombre, antDescripcion, antPerId, antScatId, antUsrId)
+                  VALUES ($antiguedadCreacionDTO->antNombre, $antiguedadCreacionDTO->antDescripcion, {$antiguedadCreacionDTO->periodo->perId}, {$antiguedadCreacionDTO->subcategoria->scatId}, {$antiguedadCreacionDTO->usuario->usrId})";
 
             return parent::post(query: $query, link: $mysqli);
         } catch (\Throwable $th) {
@@ -403,7 +411,8 @@ class AntiguedadesController extends BaseController
             );
 
             $query = "UPDATE antiguedad
-                  SET antDescripcion = $antiguedadDTO->antDescripcion,
+                  SET antNombre = $antiguedadDTO->antNombre,
+                      antDescripcion = $antiguedadDTO->antDescripcion,
                       antPerId = {$antiguedadDTO->periodo->perId},
                       antScatId = {$antiguedadDTO->subcategoria->scatId},
                       antUsrId = {$antiguedadDTO->usuario->usrId},

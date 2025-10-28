@@ -26,6 +26,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogImagenesAntiguedadUpload } from '../../imagenes-antiguedad/dialog-imagenes-antiguedad-upload/dialog-imagenes-antiguedad-upload';
 import { MAX_IMG_ANTIGUEDAD } from '../../imagenes-antiguedad/feautures';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-crear-editar-antiguedad',
@@ -54,12 +55,9 @@ export class CrearEditarAntiguedad {
   #antService = inject(AntiguedadesService);
   #imgService = inject(ImagenesAntiguedadService);
   #dialog = inject(MatDialog); // Inyectar el servicio de diálogo (Modal)
+  #location = inject(Location);
+  
   readonly TipoEstadoFx = TipoEstado;
-
-
-  //FORMULARIO
-  protected antDescripcion = this.#fb.control<string>('', { validators: [Validators.required, Validators.minLength(1), Validators.maxLength(500)], updateOn: 'change' })
-  readonly antDescripcionFormControlSignal = formControlSignal(this.antDescripcion, this.#injector);
 
   //RESOURCES
 
@@ -77,8 +75,10 @@ export class CrearEditarAntiguedad {
   readonly imagenesDTO = signal<ImagenAntiguedadDTO[]>([]);
   readonly antiguedadModelo = signal<AntiguedadDTO | null>(null);
   readonly imagenesModelo = signal<ImagenAntiguedadDTO[] | null>(null);
+  private readonly _returnTo = signal<string[] | null>(null);
 
   readonly maxCaracteresDescripcion = signal(500);
+  readonly maxCaracteresNombre = signal(50);
   readonly periodoEditDescripcion = signal<string>('');
   readonly categoriaEditDescripcion = signal<string>('');
   readonly subcategoriaEditDescripcion = signal<string>('');
@@ -154,6 +154,8 @@ export class CrearEditarAntiguedad {
   readonly isAllValid = computed(() => {
     return this.antDescripcionFormControlSignal.status() === 'VALID'
       && this.antDescripcionFormControlSignal.value() !== null && this.antDescripcionFormControlSignal.value()!.trim().length > 0
+      && this.antNombreFormControlSignal.status() === 'VALID'
+      && this.antNombreFormControlSignal.value() !== null && this.antNombreFormControlSignal.value()!.trim().length > 0
       && this.perId() !== null
       && this.scatId() !== null
       && this.usrId() !== null
@@ -168,18 +170,30 @@ export class CrearEditarAntiguedad {
 
     const ant = this.antiguedadModelo()!;
     const descCambio = ant.antDescripcion !== this.antDescripcionFormControlSignal.value()!.trim();
+    const nombreCambio = ant.antNombre !== this.antNombreFormControlSignal.value()!.trim();
     const perCambio = ant.periodo.perId !== this.perId();
     const scatCambio = ant.subcategoria.scatId !== this.scatId();
     const imgsCambio = !this.arraysImagenesIguales(this.imagenesDTO(), this.imagenesModelo());
     //const imgsNewCambio = this.imagenesDTO().length !== ant.imagenes?.length;
 
-    return descCambio || perCambio || scatCambio || imgsCambio; // || imgsNewCambio;
+    return descCambio || nombreCambio || perCambio || scatCambio || imgsCambio; // || imgsNewCambio;
   });
 
   readonly EsEdicionYNoHayCambios = computed(() => this.esEdicion() && !this.isSomethingChange());
 
+  //FORMULARIO
+  protected antDescripcion = this.#fb.control<string>('', { validators: [Validators.required, Validators.minLength(1), Validators.maxLength(this.maxCaracteresDescripcion())], updateOn: 'change' })
+  readonly antDescripcionFormControlSignal = formControlSignal(this.antDescripcion, this.#injector);
+
+  protected antNombre = this.#fb.control<string>('', { validators: [Validators.required, Validators.minLength(1), Validators.maxLength(this.maxCaracteresNombre())], updateOn: 'change' })
+  readonly antNombreFormControlSignal = formControlSignal(this.antNombre, this.#injector);
+
+  //
 
   constructor() {
+
+    const st = this.#location.getState() as { returnTo?: unknown } | null;
+    this._returnTo.set(Array.isArray(st?.returnTo) ? (st!.returnTo as string[]) : null);
 
     effect(() => {
       const img = this.imagenesFiles();
@@ -206,12 +220,11 @@ export class CrearEditarAntiguedad {
       this.#imgService.postError.set(null);
       this.#imgService.patchError.set(null);
     });
-
-
   }
 
   mapearAntiguedadData(antiguedad: AntiguedadDTO) {
     this.tipoEstadoValue.set(antiguedad.tipoEstado);
+    this.antNombre.setValue(antiguedad.antNombre);
     this.antDescripcion.setValue(antiguedad.antDescripcion);
     this.periodoEditDescripcion.set(antiguedad.periodo.perDescripcion);
     this.categoriaEditDescripcion.set(antiguedad.subcategoria.categoria.catDescripcion);
@@ -222,6 +235,10 @@ export class CrearEditarAntiguedad {
 
   obtenerErrorAntDescripcion(): string | null {
     return this.#vcf.obtenerErrorControl(this.antDescripcion, 'descripción de la antigüedad');
+  }
+
+  obtenerErrorAntNombre(): string | null {
+    return this.#vcf.obtenerErrorControl(this.antNombre, 'nombre de la antigüedad');
   }
 
   protected openDialog(): void {
@@ -261,6 +278,7 @@ export class CrearEditarAntiguedad {
       const antiguedadEditada: AntiguedadCreacionDTO = {
         perId: this.perId()!,
         scatId: this.scatId()!,
+        antNombre: this.antNombreFormControlSignal.value()!.trim(),
         antDescripcion: this.antDescripcionFormControlSignal.value()!.trim(),
         usrId: this.usrId()!,
       };
@@ -288,6 +306,7 @@ export class CrearEditarAntiguedad {
       const nuevaAntiguedad: AntiguedadCreacionDTO = {
         perId: this.perId()!,
         scatId: this.scatId()!,
+        antNombre: this.antNombreFormControlSignal.value()!.trim(),
         antDescripcion: this.antDescripcionFormControlSignal.value()!.trim(),
         usrId: this.usrId()!,
       }
@@ -343,4 +362,12 @@ export class CrearEditarAntiguedad {
     return true;
   }
 
+  onCancel(): void {
+    const rt = this._returnTo();
+    if (rt) {
+      this.#router.navigate(rt);
+    } else {
+      this.#router.navigate(['/antiguedades']);
+    }
+  }
 }

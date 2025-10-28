@@ -93,9 +93,11 @@ export class CrearEditarAntiguedadVenta {
   });
 
   readonly nombreAntiguedadSeleccionada = computed(() => {
-    const id = this.antiguedadSeleccionadaId();
-    const lista = this.antiguedadesResource?.value() ?? [];
-    return id ? (lista.find(a => a.antId === id)?.antDescripcion ?? '') : '';
+    if (this.esEdicion() && this.aavByIdResource?.status() === 'resolved') {
+      const aav = this.aavByIdResource.value();
+      return aav ? aav.antiguedad.antNombre : '';
+    }
+    return '';
   });
 
   readonly fechaPublicacionAntiguedadSeleccionada = computed(() => {
@@ -163,7 +165,12 @@ export class CrearEditarAntiguedadVenta {
   protected verEditarAntiguedad() {
     const antId = this.antiguedadSeleccionadaId();
     if (!antId) return;
-    this.#router.navigate(['/antiguedades/editar', antId]);
+    this.#router.navigate(['/antiguedades/editar', antId], {
+      state: {
+        from: 'aav-edit',
+        returnTo: ['/antiguedadesAlaVenta/editar', this.id()] // volver a la AAV que se estaba editando
+      }
+    });
   }
 
   private construirDTO(): AntiguedadALaVentaCreacionDTO {

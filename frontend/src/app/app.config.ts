@@ -1,14 +1,18 @@
-import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, LOCALE_ID, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
 import {provideMomentDateAdapter} from '@angular/material-moment-adapter';
 import { provideSweetAlert2} from '@sweetalert2/ngx-sweetalert2';
+import localeEsAR from '@angular/common/locales/es-AR';
 
 
 import { routes } from './app.routes';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './seguridad/token-interceptor';
+import { registerLocaleData } from '@angular/common';
+
+registerLocaleData(localeEsAR);
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,5 +27,6 @@ export const appConfig: ApplicationConfig = {
     }),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
     provideSweetAlert2(),
+    { provide: LOCALE_ID, useValue: 'es-AR' }
   ]
 };

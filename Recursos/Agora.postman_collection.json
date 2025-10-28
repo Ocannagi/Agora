@@ -1618,6 +1618,29 @@
 					"response": []
 				},
 				{
+					"name": "getPeriodosByAutocompletar",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Periodos&params[perDescripcion]=ren",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Periodos&params[perDescripcion]=ren"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "postPeriodos",
 					"request": {
 						"method": "POST",
@@ -2055,6 +2078,29 @@
 									"key": "id",
 									"value": "2"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getCategoriaByAutocompletar",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Categorias&params[catDescripcion]=esc",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Categorias&params[catDescripcion]=esc"
 							]
 						}
 					},
@@ -2508,6 +2554,29 @@
 					"response": []
 				},
 				{
+					"name": "getSubcategoriasByAutocompletar",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/Subcategorias&params[catId]=2&params[catDescripcion]=a",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"Subcategorias&params[catId]=2&params[catDescripcion]=a"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "postSubcategorias",
 					"request": {
 						"method": "POST",
@@ -2923,7 +2992,7 @@
 					"response": []
 				},
 				{
-					"name": "getLocalidadesByAutocompletar Copy",
+					"name": "getProvinciasByAutocompletar",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -3987,7 +4056,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"perId\": 2,\r\n    \"scatId\": 6,\r\n    \"antDescripcion\": \"Armario Barroco. Es una preciosura\",\r\n    \"usrId\": 6\r\n}",
+							"raw": "{\r\n    \"perId\": 2,\r\n    \"scatId\": 6,\r\n    \"antNombre\": \"Armario de estilo Barroco\",\r\n    \"antDescripcion\": \"Armario Barroco. Es una preciosura\",\r\n    \"usrId\": 6\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -4060,7 +4129,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"perId\": 4,\r\n    \"scatId\": 8,\r\n    \"antDescripcion\": \"Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C.\",\r\n    \"usrId\": 2,\r\n    \"tipoEstado\": \"RD\"\r\n}",
+							"raw": "{\r\n    \"perId\": 4,\r\n    \"scatId\": 8,\r\n    \"antNombre\": \"Mesa redonda medieval\",\r\n    \"antDescripcion\": \"Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C.\",\r\n    \"usrId\": 2,\r\n    \"tipoEstado\": \"RD\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

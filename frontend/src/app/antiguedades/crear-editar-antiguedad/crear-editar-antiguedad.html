@@ -15,6 +15,13 @@
         <app-autocompletar-subcategorias [idCat]="catId()" (idScat)="scatId.set($event)" [keywordExterno]="subcategoriaEditDescripcion()"/>
 
         <mat-form-field appearance="fill" class="col-span-2">
+            <mat-label>Nombra la antigüedad</mat-label>
+            <textarea #nombre [maxLength]="maxCaracteresNombre()" matInput [formControl]="antNombre" placeholder="Dale un nombre corto a la antigüedad"></textarea>
+            <mat-hint>{{nombre.value.length}}/{{maxCaracteresNombre()}} caracteres</mat-hint>
+            <mat-error>{{obtenerErrorAntNombre()}}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="col-span-2">
             <mat-label>Describe la antigüedad</mat-label>
             <textarea #descripcion [maxLength]="maxCaracteresDescripcion()" matInput [formControl]="antDescripcion" placeholder="Describe sus características, el año de creación, etc."></textarea>
             <mat-hint>{{descripcion.value.length}}/{{maxCaracteresDescripcion()}} caracteres</mat-hint>
@@ -39,9 +46,10 @@
     </div>
 
     <div class="contenedor-botones">
-        <button type="button" mat-flat-button [disabled]="isNotAllValid() || EsEdicionYNoHayCambios()" (click)="onSubmit()">Guardar cambios</button>
-        <a mat-stroked-button routerLink="/antiguedades">Cancelar</a>
-        <!-- <button type="button" mat-stroked-button (click)="ConsoleValidFormulario()">Prueba formulario</button> -->
+      <button type="button" mat-flat-button [disabled]="isNotAllValid() || EsEdicionYNoHayCambios()" (click)="onSubmit()">Guardar cambios</button>
+      <!-- antes: routerLink="/antiguedades" -->
+      <button type="button" mat-stroked-button (click)="onCancel()">Cancelar</button>
+      <!-- <button type="button" mat-stroked-button (click)="ConsoleValidFormulario()">Prueba formulario</button> -->
     </div>
 
 

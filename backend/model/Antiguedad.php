@@ -9,6 +9,8 @@ class Antiguedad extends ClassBase
     #[Obligatorio]
     private Subcategoria $subcategoria;
     #[Obligatorio]
+    private string $antNombre;
+    #[Obligatorio]
     private string $antDescripcion;
     #[Obligatorio]
     private Usuario $usuario;
@@ -27,6 +29,7 @@ class Antiguedad extends ClassBase
         $instance = new self();
         $instance->periodo = Periodo::fromArray(get_object_vars($dto->periodo));
         $instance->subcategoria = Subcategoria::fromArray(['scatId' => $dto->subcategoria->scatId]);
+        $instance->antNombre = $dto->antNombre;
         $instance->antDescripcion = $dto->antDescripcion;
         $instance->usuario = Usuario::fromArray(['usrId' => $dto->usuario->usrId]);
         $instance->tipoEstado = $dto->tipoEstado;
