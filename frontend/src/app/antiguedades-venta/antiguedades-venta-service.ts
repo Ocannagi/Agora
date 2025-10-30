@@ -23,6 +23,7 @@ export class AntiguedadesVentaService implements IServicePaginado<AntiguedadALaV
   readonly postError = signal<string | null>(null);
   readonly patchError = signal<string | null>(null);
   readonly deleteError = signal<string | null>(null);
+  readonly getByIdError = signal<string | null>(null);
 
   public getAllResource(injector: Injector = inject(Injector)): ResourceRef<AntiguedadALaVentaDTO[]> {
     return rxResource<AntiguedadALaVentaDTO[], null>({
@@ -48,7 +49,7 @@ export class AntiguedadesVentaService implements IServicePaginado<AntiguedadALaV
               registrosPorPagina: response.registrosPorPagina,
               arrayEntidad: response.arrayEntidad.map(antiguedadVenta => ({
                 ...antiguedadVenta,
-                aavFechaPublicacion : formatFechaDDMMYYYY(antiguedadVenta.aavFechaPublicacion),
+                aavFechaPublicacion: formatFechaDDMMYYYY(antiguedadVenta.aavFechaPublicacion),
                 id: antiguedadVenta.aavId,
                 nombre: `${antiguedadVenta.antiguedad.antNombre} - ${antiguedadVenta.antiguedad.antDescripcion.substring(0, 30)}${antiguedadVenta.antiguedad.antDescripcion.length > 30 ? '...' : ''}`,
                 acciones: {
@@ -87,7 +88,7 @@ export class AntiguedadesVentaService implements IServicePaginado<AntiguedadALaV
               registrosPorPagina: response.registrosPorPagina,
               arrayEntidad: response.arrayEntidad.map(antiguedadVenta => ({
                 ...antiguedadVenta,
-                aavFechaPublicacion : formatFechaDDMMYYYY(antiguedadVenta.aavFechaPublicacion),
+                aavFechaPublicacion: formatFechaDDMMYYYY(antiguedadVenta.aavFechaPublicacion),
                 antiguedad: {
                   ...antiguedadVenta.antiguedad,
                   imagenes: antiguedadVenta.antiguedad.imagenes?.map(img => ({
@@ -116,13 +117,13 @@ export class AntiguedadesVentaService implements IServicePaginado<AntiguedadALaV
         return this.http.get<AntiguedadALaVentaDTO>(this.urlBase + '/' + options.params!).pipe(
           map(antiguedadVenta => ({
             ...antiguedadVenta,
-            aavFechaPublicacion : formatFechaDDMMYYYY(antiguedadVenta.aavFechaPublicacion),
+            aavFechaPublicacion: formatFechaDDMMYYYY(antiguedadVenta.aavFechaPublicacion),
             antiguedad: {
               ...antiguedadVenta.antiguedad,
               imagenes: antiguedadVenta.antiguedad.imagenes?.map(img => ({
-                              ...img,
-                              imaUrl: normalizarUrlImagen(img.imaUrl),
-                            })) 
+                ...img,
+                imaUrl: normalizarUrlImagen(img.imaUrl),
+              }))
             }
           } as AntiguedadALaVentaDTO))
         );
@@ -130,6 +131,32 @@ export class AntiguedadesVentaService implements IServicePaginado<AntiguedadALaV
       defaultValue: {} as AntiguedadALaVentaDTO,
       injector: injector
     });
+  }
+
+  public getById(id: number): Observable<AntiguedadALaVentaDTO | null> {
+    this.getByIdError.set(null);
+    return this.http.get<AntiguedadALaVentaDTO>(this.urlBase + '/' + id).pipe(
+      map(antiguedadVenta => ({
+        ...antiguedadVenta,
+        aavFechaPublicacion: formatFechaDDMMYYYY(antiguedadVenta.aavFechaPublicacion),
+        antiguedad: {
+          ...antiguedadVenta.antiguedad,
+          imagenes: antiguedadVenta.antiguedad.imagenes?.map(img => ({
+            ...img,
+            imaUrl: normalizarUrlImagen(img.imaUrl),
+          }))
+        }
+      } as AntiguedadALaVentaDTO)),
+      catchError((err: HttpErrorResponse) => {
+        const msgError = String(err.error ?? 'Error desconocido al obtener la antigüedad a la venta por ID.');
+        if (msgError.toLowerCase().includes('no se encontró un antiguedadalaventadto con ese id')) {
+          return of(null);
+        } else {
+          this.getByIdError.set(msgError);
+          return throwError(() => err);
+        }
+      })
+    );
   }
 
   public create(data: AntiguedadALaVentaCreacionDTO): Observable<number> {
@@ -164,5 +191,5 @@ export class AntiguedadesVentaService implements IServicePaginado<AntiguedadALaV
       })
     );
   }
-  
+
 }

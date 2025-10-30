@@ -1,0 +1,101 @@
+<div class="ver-wrapper">
+  @if (selectedAntiguedad(); as sa) {
+    <mat-card class="detalle">
+      <div class="media-grid">
+        <div class="thumbs-vertical" role="list">
+          @if (sa.antiguedad.imagenes?.length) {
+            @for (img of sa.antiguedad.imagenes; track img.imaOrden; let i = $index) {
+              <img
+                role="button"
+                tabindex="0"
+                class="thumb"
+                [class.selected]="i + 1 === selectedImage()?.imaOrden"
+                [ngSrc]="img.imaUrl"
+                width="96"
+                height="72"
+                alt="Miniatura {{ i + 1 }} de {{ sa.antiguedad.antNombre }}"
+                (click)="selectThumb(i)"
+                (keyup.enter)="selectThumb(i)" />
+            }
+          } @else {
+            <div class="thumbs-empty" aria-hidden="true"></div>
+          }
+        </div>
+
+        <div class="media-large">
+          @if (selectedImage(); as sel) {
+            <img
+              [ngSrc]="sel.imaUrl"
+              width="960"
+              height="640"
+              alt="Imagen de {{ sa.antiguedad.antNombre }}" />
+          } @else {
+            <div class="media-placeholder" aria-hidden="true"></div>
+          }
+        </div>
+      </div>
+
+      <mat-card-header class="card-header">
+        <div class="title-block">
+          <mat-card-title>{{ sa.antiguedad.antNombre }}</mat-card-title>
+          <mat-card-subtitle>
+            {{ sa.antiguedad.subcategoria.scatDescripcion }} ·
+            {{ sa.antiguedad.periodo.perDescripcion }}
+          </mat-card-subtitle>
+        </div>
+        @if(noEstaEnElCarrito()) {
+          <button mat-flat-button color="primary" type="button" (click)="addToCart()">
+            Agregar al carrito
+          </button>
+        } @else {
+          <button mat-stroked-button color="accent" type="button" disabled>
+            Ya está en el carrito
+          </button>
+        }
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="precio">
+          {{ sa.aavPrecioVenta | currency:'ARS':'symbol':'1.0-2':'es-AR' }}
+        </div>
+
+        <section class="bloque">
+          <h4>Descripción</h4>
+          <p>{{ sa.antiguedad.antDescripcion }}</p>
+        </section>
+
+        <section class="bloque">
+          <h4>Vendedor</h4>
+          <p>{{ sa.vendedor.usrNombre }} {{ sa.vendedor.usrApellido }}</p>
+        </section>
+
+        <section class="bloque">
+          <h4>Domicilio de origen</h4>
+          <p>
+            Calle {{ sa.domicilioOrigen.domCalleRuta }} {{ sa.domicilioOrigen.domNroKm }}
+            · {{ sa.domicilioOrigen.localidad.locDescripcion }} · {{ sa.domicilioOrigen.localidad.provincia.provDescripcion }}
+          </p>
+        </section>
+
+        @if (sa.tasacion) {
+          <section class="bloque">
+            <h4>Tasación</h4>
+            <p>ID: {{ sa.tasacion.tadId }}</p>
+          </section>
+        }
+
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <div class="contenedor-botones">
+          <button mat-stroked-button type="button" (click)="back()">Cancelar</button>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+  } @else {
+    <div class="no-data">
+      No se encontró la antigüedad seleccionada.
+      <button mat-stroked-button type="button" (click)="back()">Volver</button>
+    </div>
+  }
+</div>

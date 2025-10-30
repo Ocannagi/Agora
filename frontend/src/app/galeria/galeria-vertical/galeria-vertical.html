@@ -1,0 +1,57 @@
+<app-mostrar-errores [errores]="storeSearch.errors()"></app-mostrar-errores>
+
+<app-listado-generico [listado]="storeSearch.arrayEntidad()">
+  <ng-container contenido>
+    <div class="galeria-wrapper">
+      @if (storeSearch.isLoading()) {
+        <app-cargando/>
+      } @else {
+        <div class="grid">
+          @for (aav of storeSearch.arrayEntidad(); track trackById(aav.aavId, aav)) {
+            <mat-card
+              class="card clickable"
+              tabindex="0"
+              role="link"
+              aria-label="Ver {{ aav.antiguedad.antNombre }}"
+              (click)="openDetalle(aav)"
+              (keyup.enter)="openDetalle(aav)"
+              (keyup.space)="openDetalle(aav)">
+              <div class="media">
+                @if (portadaUrl(aav)) {
+                  <img
+                    ngSrc="{{ portadaUrl(aav)! }}"
+                    width="480"
+                    height="320"
+                    alt="Imagen de {{ aav.antiguedad.antNombre }}"
+                    priority />
+                } @else {
+                  <div class="media-placeholder" aria-hidden="true"></div>
+                }
+              </div>
+              <mat-card-header>
+                <mat-card-title>{{ aav.antiguedad.antNombre }}</mat-card-title>
+                <mat-card-subtitle>{{ aav.antiguedad.subcategoria.scatDescripcion }} · {{ aav.antiguedad.periodo.perDescripcion }}</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="precio">{{ aav.aavPrecioVenta | currency:'ARS':'symbol':'1.0-2':'es-AR' }}</div>
+                <div class="meta">Publicado: {{ aav.aavFechaPublicacion }}</div>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+
+        <mat-paginator
+          [length]="storeSearch.totalRegistros()"
+          [pageIndex]="storeSearch.pagina() - 1"
+          [pageSize]="storeSearch.registrosPorPagina()"
+          [pageSizeOptions]="[5, 10, 20]"
+          (page)="onPage($event)">
+        </mat-paginator>
+      }
+    </div>
+
+    <app-mostrar-errores [errores]="storeSearch.errors()"></app-mostrar-errores>
+
+  </ng-container>
+</app-listado-generico>
+

@@ -255,6 +255,8 @@ class ComprasVentasController extends BaseController
                                                        AND tisFechaTasInSituRealizada IS NOT NULL
                                          WHERE aavId = %id AND aavFechaRetiro IS NULL AND aavHayVenta = FALSE"; //IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
             for ($i = 0; $i < count($compraVentaCreacionDTO->detalles); $i++) {
+                $precioVtaFront = $compraVentaCreacionDTO->detalles[$i]->antiguedadAlaVenta->aavPrecioVenta;
+                
                 //getByIdInterno se asegura que exista la antiguedad a la venta y que no esté retirada ni vendida
                 $compraVentaCreacionDTO->detalles[$i]->antiguedadAlaVenta = $this->getByIdInterno(
                     id: $compraVentaCreacionDTO->detalles[$i]->antiguedadAlaVenta->aavId,
@@ -262,6 +264,13 @@ class ComprasVentasController extends BaseController
                     linkExterno: $mysqli,
                     query: $queryAntiguedadAlaVenta
                 );
+
+                // Verificar si el precio de venta coincide con el actual en la base de datos
+                if(isset($precioVtaFront)) {
+                    if ($compraVentaCreacionDTO->detalles[$i]->antiguedadAlaVenta->aavPrecioVenta != $precioVtaFront) {
+                        throw new CustomException(code: 400, message: "El precio de venta de la antigüedad a la venta con ID {$compraVentaCreacionDTO->detalles[$i]->antiguedadAlaVenta->aavId} no coincide con el precio actual.");
+                    }
+                }
 
                 $compraVentaCreacionDTO->detalles[$i]->antiguedadAlaVenta->antiguedad = $this->getByIdInterno(
                     id: $compraVentaCreacionDTO->detalles[$i]->antiguedadAlaVenta->antiguedad->antId,

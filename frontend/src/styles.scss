@@ -82,3 +82,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .indice-elementos a{
     margin-right: 1rem;
 }
+
+.contenedor-botones{
+    margin-top: 0.7rem;
+    display: flex;
+    justify-content: flex-start;
+    gap: 0.5rem;
+}

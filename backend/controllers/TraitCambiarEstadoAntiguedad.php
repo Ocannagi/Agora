@@ -54,7 +54,7 @@ trait TraitCambiarEstadoAntiguedad
 
     public function pasarAHayVenta(mysqli $linkExterno, AntiguedadALaVentaDTO $antiguedadALaVentaDTO):void
     {
-        $queryActualizarAavHayVenta = "UPDATE antiguedadalaventa SET aavHayVenta = TRUE WHERE aavAntId = {$antiguedadALaVentaDTO->antiguedad->antId} AND aavFechaRetiro IS NULL";
+        $queryActualizarAavHayVenta = "UPDATE antiguedadalaventa SET aavHayVenta = TRUE WHERE aavAntId = {$antiguedadALaVentaDTO->antiguedad->antId} AND aavFechaRetiro IS NULL AND aavHayVenta = FALSE";
         $resultadoActualizarAavHayVenta = $linkExterno->query($queryActualizarAavHayVenta);
         if ($resultadoActualizarAavHayVenta === false) {
             $error = $linkExterno->error;

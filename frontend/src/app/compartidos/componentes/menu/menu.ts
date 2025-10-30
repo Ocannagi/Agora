@@ -9,33 +9,36 @@ import { AutenticacionStore } from '../../../seguridad/store/autenticacion.store
 import { SwalDirective } from '@sweetalert2/ngx-sweetalert2';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { AntiguedadVentaStore } from '../../../antiguedades-venta/store-global-antiguedad-venta/antiguedad-venta.store';
+import { MatBadgeModule } from '@angular/material/badge';
+import { SearchWordStore } from '../../../galeria/galeria-vertical/store-search-word/search-word.store';
+import { CarritoStore } from '../../../carrito/store-carrito/carrito.store';
 
 
 @Component({
   selector: 'app-menu',
-  imports: [MatToolbarModule, MatIconModule, MatButtonModule, RouterLink, Autorizado, SwalDirective, ReactiveFormsModule, MatFormFieldModule, MatInputModule],
+  imports: [MatToolbarModule, MatIconModule, MatButtonModule, RouterLink, Autorizado, SwalDirective, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatBadgeModule],
   templateUrl: './menu.html',
   styleUrl: './menu.scss'
 })
 export class Menu {
-  readonly store = inject(AutenticacionStore);
+  readonly storeAuth = inject(AutenticacionStore);
   private router = inject(Router);
 
-  #storeVenta = inject(AntiguedadVentaStore);
+  #storeSearch = inject(SearchWordStore);
+  readonly storeCarrito = inject(CarritoStore);
 
   // control del buscador
   protected searchCtrl = new FormControl<string>('', { nonNullable: true });
 
   protected onSearch(): void {
-    const q = this.searchCtrl.value.trim();
-    if(!q || q.length === 0) {
+    const keyWord = this.searchCtrl.value.trim();
+    if(!keyWord || keyWord.length === 0) {
       return;
     }
 
-    if (q !== this.#storeVenta.paginadoRequest().searchWord) {
-      this.#storeVenta.setSearchWord(q);
+    if (keyWord !== this.#storeSearch.paginadoRequest.searchWord()) {
+      this.#storeSearch.setSearchWord(keyWord);
     }
-    this.router.navigate(['/galeria']);
+    this.router.navigate(['/galeriaVertical']);
   }
 }

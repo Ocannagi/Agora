@@ -1,0 +1,170 @@
+.carrito-wrapper {
+  margin-top: 16px; /* separación del menú */
+  display: grid;
+  grid-template-columns: minmax(320px, 2fr) minmax(260px, 1fr);
+  grid-template-rows: auto 1fr; /* fila 1: título del primer grupo, fila 2: cards + resumen */
+  gap: 16px;
+  align-items: start;
+}
+
+/* Encabezado del primer grupo (columna izquierda, fila 1) */
+.col-izq-header {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+/* Cards (columna izquierda, fila 2) */
+.col-izq-cards {
+  grid-column: 1;
+  grid-row: 2;
+  display: grid;
+  gap: 12px;
+}
+
+/* Resumen alineado con la primera card (columna derecha, fila 2) */
+.col-der.resumen {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: start;
+}
+
+.resumen mat-card {
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+
+  /* magenta suave */
+  background-color: #f6e2f8;                 /* fondo suave (magenta claro) */
+  border: 1px solid rgba(156, 39, 176, .18); /* borde magenta tenue */
+  box-shadow: 0 2px 8px rgba(156, 39, 176, .08);
+}
+
+.resumen-header {
+  font-weight: 700;
+  color: #8e24aa; /* título con acento magenta */
+}
+
+.resumen-linea {
+  display: flex;
+  justify-content: space-between;
+  color: rgba(0,0,0,.8);
+
+  &.total {
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+}
+
+.resumen-acciones {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 900px) {
+  .carrito-wrapper {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto; /* header, cards, resumen */
+  }
+  .col-der.resumen {
+    grid-column: 1;
+    grid-row: 3; /* resumen debajo de las cards en mobile */
+  }
+}
+
+.vacio {
+  padding: 16px;
+  color: rgba(0,0,0,.6);
+}
+
+.grupo-titulo {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  margin: 8px 0 0;
+  .prefijo { color: rgba(0,0,0,.7); font-weight: 500; }
+  .nombre-vendedor { font-weight: 600; }
+}
+
+.item-card {
+  display: grid;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.item-card.clickable {
+  cursor: pointer;
+  transition: box-shadow .15s ease, transform .15s ease;
+}
+.item-card.clickable:hover,
+.item-card.clickable:focus-visible {
+  box-shadow: 0 3px 12px rgba(0,0,0,.18);
+  transform: translateY(-1px);
+}
+
+/* Estado deshabilitado (sin navegación) */
+.item-card.clickable.disabled {
+  cursor: not-allowed;
+  opacity: .6;
+  filter: grayscale(.15);
+  box-shadow: none;
+}
+.item-card.clickable.disabled:hover,
+.item-card.clickable.disabled:focus-visible {
+  box-shadow: none;
+  transform: none;
+}
+/* El botón eliminar debe verse y funcionar normalmente */
+.item-card.clickable.disabled .btn-eliminar {
+  cursor: pointer;
+  opacity: 1;
+  filter: none;
+}
+
+.fila-info {
+  display: grid;
+  grid-template-columns: 160px 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.thumb {
+  width: 160px;
+  height: 120px;
+  border-radius: 6px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #eee;
+  }
+}
+
+.datos .nombre {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.precio {
+  font-size: 1.05rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.fila-acciones {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.btn-eliminar {
+  padding: 0 4px;
+  font-size: 0.8rem;
+  line-height: 1.6rem;
+  color: #b00020; /* tono de error */
+}

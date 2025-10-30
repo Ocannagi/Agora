@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, injec
 import { numberAttributeOrNull } from '../../compartidos/funciones/transform';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ValidaControlForm } from '../../compartidos/servicios/valida-control-form';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AutenticacionStore } from '../../seguridad/store/autenticacion.store';
 import { MostrarErrores } from "../../compartidos/componentes/mostrar-errores/mostrar-errores";
 import { Cargando } from "../../compartidos/componentes/cargando/cargando";
@@ -32,8 +32,8 @@ import { Location } from '@angular/common';
   selector: 'app-crear-editar-antiguedad',
   standalone: true,
   imports: [MostrarErrores, Cargando, AutocompletarPeriodos,
-    AutocompletarCategorias, AutocompletarSubcategorias, MatButtonModule,
-    RouterLink, MatFormFieldModule, ReactiveFormsModule, MatInputModule,
+    AutocompletarCategorias, AutocompletarSubcategorias, MatButtonModule
+    , MatFormFieldModule, ReactiveFormsModule, MatInputModule,
     UploadImagenesAntiguedad, ListaImagenesDto, MatCheckboxModule],
   templateUrl: './crear-editar-antiguedad.html',
   styleUrl: './crear-editar-antiguedad.scss',

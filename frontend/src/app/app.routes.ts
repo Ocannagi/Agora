@@ -57,9 +57,19 @@ export const routes: Routes = [
         title: "Editar publicación",
     },
     {
-        path: 'galeria',
-        loadComponent: () => import(/* webpackChunkName: "galeria" */ './galeria/galeria').then(m => m.Galeria),
+        path: 'galeriaVertical',
+        loadComponent: () => import(/* webpackChunkName: "galeria" */ './galeria/galeria-vertical/galeria-vertical').then(m => m.GaleriaVertical),
         title: "Galería",
+    },
+    {
+        path: 'galeriaVertical/:id',
+        loadComponent: () => import(/* webpackChunkName: "ver-antiguedad-galeria" */ './galeria/ver-antiguedad-galeria/ver-antiguedad-galeria').then(m => m.VerAntiguedadGaleria),
+        title: "Ver Antigüedad",
+    },
+    {
+        path: 'carrito',
+        loadComponent: () => import(/* webpackChunkName: "carrito" */ './carrito/carrito/carrito').then(m => m.Carrito),
+        title: "Carrito de Compras",
     },
     {
         path:'**', //Wild card : Atrapa cualquier ruta de tu dominio. SIEMPRE DEBE IR AL FINAL, ya que el buscador de rutas es secuencial, empieza en el index 0 de este array de rutes y devuelve la primera coincidencia

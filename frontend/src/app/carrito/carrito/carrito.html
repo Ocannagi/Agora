@@ -1,0 +1,152 @@
+<app-mostrar-errores [errores]="storeCarrito.errors()"></app-mostrar-errores>
+
+<div class="carrito-wrapper">
+  @if (grupos().length > 0) {
+    <div class="col-izq-header">
+      <h3 class="grupo-titulo">
+        <span class="prefijo">{{ vendedorTitulo(grupos()[0].vendedor) }}</span>
+        <span class="nombre-vendedor">{{ vendedorNombre(grupos()[0].vendedor) }}</span>
+      </h3>
+    </div>
+  }
+
+  <div class="col-izq col-izq-cards">
+    @if (grupos().length === 0) {
+      <div class="vacio">Tu carrito está vacío.</div>
+    } @else {
+      <!-- Cards del primer grupo (sin repetir el título) -->
+      @for (ci of grupos()[0].items; track trackItem($index, ci)) {
+        <mat-card
+            class="item-card clickable"
+            [class.disabled]="isDisabled(ci)"
+            [attr.aria-disabled]="isDisabled(ci) ? true : null"
+            [attr.tabindex]="isDisabled(ci) ? -1 : 0"
+            role="link"
+            (click)="onCardClick(ci, $event)"
+            (keyup.enter)="onCardKey(ci, $event)"
+            (keyup.space)="onCardKey(ci, $event)">
+          <div class="fila-info">
+            <div class="thumb">
+              @if (portadaUrl(ci.antiguedadAlaVenta)) {
+                <img
+                  [ngSrc]="portadaUrl(ci.antiguedadAlaVenta)!"
+                  priority="true"
+                  width="160"
+                  height="120"
+                  alt="Imagen de {{ ci.antiguedadAlaVenta.antiguedad.antNombre }}" />
+              } @else {
+                <div class="thumb-placeholder" aria-hidden="true"></div>
+              }
+            </div>
+
+            <div class="datos">
+              <div class="nombre">{{ ci.antiguedadAlaVenta.antiguedad.antNombre }}</div>
+            </div>
+
+            <div class="precio">
+              {{ ci.antiguedadAlaVenta.aavPrecioVenta | currency:'ARS':'symbol':'1.0-2':'es-AR' }}
+            </div>
+          </div>
+
+          <div class="fila-acciones">
+            <button
+              mat-button
+              type="button"
+              class="btn-eliminar"
+              (click)="$event.stopPropagation(); eliminar(ci.antiguedadAlaVenta.aavId)">
+              Eliminar
+            </button>
+          </div>
+        </mat-card>
+            @if(isDisabled(ci)) {
+                @if(!ci.hayStock){
+                    <mat-error>No hay stock disponible para esta antigüedad.</mat-error>
+                } @else {
+                    <mat-error>Ha cambiado el precio de esta antigüedad.</mat-error>
+                }
+            }
+        }
+
+      <!-- Resto de grupos con su título + cards -->
+      @for (g of grupos().slice(1); track trackGrupo($index, g)) {
+        <h3 class="grupo-titulo">
+          <span class="prefijo">{{ vendedorTitulo(g.vendedor) }}</span>
+          <span class="nombre-vendedor">{{ vendedorNombre(g.vendedor) }}</span>
+        </h3>
+
+        @for (ci of g.items; track trackItem($index, ci)) {
+          <mat-card
+            class="item-card clickable"
+            [class.disabled]="isDisabled(ci)"
+            [attr.aria-disabled]="isDisabled(ci) ? true : null"
+            [attr.tabindex]="isDisabled(ci) ? -1 : 0"
+            role="link"
+            (click)="onCardClick(ci, $event)"
+            (keyup.enter)="onCardKey(ci, $event)"
+            (keyup.space)="onCardKey(ci, $event)">
+            <div class="fila-info">
+              <div class="thumb">
+                @if (portadaUrl(ci.antiguedadAlaVenta)) {
+                  <img
+                    [ngSrc]="portadaUrl(ci.antiguedadAlaVenta)!"
+                    priority="true"
+                    width="160"
+                    height="120"
+                    alt="Imagen de {{ ci.antiguedadAlaVenta.antiguedad.antNombre }}" />
+                } @else {
+                  <div class="thumb-placeholder" aria-hidden="true"></div>
+                }
+              </div>
+
+              <div class="datos">
+                <div class="nombre">{{ ci.antiguedadAlaVenta.antiguedad.antNombre }}</div>
+              </div>
+
+              <div class="precio">
+                {{ ci.antiguedadAlaVenta.aavPrecioVenta | currency:'ARS':'symbol':'1.0-2':'es-AR' }}
+              </div>
+            </div>
+
+            <div class="fila-acciones">
+              <button
+                mat-button
+                type="button"
+                class="btn-eliminar"
+                (click)="$event.stopPropagation(); eliminar(ci.antiguedadAlaVenta.aavId)">
+                Eliminar
+              </button>
+            </div>
+          </mat-card>
+            @if(isDisabled(ci)) {
+                @if(!ci.hayStock){
+                    <mat-error>No hay stock disponible para esta antigüedad.</mat-error>
+                } @else {
+                    <mat-error>Ha cambiado el precio de esta antigüedad.</mat-error>
+                }
+            }
+        }
+      }
+    }
+  </div>
+
+  <aside class="col-der resumen">
+    <mat-card>
+      <div class="resumen-header">Resumen de compra</div>
+      <div class="resumen-linea">
+        <span>Cantidad de antigüedades</span>
+        <span>{{ storeCarrito.totalItemsValidos() }}</span>
+      </div>
+      <div class="resumen-linea total">
+        <span>Total</span>
+        <span>{{ storeCarrito.totalPrecio() | currency:'ARS':'symbol':'1.0-2':'es-AR' }}</span>
+      </div>
+      <div class="resumen-acciones">
+        <button mat-flat-button color="primary" type="button" (click)="continuarCompra()">
+          Continuar compra
+        </button>
+      </div>
+    </mat-card>
+  </aside>
+</div>
+
+<app-mostrar-errores [errores]="storeCarrito.errors()"></app-mostrar-errores>

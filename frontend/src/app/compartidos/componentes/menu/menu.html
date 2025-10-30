@@ -18,7 +18,7 @@
       </button>
     </mat-form-field>
 
-    <app-autorizado [esAutorizado]="store.isCompradorVendedor()">
+    <app-autorizado [esAutorizado]="storeAuth.isCompradorVendedor()">
         <ng-container autorizado>
             <div>
                 <a mat-button routerLink="/antiguedades">Mis Antigüedades</a>
@@ -29,7 +29,7 @@
         </ng-container>
     </app-autorizado>
 
-    <app-autorizado [esAutorizado]="store.isSoporteTecnico()">
+    <app-autorizado [esAutorizado]="storeAuth.isSoporteTecnico()">
         <ng-container autorizado>
             <div>
                 <a mat-button routerLink="/usuarios">Usuarios</a>
@@ -39,17 +39,21 @@
 
     <div class="espacio"></div>
 
-    <app-autorizado [esAutorizado]="store.isLoggedIn()" style="display: inline;">
+    <app-autorizado [esAutorizado]="storeAuth.isLoggedIn()" style="display: inline;">
         <ng-container autorizado>
             <!-- reemplazar el span -->
-            <button mat-button class="saludo-btn" [routerLink]="'/usuarios/editar/' + store.usrId()">Hola, {{store.usrNombre()}}</button>
+            <button mat-button class="saludo-btn" [routerLink]="'/usuarios/editar/' + storeAuth.usrId()">Hola, {{storeAuth.usrNombre()}}</button>
             <!-- (click)="logout()" -->
-            <a mat-button [swal]="{title: 'Logout', text: '¿Estás seguro de que deseas cerrar sesión?', icon: 'warning', showCancelButton: true}" (confirm)="store.logout()">Logout</a>
+            <a mat-button [swal]="{title: 'Logout', text: '¿Estás seguro de que deseas cerrar sesión?', icon: 'warning', showCancelButton: true}" (confirm)="storeAuth.logout()">Logout</a>
         </ng-container>
         <ng-container noAutorizado>
             <a mat-button routerLink="login">Login</a>
             <a mat-button routerLink="usuarios/crear">SignUp</a>
         </ng-container>
     </app-autorizado>
-    
+
+    <button [disabled]="storeCarrito.noHayItems()" mat-button  routerLink="carrito" aria-label="Ver carrito de compras">
+        <mat-icon [matBadge]="storeCarrito.totalItems()" matBadgeOverlap="false" [matBadgeHidden]="storeCarrito.noHayItems()" matButton="elevated"  matBadgePosition="after">shopping_cart</mat-icon>
+    </button>
+
 </mat-toolbar>
