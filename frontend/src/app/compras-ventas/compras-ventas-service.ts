@@ -11,15 +11,16 @@ import { buildQueryPaginado } from '../compartidos/funciones/queryPaginado';
 import { RetornaId } from '../compartidos/modelo/RetornaId';
 
 import {
+  CompraIndiceDTO,
   CompraVentaCreacionDTO,
   CompraVentaDTO,
-  CompraVentaIndiceDTO
+
 } from './modelo/compraVentaDTO';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ComprasVentasService implements IServicePaginado<CompraVentaIndiceDTO> {
+export class ComprasVentasService implements IServicePaginado<CompraIndiceDTO> {
 
   private http = inject(HttpClient);
   private urlBase = environment.apiURL + '/ComprasVentas';
@@ -40,14 +41,14 @@ export class ComprasVentasService implements IServicePaginado<CompraVentaIndiceD
   public getAllPaginado(
     paginado: () => PaginadoRequestDTO,
     injector: Injector = inject(Injector)
-  ): ResourceRef<PaginadoResponseDTO<CompraVentaIndiceDTO>> {
-    return rxResource<PaginadoResponseDTO<CompraVentaIndiceDTO>, PaginadoRequestDTO>({
+  ): ResourceRef<PaginadoResponseDTO<CompraIndiceDTO>> {
+    return rxResource<PaginadoResponseDTO<CompraIndiceDTO>, PaginadoRequestDTO>({
       params: () => paginado(),
       stream: (options) => {
         const params = buildQueryPaginado(options.params);
         return this.http.get<PaginadoResponseDTO<CompraVentaDTO>>(this.urlBase, { params }).pipe(
           map(response => {
-            const indiceResponse: PaginadoResponseDTO<CompraVentaIndiceDTO> = {
+            const indiceResponse: PaginadoResponseDTO<CompraIndiceDTO> = {
               totalRegistros: response.totalRegistros,
               paginaActual: response.paginaActual,
               registrosPorPagina: response.registrosPorPagina,
@@ -62,14 +63,14 @@ export class ComprasVentasService implements IServicePaginado<CompraVentaIndiceD
                   acciones: {
                     ver: `/compras-ventas/${c.covId}` // placeholder de acción
                   }
-                } as CompraVentaIndiceDTO;
+                } as CompraIndiceDTO;
               })
             };
             return indiceResponse;
           })
         );
       },
-      defaultValue: {} as PaginadoResponseDTO<CompraVentaIndiceDTO>,
+      defaultValue: {} as PaginadoResponseDTO<CompraIndiceDTO>,
       injector
     });
   }
