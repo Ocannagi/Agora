@@ -19,11 +19,12 @@ export class AutocompletarCategorias {
   readonly store = inject(AutocompletarStore);
   readonly idCat = output<number | null>();
   readonly keywordExterno = input<string>('');
+  readonly disabled = input<boolean>(false);
 
   constructor() {
     effect(() => {
       const idModel = this.store.modelId();
-
+      console.log('AutocompletarCategorias - idModel:', idModel);
       this.idCat.emit(idModel);
     });
 

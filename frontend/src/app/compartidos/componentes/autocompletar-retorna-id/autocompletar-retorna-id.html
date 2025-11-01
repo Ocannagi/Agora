@@ -6,12 +6,12 @@
             [matAutocomplete]="auto"
             #autoTrigger="matAutocompleteTrigger"
             (input)="store.setKeyword(SearchBox.value)" 
-            (click)="store.noHayRegistros() && store.hayKeyword() ? store.resetKeyword() : null" 
-            (blur)="store.hayRegistros() && store.statusNoValido() ? store.resetKeyword() : null"/>
+            (click)="store.noHayRegistros() && store.hayKeyword() ? store.resetKeyword() : null; store.setUsuarioInteractuo(true)" 
+            (blur)="onBlur()"/>
         <mat-error>{{obtenerErrorCampo(label())}}</mat-error>
         <mat-autocomplete requireSelection="true" autoActiveFirstOption autoSelectActiveOption #auto
-        [displayWith]="displayText"
-        (optionSelected)="store.setModelId($event.option.value.id)">
+                  [displayWith]="displayText"
+                  (optionSelected)="reenlazarInput($event.option.value);">
         @if(!store.hayError()) {
             @for (registro of store.resourceAll.value(); track $index) {
             <mat-option [value]="registro">

@@ -2,17 +2,17 @@
 
 <app-mostrar-errores [errores]="errores()" ></app-mostrar-errores>
 
-@if (esCargando()){
-    <app-cargando />
-} @else{
+    @if(esCargando()) {
+        <app-cargando/>
+    } 
 
     <div class="form-grid">
 
-        <app-autocompletar-periodos (idPer)="perId.set($event)" [keywordExterno]="periodoEditDescripcion()"/>
+        <app-autocompletar-periodos [disabled]="esNoDisponible()" (idPer)="perId.set($event)" [keywordExterno]="periodoEditDescripcion()" />
 
-        <app-autocompletar-categorias (idCat)="catId.set($event)" [keywordExterno]="categoriaEditDescripcion()"/>
+        <app-autocompletar-categorias [disabled]="esNoDisponible()" (idCat)="catId.set($event)" [keywordExterno]="categoriaEditDescripcion()"/>
 
-        <app-autocompletar-subcategorias [idCat]="catId()" (idScat)="scatId.set($event)" [keywordExterno]="subcategoriaEditDescripcion()"/>
+        <app-autocompletar-subcategorias [disabled]="esNoDisponible()" [idCat]="catId()"  (idScat)="scatId.set($event)" [keywordExterno]="subcategoriaEditDescripcion()"/>
 
         <mat-form-field appearance="fill" class="col-span-2">
             <mat-label>Nombra la antigüedad</mat-label>
@@ -56,4 +56,3 @@
 <app-mostrar-errores [errores]="errores()" ></app-mostrar-errores>
 
 
-}

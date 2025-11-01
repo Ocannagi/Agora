@@ -63,43 +63,8 @@ export interface CompraVentaDTO {
 }
 
 export type CompraDatosDTO = Pick<CompraVentaDTO, 'covId' | 'covFechaCompra' | 'covTipoMedioPago' | 'domicilioDestino'>;
-export type VentaDatosDTO = Pick<AntiguedadALaVentaDTO,'vendedor' | 'antiguedad' | 'aavPrecioVenta' >;
-
-export interface CompraDTO extends VentaDatosDTO, CompraDatosDTO{}
-
-export interface IndiceCompraDTO {
-  
-}
 
 
-export interface CompraIndiceDTO extends CompraDTO, IIndiceEntidadDTO {}
+export interface CompraIndiceDTO extends CompraVentaDTO, IIndiceEntidadDTO {}
 
-export function convertToCompraIndiceDTO(compra: CompraVentaDTO): CompraIndiceDTO[] {
-  if (!compra || !Array.isArray(compra.detalles) || compra.detalles.length === 0) {
-    return [];
-  }
 
-  return compra.detalles.map((det) => {
-    const aav = det.antiguedadAlaVenta;
-
-    const item: CompraIndiceDTO = {
-      // CompraDTO (CompraDatosDTO + VentaDatosDTO)
-      covId: compra.covId,
-      covFechaCompra: compra.covFechaCompra,
-      covTipoMedioPago: compra.covTipoMedioPago,
-      domicilioDestino: compra.domicilioDestino,
-      vendedor: aav.vendedor,
-      antiguedad: aav.antiguedad,
-      aavPrecioVenta: aav.aavPrecioVenta,
-
-      // IIndiceEntidadDTO
-      id: compra.covId,
-      nombre: `Vendedor: ${aav.vendedor.usrRazonSocialFantasia?.trim() ?? (aav.vendedor.usrNombre + ' ' + aav.vendedor.usrApellido).trim()}`,
-      acciones: {
-        editar: `/compras-ventas/editar/${compra.covId}`
-      }
-    };
-
-    return item;
-  });
-}

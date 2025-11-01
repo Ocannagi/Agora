@@ -11,6 +11,7 @@ export interface AutocompletarSlice {
     readonly idDependenciaPadre: number | null;
     readonly modelId: number | null; // output model ID
     readonly formControlSignal: FormControlSignal<IAutocompletarDTO | null>;
+    readonly usuarioInteractuo: boolean;
 }
 
 export const autocompletarInitialState: AutocompletarSlice = {
@@ -24,5 +25,6 @@ export const autocompletarInitialState: AutocompletarSlice = {
         status: signal<string>('INVALID'),
         disabled: signal<boolean>(false),
         control: new FormControl<IAutocompletarDTO | null>(null)
-    }
+    },
+    usuarioInteractuo: false
 };

@@ -13,3 +13,24 @@ img {
   max-height: 100%;
   object-fit: contain;   // no deforma
 }
+
+/* Overlay de pantalla completa con fondo atenuado */
+:host.cargando-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.35);
+  /* Bloquea interacción con el contenido detrás */
+  pointer-events: all;
+}
+
+/* A11y: texto solo para lectores de pantalla */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0);
+  white-space: nowrap; border: 0;
+}

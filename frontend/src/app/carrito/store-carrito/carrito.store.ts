@@ -1,5 +1,5 @@
 import { patchState, signalStore, withComputed, withHooks, withMethods, withProps, withState } from "@ngrx/signals";
-import { CarritoInitialState, PersistenciaCarritoSlice, stringPersistencia } from "./carrito.slice";
+import { CarritoInitialState, CarritoPersistenciaConUsrID, PersistenciaCarritoSlice, stringPersistencia } from "./carrito.slice";
 import { computed, effect, inject, Injector, Signal } from "@angular/core";
 import { AntiguedadALaVentaDTO } from "../../antiguedades-venta/modelo/AntiguedadAlaVentaDTO";
 import { AntiguedadesVentaService } from "../../antiguedades-venta/antiguedades-venta-service";
@@ -7,6 +7,7 @@ import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import { concatMap, mergeMap, pipe, tap, finalize, from } from 'rxjs';
 import { tapResponse } from "@ngrx/operators";
 import { HttpErrorResponse } from "@angular/common/http";
+import { AutenticacionStore } from "../../seguridad/store/autenticacion.store";
 
 
 export const CarritoStore = signalStore(
@@ -36,12 +37,20 @@ export const CarritoStore = signalStore(
 
         const _injector = inject(Injector);
         const _service = inject(AntiguedadesVentaService);
+        const _storeAuth = inject(AutenticacionStore);
 
         return {
             _injector,
-            _service
+            _service,
+            _storeAuth
         };
 
+    }),
+    withComputed((store) => {
+        const usrId = computed(() => store._storeAuth.usrId() ?? null);
+        return {
+            usrId
+        };
     }),
     withMethods((store) => {
         const addCarrito = (item: AntiguedadALaVentaDTO) => {
@@ -177,13 +186,37 @@ export const CarritoStore = signalStore(
     withHooks(store => ({
         onInit: () => {
 
-            const persistido: Signal<PersistenciaCarritoSlice> = computed(() => ({ carrito: store.carrito() }));
+            const persistido: Signal<CarritoPersistenciaConUsrID> = computed(() => ({ carrito: store.carrito(), usrId: store.usrId() }));
 
             const persistidoLocalStorage = localStorage.getItem(stringPersistencia);
             if (persistidoLocalStorage) {
-                const parseado: PersistenciaCarritoSlice = JSON.parse(persistidoLocalStorage);
+                const parseadoConUsrId: CarritoPersistenciaConUsrID = JSON.parse(persistidoLocalStorage);
+                const parseado: PersistenciaCarritoSlice = { carrito: parseadoConUsrId.carrito };
+
+                if (store.usrId() === null) {
+                    // Si el usrId es null, no cargamos el carrito
+                    patchState(store, { carrito: [] });
+                } else if (parseadoConUsrId.usrId !== store.usrId()) {
+                    // Si el usrId no coincide, no cargamos el carrito y limpiamos el localStorage
+                    patchState(store, { carrito: [] });
+                    localStorage.removeItem(stringPersistencia);
+                }
                 patchState(store, parseado);
             }
+
+            effect(() => {
+                const usrId = store.usrId();
+                if(usrId !== null && store.noHayItems()) {
+                    if (persistidoLocalStorage){
+                        const parseadoConUsrId: CarritoPersistenciaConUsrID = JSON.parse(persistidoLocalStorage);
+                        if (parseadoConUsrId.usrId === usrId){
+                            const parseado: PersistenciaCarritoSlice = { carrito: parseadoConUsrId.carrito };
+                            patchState(store, parseado);
+                        }
+                    }
+                                        
+                }
+            });
 
             effect(() => {
                 const valuePersistencia = persistido();

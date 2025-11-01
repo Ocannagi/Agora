@@ -35,6 +35,7 @@ export const AutocompletarStore = signalStore(
     const resetStore = () => patchState(store, autocompletarInitialState);
     const resetKeyword = () => patchState(store, { keyword: '' });
     const resetKeywordExterno = () => patchState(store, { keywordExterno: '' });
+    const setUsuarioInteractuo = (interactuo: boolean) => patchState(store, { usuarioInteractuo: interactuo });
     return {
       setKeyword,
       setKeywordExterno,
@@ -44,7 +45,8 @@ export const AutocompletarStore = signalStore(
       setFormControlSignal,
       resetStore,
       resetKeyword,
-      resetKeywordExterno
+      resetKeywordExterno,
+      setUsuarioInteractuo
     };
   }),
   withComputed((store) => {
@@ -89,7 +91,7 @@ export const AutocompletarStore = signalStore(
 
     const statusValido = computed(() => store.formControlSignal.status()() !== 'INVALID');
     const hayKeyword = computed(() => store.keyword().length > 0);
-    const hayKeywordExterno = computed(() => store.keywordExterno().length > 0);
+    const hayKeywordExterno = computed(() => store.keywordExterno().length > 0 && store.usuarioInteractuo() === false);
 
   
     const dependenciaPadreResuelta = computed(() => {
@@ -101,9 +103,13 @@ export const AutocompletarStore = signalStore(
 
     const dependenciaPadreNoResuelta = computed(() => !dependenciaPadreResuelta());
 
-    const hayQueReseterar = computed(() => (statusNoValido() || noHayRegistros()
-      || store.formControlSignal.value()() === null)
-      && store.keyword() !== '' && store.modelId() !== null);
+    const hayQueReseterar = computed(() =>
+      (statusNoValido() || noHayRegistros() || store.formControlSignal.value()() === null)
+      // solo resetear si el keyword lo escribió el usuario (no por keywordExterno)
+      && store.keyword() !== ''
+      && !hayKeywordExterno()
+      && store.modelId() !== null
+    );
 
     return {
       resourceAllStatusResolved,
@@ -169,7 +175,7 @@ export const AutocompletarStore = signalStore(
 
     },
     onDestroy: () => {
-      //console.log('Autocompletar store destroy');
+      console.log('Autocompletar store destroy');
     }
   }))
 );

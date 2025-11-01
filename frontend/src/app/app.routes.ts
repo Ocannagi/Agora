@@ -72,6 +72,11 @@ export const routes: Routes = [
         title: "Carrito de Compras",
     },
     {
+        path: 'compras',
+        loadComponent: () => import(/* webpackChunkName: "indice-compras" */ './compras-ventas/indice-compras-ventas/indice-compras-ventas').then(m => m.IndiceComprasVentas),
+        title: "Mis Compras",
+    },
+    {
         path:'**', //Wild card : Atrapa cualquier ruta de tu dominio. SIEMPRE DEBE IR AL FINAL, ya que el buscador de rutas es secuencial, empieza en el index 0 de este array de rutes y devuelve la primera coincidencia
         redirectTo: '',
         title:'Error 404'

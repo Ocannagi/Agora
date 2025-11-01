@@ -16,6 +16,7 @@ import {
   CompraVentaDTO,
 
 } from './modelo/compraVentaDTO';
+import { formatFechaDDMMYYYY } from '../compartidos/funciones/formatFechaDDMMYYYY';
 
 @Injectable({
   providedIn: 'root'
@@ -53,13 +54,13 @@ export class ComprasVentasService implements IServicePaginado<CompraIndiceDTO> {
               paginaActual: response.paginaActual,
               registrosPorPagina: response.registrosPorPagina,
               arrayEntidad: response.arrayEntidad.map(c => {
-                const nombreComprador = `${c.usuarioComprador.usrNombre ?? ''} ${c.usuarioComprador.usrApellido ?? ''}`.trim();
-                const nombre = nombreComprador ? `Compra #${c.covId} · ${nombreComprador}` : `Compra #${c.covId}`;
                 // CompraVentaIndiceDTO extiende CompraVentaDTO + IIndiceEntidadDTO
+                const fechaCompra = formatFechaDDMMYYYY(c.covFechaCompra);
+                const antiguedades = c.detalles.length > 1 ? `${c.detalles.length} antigüedades` : c.detalles[0].antiguedadAlaVenta.antiguedad.antNombre;
                 return {
                   ...c,
                   id: c.covId,
-                  nombre,
+                  nombre: `Fecha Compra: ${fechaCompra} · ${antiguedades}`,
                   acciones: {
                     ver: `/compras-ventas/${c.covId}` // placeholder de acción
                   }

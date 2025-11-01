@@ -20,6 +20,7 @@ export class AutocompletarSubcategorias {
   readonly idCat = input<number | null>(null);
   readonly idScat = output<number | null>();
   readonly keywordExterno = input<string>('');
+  readonly disabled = input<boolean>(false);
 
 
 

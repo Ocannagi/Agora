@@ -1,6 +1,3 @@
-import { PaginadoRequestSearchDTO } from "../../compartidos/modelo/PaginadoRequestDTO";
-import { PaginadoResponseDTO } from "../../compartidos/modelo/PaginadoResponseDTO";
-import { AntiguedadALaVentaDTO } from "../../antiguedades-venta/modelo/AntiguedadAlaVentaDTO";
 import { AntiguedadEnCarritoDTO } from "../modelo/antiguedadEnCarritoDTO";
 
 export interface CarritoSlice{
@@ -21,4 +18,7 @@ export const CarritoInitialState: CarritoSlice = {
 };
 
 export type PersistenciaCarritoSlice = Pick<CarritoSlice, 'carrito'>;
+export interface CarritoPersistenciaConUsrID extends PersistenciaCarritoSlice {
+    usrId: number | null;
+}
 export const stringPersistencia = 'carrito';

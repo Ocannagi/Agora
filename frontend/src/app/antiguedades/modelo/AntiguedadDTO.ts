@@ -44,6 +44,7 @@ export const TipoEstado = {
     t === TipoEstadoEnum.TasadoDigital ||
     t === TipoEstadoEnum.TasadoInSitu,
   isAlaVenta: (t: TipoEstadoEnum): boolean => t === TipoEstadoEnum.ALaVenta,
+  isNoDisponible: (t: TipoEstadoEnum): boolean => t === TipoEstadoEnum.RetiradoNoDisponible || t === TipoEstadoEnum.Comprado,
 } as const;
 
 // Equivalente a AntiguedadDTO.php

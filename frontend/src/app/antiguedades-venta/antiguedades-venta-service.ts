@@ -53,7 +53,8 @@ export class AntiguedadesVentaService implements IServicePaginado<AntiguedadALaV
                 id: antiguedadVenta.aavId,
                 nombre: `${antiguedadVenta.antiguedad.antNombre} - ${antiguedadVenta.antiguedad.antDescripcion.substring(0, 30)}${antiguedadVenta.antiguedad.antDescripcion.length > 30 ? '...' : ''}`,
                 acciones: {
-                  editar: `/antiguedadesAlaVenta/editar/${antiguedadVenta.aavId}`
+                  editar: `/antiguedadesAlaVenta/editar/${antiguedadVenta.aavId}`,
+                  borrar: true,
                 }
               } as AntiguedadALaVentaIndiceDTO))
             };

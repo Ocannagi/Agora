@@ -100,6 +100,11 @@ export class CrearEditarAntiguedad {
     return tipoEstadoEnum ? TipoEstado.isAlaVenta(tipoEstadoEnum) : false;
   });
 
+  readonly esNoDisponible = computed(() => {
+    const tipoEstadoEnum = TipoEstado.convertStringToEnum(this.tipoEstadoValue());
+    return tipoEstadoEnum ? TipoEstado.isNoDisponible(tipoEstadoEnum) : false;
+  });
+
   readonly esCargando = computed(() => {
     if (this.esEdicion()) {
       const antiguedadRes = this.antiguedadByIdResource;
@@ -194,6 +199,10 @@ export class CrearEditarAntiguedad {
 
     const st = this.#location.getState() as { returnTo?: unknown } | null;
     this._returnTo.set(Array.isArray(st?.returnTo) ? (st!.returnTo as string[]) : null);
+    let flag = true;
+
+    const ant = this.antiguedadByIdResource;
+    const img = this.imagenesAntiguedadByAntIdResource;
 
     effect(() => {
       const img = this.imagenesFiles();
@@ -201,10 +210,10 @@ export class CrearEditarAntiguedad {
     });
 
     effect(() => {
-      if (this.isReadyToEdit()) {
+      if (this.isReadyToEdit() && flag) {
         console.log('Is ready to edit - mapeando datos de antigüedad e imágenes');
-        const ant = this.antiguedadByIdResource;
-        const img = this.imagenesAntiguedadByAntIdResource;
+        flag = false;
+        
         this.antiguedadModelo.set(ant.value());
         this.imagenesModelo.set(img.value());
         this.mapearAntiguedadData(ant.value());
@@ -212,7 +221,17 @@ export class CrearEditarAntiguedad {
       }
     });
 
+    effect(() => {
+      const imgValue = img.value();
+      if(flag) return;
 
+      this.imagenesDTO.set(imgValue);
+    });
+
+    effect(() => {
+      console.log('Tipo Estado cambiado a:', this.tipoEstadoValue());
+      this.ifDeshabilitarCamposEnEdicion();
+    });
 
     this.#destroyRef.onDestroy(() => {
       this.#antService.postError.set(null);
@@ -222,13 +241,20 @@ export class CrearEditarAntiguedad {
     });
   }
 
-  mapearAntiguedadData(antiguedad: AntiguedadDTO) {
+  private mapearAntiguedadData(antiguedad: AntiguedadDTO) {
     this.tipoEstadoValue.set(antiguedad.tipoEstado);
     this.antNombre.setValue(antiguedad.antNombre);
     this.antDescripcion.setValue(antiguedad.antDescripcion);
     this.periodoEditDescripcion.set(antiguedad.periodo.perDescripcion);
     this.categoriaEditDescripcion.set(antiguedad.subcategoria.categoria.catDescripcion);
     this.subcategoriaEditDescripcion.set(antiguedad.subcategoria.scatDescripcion);
+  }
+
+  private ifDeshabilitarCamposEnEdicion(): void {
+    if (this.esEdicion() && this.isReadyToEdit() && this.esNoDisponible()) {
+      this.antDescripcionFormControlSignal.disabled.set(true);
+      this.antNombreFormControlSignal.disabled.set(true);
+    }
   }
 
   // MÉTODOS Y EVENTOS
@@ -254,7 +280,9 @@ export class CrearEditarAntiguedad {
           takeUntilDestroyed(this.#destroyRef)
         ).subscribe({
           next: () => {
+            this.resetearEditDescripcion();
             this.imagenesAntiguedadByAntIdResource.reload();
+            
           },
           error: (err) => {
             console.error('Error al subir imágenes:', err);
@@ -266,6 +294,12 @@ export class CrearEditarAntiguedad {
     this.#destroyRef.onDestroy(() => {
       subscription.unsubscribe();
     });
+  }
+
+  private resetearEditDescripcion (): void {
+    this.periodoEditDescripcion.set('');
+    this.categoriaEditDescripcion.set('');
+    this.subcategoriaEditDescripcion.set('');
   }
 
   protected onSubmit() {

@@ -2,7 +2,9 @@ export interface IIndiceEntidadDTO {
    id: number;
    nombre: string;
    acciones: {
-        editar: string;
+     editar?: string;
+     ver?: string;
+     borrar?: boolean;
    };
 }
 

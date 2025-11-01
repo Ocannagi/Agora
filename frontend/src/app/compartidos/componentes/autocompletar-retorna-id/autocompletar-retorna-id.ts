@@ -1,4 +1,4 @@
-import { afterNextRender, ChangeDetectionStrategy, Component, effect, ElementRef, inject, Injector, input, untracked, viewChild } from '@angular/core';
+import { afterNextRender, ChangeDetectionStrategy, Component, effect, ElementRef, inject, Injector, input, signal, untracked, viewChild } from '@angular/core';
 import { ValidaControlForm } from '../../servicios/valida-control-form';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IAutocompletarDTO } from '../../modelo/IAutocompletarDTO';
@@ -19,6 +19,7 @@ export class AutocompletarRetornaId<T extends IAutocompletarDTO> {
 
   readonly label = input.required<string>();
   readonly placeholder = input.required<string>();
+  readonly disabled = input<boolean>(false);
 
   private validaForm = inject(ValidaControlForm);
   protected control = new FormControl<IAutocompletarDTO | null>(null, [Validators.required]);
@@ -37,8 +38,9 @@ export class AutocompletarRetornaId<T extends IAutocompletarDTO> {
         const hayKeywordExterno = this.store.hayKeywordExterno();
         const dependenciaPadreResuelta = this.store.dependenciaPadreResuelta();
         const inputElem = this.searchBox();
+        const usuarioNoInteractuo = !this.store.usuarioInteractuo();
 
-        if (hayKeywordExterno && dependenciaPadreResuelta) {
+        if (hayKeywordExterno && dependenciaPadreResuelta && usuarioNoInteractuo) {
           if (inputElem) {
             inputElem.nativeElement.value = this.store.keywordExterno();
             inputElem.nativeElement.dispatchEvent(new Event('input', { bubbles: true }));
@@ -53,8 +55,9 @@ export class AutocompletarRetornaId<T extends IAutocompletarDTO> {
       const dependenciaPadreResuelta = this.store.dependenciaPadreResuelta();
       const resourceAll = this.store.resourceAll;
       const resourceAllStatusResolved = this.store.resourceAllStatusResolved();
+      const usuarioNoInteractuo = !this.store.usuarioInteractuo();
 
-      if (hayKeywordExterno && dependenciaPadreResuelta) {
+      if (hayKeywordExterno && dependenciaPadreResuelta && usuarioNoInteractuo) {
         if (resourceAllStatusResolved) {
           const opciones = resourceAll.value();
 
@@ -81,6 +84,17 @@ export class AutocompletarRetornaId<T extends IAutocompletarDTO> {
 
     }, { injector: this.#injector });
 
+    effect(() => {
+      if (this.disabled()) {
+        this.control.disable();
+      } else {
+        this.control.enable();
+      }
+    });
+
+    effect(() => {
+      console.log('usuario interactuo:', this.store.usuarioInteractuo());
+    });
 
   }
 
@@ -92,5 +106,30 @@ export class AutocompletarRetornaId<T extends IAutocompletarDTO> {
   protected displayText = (loc: T | null): string =>
     loc ? loc.descripcion : '';
 
+  protected reenlazarInput(value: IAutocompletarDTO | null): void {
+    if (value) {
+      this.store.setUsuarioInteractuo(true);
+      // Seteamos el control y el modelo sin disparar eventos extra
+      this.control.setValue(value);
+      this.store.setModelId(value.id);
+      this.store.resetKeyword();      // dejamos el keyword limpio
+      this.trigger()?.closePanel();
+    } else {
+      this.control.setValue(null);
+      this.store.setModelId(null);
+      this.store.resetKeyword();
+    }
+  }
 
+  protected onBlur(): void {
+    // Evita resetear mientras el panel está abierto o si el control ya es válido
+    if (this.trigger()?.panelOpen) return;
+    if (this.control.valid) return;
+
+    if (this.store.hayRegistros() && this.store.statusNoValido()) {
+      this.store.resetKeyword();
+      // Si necesitás, podés limpiar el modelId aquí también:
+      // this.store.setModelId(null);
+    }
+  }
 }
