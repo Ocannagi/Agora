@@ -3,22 +3,17 @@ import { AntiguedadEnCarritoDTO } from "../modelo/antiguedadEnCarritoDTO";
 export interface CarritoSlice{
     readonly busy: boolean;
     readonly errors: string[];
+    readonly usrId: number | null;
     readonly carrito: AntiguedadEnCarritoDTO[];
-    readonly triggerComprobacion : boolean;
-    readonly flagComprobacion : boolean;
 }
 
 
 export const CarritoInitialState: CarritoSlice = {
     busy: false,
     errors: [],
+    usrId: null,
     carrito: [] as AntiguedadEnCarritoDTO[],
-    triggerComprobacion: false, //Para forzar la comprobación de stock/precio
-    flagComprobacion: true, //Flag interno para evitar bucles infinitos
 };
 
-export type PersistenciaCarritoSlice = Pick<CarritoSlice, 'carrito'>;
-export interface CarritoPersistenciaConUsrID extends PersistenciaCarritoSlice {
-    usrId: number | null;
-}
+export type PersistenciaCarritoSlice = Pick<CarritoSlice, 'usrId' | 'carrito'>;
 export const stringPersistencia = 'carrito';

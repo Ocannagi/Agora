@@ -12,11 +12,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatBadgeModule } from '@angular/material/badge';
 import { SearchWordStore } from '../../../galeria/galeria-vertical/store-search-word/search-word.store';
 import { CarritoStore } from '../../../carrito/store-carrito/carrito.store';
+import { MatMenuModule } from '@angular/material/menu';
 
 
 @Component({
   selector: 'app-menu',
-  imports: [MatToolbarModule, MatIconModule, MatButtonModule, RouterLink, Autorizado, SwalDirective, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatBadgeModule],
+  imports: [MatToolbarModule, MatIconModule, MatButtonModule, RouterLink, Autorizado, SwalDirective, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatBadgeModule, MatMenuModule],
   templateUrl: './menu.html',
   styleUrl: './menu.scss'
 })

@@ -1,7 +1,8 @@
 import { environment } from "../../environments/environment.development";
 
  export function normalizarUrlImagen(url: string): string {
-    // Ya absoluta
+    
+  // Ya absoluta
     if (/^https?:\/\//i.test(url)) return url;
 
     // Limpieza de prefijos './' o '/' redundantes

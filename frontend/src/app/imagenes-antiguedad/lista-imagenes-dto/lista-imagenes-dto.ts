@@ -1,5 +1,5 @@
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, input, model } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip'; // <-- tooltip
 import { ImagenAntiguedadDTO } from '../modelo/ImagenAntiguedadDTO';
@@ -17,6 +17,7 @@ import { SwalDirective } from '@sweetalert2/ngx-sweetalert2';
 })
 export class ListaImagenesDto {
   readonly arrayImagenes = model.required<ImagenAntiguedadDTO[]>();
+  readonly disabled = input<boolean>(false);
 
   // Índice del ítem sobre el que se está “entrando” con el drag
   private lastEnteredIndex: number | null = null;

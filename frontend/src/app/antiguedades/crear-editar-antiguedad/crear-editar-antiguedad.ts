@@ -92,7 +92,7 @@ export class CrearEditarAntiguedad {
   readonly esEdicion = computed(() => this.id() !== null && this.id() !== undefined);
   readonly esNuevo = computed(() => !this.esEdicion());
   readonly titulo = computed(() => this.esEdicion() ? 'Editar Antigüedad' : 'Registrar nueva Antigüedad');
-  readonly deshabilitarAgregarImagenes = computed(() => this.imagenesDTO().length >= this.MaxImgAntiguedad);
+  readonly deshabilitarAgregarImagenes = computed(() => this.imagenesDTO().length >= this.MaxImgAntiguedad || this.esNoDisponible());
 
 
   readonly isAlaVenta = computed(() => {

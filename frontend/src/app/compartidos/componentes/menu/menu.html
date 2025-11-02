@@ -6,8 +6,9 @@
     </span>
 
     <!-- Buscador -->
-    <mat-form-field class="buscador" appearance="outline" floatLabel="auto">
+
       <input
+        class="buscador"
         matInput
         [formControl]="searchCtrl"
         placeholder="Buscar antigüedades, períodos y más..."
@@ -16,18 +17,18 @@
       <button mat-icon-button matSuffix aria-label="Buscar" (click)="onSearch()">
         <mat-icon>search</mat-icon>
       </button>
-    </mat-form-field>
+
 
     <app-autorizado [esAutorizado]="storeAuth.isCompradorVendedor()">
         <ng-container autorizado>
             <div>
-                <a mat-button routerLink="/antiguedades">Mis Antigüedades</a>
+                <a mat-button routerLink="/antiguedades"><mat-icon >chair</mat-icon> Antigüedades</a>
             </div>
             <div>
-                <a mat-button routerLink="/antiguedadesAlaVenta">En Venta</a>
+                <a mat-button routerLink="/antiguedadesAlaVenta"><mat-icon >sell</mat-icon>En Venta</a>
             </div>
             <div>
-                <a mat-button routerLink="/compras">Mis Compras</a>
+                <a mat-button routerLink="/compras"><mat-icon >local_mall</mat-icon>Mis Compras</a>
             </div>
         </ng-container>
     </app-autorizado>
@@ -35,7 +36,7 @@
     <app-autorizado [esAutorizado]="storeAuth.isSoporteTecnico()">
         <ng-container autorizado>
             <div>
-                <a mat-button routerLink="/usuarios">Usuarios</a>
+                <a mat-button routerLink="/usuarios"><mat-icon>people</mat-icon>Usuarios</a>
             </div>
         </ng-container>
     </app-autorizado>
@@ -55,8 +56,8 @@
         </ng-container>
     </app-autorizado>
 
-    <button [disabled]="storeCarrito.noHayItems()" mat-button  routerLink="carrito" aria-label="Ver carrito de compras">
-        <mat-icon [matBadge]="storeCarrito.totalItems()" matBadgeOverlap="false" [matBadgeHidden]="storeCarrito.noHayItems()" matButton="elevated"  matBadgePosition="after">shopping_cart</mat-icon>
+    <button [disabled]="storeCarrito.deshabilitarCarrito()" mat-button  routerLink="carrito" aria-label="Ver carrito de compras">
+        <mat-icon [matBadge]="storeCarrito.totalItems()" matBadgeOverlap="false" [matBadgeHidden]="storeCarrito.deshabilitarCarrito()" matButton="elevated"  matBadgePosition="after">shopping_cart</mat-icon>
     </button>
 
 </mat-toolbar>

@@ -4,6 +4,7 @@ import { PaginadoRequestDTO } from "../../../modelo/PaginadoRequestDTO";
 export interface IndiceEntidadSlice{
     readonly titulo: string;
     readonly pathCrear: string;
+    readonly msgBorrar: string;
     readonly columnasDefault: KeysIIndiceEntidadDTO[];
     readonly columnasExtras: string[];
     readonly paginado: PaginadoRequestDTO;
@@ -13,6 +14,7 @@ export interface IndiceEntidadSlice{
 export const IndiceEntidadInitialState: IndiceEntidadSlice = {
     titulo: '',
     pathCrear: '',
+    msgBorrar: '¿Desea borrar este registro?',
     columnasDefault: ['id', 'nombre', 'acciones'],
     columnasExtras: [],
     paginado: {

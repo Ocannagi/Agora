@@ -3,17 +3,15 @@ import { CurrencyPipe, NgOptimizedImage } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { CarritoStore } from '../store-carrito/carrito.store';
-import { AntiguedadEnCarritoDTO } from '../modelo/antiguedadEnCarritoDTO';
+import { AntiguedadEnCarritoDTO, GrupoVendedor } from '../modelo/antiguedadEnCarritoDTO';
 import { AntiguedadALaVentaDTO } from '../../antiguedades-venta/modelo/AntiguedadAlaVentaDTO';
 import { UsuarioDTO } from '../../usuarios/modelo/usuarioDTO';
 import { Router } from '@angular/router';
 import { MostrarErrores } from "../../compartidos/componentes/mostrar-errores/mostrar-errores";
 import { MatError } from "@angular/material/form-field";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter, first, from, map, of, startWith, switchMap, tap, timeout } from 'rxjs';
 
-type GrupoVendedor = {
-  vendedor: UsuarioDTO;
-  items: AntiguedadEnCarritoDTO[];
-};
 
 @Component({
   selector: 'app-carrito',
@@ -41,7 +39,9 @@ export class Carrito {
 
 
   constructor() {
-    this.storeCarrito.pullingTrigger();
+    this.storeCarrito.comprobarStockPrecioAav().pipe(
+      takeUntilDestroyed(this.#destroyRef)
+    ).subscribe();
 
     this.#destroyRef.onDestroy(() => {
       // limpiar items inválidos al salir del carrito
@@ -80,10 +80,19 @@ export class Carrito {
   }
 
   continuarCompra(): void {
-    this.storeCarrito.pullingTrigger();
-    // TODO: navegación a flujo de checkout
-    // this.router.navigate(['/checkout']);
-  }
+  this.storeCarrito.comprobarStockPrecioAav().pipe(takeUntilDestroyed(this.#destroyRef)).subscribe({
+    complete: () => {
+      if (this.storeCarrito.impedirContinuarCompra()) {
+        this.storeCarrito.setOneError('No se puede continuar: sin stock o hubo cambio de precio.');
+        return;
+      }
+      this.router.navigate(['/checkout']);
+    },
+    error: () => {
+      this.storeCarrito.setOneError('No se pudo comprobar stock/precio. Intente nuevamente.');
+    }
+  });
+}
 
   isDisabled(ci: AntiguedadEnCarritoDTO): boolean {
     return !ci.hayStock || ci.cambioPrecio;

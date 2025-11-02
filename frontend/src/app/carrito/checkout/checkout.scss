@@ -1,0 +1,319 @@
+.checkout-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: minmax(320px, 2fr) minmax(260px, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.panel {
+  padding: 12px;
+}
+
+.panel-title {
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.full {
+  width: 100%;
+}
+
+.col-izq.col-izq-cards {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 12px;
+}
+
+.vacio {
+  padding: 16px;
+  color: rgba(0,0,0,.6);
+}
+
+.grupo {
+  display: grid;
+  gap: 8px;
+}
+
+.grupo-titulo {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  margin: 8px 0 0;
+  .prefijo { color: rgba(0,0,0,.7); font-weight: 500; }
+  .nombre-vendedor { font-weight: 600; }
+}
+
+.item-card {
+  display: grid;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.fila-info {
+  display: grid;
+  grid-template-columns: 160px 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.thumb {
+  width: 160px;
+  height: 120px;
+  border-radius: 6px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #eee;
+  }
+}
+
+.datos .nombre {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.datos .entrega {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: rgba(0,0,0,.7);
+}
+
+.precio {
+  font-size: 1.05rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.subtotal, .total-linea {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-weight: 600;
+}
+
+.total-card {
+  padding: 12px;
+}
+
+.monto {
+  white-space: nowrap;
+}
+
+.acciones {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.exito {
+  margin-top: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.comprados-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.comprado {
+  padding: 8px 12px;
+  display: grid;
+  gap: 8px;
+  place-items: start;
+}
+
+.thumb-exito {
+  width: 160px;
+  height: 160px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #eee;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+@media (max-width: 900px) {
+  .checkout-grid {
+    grid-template-columns: 1fr;
+  }
+  .acciones {
+    justify-content: stretch;
+  }
+}
+// filepath: c:\xampp\htdocs\Agora\frontend\src\app\carrito\checkout\checkout.scss
+.checkout-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: minmax(320px, 2fr) minmax(260px, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.panel {
+  padding: 12px;
+}
+
+.panel-title {
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.full {
+  width: 100%;
+}
+
+.col-izq.col-izq-cards {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 12px;
+}
+
+.vacio {
+  padding: 16px;
+  color: rgba(0,0,0,.6);
+}
+
+.grupo {
+  display: grid;
+  gap: 8px;
+}
+
+.grupo-titulo {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  margin: 8px 0 0;
+  .prefijo { color: rgba(0,0,0,.7); font-weight: 500; }
+  .nombre-vendedor { font-weight: 600; }
+}
+
+.item-card {
+  display: grid;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.fila-info {
+  display: grid;
+  grid-template-columns: 160px 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.thumb {
+  width: 160px;
+  height: 120px;
+  border-radius: 6px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #eee;
+  }
+}
+
+.datos .nombre {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.datos .entrega {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: rgba(0,0,0,.7);
+}
+
+.precio {
+  font-size: 1.05rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.subtotal, .total-linea {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-weight: 600;
+}
+
+.total-card {
+  padding: 12px;
+}
+
+.monto {
+  white-space: nowrap;
+}
+
+.acciones {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.exito {
+  margin-top: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.comprados-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.comprado {
+  padding: 8px 12px;
+  display: grid;
+  gap: 8px;
+  place-items: start;
+}
+
+.thumb-exito {
+  width: 160px;
+  height: 160px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #eee;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+@media (max-width: 900px) {
+  .checkout-grid {
+    grid-template-columns: 1fr;
+  }
+  .acciones {
+    justify-content: stretch;
+  }
+}

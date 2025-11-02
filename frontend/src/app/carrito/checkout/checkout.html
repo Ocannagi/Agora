@@ -1,0 +1,130 @@
+<app-mostrar-errores [errores]="errores()"></app-mostrar-errores>
+@if (busy()) { <app-cargando /> }
+
+@if (!success()) {
+  <div class="checkout-grid">
+
+    <mat-card class="panel">
+      <h3 class="panel-title">Domicilio de destino</h3>
+      <mat-form-field appearance="fill" class="full">
+        <mat-label>Seleccioná un domicilio</mat-label>
+        <mat-select [value]="selectedDomicilioId()" (valueChange)="selectedDomicilioId.set($event)">
+          <mat-option [value]="null">--Seleccione--</mat-option>
+          @if (usuariosDomiciliosResource.value()) {
+            @for (dom of usuariosDomiciliosResource.value()!.domicilios; track dom.domId) {
+              <mat-option [value]="dom.domId">
+                {{ dom.domCalleRuta }} {{ dom.domNroKm }} ·
+                {{ dom.localidad.locDescripcion }} - {{ dom.localidad.provincia.provDescripcion }}
+              </mat-option>
+            }
+          }
+        </mat-select>
+      </mat-form-field>
+    </mat-card>
+
+    <mat-card class="panel">
+      <h3 class="panel-title">Medio de pago</h3>
+      <mat-form-field appearance="fill" class="full">
+        <mat-label>Seleccioná un medio de pago</mat-label>
+        <mat-select [value]="medioPago()" (valueChange)="medioPago.set($event)">
+          <mat-option [value]="null">--Seleccione--</mat-option>
+          <mat-option [value]="TMP.TarjetaCredito">Tarjeta de crédito</mat-option>
+          <mat-option [value]="TMP.TransferenciaBancaria">Transferencia bancaria</mat-option>
+          <mat-option [value]="TMP.MercadoPago">Mercado Pago</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-card>
+
+    <div class="col-izq col-izq-cards">
+      @if (grupos().length === 0) {
+        <div class="vacio">No hay antigüedades válidas para comprar.</div>
+      } @else {
+        @for (g of grupos(); track g.vendedor.usrId) {
+          <section class="grupo">
+            <h3 class="grupo-titulo">
+              <span class="prefijo">{{ vendedorTitulo(g.vendedor) }}</span>
+              <span class="nombre-vendedor">{{ vendedorNombre(g.vendedor) }}</span>
+            </h3>
+
+            @for (ci of g.items; track ci.antiguedadAlaVenta.aavId) {
+              <mat-card class="item-card">
+                <div class="fila-info">
+                  <div class="thumb">
+                    @if (portadaUrl(ci.antiguedadAlaVenta)) {
+                      <img
+                        [ngSrc]="portadaUrl(ci.antiguedadAlaVenta)!"
+                        priority="true"
+                        width="160" height="120"
+                        alt="Imagen de {{ ci.antiguedadAlaVenta.antiguedad.antNombre }}" />
+                    } @else {
+                      <div class="thumb-placeholder" aria-hidden="true"></div>
+                    }
+                  </div>
+
+                  <div class="datos">
+                    <div class="nombre">{{ ci.antiguedadAlaVenta.antiguedad.antNombre }}</div>
+                    <div class="entrega">
+                      @if (selectedDomicilio()) {
+                        Entrega prevista: {{ entregaPrevistaFor(ci.antiguedadAlaVenta.aavId) }}
+                      } @else {
+                        Seleccioná un domicilio para ver la fecha de entrega.
+                      }
+                    </div>
+                  </div>
+
+                  <div class="precio">
+                    {{ ci.antiguedadAlaVenta.aavPrecioVenta | currency:'ARS':'symbol':'1.0-2':'es-AR' }}
+                  </div>
+                </div>
+              </mat-card>
+            }
+
+            <div class="subtotal">
+              <span>Subtotal</span>
+              <span class="monto">{{ g.subtotal | currency:'ARS':'symbol':'1.0-2':'es-AR' }}</span>
+            </div>
+          </section>
+        }
+
+        <mat-card class="total-card">
+          <div class="total-linea">
+            <span>Total</span>
+            <span class="monto">{{ total() | currency:'ARS':'symbol':'1.0-2':'es-AR' }}</span>
+          </div>
+        </mat-card>
+      }
+    </div>
+
+    <div class="acciones">
+      <button mat-flat-button color="primary" type="button" [disabled]="!puedeComprar()" (click)="comprar()">
+        Comprar
+      </button>
+      <button mat-stroked-button type="button" (click)="cancelar()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+} @else {
+  <div class="exito">
+    <h2>Felicitaciones por tu compra</h2>
+    <div class="comprados-grid">
+      @for (aav of itemsComprados(); track aav.aavId) {
+        <mat-card class="comprado">
+          <div class="thumb-exito">
+            @if (portadaUrl(aav)) {
+              <img [ngSrc]="portadaUrl(aav)!" priority="true" width="160" height="160" alt="Imagen de {{ aav.antiguedad.antNombre }}" />
+            } @else {
+              <div class="thumb-placeholder" aria-hidden="true"></div>
+            }
+          </div>
+          <div class="nombre">{{ aav.antiguedad.antNombre }}</div>
+        </mat-card>
+      }
+    </div>
+    <div class="acciones exito-acciones">
+      <button mat-flat-button color="primary" type="button" (click)="router.navigate(['/'])">
+        Ver más
+      </button>
+    </div>
+  </div>
+}

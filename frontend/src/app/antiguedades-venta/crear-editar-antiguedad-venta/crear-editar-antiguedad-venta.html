@@ -81,8 +81,8 @@
       <mat-label>Domicilio de origen</mat-label>
       <mat-select [value]="selectedDomicilioId()" (valueChange)="selectedDomicilioId.set($event)">
         <mat-option [value]="null">--Seleccione--</mat-option>
-        @if (usuariosDomiciliosResource.value().domicilios.length) {
-          @for (dom of usuariosDomiciliosResource.value().domicilios; track dom.domId) {
+        @if (usuariosDomiciliosResource.value()) {
+          @for (dom of usuariosDomiciliosResource.value()!.domicilios; track dom.domId) {
             <mat-option [value]="dom.domId">{{ formatDomicilio(dom) }}</mat-option>
           }
         }

@@ -6,6 +6,7 @@
 
     <div cdkDropList
          class="thumb-list"
+         [cdkDropListDisabled]="disabled()"
          [cdkDropListData]="arrayImagenes()"
          cdkDropListOrientation="vertical"
          (cdkDropListDropped)="onReorder($event)">
@@ -32,7 +33,7 @@
             [matTooltipDisabled]="arrayImagenes().length > 1"
             matTooltipPosition="above">
             <button
-              [disabled]="arrayImagenes().length <= 1"
+              [disabled]="arrayImagenes().length <= 1 || disabled()"
               mat-icon-button
               class="btn-remove"
               [swal]="{

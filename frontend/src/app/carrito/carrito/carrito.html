@@ -141,7 +141,7 @@
         <span>{{ storeCarrito.totalPrecio() | currency:'ARS':'symbol':'1.0-2':'es-AR' }}</span>
       </div>
       <div class="resumen-acciones">
-        <button mat-flat-button color="primary" type="button" (click)="continuarCompra()">
+        <button mat-flat-button color="primary" type="button" [disabled]="storeCarrito.impedirContinuarCompra()" (click)="continuarCompra()">
           Continuar compra
         </button>
       </div>

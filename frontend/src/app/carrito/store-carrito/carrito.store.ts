@@ -1,38 +1,15 @@
 import { patchState, signalStore, withComputed, withHooks, withMethods, withProps, withState } from "@ngrx/signals";
-import { CarritoInitialState, CarritoPersistenciaConUsrID, PersistenciaCarritoSlice, stringPersistencia } from "./carrito.slice";
-import { computed, effect, inject, Injector, Signal } from "@angular/core";
+import { CarritoInitialState, PersistenciaCarritoSlice, stringPersistencia } from "./carrito.slice";
+import { computed, effect, inject, Injector } from "@angular/core";
 import { AntiguedadALaVentaDTO } from "../../antiguedades-venta/modelo/AntiguedadAlaVentaDTO";
 import { AntiguedadesVentaService } from "../../antiguedades-venta/antiguedades-venta-service";
-import { rxMethod } from "@ngrx/signals/rxjs-interop";
-import { concatMap, mergeMap, pipe, tap, finalize, from } from 'rxjs';
-import { tapResponse } from "@ngrx/operators";
-import { HttpErrorResponse } from "@angular/common/http";
+import { mergeMap, tap, from, map, Observable, defer, catchError, EMPTY } from 'rxjs';
 import { AutenticacionStore } from "../../seguridad/store/autenticacion.store";
 
 
 export const CarritoStore = signalStore(
     { providedIn: 'root' },
     withState(CarritoInitialState),
-    withComputed((store) => {
-
-        const totalItems = computed(() => store.carrito().length);
-        const totalItemsValidos = computed(() => store.carrito().filter(item => item.hayStock && !item.cambioPrecio).length);
-        const hayItems = computed(() => store.carrito().length > 0);
-        const noHayItems = computed(() => !hayItems());
-        const totalPrecio = computed(() => store.carrito().reduce((acc, item) => acc + (!item.cambioPrecio && item.hayStock ? item.antiguedadAlaVenta.aavPrecioVenta : 0), 0));
-        const algunoSinStock = computed(() => store.carrito().some(item => !item.hayStock));
-        const algunoConCambioPrecio = computed(() => store.carrito().some(item => item.cambioPrecio));
-        
-        return {
-            totalItems,
-            totalItemsValidos,
-            hayItems,
-            noHayItems,
-            totalPrecio,
-            algunoSinStock,
-            algunoConCambioPrecio
-        };
-    }),
     withProps(() => {
 
         const _injector = inject(Injector);
@@ -42,14 +19,40 @@ export const CarritoStore = signalStore(
         return {
             _injector,
             _service,
-            _storeAuth
+            _storeAuth,
         };
 
     }),
     withComputed((store) => {
-        const usrId = computed(() => store._storeAuth.usrId() ?? null);
+
+        const totalItems = computed(() => store.carrito().length);
+        const totalItemsValidos = computed(() => store.carrito().filter(item => item.hayStock && !item.cambioPrecio).length);
+        const hayItems = computed(() => store.carrito().length > 0);
+        const noHayItems = computed(() => !hayItems());
+        const totalPrecio = computed(() => store.carrito().reduce((acc, item) => acc + (!item.cambioPrecio && item.hayStock ? item.antiguedadAlaVenta.aavPrecioVenta : 0), 0));
+        const algunoSinStock = computed(() => store.carrito().some(item => !item.hayStock));
+        const algunoConCambioPrecio = computed(() => store.carrito().some(item => item.cambioPrecio));
+        const impedirContinuarCompra = computed(() => {
+            return store.busy() || noHayUsrLogueado() || noHayItems() || algunoSinStock() || algunoConCambioPrecio();
+        });
+        const hayUsrLogueado = computed(() => store.usrId() !== null);
+        const noHayUsrLogueado = computed(() => !hayUsrLogueado());
+        const deshabilitarCarrito = computed(() => noHayUsrLogueado() || noHayItems());
+        const _persistido = computed(() => ({ usrId: store.usrId(), carrito: store.carrito() } as PersistenciaCarritoSlice));
+
         return {
-            usrId
+            totalItems,
+            totalItemsValidos,
+            hayItems,
+            noHayItems,
+            totalPrecio,
+            algunoSinStock,
+            algunoConCambioPrecio,
+            hayUsrLogueado,
+            noHayUsrLogueado,
+            deshabilitarCarrito,
+            impedirContinuarCompra,
+            _persistido
         };
     }),
     withMethods((store) => {
@@ -110,60 +113,101 @@ export const CarritoStore = signalStore(
         };
         const resetErrors = () => {
             patchState(store, { errors: [] });
-        }
-        const pullingTrigger = () => patchState(store, { triggerComprobacion: !store.triggerComprobacion() });
-        const setFlagComprobacion = (flagComprobacion: boolean) => { patchState(store, { flagComprobacion }) };
+        };
 
-        // Procesa un lote de IDs
-        const comprStockPreAav = rxMethod<readonly number[]>(pipe(
-            tap(() => {
+        const comprobarStockPrecioAav = (): Observable<void> => defer(() => {
+            const ids = store.carrito().map(ci => ci.antiguedadAlaVenta.aavId);
+            resetErrors();
+            if (ids.length === 0) {
+                setBusy(false);
+                return EMPTY;
+            }
+            setBusy(true);
+            return from(ids).pipe(
+                mergeMap((aavId) =>
+                    store._service.getById(aavId).pipe(
+                        map((response) => {
+                            if (!response) {
+                                setHayStock(aavId, false);
+                            } else {
+                                setTrueSiHuboCambioPrecio(aavId, response.aavPrecioVenta);
+                            }
+                            return undefined;
+                        }),
+                        catchError((err) => {
+                            setOneError(store._service.getByIdError() ?? 'Error desconocido al comprobar la antigüedad en el carrito.');
+                            console.error(err);
+                            // continuar el lote
+                            return [undefined];
+                        })
+                    )
+                ),
+                // Asegurar busy=false ANTES de que el subscriber reciba complete
+                tap({
+                    complete: () => {
+                        setBusy(false);
+                        store._service.getByIdError.set(null);
+                        console.log('Comprobación de stock/precio finalizada para lote de IDs del carrito.');
+                    }
+                })
+            );
+        });
+
+
+        /*         // Procesa un lote de IDs
+                const comprStockPreAav = rxMethod<readonly number[]>(pipe(
+                    tap(() => {
                         resetErrors();
                         setBusy(true);
-                        console.log('es busy true', store.busy());
                     }),
-            // cada llamada dispara un lote; se encola si hay otro en curso
-            concatMap((ids) =>
-              from(ids).pipe(
-                // opcional: limitar concurrencia por llamada
-                mergeMap((aavId) =>
-                  store._service.getById(aavId).pipe(
-                    tapResponse({
-                      next: (response) => {
-                        console.log('Respuesta de getById para aavId', aavId, ':', response);
-                        if (!response) setHayStock(aavId, false);
-                        else setTrueSiHuboCambioPrecio(aavId, response.aavPrecioVenta);
-                      },
-                      error: (error: HttpErrorResponse) => {
-                        setOneError(store._service.getByIdError() ?? 'Error desconocido al comprobar la antigüedad en el carrito.');
-                        console.error(error);
-                      },
-                      finalize: () => {
-                        // per-item: no tocar busy aquí
-                      }
-                    })
-                  )
-                  // , 4  // habilitá esta línea para concurrencia limitada
-                ),
-                finalize(() => {
-                  setBusy(false);
-                  console.log('es busy false', store.busy());
-                  store._service.getByIdError.set(null);
-                })
-              )
-            )
-          ), { injector: store._injector });
-
-        const _comprobarStockPrecioAav = () => {
-            const ids = store.carrito().map(ci => ci.antiguedadAlaVenta.aavId);
-            if (ids.length === 0) return;
-            comprStockPreAav(ids);
-        };
+                    // cada llamada dispara un lote; se encola si hay otro en curso
+                    concatMap((ids) =>
+                        from(ids).pipe(
+                            // opcional: limitar concurrencia por llamada
+                            mergeMap((aavId) =>
+                                store._service.getById(aavId).pipe(
+                                    tapResponse({
+                                        next: (response) => {
+                                            if (!response) setHayStock(aavId, false);
+                                            else setTrueSiHuboCambioPrecio(aavId, response.aavPrecioVenta);
+                                        },
+                                        error: (error: HttpErrorResponse) => {
+                                            setOneError(store._service.getByIdError() ?? 'Error desconocido al comprobar la antigüedad en el carrito.');
+                                            console.error(error);
+                                        },
+                                        finalize: () => {
+                                            // per-item: no tocar busy aquí
+                                        }
+                                    })
+                                )
+                                // , 4  // habilitá esta línea para concurrencia limitada
+                            ),
+                            finalize(() => {
+                                console.log('Comprobación de stock/precio finalizada para lote de IDs del carrito.');
+                                setBusy(false);
+                                store._service.getByIdError.set(null);
+                            })
+                        )
+                    )
+                ), { injector: store._injector });
+        
+                const comprobarStockPrecioAav$ = (): void => {
+                    const ids = store.carrito().map(ci => ci.antiguedadAlaVenta.aavId);
+                    if (ids.length === 0) {
+                        return;
+                    }
+                    comprStockPreAav(ids);
+                }; */
 
         const removeItemsInvalidos = () => {
             const carritoActual = store.carrito();
             const nuevosItems = carritoActual.filter(item => item.hayStock && !item.cambioPrecio);
             patchState(store, { carrito: nuevosItems });
         };
+
+        const _setUsrId = (usrId: number | null) => {
+            patchState(store, { usrId });
+        }
 
         return {
             addCarrito,
@@ -173,66 +217,52 @@ export const CarritoStore = signalStore(
             isInCarrito,
             setHayStock,
             setCambioPrecio,
-            _comprobarStockPrecioAav,
             setOneError,
             resetErrors,
             setBusy,
             setTrueSiHuboCambioPrecio,
-            pullingTrigger,
-            setFlagComprobacion,
-            removeItemsInvalidos
+            removeItemsInvalidos,
+            _setUsrId,
+            comprobarStockPrecioAav
         };
     }),
     withHooks(store => ({
         onInit: () => {
 
-            const persistido: Signal<CarritoPersistenciaConUsrID> = computed(() => ({ carrito: store.carrito(), usrId: store.usrId() }));
-
-            const persistidoLocalStorage = localStorage.getItem(stringPersistencia);
-            if (persistidoLocalStorage) {
-                const parseadoConUsrId: CarritoPersistenciaConUsrID = JSON.parse(persistidoLocalStorage);
-                const parseado: PersistenciaCarritoSlice = { carrito: parseadoConUsrId.carrito };
-
-                if (store.usrId() === null) {
-                    // Si el usrId es null, no cargamos el carrito
-                    patchState(store, { carrito: [] });
-                } else if (parseadoConUsrId.usrId !== store.usrId()) {
-                    // Si el usrId no coincide, no cargamos el carrito y limpiamos el localStorage
-                    patchState(store, { carrito: [] });
-                    localStorage.removeItem(stringPersistencia);
-                }
-                patchState(store, parseado);
-            }
-
             effect(() => {
-                const usrId = store.usrId();
-                if(usrId !== null && store.noHayItems()) {
-                    if (persistidoLocalStorage){
-                        const parseadoConUsrId: CarritoPersistenciaConUsrID = JSON.parse(persistidoLocalStorage);
-                        if (parseadoConUsrId.usrId === usrId){
-                            const parseado: PersistenciaCarritoSlice = { carrito: parseadoConUsrId.carrito };
-                            patchState(store, parseado);
-                        }
-                    }
-                                        
+                const valuePersistencia = store._persistido();
+                if (store.noHayUsrLogueado()) {
+                    return;
                 }
-            });
-
-            effect(() => {
-                const valuePersistencia = persistido();
                 localStorage.setItem(stringPersistencia, JSON.stringify(valuePersistencia));
             });
 
             effect(() => {
-                const trigger = store.triggerComprobacion();
-                const flag = store.flagComprobacion();
+                const usrId = store._storeAuth.usrId() ?? null;
+                store._setUsrId(usrId);
 
-                if (trigger !== flag) {
-                    store.setFlagComprobacion(trigger);
-                    store._comprobarStockPrecioAav();
+                if (usrId === null) {
+                    store.resetStore();
                 }
             });
 
+            effect(() => {
+                const hayUsrLogueado = store.hayUsrLogueado();
+                const noHayItems = store.noHayItems();
+
+                if (hayUsrLogueado && noHayItems) {
+
+                    const persistidoLocalStorage = localStorage.getItem(stringPersistencia);
+                    if (persistidoLocalStorage) {
+                        const parseado: PersistenciaCarritoSlice = JSON.parse(persistidoLocalStorage);
+                        if (parseado.usrId !== store.usrId()) {
+                            localStorage.removeItem(stringPersistencia);
+                        } else {
+                            patchState(store, parseado);
+                        }
+                    }
+                }
+            });
         },
     }))
 );

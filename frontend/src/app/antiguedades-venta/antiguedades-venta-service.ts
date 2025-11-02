@@ -9,7 +9,7 @@ import { buildQueryPaginado, buildQueryPaginadoSearch } from '../compartidos/fun
 import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
 import { RetornaId } from '../compartidos/modelo/RetornaId';
 import { IServicePaginado } from '../compartidos/interfaces/IServicePaginado';
-import { formatFechaDDMMYYYY } from '../compartidos/funciones/formatFechaDDMMYYYY';
+import { formatFechaDDMMYYYY } from '../compartidos/funciones/formatFecha';
 import { normalizarUrlImagen } from '../compartidos/funciones/normalizarUrlImagen';
 
 @Injectable({

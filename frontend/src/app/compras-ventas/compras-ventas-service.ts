@@ -16,7 +16,8 @@ import {
   CompraVentaDTO,
 
 } from './modelo/compraVentaDTO';
-import { formatFechaDDMMYYYY } from '../compartidos/funciones/formatFechaDDMMYYYY';
+import { formatFechaDDMMYYYY } from '../compartidos/funciones/formatFecha';
+import { normalizarUrlImagen } from '../compartidos/funciones/normalizarUrlImagen';
 
 @Injectable({
   providedIn: 'root'
@@ -54,15 +55,36 @@ export class ComprasVentasService implements IServicePaginado<CompraIndiceDTO> {
               paginaActual: response.paginaActual,
               registrosPorPagina: response.registrosPorPagina,
               arrayEntidad: response.arrayEntidad.map(c => {
-                // CompraVentaIndiceDTO extiende CompraVentaDTO + IIndiceEntidadDTO
-                const fechaCompra = formatFechaDDMMYYYY(c.covFechaCompra);
-                const antiguedades = c.detalles.length > 1 ? `${c.detalles.length} antigüedades` : c.detalles[0].antiguedadAlaVenta.antiguedad.antNombre;
-                return {
+                // Normalizar URLs de imágenes (imaUrl) en cada detalle
+                const cNorm: CompraVentaDTO = {
                   ...c,
-                  id: c.covId,
+                  detalles: c.detalles.map(det => ({
+                    ...det,
+                    antiguedadAlaVenta: {
+                      ...det.antiguedadAlaVenta,
+                      antiguedad: {
+                        ...det.antiguedadAlaVenta.antiguedad,
+                        imagenes: (det.antiguedadAlaVenta.antiguedad.imagenes ?? []).map(img => ({
+                          ...img,
+                          imaUrl: img.imaUrl ? normalizarUrlImagen(img.imaUrl) : img.imaUrl
+                        }))
+                      }
+                    }
+                  }))
+                };
+
+                // Armar item de índice con datos normalizados
+                const fechaCompra = formatFechaDDMMYYYY(cNorm.covFechaCompra);
+                const antiguedades = cNorm.detalles.length > 1
+                  ? `${cNorm.detalles.length} antigüedades`
+                  : cNorm.detalles[0].antiguedadAlaVenta.antiguedad.antNombre;
+
+                return {
+                  ...cNorm,
+                  id: cNorm.covId,
                   nombre: `Fecha Compra: ${fechaCompra} · ${antiguedades}`,
                   acciones: {
-                    ver: `/compras-ventas/${c.covId}` // placeholder de acción
+                    ver: `/compras/${cNorm.covId}`
                   }
                 } as CompraIndiceDTO;
               })
@@ -83,7 +105,24 @@ export class ComprasVentasService implements IServicePaginado<CompraIndiceDTO> {
         if (options.params === null) {
           return of({} as CompraVentaDTO);
         }
-        return this.http.get<CompraVentaDTO>(`${this.urlBase}/${options.params}`);
+        return this.http.get<CompraVentaDTO>(`${this.urlBase}/${options.params}`).pipe(
+          map(c => ({
+            ...c,
+            detalles: c.detalles.map(det => ({
+              ...det,
+              antiguedadAlaVenta: {
+                ...det.antiguedadAlaVenta,
+                antiguedad: {
+                  ...det.antiguedadAlaVenta.antiguedad,
+                  imagenes: (det.antiguedadAlaVenta.antiguedad.imagenes ?? []).map(img => ({
+                    ...img,
+                    imaUrl: img.imaUrl ? normalizarUrlImagen(img.imaUrl) : img.imaUrl
+                  }))
+                }
+              }
+            }))
+          }))
+        );
       },
       defaultValue: {} as CompraVentaDTO,
       injector

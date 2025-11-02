@@ -29,7 +29,7 @@
         </mat-form-field>
 
         @if(esEdicion()){
-            <app-lista-imagenes-dto [(arrayImagenes)]="imagenesDTO"/>
+            <app-lista-imagenes-dto [(arrayImagenes)]="imagenesDTO" [disabled]="esNoDisponible()"/>
             <div class="btnAgregarImagenesContainer">
                 <button type="button" mat-flat-button
                     (click)="openDialog()"

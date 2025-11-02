@@ -1,0 +1,90 @@
+<app-mostrar-errores [errores]="errores()"></app-mostrar-errores>
+
+@if (esCargando()) {
+  <app-cargando />
+} @else {
+  @if (compra(); as cov) {
+    <!-- Resumen principal (sin ID) -->
+    <mat-card class="resumen-compra">
+      <div class="res-grid">
+        <div class="res-item">
+          <div class="label">Fecha de compra</div>
+          <div class="value">{{ fechaCompra() }}</div>
+        </div>
+        <div class="res-item">
+          <div class="label">Medio de pago</div>
+          <div class="value">{{ medioPagoTexto() }}</div>
+        </div>
+        <div class="res-item col-span-2">
+          <div class="label">Domicilio de destino</div>
+          <div class="value">{{ domicilioDestinoTexto() }}</div>
+        </div>
+      </div>
+    </mat-card>
+
+    <div class="contenido">
+      <!-- Grupos por vendedor -->
+      @if (grupos().length === 0) {
+        <div class="vacio">No hay detalles en esta compra.</div>
+      } @else {
+        @for (g of grupos(); track trackGrupo($index, g)) {
+          <section class="grupo">
+            <h3 class="grupo-titulo">
+              <span class="prefijo">{{ vendedorTitulo(g.vendedor) }}</span>
+              <span class="nombre-vendedor">{{ vendedorNombre(g.vendedor) }}</span>
+            </h3>
+
+            @for (det of g.items; track trackItem($index, det)) {
+              <mat-card class="item">
+                <div class="fila">
+                  <div class="thumb">
+                    @if (portadaUrl(det.antiguedadAlaVenta)) {
+                      <img
+                        [ngSrc]="portadaUrl(det.antiguedadAlaVenta)!"
+                        width="120"
+                        height="90"
+                        alt="Imagen de {{ det.antiguedadAlaVenta.antiguedad.antNombre }}"
+                        priority="true"/>
+                    } @else {
+                      <div class="thumb-placeholder" aria-hidden="true"></div>
+                    }
+                  </div>
+
+                  <div class="datos">
+                    <div class="nombre">{{ det.antiguedadAlaVenta.antiguedad.antNombre }}</div>
+                    <div class="entrega">Entrega: {{ fechaEntrega(det) }}</div>
+                  </div>
+
+                  <div class="precio">
+                    {{ det.antiguedadAlaVenta.aavPrecioVenta | currency:'ARS':'symbol':'1.0-2':'es-AR' }}
+                  </div>
+
+                  <div class="acciones">
+                    <button mat-icon-button type="button" aria-label="Ver antigüedad"
+                            (click)="openVerAntiguedad(det.antiguedadAlaVenta.antiguedad.antId)">
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </mat-card>
+            }
+
+            <div class="subtotal">
+              <span>Subtotal</span>
+              <span class="monto">{{ g.subtotal | currency:'ARS':'symbol':'1.0-2':'es-AR' }}</span>
+            </div>
+          </section>
+        }
+
+        <mat-card class="total-card">
+          <div class="total-linea">
+            <span>Total</span>
+            <span class="monto">{{ total() | currency:'ARS':'symbol':'1.0-2':'es-AR' }}</span>
+          </div>
+        </mat-card>
+      }
+    </div>
+  } @else {
+    <div class="vacio">No se encontró la compra solicitada.</div>
+  }
+}

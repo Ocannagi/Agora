@@ -20,7 +20,7 @@ export class IndiceComprasVentas {
   protected store = inject(IndiceEntidadStore);
 
   constructor() {
-    this.store.setTitulo('Compras/Ventas');
+    this.store.setTitulo('Mis compras');
     // No hay creación manual por ahora; dejamos vacío o una ruta futura si corresponde
     this.store.setPathCrear('');
     // Columnas adicionales planas del DTO índice (además de id, nombre, acciones)

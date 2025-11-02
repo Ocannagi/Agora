@@ -22,7 +22,7 @@
                         }
                         @if(elemento.acciones.borrar){
                             <button mat-flat-button color="warn"
-                                [swal]="{title: 'Confirmar acción', text: '¿Deseas borrar este registro?', showCancelButton: true}"
+                                [swal]="{title: '¿Está seguro?', text: store.msgBorrar(), showCancelButton: true}"
                                 (confirm)="store.borrarEntidad(elemento.id)">Borrar</button>
                         }
                     </td>

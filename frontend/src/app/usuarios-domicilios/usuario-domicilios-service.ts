@@ -14,19 +14,19 @@ export class UsuariosDomiciliosService {
   private http = inject(HttpClient);
   private urlBase = environment.apiURL + '/UsuariosDomicilios';
 
-  public getByUsrIdResource(usrId: () => number | null, injector: Injector = inject(Injector)): ResourceRef<UsuarioDomiciliosDTO> {
-    return rxResource<UsuarioDomiciliosDTO, HttpParams>({
+  public getByUsrIdResource(usrId: () => number | null, injector: Injector = inject(Injector)): ResourceRef<UsuarioDomiciliosDTO | null> {
+    return rxResource<UsuarioDomiciliosDTO | null, HttpParams>({
       params: () => {
         return buildQueryParams({ usrId: usrId?.() ?? '' });
       },
       stream: ({ params }) => {
         const usr = params.get('params[usrId]');
         if (!usr) {
-          return of<UsuarioDomiciliosDTO>({} as UsuarioDomiciliosDTO);
+          return of<UsuarioDomiciliosDTO | null>(null);
         }
         return this.http.get<UsuarioDomiciliosDTO>(this.urlBase, { params })
       },
-      defaultValue: {} as UsuarioDomiciliosDTO,
+      defaultValue: null,
       injector
     });
   }

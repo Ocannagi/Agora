@@ -34,6 +34,7 @@ export const IndiceEntidadStore = signalStore(
     withMethods((store) => {
         const setTitulo = (titulo: string) => patchState(store, { titulo });
         const setPathCrear = (pathCrear: string) => patchState(store, { pathCrear });
+        const setMsgBorrar = (msgBorrar: string) => patchState(store, { msgBorrar });
         const setColumnasExtras = (columnasExtras: string[]) => patchState(store, { columnasExtras });
         const setPaginado = (paginado: PaginadoRequestDTO) => patchState(store, { paginado });
         const setPagina = (pagina: number) => patchState(store, { paginado: { ...store.paginado(), pagina } });
@@ -69,6 +70,7 @@ export const IndiceEntidadStore = signalStore(
         return {
             setTitulo,
             setPathCrear,
+            setMsgBorrar,
             setColumnasExtras,
             setPaginado,
             setPagina,
@@ -129,7 +131,7 @@ export const IndiceEntidadStore = signalStore(
     }),
     withHooks(store => ({
         onInit: () => {
-            console.log('Store initialized');
+
         },
         onDestroy: () => {
             store._service.deleteError.set(null);
