@@ -18,6 +18,7 @@ import {
 } from './modelo/compraVentaDTO';
 import { formatFechaDDMMYYYY } from '../compartidos/funciones/formatFecha';
 import { normalizarUrlImagen } from '../compartidos/funciones/normalizarUrlImagen';
+import { TituloExtraSeparador } from '../compartidos/modelo/IIndiceEntidadDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -83,6 +84,7 @@ export class ComprasVentasService implements IServicePaginado<CompraIndiceDTO> {
                   ...cNorm,
                   id: cNorm.covId,
                   nombre: `Fecha Compra: ${fechaCompra} · ${antiguedades}`,
+                  extra: cNorm.usuarioComprador.usrRazonSocialFantasia ? `Comprador${TituloExtraSeparador}${cNorm.usuarioComprador.usrRazonSocialFantasia}` : `Comprador${TituloExtraSeparador}${cNorm.usuarioComprador.usrNombre} ${cNorm.usuarioComprador.usrApellido}`,
                   acciones: {
                     ver: `/compras/${cNorm.covId}`
                   }

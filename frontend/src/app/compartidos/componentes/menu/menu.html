@@ -23,10 +23,10 @@
     <app-autorizado [esAutorizado]="storeAuth.isCompradorVendedor()">
         <ng-container autorizado>
             <div>
-                <a mat-button routerLink="/antiguedades"><mat-icon >chair</mat-icon> Antigüedades</a>
+                <a mat-button routerLink="/antiguedades"><mat-icon >chair</mat-icon> Mis Antigüedades</a>
             </div>
             <div>
-                <a mat-button routerLink="/antiguedadesAlaVenta"><mat-icon >sell</mat-icon>En Venta</a>
+                <a mat-button routerLink="/antiguedadesAlaVenta"><mat-icon >sell</mat-icon> Mis Antigüedades en Venta</a>
             </div>
             <div>
                 <a mat-button routerLink="/compras"><mat-icon >local_mall</mat-icon>{{storeAuth.isSoporteTecnico()? 'Todas las Compras' : 'Mis Compras'}}</a>

@@ -1,7 +1,7 @@
 import { inject, Injectable, Injector, ResourceRef, signal } from '@angular/core';
 import { VentaDetalleDTO, VentaDetalleIndiceDTO } from './modelo/ventaDetalleDTO';
 import { IServicePaginado } from '../compartidos/interfaces/IServicePaginado';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../environments/environment.development';
 import { PaginadoRequestDTO } from '../compartidos/modelo/PaginadoRequestDTO';
 import { PaginadoResponseDTO } from '../compartidos/modelo/PaginadoResponseDTO';
@@ -10,7 +10,8 @@ import { buildQueryPaginado } from '../compartidos/funciones/queryPaginado';
 import { map } from 'rxjs/internal/operators/map';
 import { normalizarUrlImagen } from '../compartidos/funciones/normalizarUrlImagen';
 import { formatFechaDDMMYYYY } from '../compartidos/funciones/formatFecha';
-import { Observable, of } from 'rxjs';
+import { catchError, Observable, of, tap, throwError } from 'rxjs';
+import { TituloExtraSeparador } from '../compartidos/modelo/IIndiceEntidadDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -65,6 +66,7 @@ export class VentasDetalleService implements IServicePaginado<VentaDetalleIndice
                   cvdFechaEntregaReal,
                   id: vdNorm.cvdId,
                   nombre: `Fecha Venta: ${fechaVenta} · ${vdNorm.antiguedadAlaVenta.antiguedad.antNombre}`,
+                  extra: vdNorm.antiguedadAlaVenta.vendedor.usrRazonSocialFantasia ? `Vendedor${TituloExtraSeparador}${vdNorm.antiguedadAlaVenta.vendedor.usrRazonSocialFantasia}` : `Vendedor${TituloExtraSeparador}${vdNorm.antiguedadAlaVenta.vendedor.usrNombre} ${vdNorm.antiguedadAlaVenta.vendedor.usrApellido}`,
                   acciones: {
                     ver: `/ventas/${vdNorm.cvdId}`
                   }
@@ -80,12 +82,12 @@ export class VentasDetalleService implements IServicePaginado<VentaDetalleIndice
     });
   }
 
-  public getByIdResource(id: () => number | null, injector: Injector = inject(Injector)): ResourceRef<VentaDetalleDTO> {
-    return rxResource<VentaDetalleDTO, number | null>({
+  public getByIdResource(id: () => number | null, injector: Injector = inject(Injector)): ResourceRef<VentaDetalleDTO | null> {
+    return rxResource<VentaDetalleDTO | null, number | null>({
       params: () => id(),
       stream: (options) => {
         if (options.params === null) {
-          return of({} as VentaDetalleDTO);
+          return of(null);
         }
         return this.http.get<VentaDetalleDTO>(`${this.urlBase}/${options.params}`).pipe(
           map((vd) => {
@@ -114,7 +116,7 @@ export class VentasDetalleService implements IServicePaginado<VentaDetalleIndice
             }
           }))
       },
-      defaultValue: {} as VentaDetalleDTO,
+      defaultValue: null,
       injector
     });
   }
@@ -135,7 +137,13 @@ export class VentasDetalleService implements IServicePaginado<VentaDetalleIndice
   }
 
   public update(id: number, data: Partial<VentaDetalleDTO>): Observable<void> {
-    throw new Error('Not implemented');
+    return this.http.patch<void>(`${this.urlBase}/${id}`, data).pipe(
+      tap(() => this.patchError.set(null)),
+      catchError((err: HttpErrorResponse) => {
+        this.patchError.set(String(err.error ?? 'Error desconocido al editar compra/venta.'));
+        return throwError(() => err);
+      })
+    );
   }
 
   public delete(id: number): Observable<[]> {

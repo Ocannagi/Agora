@@ -1,0 +1,87 @@
+<app-mostrar-errores [errores]="errores()"></app-mostrar-errores>
+
+@if (esCargando()) {
+  <app-cargando />
+} 
+
+  @if (venta(); as vd) {
+
+    <mat-card class="venta-header">
+      <div class="h-grid">
+        <div class="h-item">
+          <div class="label">Comprador</div>
+          <div class="value">{{ compradorNombre(vd.usuarioComprador) }}</div>
+        </div>
+        <div class="h-item">
+          <div class="label">Fecha de compra</div>
+          <div class="value">{{ fechaCompra() }}</div>
+        </div>
+      </div>
+    </mat-card>
+
+    <mat-card class="venta-item">
+      <div class="fila">
+        <div class="thumb">
+          @if (portadaUrl(vd.antiguedadAlaVenta)) {
+            <img [ngSrc]="portadaUrl(vd.antiguedadAlaVenta)!" width="120" height="90"
+                 alt="Imagen de {{ vd.antiguedadAlaVenta.antiguedad.antNombre }}" />
+          } @else {
+            <div class="thumb-placeholder" aria-hidden="true"></div>
+          }
+        </div>
+
+        <div class="datos">
+          <div class="nombre">{{ vd.antiguedadAlaVenta.antiguedad.antNombre }}</div>
+
+          <div class="chips">
+            <div class="chip">
+              <mat-icon>attach_money</mat-icon>
+              <span>{{ vd.antiguedadAlaVenta.aavPrecioVenta | currency:'ARS':'symbol':'1.0-2':'es-AR' }}</span>
+            </div>
+            <div class="chip">
+              <mat-icon>credit_card</mat-icon>
+              <span>{{ medioPagoTexto() }}</span>
+            </div>
+          </div>
+
+          <div class="entrega">
+            <div>
+              Entrega prevista: {{ fechaPrevista(vd) }}
+              · {{ domicilioDestinoLinea(vd.domicilioDestino) }}
+            </div>
+
+            @if (vd.cvdFechaEntregaReal) {
+              <div style="margin-top: 5px;" class="real">Entrega real: {{ vd.cvdFechaEntregaReal }}</div>
+            } @else {
+              <div class="real-edit" style="margin-top: 5px;">
+                <mat-form-field floatLabel="always" appearance="outline" class="fecha-real-field">
+                  <mat-label>Entrega real - dd/mm/yyyy</mat-label>
+                  <input matInput [matDatepicker]="picker"
+                         [value]="fechaEntregaRealInput()"
+                         (dateChange)="fechaEntregaRealInput.set($event.value ?? null)"
+                         aria-label="Fecha de entrega real" />
+                  <mat-datepicker #picker></mat-datepicker>
+                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                </mat-form-field>
+                 <button type="button" mat-flat-button color="primary"
+                        [disabled]="!fechaEntregaRealInput() || guardando()"
+                        (click)="guardarFechaEntregaReal()">
+                   Guardar
+                 </button>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </mat-card>
+
+  } @else {
+    <div class="vacio">No se encontró la venta solicitada.</div>
+  }
+
+  <div class="acciones-final">
+    <button type="button" mat-stroked-button (click)="volver()">
+      Volver
+    </button>
+  </div>
+

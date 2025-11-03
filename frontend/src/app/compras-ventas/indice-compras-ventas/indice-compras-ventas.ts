@@ -27,6 +27,9 @@ export class IndiceComprasVentas {
     // No hay creación manual por ahora; dejamos vacío o una ruta futura si corresponde
     this.store.setPathCrear('');
     // Columnas adicionales planas del DTO índice (además de id, nombre, acciones)
-    this.store.setColumnasExtras(['covTipoMedioPago']);
+
+    const colExtra = this.#authService.isSoporteTecnico() ? ['extra','covTipoMedioPago'] : ['covTipoMedioPago'];
+
+    this.store.setColumnasExtras(colExtra);
   }
 }

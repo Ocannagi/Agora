@@ -223,7 +223,8 @@ class AntiguedadesAlaVentaController extends BaseController
                       LEFT JOIN periodo ON antPerId = perId
                       LEFT JOIN usuario ON antUsrId = usrId"; // <-- sin WHERE aquí
             
-            $whereClause= "((antDescripcion LIKE '%{$searchWord}%') 
+            $whereClause= "((antDescripcion LIKE '%{$searchWord}%')
+                    OR (antNombre LIKE '%{$searchWord}%')
                     OR (scatDescripcion LIKE '%{$searchWord}%') 
                     OR (catDescripcion LIKE '%{$searchWord}%') 
                     OR (perDescripcion LIKE '%{$searchWord}%') 

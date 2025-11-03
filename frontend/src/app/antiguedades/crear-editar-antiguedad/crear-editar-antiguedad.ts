@@ -76,7 +76,7 @@ export class CrearEditarAntiguedad {
   readonly imagenesDTO = signal<ImagenAntiguedadDTO[]>([]);
   readonly antiguedadModelo = signal<AntiguedadDTO | null>(null);
   readonly imagenesModelo = signal<ImagenAntiguedadDTO[] | null>(null);
-  private readonly _returnTo = signal<string[] | null>(null);
+  private readonly _returnTo = signal<ReadonlyArray<string | number> | string | null>(null);
 
   readonly maxCaracteresDescripcion = signal(500);
   readonly maxCaracteresNombre = signal(50);
@@ -202,9 +202,11 @@ export class CrearEditarAntiguedad {
   //
 
   constructor() {
-
     const st = this.#location.getState() as { returnTo?: unknown } | null;
-    this._returnTo.set(Array.isArray(st?.returnTo) ? (st!.returnTo as string[]) : null);
+    const rt = Array.isArray(st?.returnTo) || typeof st?.returnTo === 'string'
+      ? (st!.returnTo as ReadonlyArray<string | number> | string)
+      : null;
+    this._returnTo.set(rt);
     let flag = true;
 
     const ant = this.antiguedadByIdResource;
@@ -404,11 +406,21 @@ export class CrearEditarAntiguedad {
 
   onCancel(): void {
     const rt = this._returnTo();
-    if (rt) {
-      this.#router.navigate(rt);
-    } else {
-      this.#router.navigate(['/antiguedades']);
+
+    if (Array.isArray(rt)) {
+      const cmds = rt.filter((s): s is string | number =>
+        (typeof s === 'string' && s.trim().length > 0) || typeof s === 'number'
+      );
+      if (cmds.length) {
+        this.#router.navigate(cmds);
+        return;
+      }
+    } else if (typeof rt === 'string' && rt.trim().length > 0) {
+      this.#router.navigateByUrl(rt);
+      return;
     }
+
+    this.#router.navigate(['/antiguedades']);
   }
 
   protected convertToRD(){

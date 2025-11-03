@@ -1,0 +1,127 @@
+.venta-header {
+  margin-top: 12px;
+  padding: 12px;
+}
+.h-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.h-item .label {
+  font-size: .82rem;
+  color: rgba(0,0,0,.65);
+}
+.h-item .value {
+  font-weight: 600;
+}
+
+.venta-item {
+  margin-top: 16px;
+  padding: 12px;
+}
+.fila {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.thumb {
+  width: 120px;
+  height: 90px;
+  overflow: hidden;
+  border-radius: 6px;
+}
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.thumb-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #eee;
+  border-radius: 6px;
+}
+
+.datos .nombre {
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 4px 0 8px;
+}
+.chip {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 9999px;
+  background: #f3e5f5;
+  color: #4a148c;
+  font-weight: 600;
+  font-size: .9rem;
+}
+
+.entrega {
+  display: grid;
+  gap: 6px;
+  font-size: .95rem;
+}
+.entrega .real {
+  font-weight: 600;
+}
+.real-edit {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Reducir altura del mat-form-field del datepicker */
+:host ::ng-deep .fecha-real-field {
+  --field-h: 36px;   /* altura deseada */
+  --pad-y: 6px;      /* padding vertical interno */
+
+  .mat-mdc-text-field-wrapper,
+  .mat-mdc-form-field-flex {
+    height: var(--field-h);
+  }
+  .mat-mdc-form-field-infix {
+    padding-top: var(--pad-y);
+    padding-bottom: var(--pad-y);
+  }
+  .mdc-text-field__input {
+    height: calc(var(--field-h) - (var(--pad-y) * 2));
+    padding: 0 8px;
+  }
+  /* Ajustar el toggle del datepicker para que acompañe la altura */
+  .mat-mdc-form-field-icon-suffix .mat-datepicker-toggle-default-icon {
+    width: 18px;
+    height: 18px;
+  }
+  /* Menos espacio para hint/errores */
+  .mat-mdc-form-field-subscript-wrapper {
+    margin-top: 2px;
+  }
+}
+
+.vacio {
+  padding: 16px;
+  color: rgba(0,0,0,.6);
+}
+
+.acciones-final {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@media (max-width: 720px) {
+  .h-grid { grid-template-columns: 1fr; }
+}

@@ -1,7 +1,89 @@
-app-autocompletar-localidades {
-  --autocompletar-width: 300px; // o 100%, 40rem, etc.
+:host {
+  --magenta: #d81b60;
+  --lila: #ab47bc;
+  --purpura: #6a1b9a;
+  --ink: #2e034a;
+  display: block;
 }
 
-app-autocompletar-localidades.autocomp-grande {
-  --autocompletar-width: 520px;
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 24px;
+  align-items: center;
+  padding: 32px 16px;
+
+  &__content h1 { margin: 0 0 8px; color: var(--ink); }
+  &__content p { margin: 0 0 16px; color: rgba(0,0,0,.7); }
+  &__cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  &__image img { border-radius: 12px; object-fit: cover; width: 100%; height: auto; }
+}
+
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 16px;
+
+  &__item {
+    border: 1px solid rgba(171,71,188,.25);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+  &__item mat-icon { color: var(--lila); margin-bottom: 6px; }
+  &__item h3 { margin: 6px 0; }
+  &__item p { margin: 0; color: rgba(0,0,0,.7); }
+}
+
+.how {
+  padding: 8px 16px 20px;
+}
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, 1fr);
+}
+.steps li { display: flex; gap: 10px; align-items: flex-start; }
+.steps .num {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: grid; place-items: center; color: #fff;
+  background: var(--purpura); font-weight: 700;
+}
+
+.sell-cta {
+  margin: 8px 16px 20px;
+  padding: 18px;
+  border-radius: 12px;
+  background: rgba(216,27,96,.06);
+  border: 1px solid rgba(216,27,96,.18);
+}
+
+.newsletter {
+  padding: 16px;
+  text-align: center;
+}
+.nl-form {
+  display: inline-flex; gap: 8px; align-items: center; margin-top: 8px;
+}
+.nl-form input {
+  height: 40px; padding: 0 12px; border: 1px solid rgba(171,71,188,.5);
+  border-radius: 9999px; outline: none;
+}
+.nl-form input:focus { border-color: var(--lila); box-shadow: 0 0 0 3px rgba(171,71,188,.18); }
+
+.trust {
+  margin: 12px 16px 24px;
+  display: grid; grid-auto-flow: column; gap: 12px; align-items: center; justify-content: center;
+  color: rgba(0,0,0,.75);
+}
+.trust mat-icon { color: var(--lila); }
+
+@media (max-width: 960px) {
+  .hero { grid-template-columns: 1fr; }
+  .pillars { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr; }
 }

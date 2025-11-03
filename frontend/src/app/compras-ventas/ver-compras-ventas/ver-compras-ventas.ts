@@ -146,11 +146,17 @@ export class VerComprasVentas {
     });
   }
 
-  // Fecha de entrega a mostrar: real si existe, si no la prevista
+  tituloFechaEntrega(det: CompraVentaDetalleDTO): string {
+    const fecha = det.cvdFechaEntregaReal ?? det.cvdFechaEntregaPrevista ?? null;
+    const esReal = det.cvdFechaEntregaReal !== null && det.cvdFechaEntregaReal !== undefined;
+    return esReal ? `Fecha de entrega (real): ${formatFechaDDMMYYYY(fecha)}` : `Fecha de entrega (prevista): ${formatFechaDDMMYYYY(fecha)}`;
+  }
+
+/*   // Fecha de entrega a mostrar: real si existe, si no la prevista
   fechaEntrega(det: CompraVentaDetalleDTO): string {
     const fecha = det.cvdFechaEntregaReal ?? det.cvdFechaEntregaPrevista ?? null;
     return formatFechaDDMMYYYY(fecha);
-  }
+  } */
 
   // trackBy
   trackGrupo = (_: number, g: GrupoVendedor) => (g.vendedor as any).usrId as number;
