@@ -49,7 +49,8 @@
       <button type="button" mat-flat-button [disabled]="isNotAllValid() || EsEdicionYNoHayCambios()" (click)="onSubmit()">Guardar cambios</button>
       <!-- antes: routerLink="/antiguedades" -->
       <button type="button" mat-stroked-button (click)="onCancel()">Cancelar</button>
-      <!-- <button type="button" mat-stroked-button (click)="ConsoleValidFormulario()">Prueba formulario</button> -->
+      @if(esEstadoComprado()){<button type="button" class="btn-volver-agora" mat-stroked-button [swal]="{title: '¿Está seguro?', text: 'La antigüedad volverá al Agora', showCancelButton: true}"
+                                (confirm)="convertToRD()">Volver al Agora</button>}
     </div>
 
 

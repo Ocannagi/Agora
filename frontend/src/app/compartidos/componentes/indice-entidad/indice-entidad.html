@@ -1,6 +1,8 @@
 <h2>{{store.titulo()}}</h2>
 
-<button mat-flat-button routerLink="{{store.pathCrear()}}">Crear nuevo</button>
+@if(store.pathCrear().length > 0) {
+    <button mat-flat-button routerLink="{{store.pathCrear()}}">Crear nuevo</button>
+}
 
 <app-listado-generico [listado]="store.resourcePaginado.value().arrayEntidad">
     <ng-container contenido>

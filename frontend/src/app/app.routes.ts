@@ -87,6 +87,16 @@ export const routes: Routes = [
         title: "Checkout",
     },
     {
+        path: 'ventas',
+        loadComponent: () => import(/* web  packChunkName: "indice-ventas" */ './compras-ventas/indice-ventas/indice-ventas').then(m => m.IndiceVentas),
+        title: "Mis Ventas",
+    },
+    // {
+    //     path: 'ventas/:id',
+    //     loadComponent: () => import(/* webpackChunkName: "ver-ventas" */ './compras-ventas/ver-ventas/ver-ventas').then(m => m.VerVentas),
+    //     title: "Ver Venta",
+    // },
+    {
         path:'**', //Wild card : Atrapa cualquier ruta de tu dominio. SIEMPRE DEBE IR AL FINAL, ya que el buscador de rutas es secuencial, empieza en el index 0 de este array de rutes y devuelve la primera coincidencia
         redirectTo: '',
         title:'Error 404'

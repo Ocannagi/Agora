@@ -1,0 +1,76 @@
+<h2 mat-dialog-title>Agregar más domicilios a tu Usuario</h2>
+
+<app-mostrar-errores [errores]="errors()"></app-mostrar-errores>
+
+<mat-dialog-content>
+    <form [formGroup]="formDomicilio" (ngSubmit)="OnSubmit($event)">
+        <fieldset class="fieldset-domicilio">
+            <legend>Domicilio</legend>
+
+            <div class="form-grid">
+                <mat-form-field appearance="fill" class="col-span-2">
+                    <mat-label >CPA</mat-label>
+                    <input matInput formControlName="domCPA" maxlength="8"/>
+                    <mat-hint>L1234LLL</mat-hint>
+                    <mat-error>{{obtenerErrorCampo('domCPA', 'El formato debe ser L1234LLL (1 letra, 4 números, 3 letras).')}}</mat-error>
+                </mat-form-field>
+
+                <app-autocompletar-provincias
+                    (idProv)="ctrlProvinciaSignal.value.set($event)"
+                />
+                <app-autocompletar-localidades
+                    [idProv]="ctrlProvinciaSignal.value()"
+                    (idLoc)="ctrlLocalidadSignal.value.set($event)"
+                ></app-autocompletar-localidades>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Calle/Ruta</mat-label>
+                    <input matInput formControlName="domCalleRuta" />
+                    <mat-error>{{obtenerErrorCampo('domCalleRuta')}}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Número</mat-label>
+                    <input type="number" step="1" matInput formControlName="domNroKm" />
+                    <mat-error>{{obtenerErrorCampo('domNroKm')}}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Piso</mat-label>
+                    <input matInput formControlName="domPiso" />
+                    <mat-error>{{obtenerErrorCampo('domPiso')}}</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Departamento</mat-label>
+                    <input matInput formControlName="domDepto" />
+                    <mat-error>{{obtenerErrorCampo('domDepto')}}</mat-error>
+                </mat-form-field>
+            </div>
+        </fieldset>
+    </form>
+    
+</mat-dialog-content>
+<mat-dialog-actions>
+  <div class="contenedor-botones">
+    <button
+      type="submit"
+      mat-flat-button
+      [disabled]="formDomicilio.invalid"
+      [swal]="{
+        title: '¿Estás seguro?',
+        text: 'Se guardarán más domicilios a tu perfil.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Cancelar'
+      }"
+      (confirm)="onConfirmSwal()"
+    >
+      Guardar
+    </button>
+    <button type="button" mat-stroked-button (click)="Cancelar()" cdkFocusInitial>Cancelar</button>
+  </div>
+</mat-dialog-actions>
+
+<app-mostrar-errores [errores]="errors()"></app-mostrar-errores>

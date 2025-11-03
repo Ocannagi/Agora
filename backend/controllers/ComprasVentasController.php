@@ -15,6 +15,7 @@ class ComprasVentasController extends BaseController
     use TraitGetInterno; // Trait para usar getInterno con linkExterno
     use TraitGetByIdInterno; // Trait para usar getByIdInterno con linkExterno
     use TraitCambiarEstadoAntiguedad; // Trait para cambiar el estado de la antiguedad
+    use TraitGetPaginado; // Trait para obtener paginados genéricos
 
     /** El orden de las dependencias debe ser el mismo que en inyectarDependencias en api.php  */
     private function __construct(IDbConnection $dbConnection, ISecurity $securityService, ValidacionServiceBase $comprasVentasValidacionService)
@@ -36,6 +37,59 @@ class ComprasVentasController extends BaseController
     // Método para evitar la clonación del objeto
     private function __clone() {}
 
+    public function getComprasVentasPaginado($paginado)
+    {
+        $mysqli = $this->dbConnection->conectarBD();
+        try {
+            $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
+
+            if (!TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico()) {
+                $where = " covUsrComprador = {$claimDTO->usrId} AND covFechaBaja IS NULL";
+            } else {
+                $where = " covFechaBaja IS NULL";
+            }
+
+            $query = "SELECT covId, covUsrComprador, covDomDestino, covFechaCompra, covTipoMedioPago
+                      FROM compraventa WHERE" . $where . " ORDER BY covFechaCompra DESC, covId DESC ";
+
+            $paginadoResponseDTO = $this->getPaginadoResponseDTO(
+                paginado: $paginado,
+                mysqli: $mysqli,
+                baseCount: 'compraventa',
+                whereCount: $where,
+                msgCount: 'obtener el total de compras-ventas para paginado',
+                queryClassDTO: $query,
+                classDTO: CompraVentaDTO::class
+            );
+
+            $arrayComprasVentasDTO = $paginadoResponseDTO->arrayEntidad;
+
+            for ($i = 0; $i < count($arrayComprasVentasDTO); $i++) {
+                $arrayComprasVentasDTO[$i] = $this->obtenerCompraVentaDTOCompleto($arrayComprasVentasDTO[$i]->covId, $mysqli);
+            }
+
+            $paginadoResponseDTO->arrayEntidad = $arrayComprasVentasDTO;
+
+            Output::outputJson($paginadoResponseDTO);
+
+
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
+                $mysqli->close(); // Cerrar la conexión a la base de datos
+            }
+        }
+    }
+
     public function getComprasVentas()
     {
         $mysqli = $this->dbConnection->conectarBD();
@@ -55,10 +109,10 @@ class ComprasVentasController extends BaseController
                                                            FROM compraventa " . $where
             );
 
-            for ($i=0; $i < count($arrayComprasVentasDTO); $i++) { 
+            for ($i = 0; $i < count($arrayComprasVentasDTO); $i++) {
                 $arrayComprasVentasDTO[$i] = $this->obtenerCompraVentaDTOCompleto($arrayComprasVentasDTO[$i]->covId, $mysqli);
             }
-            
+
             Output::outputJson($arrayComprasVentasDTO);
         } catch (\Throwable $th) {
             if ($th instanceof mysqli_sql_exception) {
@@ -160,7 +214,7 @@ class ComprasVentasController extends BaseController
         //var_dump($compraVentaDTO->detalles);
 
         for ($i = 0; $i < count($compraVentaDTO->detalles); $i++) {
-            
+
             $compraVentaDTO->detalles[$i]->antiguedadAlaVenta = $this->getByIdInterno(
                 id: $compraVentaDTO->detalles[$i]->antiguedadAlaVenta->aavId,
                 classDTO: AntiguedadALaVentaDTO::class,
@@ -201,7 +255,7 @@ class ComprasVentasController extends BaseController
             $compraVentaDTO->detalles[$i]->antiguedadAlaVenta->tasacion = null; // No queremos traer la tasación digital completa en este contexto
         }
 
-       // var_dump($compraVentaDTO->detalles);
+        // var_dump($compraVentaDTO->detalles);
         return $compraVentaDTO;
     }
 
@@ -217,14 +271,16 @@ class ComprasVentasController extends BaseController
 
             $this->comprasVentasValidacionService->validarType(className: CompraVentaCreacionDTO::class, datos: $data);
             $compraVentaCreacionDTO = new CompraVentaCreacionDTO($data);
+            
             // Verifica que el usrId del token coincida con el usrId del comprador
             if (!TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico() && $claimDTO->usrId !== $compraVentaCreacionDTO->usuarioComprador->usrId) {
                 throw new CustomException(code: 403, message: "El usuario no tiene permiso para realizar esta acción.");
             }
 
-            if(!isset($compraVentaCreacionDTO->usuarioComprador) || !isset($compraVentaCreacionDTO->usuarioComprador->usrId)){
+            if (!isset($compraVentaCreacionDTO->usuarioComprador) || !isset($compraVentaCreacionDTO->usuarioComprador->usrId)) {
                 throw new CustomException(code: 400, message: "El usuario comprador es obligatorio.");
             }
+
             $compraVentaCreacionDTO->usuarioComprador = $this->getByIdInterno(
                 id: $compraVentaCreacionDTO->usuarioComprador->usrId,
                 classDTO: UsuarioDTO::class,
@@ -232,7 +288,7 @@ class ComprasVentasController extends BaseController
                 query: 'USUARIO'
             );
 
-            if(!isset($compraVentaCreacionDTO->domicilioDestino) || !isset($compraVentaCreacionDTO->domicilioDestino->domId)){
+            if (!isset($compraVentaCreacionDTO->domicilioDestino) || !isset($compraVentaCreacionDTO->domicilioDestino->domId)) {
                 throw new CustomException(code: 400, message: "El domicilio de destino es obligatorio.");
             }
             $compraVentaCreacionDTO->domicilioDestino = $this->getByIdInterno(
@@ -254,9 +310,10 @@ class ComprasVentasController extends BaseController
                                                        AND tisFechaBaja IS NULL
                                                        AND tisFechaTasInSituRealizada IS NOT NULL
                                          WHERE aavId = %id AND aavFechaRetiro IS NULL AND aavHayVenta = FALSE"; //IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
+            
+            
             for ($i = 0; $i < count($compraVentaCreacionDTO->detalles); $i++) {
-                $precioVtaFront = $compraVentaCreacionDTO->detalles[$i]->antiguedadAlaVenta->aavPrecioVenta;
-                
+
                 //getByIdInterno se asegura que exista la antiguedad a la venta y que no esté retirada ni vendida
                 $compraVentaCreacionDTO->detalles[$i]->antiguedadAlaVenta = $this->getByIdInterno(
                     id: $compraVentaCreacionDTO->detalles[$i]->antiguedadAlaVenta->aavId,
@@ -265,8 +322,10 @@ class ComprasVentasController extends BaseController
                     query: $queryAntiguedadAlaVenta
                 );
 
+                $precioVtaFront = $compraVentaCreacionDTO->detalles[$i]->antiguedadAlaVenta->aavPrecioVenta;
+
                 // Verificar si el precio de venta coincide con el actual en la base de datos
-                if(isset($precioVtaFront)) {
+                if (isset($precioVtaFront)) {
                     if ($compraVentaCreacionDTO->detalles[$i]->antiguedadAlaVenta->aavPrecioVenta != $precioVtaFront) {
                         throw new CustomException(code: 400, message: "El precio de venta de la antigüedad a la venta con ID {$compraVentaCreacionDTO->detalles[$i]->antiguedadAlaVenta->aavId} no coincide con el precio actual.");
                     }
@@ -393,55 +452,55 @@ class ComprasVentasController extends BaseController
 
     private function ValidacionCustomPatchCompraVenta(CompraVentaDTO $compraVentaDTO, mysqli $mysqli)
     {
-        if(!Querys::existeEnBD(
-                link: $mysqli,
-                query: "SELECT 1
+        if (!Querys::existeEnBD(
+            link: $mysqli,
+            query: "SELECT 1
                                 FROM compraventa
                                 WHERE covId = {$compraVentaDTO->covId}
                                 AND covFechaBaja IS NULL",
-                msg: "saber si la compra/venta existe y no está dada de baja"
-            )) {
-                throw new CustomException(code: 404, message: "No existe la compra/venta o ya está dada de baja.");
-            }
+            msg: "saber si la compra/venta existe y no está dada de baja"
+        )) {
+            throw new CustomException(code: 404, message: "No existe la compra/venta o ya está dada de baja.");
+        }
 
-            if (Querys::existeEnBD(
-                link: $mysqli,
-                query: "   SELECT cvdId
+        if (Querys::existeEnBD(
+            link: $mysqli,
+            query: "   SELECT cvdId
                                             FROM compraventadetalle
                                             WHERE cvdCovId = {$compraVentaDTO->covId}
                                             AND cvdFechaEntregaReal IS NOT NULL
                                             LIMIT 1",
-                msg: "saber si existe al menos un detalle con fecha de entrega real"
-            )) {
-                throw new CustomException(code: 400, message: "No se puede modificar la compra-venta porque ya se ha entregado al menos una antigüedad.");
-            }
+            msg: "saber si existe al menos un detalle con fecha de entrega real"
+        )) {
+            throw new CustomException(code: 400, message: "No se puede modificar la compra-venta porque ya se ha entregado al menos una antigüedad.");
+        }
 
-            if (Querys::existeEnBD(
-                link: $mysqli,
-                query: "SELECT 1
+        if (Querys::existeEnBD(
+            link: $mysqli,
+            query: "SELECT 1
                                         FROM compraventadetalle
                                         INNER JOIN antiguedadalaventa 
                                             ON cvdAavId = aavId
                                         WHERE cvdCovId = {$compraVentaDTO->covId}
                                         AND aavDomOrigen = {$compraVentaDTO->domicilioDestino->domId}",
-                msg: "saber si el domicilio de origen es el mismo que el de destino"
-            )) {
-                throw new CustomException(code: 400, message: "El domicilio de origen y destino no pueden ser el mismo.");
-            }
+            msg: "saber si el domicilio de origen es el mismo que el de destino"
+        )) {
+            throw new CustomException(code: 400, message: "El domicilio de origen y destino no pueden ser el mismo.");
+        }
 
-            if (!Querys::existeEnBD(
-                link: $mysqli,
-                query: "SELECT 1
+        if (!Querys::existeEnBD(
+            link: $mysqli,
+            query: "SELECT 1
                             FROM compraventa as cv
                             INNER JOIN usuariodomicilio as ud
                             ON ud.udomUsr = cv.covUsrComprador
                             WHERE
                             cv.covId = {$compraVentaDTO->covId}
                             AND ud.udomDom = {$compraVentaDTO->domicilioDestino->domId}",
-                msg: "saber si el domicilio de origen es el mismo que el de destino"
-            )) {
-                throw new CustomException(code: 400, message: "El domicilio de destino no pertenece al usuario comprador.");
-            }
+            msg: "saber si el domicilio de origen es el mismo que el de destino"
+        )) {
+            throw new CustomException(code: 400, message: "El domicilio de destino no pertenece al usuario comprador.");
+        }
     }
 
     //El soporte técnico solo puede eliminar compras/ventas que tengan menos de 10 días desde su creación (Boton de arrepentimiento).
@@ -483,7 +542,7 @@ class ComprasVentasController extends BaseController
                                                                                                             AND tisFechaBaja IS NULL
                                                                                                             AND tisFechaTasInSituRealizada IS NOT NULL 
                                                                                               WHERE aavId = {$compraVentaDTO->detalles[$i]->antiguedadAlaVenta->aavId}"
-                );//IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
+                ); //IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
 
                 $compraVentaDTO->detalles[$i]->antiguedadAlaVenta->vendedor = $this->getByIdInterno(
                     id: $compraVentaDTO->detalles[$i]->antiguedadAlaVenta->vendedor->usrId,

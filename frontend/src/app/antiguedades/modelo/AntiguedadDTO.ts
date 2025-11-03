@@ -45,6 +45,7 @@ export const TipoEstado = {
     t === TipoEstadoEnum.TasadoInSitu,
   isAlaVenta: (t: TipoEstadoEnum): boolean => t === TipoEstadoEnum.ALaVenta,
   isNoDisponible: (t: TipoEstadoEnum): boolean => t === TipoEstadoEnum.RetiradoNoDisponible || t === TipoEstadoEnum.Comprado,
+  isComprado: (t: TipoEstadoEnum): boolean => t === TipoEstadoEnum.Comprado,
 } as const;
 
 // Equivalente a AntiguedadDTO.php
@@ -68,7 +69,7 @@ export interface AntiguedadCreacionDTO {
   antDescripcion: string;
   usrId: number;
   // En PHP tiene valor por defecto (RetiradoDisponible). En el frontend puede omitirse.
-  //tipoEstado?: TipoEstadoEnum;
+  tipoEstado?: TipoEstadoEnum;
 }
 
 export interface AntiguedadIndiceDTO extends AntiguedadDTO, IIndiceEntidadDTO {

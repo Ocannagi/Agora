@@ -1,32 +1,33 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { IndiceEntidad } from '../../compartidos/componentes/indice-entidad/indice-entidad';
-import { ComprasVentasService } from '../compras-ventas-service';
 import { MostrarErrores } from '../../compartidos/componentes/mostrar-errores/mostrar-errores';
+import { IndiceEntidad } from '../../compartidos/componentes/indice-entidad/indice-entidad';
 import { IndiceEntidadStore } from '../../compartidos/componentes/indice-entidad/store-indice-entidad/indice-entidad.store';
 import { SERVICIO_PAGINADO_TOKEN } from '../../compartidos/proveedores/tokens';
+import { VentasDetalleService } from '../ventas-detalle-service';
 import { AutenticacionStore } from '../../seguridad/store/autenticacion.store';
 
 @Component({
-  selector: 'app-indice-compras-ventas',
+  selector: 'app-indice-ventas',
   imports: [MostrarErrores, IndiceEntidad],
-  templateUrl: './indice-compras-ventas.html',
-  styleUrl: './indice-compras-ventas.scss',
+  templateUrl: './indice-ventas.html',
+  styleUrl: './indice-ventas.scss',
   providers: [
-    { provide: SERVICIO_PAGINADO_TOKEN, useClass: ComprasVentasService },
+    { provide: SERVICIO_PAGINADO_TOKEN, useClass: VentasDetalleService },
     IndiceEntidadStore
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class IndiceComprasVentas {
+export class IndiceVentas {
   protected store = inject(IndiceEntidadStore);
   #authService = inject(AutenticacionStore);
 
   constructor() {
-    const titulo = this.#authService.isSoporteTecnico()?  'Todas las Compras' : 'Mis compras';
+    const titulo = this.#authService.isSoporteTecnico()?  'Todas las Ventas' : 'Mis Ventas';
     this.store.setTitulo(titulo);
     // No hay creación manual por ahora; dejamos vacío o una ruta futura si corresponde
     this.store.setPathCrear('');
     // Columnas adicionales planas del DTO índice (además de id, nombre, acciones)
     this.store.setColumnasExtras(['covTipoMedioPago']);
   }
+
 }

@@ -21,6 +21,9 @@ import { stringPersistencia } from '../store-carrito/carrito.slice';
 import { formatFechaDDMMYYYY, formatFechaYYYYMMDD } from '../../compartidos/funciones/formatFecha';
 import { lastValueFrom } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogAgregarDomicilio } from '../../usuarios-domicilios/dialog-agregar-domicilio/dialog-agregar-domicilio';
+import { MatIcon } from "@angular/material/icon";
 
 type GrupoVendedorConSubtotal = {
   vendedor: UsuarioDTO;
@@ -32,8 +35,9 @@ type GrupoVendedorConSubtotal = {
   selector: 'app-checkout',
   imports: [
     MatCardModule, MatButtonModule, MatFormFieldModule, MatSelectModule,
-    CurrencyPipe, NgOptimizedImage, MostrarErrores, Cargando
-  ],
+    CurrencyPipe, NgOptimizedImage, MostrarErrores, Cargando,
+    MatIcon
+],
   templateUrl: './checkout.html',
   styleUrl: './checkout.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -48,6 +52,7 @@ export class Checkout {
   #comprasService = inject(ComprasVentasService);
   #injector = inject(Injector);
   #destroyRef = inject(DestroyRef);
+  #dialog = inject(MatDialog); // Inyectar el servicio de diálogo (Modal)
 
   // Estado local
   readonly medioPago = signal<TipoMedioPagoEnum | null>(null);
@@ -231,4 +236,21 @@ export class Checkout {
 
   // Exponer enum al template
   protected readonly TMP = TipoMedioPagoEnum;
+
+  protected openDialog(): void {
+    const dialogRef = this.#dialog.open(DialogAgregarDomicilio, {
+      disableClose: true,
+    });
+
+    const subscription = dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      if (result === true) {
+        this.usuariosDomiciliosResource.reload();
+      }
+    });
+
+    this.#destroyRef.onDestroy(() => {
+      subscription.unsubscribe();
+    });
+  }
 }

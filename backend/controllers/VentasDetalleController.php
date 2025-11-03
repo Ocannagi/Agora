@@ -13,6 +13,7 @@ class VentasDetalleController extends BaseController
 
     use TraitGetInterno;
     use TraitGetByIdInterno;
+    use TraitGetPaginado; // Trait para obtener paginados genéricos
 
     private function __construct(IDbConnection $dbConnection, ISecurity $securityService)
     {
@@ -30,6 +31,65 @@ class VentasDetalleController extends BaseController
 
     // Método para evitar la clonación del objeto
     private function __clone() {}
+
+    public function getVentasDetallePaginado($paginado)
+    {
+        $mysqli = $this->dbConnection->conectarBD();
+        try {
+            $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
+
+            if (!TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico()) {
+                $where = " aavUsrIdVendedor = {$claimDTO->usrId} AND cvdFechaBaja IS NULL";
+            } else {
+                $where = " cvdFechaBaja IS NULL";
+            }
+
+            $query = "SELECT DISTINCT cvdId, covId, covUsrComprador, covDomDestino, covFechaCompra,
+                                        aavId,
+                                        covTipoMedioPago, cvdFechaEntregaPrevista, cvdFechaEntregaReal
+                        FROM compraventadetalle
+                        INNER JOIN compraventa ON cvdCovId = covId
+                        INNER JOIN antiguedadalaventa ON cvdAavId = aavId
+                        WHERE" . $where . "
+                        ORDER BY cvdId DESC";
+
+
+            $paginadoResponseDTO = $this->getPaginadoResponseDTO(
+                paginado: $paginado,
+                mysqli: $mysqli,
+                baseCount: 'compraventadetalle INNER JOIN compraventa ON cvdCovId = covId INNER JOIN antiguedadalaventa ON cvdAavId = aavId',
+                whereCount: $where,
+                msgCount: 'obtener el total de ventas-detalle para paginado',
+                queryClassDTO: $query,
+                classDTO: VentaDetalleDTO::class
+            );
+
+            $arrayVentasDetalleDTO = $paginadoResponseDTO->arrayEntidad;
+
+            for ($i = 0; $i < count($arrayVentasDetalleDTO); $i++) {
+                $arrayVentasDetalleDTO[$i] = $this->obtenerVentaDetalleCompleto($arrayVentasDetalleDTO[$i], $mysqli);
+            }
+
+            $paginadoResponseDTO->arrayEntidad = $arrayVentasDetalleDTO;
+
+            Output::outputJson($paginadoResponseDTO);
+
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
+                $mysqli->close(); // Cerrar la conexión a la base de datos
+            }
+        }
+    }
 
     public function getVentasDetalle()
     {

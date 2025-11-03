@@ -5,3 +5,8 @@ export interface UsuarioDomiciliosDTO {
     usuario : UsuarioDTO
     domicilios : DomicilioDTO[]
 }
+
+export interface UsuarioDomiciliosCreacionDTO {
+    udomUsr: number
+    udomDom: number
+}

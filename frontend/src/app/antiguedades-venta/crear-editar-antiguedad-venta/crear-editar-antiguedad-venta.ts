@@ -22,6 +22,8 @@ import { UsuariosDomiciliosService } from '../../usuarios-domicilios/usuario-dom
 import { UsuarioDTO } from '../../usuarios/modelo/usuarioDTO';
 import { TasacionDigitalDTO } from '../../tasaciones-digitales/modelo/tasacionDigitalDTO';
 import { formControlSignal } from '../../compartidos/funciones/formToSignal';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogAgregarDomicilio } from '../../usuarios-domicilios/dialog-agregar-domicilio/dialog-agregar-domicilio';
 
 
 @Component({
@@ -51,6 +53,7 @@ export class CrearEditarAntiguedadVenta {
   #aavService = inject(AntiguedadesVentaService);
   #antService = inject(AntiguedadesService);
   #usrDomService = inject(UsuariosDomiciliosService);
+  #dialog = inject(MatDialog); // Inyectar el servicio de diálogo (Modal)
 
   // Estado
   readonly usrId = signal<number | null>(this.#auth.usrId());
@@ -235,6 +238,23 @@ export class CrearEditarAntiguedadVenta {
 
   obtenerErrorCampoVenta(arg0: string) {
     return this.#vcf.obtenerErrorCampoGroup(this.formVenta.controls, arg0,true);
+  }
+
+  protected openDialog(): void {
+    const dialogRef = this.#dialog.open(DialogAgregarDomicilio, {
+      disableClose: true,
+    });
+
+    const subscription = dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      if (result === true) {
+        this.usuariosDomiciliosResource.reload();
+      }
+    });
+
+    this.#destroyRef.onDestroy(() => {
+      subscription.unsubscribe();
+    });
   }
 
 }

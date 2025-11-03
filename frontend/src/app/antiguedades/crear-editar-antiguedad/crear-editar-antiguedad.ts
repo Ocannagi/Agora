@@ -27,6 +27,7 @@ import { DialogImagenesAntiguedadUpload } from '../../imagenes-antiguedad/dialog
 import { MAX_IMG_ANTIGUEDAD } from '../../imagenes-antiguedad/feautures';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Location } from '@angular/common';
+import { SwalDirective } from '@sweetalert2/ngx-sweetalert2';
 
 @Component({
   selector: 'app-crear-editar-antiguedad',
@@ -34,7 +35,7 @@ import { Location } from '@angular/common';
   imports: [MostrarErrores, Cargando, AutocompletarPeriodos,
     AutocompletarCategorias, AutocompletarSubcategorias, MatButtonModule
     , MatFormFieldModule, ReactiveFormsModule, MatInputModule,
-    UploadImagenesAntiguedad, ListaImagenesDto, MatCheckboxModule],
+    UploadImagenesAntiguedad, ListaImagenesDto, MatCheckboxModule, SwalDirective],
   templateUrl: './crear-editar-antiguedad.html',
   styleUrl: './crear-editar-antiguedad.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -103,6 +104,11 @@ export class CrearEditarAntiguedad {
   readonly esNoDisponible = computed(() => {
     const tipoEstadoEnum = TipoEstado.convertStringToEnum(this.tipoEstadoValue());
     return tipoEstadoEnum ? TipoEstado.isNoDisponible(tipoEstadoEnum) : false;
+  });
+
+  readonly esEstadoComprado = computed(() => {
+    const tipoEstadoEnum = TipoEstado.convertStringToEnum(this.tipoEstadoValue());
+    return tipoEstadoEnum ? TipoEstado.isComprado(tipoEstadoEnum) : false;
   });
 
   readonly esCargando = computed(() => {
@@ -403,5 +409,27 @@ export class CrearEditarAntiguedad {
     } else {
       this.#router.navigate(['/antiguedades']);
     }
+  }
+
+  protected convertToRD(){
+    if(!this.esEstadoComprado())
+      return;
+    const antiguedadEditada: AntiguedadCreacionDTO = {
+      perId: this.perId()!,
+      scatId: this.scatId()!,
+      antNombre: this.antNombreFormControlSignal.value()!.trim(),
+      antDescripcion: this.antDescripcionFormControlSignal.value()!.trim(),
+      usrId: this.usrId()!,
+      tipoEstado: TipoEstadoEnum.RetiradoDisponible
+
+    }
+    this.#antService.update(this.id()!, antiguedadEditada).pipe(takeUntilDestroyed(this.#destroyRef)).subscribe({
+      next: () => {
+        window.location.reload();
+      },
+      error: (err) => {
+        console.error('Error al actualizar la antigüedad:', err);
+      }
+    });
   }
 }

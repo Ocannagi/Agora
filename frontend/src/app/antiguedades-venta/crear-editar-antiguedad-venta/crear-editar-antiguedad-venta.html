@@ -6,7 +6,8 @@
 
 @if (esCargando()) {
   <app-cargando />
-} @else {
+} 
+
   <div class="form-grid">
     @if (noEsEdicion()) {
 
@@ -109,10 +110,16 @@
     </form>
   </div>
 
+  <br>
+
+  <div class="btnAgregarMasDomiciliosContainer">
+    <button type="button" mat-flat-button (click)="openDialog()">Agregar más domicilios</button>
+  </div>
+
   <div class="contenedor-botones">
     <button type="button" mat-flat-button [disabled]="isNotFormValid()" (click)="onSubmit()">Guardar</button>
     <a mat-stroked-button routerLink="/antiguedadesAlaVenta">Cancelar</a>
   </div>
 
   <app-mostrar-errores [errores]="errores()"></app-mostrar-errores>
-}
+

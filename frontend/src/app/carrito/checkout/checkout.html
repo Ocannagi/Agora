@@ -35,6 +35,13 @@
       </mat-form-field>
     </mat-card>
 
+    <div class="btnAgregarMasDomiciliosContainer col-izq col-izq-cards">
+      <button type="button" mat-button class="btn-link" (click)="openDialog()">
+        <mat-icon>add_home</mat-icon>
+        Agregar más domicilios
+      </button>
+    </div>
+
     <div class="col-izq col-izq-cards">
       @if (grupos().length === 0) {
         <div class="vacio">No hay antigüedades válidas para comprar.</div>
@@ -94,6 +101,8 @@
         </mat-card>
       }
     </div>
+
+
 
     <div class="acciones">
       <button mat-flat-button color="primary" type="button" [disabled]="!puedeComprar()" (click)="comprar()">

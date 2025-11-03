@@ -126,7 +126,7 @@ export class CrearEditarUsuario {
   //FORMULARIOS
 
   protected formDomicilio = this.#fb.group({
-    domCPA: ['', { validators: [Validators.required, Validators.pattern(/^[A-Z]\d{4}[A-Z]{3}$/)], updateOn: 'change' }],
+    domCPA: ['', { validators: [Validators.required, Validators.pattern(/^[A-Z]\d{4}[A-Z]{3}$/i)], updateOn: 'change' }],
     domCalleRuta: ['', { validators: [Validators.required, Validators.maxLength(50)], updateOn: 'change' }],
     domNroKm: this.#fb.control<number | null>(0, { validators: [Validators.required, Validators.min(0), Validators.max(12000), this.#vcf.entero()], updateOn: 'change' }),
     domPiso: ['', { validators: [Validators.maxLength(10), Validators.pattern(/^[a-zA-Z0-9ñÑ]+$/)], updateOn: 'change' }],
@@ -183,6 +183,16 @@ export class CrearEditarUsuario {
   constructor() {
     this.#vcf.requeridoIfEffect(this.requiereMatricula, this.formUsuario.get('usrMatricula')! as FormControl);
     this.#vcf.requeridoIfEffect(this.requiereRazonSocial, this.formUsuario.get('usrRazonSocialFantasia')! as FormControl);
+
+    this.formDomicilio.get('domCPA')?.valueChanges.pipe(
+      takeUntilDestroyed(this.#destroyRef)
+    ).subscribe({
+      next: (value) => {
+        if (value) {
+          this.formDomicilio.get('domCPA')?.setValue(value.toUpperCase(), { emitEvent: false });
+        }
+      }
+    });
 
     effect(() => {
       const reqMatricula = this.requiereMatricula();

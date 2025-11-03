@@ -55,6 +55,21 @@ mat-form-field {
   }
 }
 
+.btn-volver-agora {
+  --purpura: #6a1b9a;
+  --lila: #ab47bc;
+  color: var(--purpura);
+  border-color: var(--lila);
+  background: transparent;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+.btn-volver-agora:hover {
+  background-color: rgba(171, 71, 188, 0.10);
+  border-color: var(--purpura);
+}
+.btn-volver-agora:active {
+  background-color: rgba(171, 71, 188, 0.16);
+}
 
 /* Permitir que los campos ocupen el espacio del grid (anula el max-width global) */
 .form-grid mat-form-field {

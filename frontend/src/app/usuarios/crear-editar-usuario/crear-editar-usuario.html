@@ -101,7 +101,7 @@
     <div class="form-grid">
       <mat-form-field appearance="fill" class="col-span-2">
         <mat-label >CPA</mat-label>
-        <input #cpaInput matInput formControlName="domCPA" maxlength="8" (input)="cpaInput.value = cpaInput.value.toUpperCase()" />
+        <input #cpaInput matInput formControlName="domCPA" maxlength="8"/>
         <mat-hint>L1234LLL</mat-hint>
         <mat-error>{{obtenerErrorCampo('domCPA', true, 'El formato debe ser L1234LLL (1 letra, 4 números, 3 letras).')}}</mat-error>
       </mat-form-field>
