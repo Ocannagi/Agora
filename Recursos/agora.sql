@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-11-2025 a las 21:00:48
+-- Tiempo de generación: 10-11-2025 a las 00:04:52
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -43,6 +43,18 @@ CREATE TABLE `antiguedad` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- RELACIONES PARA LA TABLA `antiguedad`:
+--   `antPerId`
+--       `periodo` -> `perId`
+--   `antScatId`
+--       `subcategoria` -> `scatId`
+--   `antTipoEstado`
+--       `tipoestado` -> `tteTipoEstado`
+--   `antUsrId`
+--       `usuario` -> `usrId`
+--
+
+--
 -- Volcado de datos para la tabla `antiguedad`
 --
 
@@ -74,6 +86,18 @@ CREATE TABLE `antiguedadalaventa` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- RELACIONES PARA LA TABLA `antiguedadalaventa`:
+--   `aavAntId`
+--       `antiguedad` -> `antId`
+--   `aavDomOrigen`
+--       `domicilio` -> `domId`
+--   `aavTadId`
+--       `tasaciondigital` -> `tadId`
+--   `aavUsrIdVendedor`
+--       `usuario` -> `usrId`
+--
+
+--
 -- Volcado de datos para la tabla `antiguedadalaventa`
 --
 
@@ -103,6 +127,10 @@ CREATE TABLE `categoria` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- RELACIONES PARA LA TABLA `categoria`:
+--
+
+--
 -- Volcado de datos para la tabla `categoria`
 --
 
@@ -128,6 +156,16 @@ CREATE TABLE `compraventa` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- RELACIONES PARA LA TABLA `compraventa`:
+--   `covDomDestino`
+--       `domicilio` -> `domId`
+--   `covTipoMedioPago`
+--       `tipomediopago` -> `tmpTipoMedioPago`
+--   `covUsrComprador`
+--       `usuario` -> `usrId`
+--
+
+--
 -- Volcado de datos para la tabla `compraventa`
 --
 
@@ -151,6 +189,14 @@ CREATE TABLE `compraventadetalle` (
   `cvdFechaEntregaReal` date DEFAULT NULL,
   `cvdFechaBaja` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `compraventadetalle`:
+--   `cvdAavId`
+--       `antiguedadalaventa` -> `aavId`
+--   `cvdCovId`
+--       `compraventa` -> `covId`
+--
 
 --
 -- Volcado de datos para la tabla `compraventadetalle`
@@ -180,6 +226,12 @@ CREATE TABLE `domicilio` (
   `domFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
   `domFechaBaja` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `domicilio`:
+--   `domLocId`
+--       `localidad` -> `locId`
+--
 
 --
 -- Volcado de datos para la tabla `domicilio`
@@ -214,6 +266,12 @@ CREATE TABLE `imagenantiguedad` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- RELACIONES PARA LA TABLA `imagenantiguedad`:
+--   `imaAntId`
+--       `antiguedad` -> `antId`
+--
+
+--
 -- Volcado de datos para la tabla `imagenantiguedad`
 --
 
@@ -242,6 +300,12 @@ CREATE TABLE `localidad` (
   `locFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
   `locFechaBaja` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `localidad`:
+--   `locProvId`
+--       `provincia` -> `provId`
+--
 
 --
 -- Volcado de datos para la tabla `localidad`
@@ -299,6 +363,10 @@ CREATE TABLE `periodo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- RELACIONES PARA LA TABLA `periodo`:
+--
+
+--
 -- Volcado de datos para la tabla `periodo`
 --
 
@@ -321,6 +389,10 @@ CREATE TABLE `provincia` (
   `provId` smallint(6) NOT NULL,
   `provDescripcion` varchar(40) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `provincia`:
+--
 
 --
 -- Volcado de datos para la tabla `provincia`
@@ -367,6 +439,12 @@ CREATE TABLE `subcategoria` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- RELACIONES PARA LA TABLA `subcategoria`:
+--   `scatCatId`
+--       `categoria` -> `catId`
+--
+
+--
 -- Volcado de datos para la tabla `subcategoria`
 --
 
@@ -401,6 +479,16 @@ CREATE TABLE `tasaciondigital` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- RELACIONES PARA LA TABLA `tasaciondigital`:
+--   `tadUsrPropId`
+--       `usuario` -> `usrId`
+--   `tadAntId`
+--       `antiguedad` -> `antId`
+--   `tadUsrTasId`
+--       `usuario` -> `usrId`
+--
+
+--
 -- Volcado de datos para la tabla `tasaciondigital`
 --
 
@@ -429,6 +517,14 @@ CREATE TABLE `tasacioninsitu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- RELACIONES PARA LA TABLA `tasacioninsitu`:
+--   `tisDomTasId`
+--       `domicilio` -> `domId`
+--   `tisTadId`
+--       `tasaciondigital` -> `tadId`
+--
+
+--
 -- Volcado de datos para la tabla `tasacioninsitu`
 --
 
@@ -446,6 +542,10 @@ CREATE TABLE `tipoestado` (
   `tteTipoEstado` char(2) NOT NULL,
   `tteTipoEstadoDescripcion` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `tipoestado`:
+--
 
 --
 -- Volcado de datos para la tabla `tipoestado`
@@ -472,6 +572,10 @@ CREATE TABLE `tipomediopago` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- RELACIONES PARA LA TABLA `tipomediopago`:
+--
+
+--
 -- Volcado de datos para la tabla `tipomediopago`
 --
 
@@ -492,6 +596,10 @@ CREATE TABLE `tipousuario` (
   `ttuDescripcion` varchar(25) NOT NULL,
   `ttuRequiereMatricula` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `tipousuario`:
+--
 
 --
 -- Volcado de datos para la tabla `tipousuario`
@@ -517,11 +625,15 @@ CREATE TABLE `tokens` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- RELACIONES PARA LA TABLA `tokens`:
+--
+
+--
 -- Volcado de datos para la tabla `tokens`
 --
 
 INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MiwidXNyTm9tYnJlIjoiQ3Jpc3RpYW4gSmF2aWVyIiwidXNyVGlwb1VzdWFyaW8iOiJVRyIsImV4cCI6MTc2MjE5ODMzMH0.kea5xdD5tBgFBJskVzJCom4jIjLiVp3g4IjvdGOZ14tr5tDOeUjYR053Gw7x3aW-c8TTJHWK5AFqLXggjDej3A', '2025-11-03 15:32:10');
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NjI3MzI5NzZ9.x4Rrz115v86EXJeDMgJmS9pt5981e1pxgKRvQVYZN8dezVEoPcbzYhvhO1T0_vQFELL1gbsITvUFShxvkUU3Ug', '2025-11-09 20:02:56');
 
 -- --------------------------------------------------------
 
@@ -550,6 +662,14 @@ CREATE TABLE `usuario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- RELACIONES PARA LA TABLA `usuario`:
+--   `usrDomicilio`
+--       `domicilio` -> `domId`
+--   `usrTipoUsuario`
+--       `tipousuario` -> `ttuTipoUsuario`
+--
+
+--
 -- Volcado de datos para la tabla `usuario`
 --
 
@@ -576,6 +696,14 @@ CREATE TABLE `usuariodomicilio` (
   `udomFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
   `udomFechaBaja` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `usuariodomicilio`:
+--   `udomDom`
+--       `domicilio` -> `domId`
+--   `udomUsr`
+--       `usuario` -> `usrId`
+--
 
 --
 -- Volcado de datos para la tabla `usuariodomicilio`
@@ -607,6 +735,16 @@ CREATE TABLE `usuariotasadorhabilidad` (
   `utsFechaInsert` datetime NOT NULL DEFAULT current_timestamp(),
   `utsFechaBaja` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- RELACIONES PARA LA TABLA `usuariotasadorhabilidad`:
+--   `utsPerId`
+--       `periodo` -> `perId`
+--   `utsScatId`
+--       `subcategoria` -> `scatId`
+--   `utsUsrId`
+--       `usuario` -> `usrId`
+--
 
 --
 -- Volcado de datos para la tabla `usuariotasadorhabilidad`
