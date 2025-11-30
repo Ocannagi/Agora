@@ -3,7 +3,7 @@ import { NgOptimizedImage, CurrencyPipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import { numberAttributeOrNull } from '../../compartidos/funciones/transform';
 import { MostrarErrores } from '../../compartidos/componentes/mostrar-errores/mostrar-errores';
@@ -15,6 +15,7 @@ import { UsuarioDTO } from '../../usuarios/modelo/usuarioDTO';
 import { AntiguedadALaVentaDTO } from '../../antiguedades-venta/modelo/AntiguedadAlaVentaDTO';
 import { HttpErrorResponse } from '@angular/common/http';
 import { formatFechaDDMMYYYY } from '../../compartidos/funciones/formatFecha';
+import { AutenticacionStore } from '../../seguridad/store/autenticacion.store';
 
 type GrupoVendedor = {
   vendedor: UsuarioDTO;
@@ -24,7 +25,7 @@ type GrupoVendedor = {
 
 @Component({
   selector: 'app-ver-compras-ventas',
-  imports: [MostrarErrores, Cargando, MatCardModule, MatButtonModule, MatIconModule, NgOptimizedImage, CurrencyPipe],
+  imports: [MostrarErrores, Cargando, MatCardModule, MatButtonModule, MatIconModule, NgOptimizedImage, CurrencyPipe, RouterLink],
   templateUrl: './ver-compras-ventas.html',
   styleUrl: './ver-compras-ventas.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -36,6 +37,7 @@ export class VerComprasVentas {
   #compraVtaService = inject(ComprasVentasService);
   #injector = inject(Injector);
   #router = inject(Router);
+  readonly authStore = inject(AutenticacionStore);
 
   // Recurso por id
   protected compraResource = this.#compraVtaService.getByIdResource(this.id, this.#injector);

@@ -247,3 +247,10 @@
     justify-self: end;
   }
 }
+
+button[routerLink="/compras"] {
+  margin-top: 25px;
+  margin-bottom: 8px;
+  display: block;
+  margin-left: auto;
+}

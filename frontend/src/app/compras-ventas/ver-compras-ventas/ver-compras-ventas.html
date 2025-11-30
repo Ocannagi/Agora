@@ -2,7 +2,8 @@
 
 @if (esCargando()) {
   <app-cargando />
-} @else {
+}
+
   @if (compra(); as cov) {
     <!-- Resumen principal (sin ID) -->
     <mat-card class="resumen-compra">
@@ -59,12 +60,14 @@
                     {{ det.antiguedadAlaVenta.aavPrecioVenta | currency:'ARS':'symbol':'1.0-2':'es-AR' }}
                   </div>
 
-                  <div class="acciones">
-                    <button mat-icon-button type="button" aria-label="Ver antigüedad"
-                            (click)="openVerAntiguedad(det.antiguedadAlaVenta.antiguedad.antId)">
-                      <mat-icon>visibility</mat-icon>
-                    </button>
-                  </div>
+                  @if(authStore.isSoporteTecnico()){
+                    <div class="acciones">
+                      <button mat-icon-button type="button" aria-label="Ver antigüedad"
+                              (click)="openVerAntiguedad(det.antiguedadAlaVenta.antiguedad.antId)">
+                        <mat-icon>visibility</mat-icon>
+                      </button>
+                    </div>
+                  }
                 </div>
               </mat-card>
             }
@@ -87,4 +90,9 @@
   } @else {
     <div class="vacio">No se encontró la compra solicitada.</div>
   }
-}
+
+  <button  mat-stroked-button  routerLink="/compras" type="button">
+    Volver
+  </button>
+
+<app-mostrar-errores [errores]="errores()"></app-mostrar-errores>

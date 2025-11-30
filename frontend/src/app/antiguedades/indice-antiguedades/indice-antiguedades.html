@@ -1,2 +1,64 @@
 <app-mostrar-errores [errores]="store.errors()"></app-mostrar-errores>
-<app-indice-entidad></app-indice-entidad>
+
+<!-- Tiene demsiadas particularidades como para poder usar app-indice-entidad -->
+
+<h2>{{store.titulo()}}</h2>
+
+@if(store.pathCrear().length > 0) {
+    <button mat-flat-button routerLink="{{store.pathCrear()}}">Crear nuevo</button>
+}
+
+<app-listado-generico [listado]="store.resourcePaginado.value().arrayEntidad">
+    <ng-container contenido>
+        @if (store.isCargando()) {
+            <app-cargando/>
+        }
+        <table mat-table [dataSource]="store.resourcePaginado.value().arrayEntidad" class="mat-elevation-z8 indice-elementos">
+
+            @for (columna of store.columnasAMostrar(); track $index) {
+                @if (columna === "acciones") {
+                <ng-container matColumnDef="acciones" >
+                    <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                    <td mat-cell *matCellDef="let elemento">
+                        @if(elemento.acciones.editar){
+                            <a [routerLink]="elemento.acciones.editar" mat-flat-button>Editar</a>
+                        }
+                        @if(elemento.acciones.ver){
+                            <a [routerLink]="elemento.acciones.ver" mat-flat-button>Ver</a>
+                        }
+                        @if(elemento.acciones.borrar){
+                            <span [matTooltip]="elemento.tipoEstado === 'VE' ? 'Las antiguedades a la Venta sólo se pueden dar de baja en su propio módulo' : ''">
+                                <button [disabled]="elemento.tipoEstado === 'VE'" mat-flat-button color="warn"
+                                    [swal]="{title: '¿Está seguro?', text: store.msgBorrar(), showCancelButton: true}"
+                                    (confirm)="store.borrarEntidad(elemento.id)">Borrar</button>
+                            </span>
+                        }
+                    </td>
+                </ng-container>
+
+                } @else if (columna === "tipoEstado") {
+                <ng-container matColumnDef="tipoEstado">
+                    <th mat-header-cell *matHeaderCellDef>{{ "Tipo Estado" }}</th>
+                    <td mat-cell *matCellDef="let elemento">{{elemento.tipoEstado | tipoEstado}}</td>
+                </ng-container>
+
+                } @else {
+                <ng-container matColumnDef="{{columna}}">
+                    <th mat-header-cell *matHeaderCellDef>{{columna === null? null : columna.charAt(0).toUpperCase() + columna.slice(1)}}</th>
+                    <td mat-cell *matCellDef="let elemento">{{elemento[columna]}}</td>
+                </ng-container>
+                }
+            }
+
+            <tr mat-header-row *matHeaderRowDef="store.columnasAMostrar()"></tr>
+            <tr mat-row *matRowDef="let row; columns: store.columnasAMostrar()"></tr>
+
+        </table>
+        <br/>
+        <mat-paginator showFirstLastButtons [length]="store.resourcePaginado.value().totalRegistros" [pageIndex]="store.paginado().pagina - 1"
+            [pageSize]="store.paginado().registrosPorPagina" [pageSizeOptions]="[5,10,50]" class="mat-elevation-z8"
+            (page)="store.setPageEvent($event)"></mat-paginator>
+
+    </ng-container>
+    <app-mostrar-errores [errores]="store.errors()"></app-mostrar-errores>
+</app-listado-generico>
