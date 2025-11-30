@@ -213,6 +213,8 @@ class AntiguedadesController extends BaseController
 
             $query .= $queryFiltro;
 
+            $query .= " ORDER BY antId";
+
 
             $this->getPaginado($paginado, $mysqli, "antiguedad", "antTipoEstado <>'RN'" . $queryFiltro, "obtener el total de antigüedades para paginado", $query, AntiguedadDTO::class);
 
@@ -450,7 +452,7 @@ class AntiguedadesController extends BaseController
             $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
             settype($id, 'integer');
 
-            $queryBusqueda = "SELECT antId FROM antiguedad WHERE antId = $id AND antTipoEstado <> 'RN'";
+            $queryBusqueda = "SELECT antId FROM antiguedad WHERE antId = $id AND antTipoEstado <> 'RN' AND antTipoEstado <> 'VE'";
 
             if ($claimDTO->usrTipoUsuario !== 'ST') {
                 $queryBusqueda .= " AND antUsrId = {$claimDTO->usrId}";

@@ -7,21 +7,17 @@ import { AntiguedadALaVentaDTO } from "../../../antiguedades-venta/modelo/Antigu
 import { PaginadoResponseDTO } from "../../../compartidos/modelo/PaginadoResponseDTO";
 import { PageEvent } from "@angular/material/paginator";
 import { HttpErrorResponse } from "@angular/common/http";
-import { CarritoStore } from "../../../carrito/store-carrito/carrito.store";
 
 export const SearchWordStore = signalStore(
     { providedIn: 'root' },
     withState(SearchWordInitialState),
-    withProps(() => ({
-        _storeCarrito: inject(CarritoStore),
-    })),
     withComputed((store) => {
 
         const paginadoRequest = deepComputed(() => ({
             pagina: store.pagina(),
             registrosPorPagina: store.registrosPorPagina(),
             filtrarPorUsrId: store.filtrarPorUsrId(),
-            searchWord: store.searchWord()
+            searchWord: store.searchWord(),
         } as PaginadoRequestSearchDTO));
 
         const paginadoResponse = deepComputed(() => ({
@@ -44,7 +40,6 @@ export const SearchWordStore = signalStore(
             _injector
         );
         const resourcePaginadoSearch = _resourcePaginadoSearch.asReadonly();
-
         return {
             resourcePaginadoSearch,
             _injector,
@@ -71,6 +66,7 @@ export const SearchWordStore = signalStore(
             store._resourcePaginadoSearch.reload();
         };
 
+       
         return {
             setPagina,
             setRegistrosPorPagina,
@@ -80,7 +76,7 @@ export const SearchWordStore = signalStore(
             setTotalRegistros,
             setArrayEntidad,
             resetStore,
-            reloadResourcePaginadoSearch
+            reloadResourcePaginadoSearch,
         };
     }),
     withComputed((store) => {
@@ -126,6 +122,7 @@ export const SearchWordStore = signalStore(
                 store.setArrayEntidad(valueSearch?.arrayEntidad ?? []);
                 store.setPagina(valueSearch?.paginaActual ?? 1);
                 store.setRegistrosPorPagina(valueSearch?.registrosPorPagina ?? 5);
+
             });
 
         },

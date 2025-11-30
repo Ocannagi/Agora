@@ -208,8 +208,18 @@ class AntiguedadesAlaVentaController extends BaseController
         try {
             $this->validatePaginadoSearch($paginadoSearch);
 
+            $usrId = 0;   
+            try {
+                $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
+                $usrId = $claimDTO->usrId;
+            }catch (\Throwable $th){
+                // No hay token de autenticación: continuar sin usrId
+                $usrId = 0;
+            }
+            //$usrId = $usrId + 1;
+            //var_dump($usrId);
             $searchWord = $mysqli->real_escape_string($paginadoSearch['searchWord']);
-
+            //$usrId = (int)$mysqli->real_escape_string($paginadoSearch['usrId']);
             $query = "SELECT aavId, aavAntId, aavUsrIdVendedor, aavDomOrigen, aavPrecioVenta, aavTadId, aavFechaPublicacion, aavFechaRetiro, aavHayVenta, tisId
                       FROM";
             $queryBase = "
@@ -230,7 +240,8 @@ class AntiguedadesAlaVentaController extends BaseController
                     OR (perDescripcion LIKE '%{$searchWord}%') 
                     OR (usrApellido LIKE '%{$searchWord}%') 
                     OR (usrRazonSocialFantasia LIKE '%{$searchWord}%')) 
-                    AND aavFechaRetiro IS NULL AND aavHayVenta = FALSE";
+                    AND aavFechaRetiro IS NULL AND aavHayVenta = FALSE
+                    AND aavUsrIdVendedor <> $usrId";
 
             // armar la query completa con un único WHERE
             $query = $query . $queryBase . " WHERE " . $whereClause;

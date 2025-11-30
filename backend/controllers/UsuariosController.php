@@ -135,10 +135,13 @@ class UsuariosController extends BaseController
             $usuarioCreacionDTO = new UsuarioCreacionDTO($data);
 
             $this->usuariosValidacionService->validarInput($mysqli, $usuarioCreacionDTO);
+
+            $passwordSinEscapar = $usuarioCreacionDTO->usrPassword;
+
             Input::escaparDatos($usuarioCreacionDTO, $mysqli);
             Input::agregarComillas_ConvertNULLtoString($usuarioCreacionDTO);
 
-            $hashPassword = "'" . $this->securityService->hashPassword($usuarioCreacionDTO->usrPassword) . "'";
+            $hashPassword = "'" . $this->securityService->hashPassword($passwordSinEscapar) . "'";
 
             $query =    "INSERT INTO usuario (usrDni, usrApellido, usrNombre, usrRazonSocialFantasia , usrCuitCuil,
                         usrTipoUsuario, usrMatricula, usrDomicilio, usrFechaNacimiento, usrDescripcion, usrEmail,

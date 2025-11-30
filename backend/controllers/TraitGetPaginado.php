@@ -26,7 +26,14 @@ trait TraitGetPaginado
                 settype($paginado['registrosPorPagina'], 'integer');
 
                 $pagina = $paginado['pagina'];
+
+                if($pagina < 1) {
+                    $pagina = 1;
+                }
+
                 $registrosPorPagina = $paginado['registrosPorPagina'];
+
+
 
                 $offset = ($pagina - 1) * $paginado['registrosPorPagina'];
 

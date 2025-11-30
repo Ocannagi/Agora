@@ -47,7 +47,7 @@ class LoginController
             } else {
                 $registro = $resultado->fetch_assoc();
                 $resultado->free();
-                $usrPassword = $link->real_escape_string($loginData['usrPassword']);
+                $usrPassword = $loginData['usrPassword'];
 
                 if (!$this->securityService->verifyPassword(password: $usrPassword, hash: $registro['usrPassword'])) {
                     throw new InvalidArgumentException(code: 401, message: 'La contraseña es incorrecta');
