@@ -1,6 +1,6 @@
 <?php
 
-class AntiguedadALaVentaDTO implements IDTO
+class AntiguedadAlaVentaDTO implements IDTO
 {
     public int $aavId;
     public AntiguedadDTO $antiguedad;

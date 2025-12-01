@@ -87,12 +87,15 @@ class LoginController
             $this->securityService->requireLogin(null);
             $authHeader = getallheaders();
             list($jwt) = @sscanf($authHeader['Authorization'], 'Bearer %s');
-            if (!$jwt)
-                throw new InvalidArgumentException(code: 401, message: "El token de seguridad está vacío");
+            if (!$jwt){
+                //throw new InvalidArgumentException(code: 401, message: "El token de seguridad está vacío");
+                Output::outputJson(['jwt' => ""]);
+            }
 
             $jwtSql = $link->real_escape_string($jwt);
             if (!$link->query("DELETE FROM tokens WHERE tokToken = '$jwtSql'")) {
-                throw new mysqli_sql_exception(code: 403, message: $link->error);
+                //throw new mysqli_sql_exception(code: 403, message: $link->error);
+                Output::outputJson(['jwt' => ""]);
             }
             Output::outputJson(['jwt' => ""]);
         } catch (\Throwable $th) {

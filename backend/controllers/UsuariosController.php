@@ -11,7 +11,7 @@ class UsuariosController extends BaseController
     private ISecurity $securityService;
 
     use TraitGetInterno;
-    use traitGetPaginado;
+    use TraitGetPaginado;
 
     private static $instancia = null; // La única instancia de la clase
 

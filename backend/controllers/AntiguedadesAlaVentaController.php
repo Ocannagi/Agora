@@ -178,7 +178,7 @@ class AntiguedadesAlaVentaController extends BaseController
             }
             $query .= $queryFiltro;
 
-            $paginadoResponseDTO = $this->getPaginadoResponseDTO($paginado, $mysqli, "antiguedadalaventa", "aavFechaRetiro IS NULL AND aavHayVenta = FALSE" . $queryFiltro, "obtener el total de antigüedades a la venta para paginado", $query, AntiguedadALaVentaDTO::class);
+            $paginadoResponseDTO = $this->getPaginadoResponseDTO($paginado, $mysqli, "antiguedadalaventa", "aavFechaRetiro IS NULL AND aavHayVenta = FALSE" . $queryFiltro, "obtener el total de antigüedades a la venta para paginado", $query, AntiguedadAlaVentaDTO::class);
 
             $paginadoResponseDTO->arrayEntidad = $this->completarArrayAntiguedadesAlaVentaDTO($mysqli, $paginadoResponseDTO->arrayEntidad);
 
@@ -253,7 +253,7 @@ class AntiguedadesAlaVentaController extends BaseController
                 $whereClause,
                 "obtener el total de antigüedades a la venta para paginado con búsqueda",
                 $query,
-                AntiguedadALaVentaDTO::class
+                AntiguedadAlaVentaDTO::class
             );
             $paginadoResponseDTO->arrayEntidad = $this->completarArrayAntiguedadesAlaVentaDTO($mysqli, $paginadoResponseDTO->arrayEntidad);
             Output::outputJson($paginadoResponseDTO);

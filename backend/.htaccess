@@ -1,4 +1,11 @@
 RewriteEngine on
+
+# Pasar el header Authorization a PHP (necesario para CGI/FastCGI)
+RewriteCond %{HTTP:Authorization} ^(.+)$
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# Permitir todos los métodos HTTP
+RewriteCond %{REQUEST_METHOD} ^(GET|POST|PUT|PATCH|DELETE|OPTIONS)$
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ api.php?accion=$1 [L,QSA]

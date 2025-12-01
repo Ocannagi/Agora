@@ -20,6 +20,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
+define('RUTAS_CONTROLADORES', [
+    'antiguedadesalaventa' => 'AntiguedadesAlaVentaController',
+    'antiguedades' => 'AntiguedadesController',
+    'categorias' => 'CategoriasController',
+    'comprasventas' => 'ComprasVentasController',
+    'domicilios' => 'DomiciliosController',
+    'habilidades' => 'HabilidadesController',
+    'imagenesantiguedad' => 'ImagenesAntiguedadController',
+    'localidades' => 'LocalidadesController',
+    'login' => 'LoginController',
+    'periodos' => 'PeriodosController',
+    'provincias' => 'ProvinciasController',
+    'subcategorias' => 'SubcategoriasController',
+    'tasacionesdigitales' => 'TasacionesDigitalesController',
+    'tasacionesinsitu' => 'TasacionesInSituController',
+    'tiposusuario' => 'TiposUsuarioController',
+    'usuarios' => 'UsuariosController',
+    'usuariosdomicilios' => 'UsuariosDomiciliosController',
+    'ventasdetalle' => 'VentasDetalleController',
+]);
+
 
 use Utilidades\Output;
 
@@ -97,14 +118,13 @@ define('DEPENDENCIAS', [
     'DomiciliosValidacionService' => 'DomiciliosValidacionService',
     'HabilidadesValidacionService' => 'HabilidadesValidacionService',
     'AntiguedadesValidacionService' => 'AntiguedadesValidacionService',
-    'ImagenesantiguedadValidacionService' => 'ImagenesAntiguedadValidacionService',
-    'TasacionesdigitalesValidacionService' => 'TasacionesDigitalesValidacionService',
-    'TasacionesinsituValidacionService' => 'TasacionesInSituValidacionService',
-    'UsuariosdomiciliosValidacionService' => 'UsuariosDomiciliosValidacionService',
-    'AntiguedadesalaventaValidacionService' => 'AntiguedadesAlaVentaValidacionService',
-    'ComprasventasValidacionService' => 'ComprasVentasValidacionService',
-]); // es necesario que, en caso de clases con nombre compuesto, la key del array sea el nombre de la clase solo con mayúscula inicial
-
+    'ImagenesAntiguedadValidacionService' => 'ImagenesAntiguedadValidacionService',
+    'TasacionesDigitalesValidacionService' => 'TasacionesDigitalesValidacionService',
+    'TasacionesInSituValidacionService' => 'TasacionesInSituValidacionService',
+    'UsuariosDomiciliosValidacionService' => 'UsuariosDomiciliosValidacionService',
+    'AntiguedadesAlaVentaValidacionService' => 'AntiguedadesAlaVentaValidacionService',
+    'ComprasVentasValidacionService' => 'ComprasVentasValidacionService',
+]);
 /** Configuración Zona Horaria */
 date_default_timezone_set('America/Argentina/Buenos_Aires');
 
@@ -114,39 +134,48 @@ if (!isset($_GET['accion'])) {
     Output::outputError();
 }
 
-$metodo = strtolower($_SERVER['REQUEST_METHOD']);
-$accion = explode('/', strtolower($_GET['accion']));
+try {
+    $metodo = strtolower($_SERVER['REQUEST_METHOD']);
+    $accion = explode('/', strtolower($_GET['accion']));
 
-$controllerNombre = ucfirst($accion[0]) . 'Controller';
+    $baseParaController = strtolower($accion[0]);
+    $controllerNombre = RUTAS_CONTROLADORES[$baseParaController] ?? ucfirst($baseParaController) . 'Controller';
 
-$funcionNombre = $metodo . ucfirst($accion[0]);
-$parametros = array_slice($accion, 1);
-if (count($parametros) > 0 && $metodo == 'get') {
-    $funcionNombre = $funcionNombre . 'ById';
-} else if (isset($_GET['params']) && $metodo == 'get') {
-    $parametros = [$_GET['params']]; // debe ser un solo elemento
-    $funcionNombre = $funcionNombre . 'ByParams';
-} else if (isset($_GET['paginado'] ) && $metodo == 'get') {
-    $parametros = [$_GET['paginado']]; // debe ser un solo elemento
-    $funcionNombre = $funcionNombre . 'Paginado';
-}  else if (isset($_GET['paginadoSearch'] ) && $metodo == 'get') {
-    $parametros = [$_GET['paginadoSearch']]; // debe ser un solo elemento
-    $funcionNombre = $funcionNombre . 'PaginadoSearch';
+    $funcionNombre = $metodo . ucfirst($accion[0]);
+    $parametros = array_slice($accion, 1);
+    if (count($parametros) > 0 && $metodo == 'get') {
+        $funcionNombre = $funcionNombre . 'ById';
+    } else if (isset($_GET['params']) && $metodo == 'get') {
+        $parametros = [$_GET['params']]; // debe ser un solo elemento
+        $funcionNombre = $funcionNombre . 'ByParams';
+    } else if (isset($_GET['paginado']) && $metodo == 'get') {
+        $parametros = [$_GET['paginado']]; // debe ser un solo elemento
+        $funcionNombre = $funcionNombre . 'Paginado';
+    } else if (isset($_GET['paginadoSearch']) && $metodo == 'get') {
+        $parametros = [$_GET['paginadoSearch']]; // debe ser un solo elemento
+        $funcionNombre = $funcionNombre . 'PaginadoSearch';
+    }
+
+    $controller = null;
+
+    if (class_exists($controllerNombre)) {
+        $controller = instanciarControllerSingleton($controllerNombre);
+    } else {
+        Output::outputError(400, "No existe el controlador " . $controllerNombre);
+    }
+
+    if (method_exists($controller, $funcionNombre)) {
+        call_user_func_array([$controller, $funcionNombre], $parametros);
+    } else {
+        Output::outputError(400, "No existe " . $funcionNombre . " en el controlador " . $controllerNombre);
+    }
+} catch (\Throwable $e) {
+    // Captura cualquier error no controlado
+    $errorMsg = "Error inesperado: " . $e->getMessage() . ". Trace: " . $e->getTraceAsString();
+    //error_log($errorMsg); // Registra en el log del servidor
+    Output::outputError(500, $errorMsg);
 }
 
-$controller = null;
-
-if (class_exists($controllerNombre)) {
-    $controller = instanciarControllerSingleton($controllerNombre);
-} else {
-    Output::outputError(400, "No existe el controlador " . $controllerNombre);
-}
-
-if (method_exists($controller, $funcionNombre)) {
-    call_user_func_array([$controller, $funcionNombre], $parametros);
-} else {
-    Output::outputError(400, "No existe " . $funcionNombre . " en el controlador " . $controllerNombre);
-}
 
 /***************************** API ********************************/
 

@@ -2,9 +2,9 @@
 
 class CompraVentaDetalleCreacionDTO implements ICreacionDTO
 {
-    use TraitMapAntiguedadAlaVentaDTO; // Trait para mapear AntiguedadALaVentaDTO
+    use TraitMapAntiguedadAlaVentaDTO; // Trait para mapear AntiguedadAlaVentaDTO
     
-    public AntiguedadALaVentaDTO $antiguedadAlaVenta; // AntiguedadAlaVenta
+    public AntiguedadAlaVentaDTO $antiguedadAlaVenta; // AntiguedadAlaVenta
     public string $cvdFechaEntregaPrevista; // Fecha de entrega prevista en formato 'Y-m-d H:i:s'
 
     public function __construct(array | stdClass $data) {

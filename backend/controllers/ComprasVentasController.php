@@ -217,7 +217,7 @@ class ComprasVentasController extends BaseController
 
             $compraVentaDTO->detalles[$i]->antiguedadAlaVenta = $this->getByIdInterno(
                 id: $compraVentaDTO->detalles[$i]->antiguedadAlaVenta->aavId,
-                classDTO: AntiguedadALaVentaDTO::class,
+                classDTO: AntiguedadAlaVentaDTO::class,
                 linkExterno: $mysqli,
                 query: "SELECT aavId, aavAntId, aavUsrIdVendedor, aavDomOrigen, aavPrecioVenta, aavTadId, aavFechaPublicacion, aavFechaRetiro, aavHayVenta, tisId
                                                                                                FROM antiguedadalaventa
@@ -317,7 +317,7 @@ class ComprasVentasController extends BaseController
                 //getByIdInterno se asegura que exista la antiguedad a la venta y que no esté retirada ni vendida
                 $compraVentaCreacionDTO->detalles[$i]->antiguedadAlaVenta = $this->getByIdInterno(
                     id: $compraVentaCreacionDTO->detalles[$i]->antiguedadAlaVenta->aavId,
-                    classDTO: AntiguedadALaVentaDTO::class,
+                    classDTO: AntiguedadAlaVentaDTO::class,
                     linkExterno: $mysqli,
                     query: $queryAntiguedadAlaVenta
                 );
@@ -534,7 +534,7 @@ class ComprasVentasController extends BaseController
             for ($i = 0; $i < count($compraVentaDTO->detalles); $i++) {
                 $compraVentaDTO->detalles[$i]->antiguedadAlaVenta = $this->getByIdInterno(
                     id: $compraVentaDTO->detalles[$i]->antiguedadAlaVenta->aavId,
-                    classDTO: AntiguedadALaVentaDTO::class,
+                    classDTO: AntiguedadAlaVentaDTO::class,
                     linkExterno: $mysqli,
                     query: "SELECT aavId, aavAntId, aavUsrIdVendedor, aavDomOrigen, aavPrecioVenta, aavTadId, aavFechaPublicacion, aavFechaRetiro, aavHayVenta, tisId
                                                                                               FROM antiguedadalaventa

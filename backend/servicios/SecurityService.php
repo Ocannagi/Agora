@@ -45,9 +45,10 @@ class SecurityService implements ISecurity
      */
     public function requireLogin(?array $tipoUsurio): ClaimDTO
     {
-        $authHeader = getallheaders();
+        $authHeader = $this->getAuthorizationHeader();
+        //var_dump($authHeader);
         try {
-            list($jwt) = @sscanf($authHeader['Authorization'], 'Bearer %s');
+            list($jwt) = @sscanf($authHeader, 'Bearer %s');
             if (!$jwt)
                 throw new CustomException(code: 401, message: "El token de seguridad está vacío");
             $datos = JWT::decode($jwt, new Key(JWT_KEY, JWT_ALG)); // si esta expirado el token, lanza excepción;
@@ -80,6 +81,32 @@ class SecurityService implements ISecurity
                 throw $e; // Re-lanzar la excepción si es CustomException o mysqli_sql_exception
             }
         }
+    }
+
+    private function getAuthorizationHeader(): ?string
+    {
+        // Intenta getallheaders() si existe (Apache)
+        if (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            return $headers['Authorization'] ?? null;
+        }
+        
+        // Fallback para CGI/FastCGI
+        if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+            return $_SERVER['HTTP_AUTHORIZATION'];
+        }
+        
+        if (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+            return $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+        }
+        
+        // Apache pasa el header como REDIRECT_
+        if (function_exists('apache_request_headers')) {
+            $headers = apache_request_headers();
+            return $headers['Authorization'] ?? null;
+        }
+        
+        return null;
     }
 
     public function tokenGenerator(array $data): string

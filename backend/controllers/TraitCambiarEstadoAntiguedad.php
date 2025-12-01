@@ -17,7 +17,7 @@ trait TraitCambiarEstadoAntiguedad
         }
     }
 
-    public function cambiarEstadoAntiguedadToComprado(mysqli $linkExterno, AntiguedadALaVentaDTO $antiguedadALaVentaDTO, int $usrIdComprador): void
+    public function cambiarEstadoAntiguedadToComprado(mysqli $linkExterno, AntiguedadAlaVentaDTO $antiguedadALaVentaDTO, int $usrIdComprador): void
     {
         $query = "  UPDATE antiguedad
                     SET antTipoEstado = '" . TipoEstadoEnum::Comprado()->value .
@@ -30,7 +30,7 @@ trait TraitCambiarEstadoAntiguedad
         }
     }
 
-    public function cerrarTasaciones(mysqli $linkExterno, AntiguedadALaVentaDTO $antiguedadALaVentaDTO): void
+    public function cerrarTasaciones(mysqli $linkExterno, AntiguedadAlaVentaDTO $antiguedadALaVentaDTO): void
     {
         $queryDarBajaTasaciones = " UPDATE tasaciondigital
                                     SET tadFechaBaja = NOW()
@@ -52,7 +52,7 @@ trait TraitCambiarEstadoAntiguedad
         }
     }
 
-    public function pasarAHayVenta(mysqli $linkExterno, AntiguedadALaVentaDTO $antiguedadALaVentaDTO):void
+    public function pasarAHayVenta(mysqli $linkExterno, AntiguedadAlaVentaDTO $antiguedadALaVentaDTO):void
     {
         $queryActualizarAavHayVenta = "UPDATE antiguedadalaventa SET aavHayVenta = TRUE WHERE aavAntId = {$antiguedadALaVentaDTO->antiguedad->antId} AND aavFechaRetiro IS NULL AND aavHayVenta = FALSE";
         $resultadoActualizarAavHayVenta = $linkExterno->query($queryActualizarAavHayVenta);
@@ -74,7 +74,7 @@ trait TraitCambiarEstadoAntiguedad
         }
     }
 
-    public function revertirVentaEnAntiguedadALaVenta(mysqli $linkExterno, AntiguedadALaVentaDTO $antiguedadALaVentaDTO): void
+    public function revertirVentaEnAntiguedadALaVenta(mysqli $linkExterno, AntiguedadAlaVentaDTO $antiguedadALaVentaDTO): void
     {
         $queryActualizarAavHayVenta = "UPDATE antiguedadalaventa SET aavHayVenta = FALSE WHERE aavAntId = {$antiguedadALaVentaDTO->antiguedad->antId} AND aavFechaRetiro IS NULL";
         $resultadoActualizarAavHayVenta = $linkExterno->query($queryActualizarAavHayVenta);

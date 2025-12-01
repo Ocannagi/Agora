@@ -7,7 +7,7 @@ class CompraVentaDetalleDTO implements IDTO
 
     public int $cvdId; // CompraVentaDetalle ID
     public int $covId; // CompraVenta ID
-    public AntiguedadALaVentaDTO $antiguedadAlaVenta; // AntiguedadAlaVenta
+    public AntiguedadAlaVentaDTO $antiguedadAlaVenta; // AntiguedadAlaVenta
     public string $cvdFechaEntregaPrevista; // Fecha de entrega prevista en formato 'Y-m-d H:i:s'
     public ?string $cvdFechaEntregaReal = null; // Fecha de entrega real en formato 'Y-m-d H:i:s'
 

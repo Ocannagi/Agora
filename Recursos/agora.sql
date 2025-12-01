@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-11-2025 a las 00:04:52
+-- Tiempo de generación: 30-11-2025 a las 22:01:29
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -60,11 +60,11 @@ CREATE TABLE `antiguedad` (
 
 INSERT INTO `antiguedad` (`antId`, `antScatId`, `antPerId`, `antNombre`, `antDescripcion`, `antUsrId`, `antFechaInsert`, `antTipoEstado`, `antFechaEstado`) VALUES
 (1, 7, 2, 'Vitrina doble puerta', 'Vitrina Barroca circa 1656. Hermosos detalles en oro. Madera maciza de ébano. Dos puertas.', 5, '2025-05-24 19:41:04', 'VE', '2025-11-03 15:01:51'),
-(2, 3, 1, 'Ángel de Mármol', 'Hermosa escultura renacentista de un ángel. Mármol. Circa 1486.', 3, '2025-05-24 19:51:02', 'RD', '2025-05-24 19:51:02'),
+(2, 3, 1, 'Ángel de Mármol', 'Hermosa escultura renacentista de un ángel. Mármol. Circa 1486.', 2, '2025-05-24 19:51:02', 'RD', '2025-05-24 19:51:02'),
 (3, 8, 4, 'Mesa redonda medieval', 'Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C. Excelente estado.', 5, '2025-06-01 21:37:12', 'VE', '2025-11-03 14:58:17'),
 (4, 6, 2, 'Armario de estilo Barroco', 'Armario Barroco. Es una preciosura', 5, '2025-06-16 15:24:14', 'VE', '2025-11-03 15:00:48'),
 (5, 8, 2, 'Mesita ratona otomana', 'Prueba con mesa de vidrio editada 3', 5, '2025-10-24 00:06:14', 'VE', '2025-11-03 15:01:18'),
-(6, 5, 3, 'Cuadro de Machu Pichu', 'Machu Pichu Pop Art y colorido. Qué más querés', 2, '2025-10-27 15:39:10', 'VE', '2025-11-03 15:32:36');
+(6, 5, 3, 'Cuadro de Machu Pichu', 'Machu Pichu Pop Art y colorido. Qué más querés', 1, '2025-10-27 15:39:10', 'CO', '2025-11-30 17:09:47');
 
 -- --------------------------------------------------------
 
@@ -111,7 +111,7 @@ INSERT INTO `antiguedadalaventa` (`aavId`, `aavAntId`, `aavUsrIdVendedor`, `aavD
 (7, 4, 5, 1, 5987345.00, NULL, '2025-11-03 15:00:48', NULL, 0),
 (8, 5, 5, 1, 675987.00, NULL, '2025-11-03 15:01:18', NULL, 0),
 (9, 1, 5, 1, 987543.00, NULL, '2025-11-03 15:01:51', NULL, 0),
-(10, 6, 2, 2, 6325589.00, NULL, '2025-11-03 15:32:36', NULL, 0);
+(10, 6, 2, 2, 6325589.00, NULL, '2025-11-03 15:32:36', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -172,7 +172,8 @@ CREATE TABLE `compraventa` (
 INSERT INTO `compraventa` (`covId`, `covUsrComprador`, `covDomDestino`, `covFechaCompra`, `covTipoMedioPago`, `covFechaBaja`) VALUES
 (1, 5, 1, '2025-09-11 18:23:58', 'MP', NULL),
 (3, 5, 1, '2025-11-02 18:05:58', 'TC', NULL),
-(4, 2, 2, '2025-11-03 12:04:16', 'MP', NULL);
+(4, 2, 2, '2025-11-03 12:04:16', 'MP', NULL),
+(5, 1, 1, '2025-11-30 17:09:47', 'TC', NULL);
 
 -- --------------------------------------------------------
 
@@ -206,7 +207,8 @@ INSERT INTO `compraventadetalle` (`cvdId`, `cvdCovId`, `cvdAavId`, `cvdFechaEntr
 (1, 1, 1, '2025-09-16', '2025-09-11', NULL),
 (4, 3, 5, '2025-11-12', NULL, NULL),
 (5, 3, 3, '2025-11-03', '2025-11-03', NULL),
-(6, 4, 4, '2025-11-04', NULL, NULL);
+(6, 4, 4, '2025-11-04', NULL, NULL),
+(7, 5, 10, '2025-12-01', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -283,8 +285,8 @@ INSERT INTO `imagenantiguedad` (`imaId`, `imaAntId`, `imaUrl`, `imaNombreArchivo
 (14, 5, '/storage/imagenesAntiguedad/antId5_1761503766_mesa_en_angulo.jpeg', 'mesa_en_angulo.jpg', '2025-10-26 15:36:06', 3),
 (15, 5, '/storage/imagenesAntiguedad/antId5_1761503766_mesa_arriba.jpeg', 'mesa_arriba.jpg', '2025-10-26 15:36:06', 2),
 (18, 1, '/storage/imagenesAntiguedad/antId1_1761570676_vitrina.jpeg', 'vitrina.jpg', '2025-10-27 10:11:16', 1),
-(19, 6, '/storage/imagenesAntiguedad/antId6_1761590350_machuPichuPopArt.jpeg', 'machuPichuPopArt.jpg', '2025-10-27 15:39:10', 2),
-(20, 6, '/storage/imagenesAntiguedad/antId6_1761590350_rizky-irawan-macchu-picchu.jpeg', 'rizky-irawan-macchu-picchu.jpg', '2025-10-27 15:39:10', 1);
+(19, 6, '/storage/imagenesAntiguedad/antId6_1761590350_machuPichuPopArt.jpeg', 'machuPichuPopArt.jpg', '2025-10-27 15:39:10', 1),
+(20, 6, '/storage/imagenesAntiguedad/antId6_1761590350_rizky-irawan-macchu-picchu.jpeg', 'rizky-irawan-macchu-picchu.jpg', '2025-10-27 15:39:10', 2);
 
 -- --------------------------------------------------------
 
@@ -633,7 +635,7 @@ CREATE TABLE `tokens` (
 --
 
 INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MSwidXNyTm9tYnJlIjoiTmljb2xcdTAwZTFzIEFsZWphbmRybyIsInVzclRpcG9Vc3VhcmlvIjoiU1QiLCJleHAiOjE3NjI3MzI5NzZ9.x4Rrz115v86EXJeDMgJmS9pt5981e1pxgKRvQVYZN8dezVEoPcbzYhvhO1T0_vQFELL1gbsITvUFShxvkUU3Ug', '2025-11-09 20:02:56');
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MiwidXNyTm9tYnJlIjoiQ3Jpc3RpYW4gSmF2aWVyIiwidXNyVGlwb1VzdWFyaW8iOiJVRyIsImV4cCI6MTc2NDUzNzAwN30.vBGyC7KnaHxu5Y33KYocLqdEm9cIlRophuUVijfuIjKFqEQiD4cfX-qhXGlj4GloFUTIfIcFnHsmYb0684hs6A', '2025-11-30 17:10:07');
 
 -- --------------------------------------------------------
 
@@ -932,13 +934,13 @@ ALTER TABLE `categoria`
 -- AUTO_INCREMENT de la tabla `compraventa`
 --
 ALTER TABLE `compraventa`
-  MODIFY `covId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `covId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `compraventadetalle`
 --
 ALTER TABLE `compraventadetalle`
-  MODIFY `cvdId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `cvdId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `domicilio`
