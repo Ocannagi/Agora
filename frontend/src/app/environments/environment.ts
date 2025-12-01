@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
-    apiURL: '...',
-    storageURL: '...'
+    apiURL: 'https://agoraecommerce.tech/backend',
+    storageURL: 'https://agoraecommerce.tech'
 };
