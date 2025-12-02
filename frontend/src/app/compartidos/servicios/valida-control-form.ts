@@ -186,7 +186,7 @@ export class ValidaControlForm {
             const req = requerido();
             if (req) control.addValidators(Validators.required);
             else control.removeValidators(Validators.required);
-            control.updateValueAndValidity({ onlySelf: true, emitEvent: false });
+            control.updateValueAndValidity({ onlySelf: false, emitEvent: true });
         }, { injector: injector });
     }
 

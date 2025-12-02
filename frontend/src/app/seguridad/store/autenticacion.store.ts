@@ -4,43 +4,52 @@ import { ClaimDTO, CredencialesUsuarioDTO, KeysClaimDTO, TipoUsuarioEnum } from 
 import { SeguridadService } from "../seguridad-service";
 import { autenticacionInitialState, PersistedAutenticacionSlice } from "./autenticacion.slice";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
-import { pipe, switchMap, tap } from "rxjs";
+import { interval, map, pipe, switchMap, tap } from "rxjs";
 import { tapResponse } from "@ngrx/operators";
 import { HttpErrorResponse } from "@angular/common/http";
 import { Router } from "@angular/router";
+import { toSignal } from "@angular/core/rxjs-interop";
 
 
 export const AutenticacionStore = signalStore(
-    {providedIn: 'root'},
+    { providedIn: 'root' },
     withState(autenticacionInitialState),
     withProps((_) => {
         const _seguridadService = inject(SeguridadService);
         const _injector = inject(Injector);
         const router = inject(Router);
 
-        
+        const reloj$ = interval(60000).pipe(
+            map(() => Date.now())
+        );
+
+        const _currentTime = toSignal(reloj$, { injector: _injector, initialValue: Date.now() });
+
+
         return {
             _seguridadService,
             _injector,
-            router
+            router,
+            _currentTime
         }
 
     }),
     withMethods(
         (store) => {
-            const _setJwt = (jwt: string) => patchState(store, {jwt});
-            const setBusy = (busy: boolean) => patchState(store, {busy});
-            const setErrors = (errors: string[]) => patchState(store, {errors});
-            const setOneError = (error: string) => patchState(store, {errors : [...store.errors(), error]});
+            const _setJwt = (jwt: string) => patchState(store, { jwt });
+            const setBusy = (busy: boolean) => patchState(store, { busy });
+            const setErrors = (errors: string[]) => patchState(store, { errors });
+            const setOneError = (error: string) => patchState(store, { errors: [...store.errors(), error] });
 
             const resetState = () => patchState(store, autenticacionInitialState);
 
             const login = rxMethod<CredencialesUsuarioDTO>(pipe(
-                    tap(() => {
-                        setBusy(true);
-                        setErrors([]);
-                    }),
-                    switchMap(credenciales => {return store._seguridadService.login(credenciales).pipe(
+                tap(() => {
+                    setBusy(true);
+                    setErrors([]);
+                }),
+                switchMap(credenciales => {
+                    return store._seguridadService.login(credenciales).pipe(
                         tapResponse({
                             next: (response) => {
                                 response.body ? _setJwt(response.body.jwt) : '';
@@ -52,9 +61,10 @@ export const AutenticacionStore = signalStore(
                             },
                             finalize: () => setBusy(false)
                         })
-                    )})
+                    )
+                })
 
-                ), { injector: store._injector });
+            ), { injector: store._injector });
 
             const logout = rxMethod<void>(pipe(
                 tap(() => {
@@ -88,14 +98,14 @@ export const AutenticacionStore = signalStore(
     ),
     withComputed(
         (store) => {
-            const getFieldFromJWT = (field : KeysClaimDTO) : string | number | null => {
-                if(store.jwt() === null)
+            const getFieldFromJWT = (field: KeysClaimDTO): string | number | null => {
+                if (store.jwt() === null)
                     return null;
 
                 let dataToken
-                
+
                 try {
-                    dataToken = JSON.parse(atob(store.jwt()!.split('.')[1]))  
+                    dataToken = JSON.parse(atob(store.jwt()!.split('.')[1]))
                 } catch (error) {
                     if (error instanceof SyntaxError) {
                         store.setOneError("Error de sintaxis en el token JWT");
@@ -125,7 +135,7 @@ export const AutenticacionStore = signalStore(
                 exp: exp() ?? 0,
             }));
 
-            const isLoggedIn = computed(() => usrId() !== null && exp() !== null && exp()! * 1000 > new Date().getTime());
+            const isLoggedIn = computed(() => usrId() !== null && exp() !== null && exp()! * 1000 > store._currentTime());
             const isSoporteTecnico = computed(() => isLoggedIn() && usrTipoUsuario() === TipoUsuarioEnum.SoporteTecnico);
             const isUsrAnticuario = computed(() => isLoggedIn() && usrTipoUsuario() === TipoUsuarioEnum.UsuarioAnticuario);
             const isUsrTasador = computed(() => isLoggedIn() && usrTipoUsuario() === TipoUsuarioEnum.UsuarioTasador);
@@ -158,13 +168,13 @@ export const AutenticacionStore = signalStore(
         }
     ),
     withHooks(store => ({
-        onInit(){
+        onInit() {
 
-            const persisted : Signal<PersistedAutenticacionSlice> = computed(() => ({ jwt: store.jwt() }));
+            const persisted: Signal<PersistedAutenticacionSlice> = computed(() => ({ jwt: store.jwt() }));
             const saved = localStorage.getItem(store._seguridadService.keyToken);
 
             if (saved) {
-                const parsed : PersistedAutenticacionSlice = { jwt: saved };
+                const parsed: PersistedAutenticacionSlice = { jwt: saved };
                 if (persisted().jwt !== parsed.jwt) {
                     patchState(store, parsed);
                 }
@@ -172,17 +182,26 @@ export const AutenticacionStore = signalStore(
 
             effect(() => {
                 const persistedValue = persisted();
-                if(persistedValue.jwt === null)
+                if (persistedValue.jwt === null)
                     localStorage.removeItem(store._seguridadService.keyToken);
                 else
                     localStorage.setItem(store._seguridadService.keyToken, persistedValue.jwt);
 
                 console.log('Usuario', store.ClaimDTOSignal())
             });
+
+            effect(() => {
+                if (store.isLoggedIn()) {
+                    console.log('Está logueado el usuario con ID:', store.usrId());
+                } else {
+                    console.log('Usuario no logueado');
+                }
+            });
+
         },
-        onDestroy(){
+        onDestroy() {
 
         }
     }))
-    
+
 );

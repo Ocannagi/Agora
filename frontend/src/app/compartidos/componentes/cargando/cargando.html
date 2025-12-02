@@ -1,2 +1,7 @@
-<img ngSrc="loading.gif" width="64" height="64" alt="Cargando…" priority />
-<span class="sr-only">Cargando…</span>
+<div class="cargando-content">
+  <img ngSrc="loading.gif" width="64" height="64" alt="Cargando…" priority />
+  <span class="sr-only">Cargando…</span>
+  @if(!authStore.isLoggedIn()) {
+    <a routerLink="/login" mat-flat-button class="login-button">Token expirado -> Ir al Login</a>
+  }
+</div>

@@ -1,8 +1,15 @@
 :host {
   display: grid;
-  place-items: center;   // centra horizontal y vertical
+  place-items: center;
   width: 100%;
   height: 100%;
+}
+
+.cargando-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 img {
@@ -11,7 +18,11 @@ img {
   height: 64px;
   max-width: 100%;
   max-height: 100%;
-  object-fit: contain;   // no deforma
+  object-fit: contain;
+}
+
+.login-button {
+  z-index: 1001; // Por encima del overlay
 }
 
 /* Overlay de pantalla completa con fondo atenuado */
@@ -22,15 +33,18 @@ img {
   display: grid;
   place-items: center;
   background: rgba(0, 0, 0, 0.35);
-  /* Bloquea interacción con el contenido detrás */
   pointer-events: all;
 }
 
 /* A11y: texto solo para lectores de pantalla */
 .sr-only {
   position: absolute;
-  width: 1px; height: 1px;
-  padding: 0; margin: -1px;
-  overflow: hidden; clip: rect(0, 0, 0, 0);
-  white-space: nowrap; border: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

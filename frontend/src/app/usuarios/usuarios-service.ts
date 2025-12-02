@@ -49,8 +49,9 @@ export class UsuariosService implements IServicePaginado<UsuarioIndiceDTO> {
                 id: usuario.usrId,
                 nombre: `${usuario.usrNombre} ${usuario.usrApellido}`,
                 acciones: {
-                  editar: `/usuarios/editar/${usuario.usrId}`},
-                  borrar: true,
+                  editar: `/usuarios/editar/${usuario.usrId}`,
+                  borrar: true
+                },
               }) as UsuarioIndiceDTO)
             };
             return indiceResponse;
