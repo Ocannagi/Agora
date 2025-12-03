@@ -42,6 +42,7 @@ class ComprasVentasController extends BaseController
         $mysqli = $this->dbConnection->conectarBD();
         try {
             $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
+            
 
             if (!TipoUsuarioEnum::from($claimDTO->usrTipoUsuario)->isSoporteTecnico()) {
                 $where = " covUsrComprador = {$claimDTO->usrId} AND covFechaBaja IS NULL";
@@ -63,6 +64,8 @@ class ComprasVentasController extends BaseController
             );
 
             $arrayComprasVentasDTO = $paginadoResponseDTO->arrayEntidad;
+
+            
 
             for ($i = 0; $i < count($arrayComprasVentasDTO); $i++) {
                 $arrayComprasVentasDTO[$i] = $this->obtenerCompraVentaDTOCompleto($arrayComprasVentasDTO[$i]->covId, $mysqli);
@@ -188,6 +191,8 @@ class ComprasVentasController extends BaseController
                                                            AND covFechaBaja IS NULL"
         );
 
+        
+
         $compraVentaDTO->usuarioComprador = $this->getByIdInterno(
             id: $compraVentaDTO->usuarioComprador->usrId,
             classDTO: UsuarioDTO::class,
@@ -195,12 +200,16 @@ class ComprasVentasController extends BaseController
             query: 'USUARIO'
         );
 
+      
+
         $compraVentaDTO->domicilioDestino = $this->getByIdInterno(
             id: $compraVentaDTO->domicilioDestino->domId,
             classDTO: DomicilioDTO::class,
             linkExterno: $mysqli,
             query: 'DOMICILIO'
         );
+
+          
 
         $compraVentaDTO->detalles = $this->getInterno(
             classDTO: CompraVentaDetalleDTO::class,
@@ -210,7 +219,7 @@ class ComprasVentasController extends BaseController
                                                                  WHERE cvdCovId = {$compraVentaDTO->covId}
                                                                  AND cvdFechaBaja IS NULL"
         );
-
+        
         //var_dump($compraVentaDTO->detalles);
 
         for ($i = 0; $i < count($compraVentaDTO->detalles); $i++) {
@@ -227,6 +236,8 @@ class ComprasVentasController extends BaseController
                                                                                                WHERE aavId = {$compraVentaDTO->detalles[$i]->antiguedadAlaVenta->aavId}"
             ); //IMPORTANTE: Solo se consideran las tasaciones in situ realizadas
 
+            
+
             $compraVentaDTO->detalles[$i]->antiguedadAlaVenta->vendedor = $this->getByIdInterno(
                 id: $compraVentaDTO->detalles[$i]->antiguedadAlaVenta->vendedor->usrId,
                 classDTO: UsuarioDTO::class,
@@ -238,8 +249,24 @@ class ComprasVentasController extends BaseController
                 id: $compraVentaDTO->detalles[$i]->antiguedadAlaVenta->antiguedad->antId,
                 classDTO: AntiguedadDTO::class,
                 linkExterno: $mysqli,
-                query: 'ANTIGUEDAD'
+                query: "SELECT antId, antNombre, antDescripcion, antFechaEstado, antTipoEstado
+                        ,perId, perDescripcion
+                        ,scatId, catId, catDescripcion, scatDescripcion
+                        ,usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario, usrRazonSocialFantasia,usrDescripcion,usrScoring,usrCuitCuil,usrMatricula
+                        ,domId, domCPA, domCalleRuta, domNroKm, domPiso, domDepto
+                        ,locId, locDescripcion, provId, provDescripcion
+                    FROM antiguedad
+                    INNER JOIN periodo ON antPerId = perId
+                    INNER JOIN subcategoria ON antScatId = scatId
+                    INNER JOIN categoria ON scatCatId = catId
+                    INNER JOIN usuario ON antUsrId = usrId
+                    INNER JOIN domicilio ON usrDomicilio = domId
+                    INNER JOIN localidad ON locId = domLocId
+                    INNER JOIN provincia ON provId = locProvId
+                  WHERE antId = %id"
             );
+
+            
             $compraVentaDTO->detalles[$i]->antiguedadAlaVenta->antiguedad->imagenes = $this->getInterno(
                 query: "SELECT imaId, imaUrl, imaAntId, imaOrden, imaNombreArchivo FROM imagenantiguedad WHERE imaAntId = {$compraVentaDTO->detalles[$i]->antiguedadAlaVenta->antiguedad->antId} ORDER BY imaOrden",
                 classDTO: ImagenAntiguedadDTO::class,

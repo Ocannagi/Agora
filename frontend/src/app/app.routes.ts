@@ -69,6 +69,18 @@ export const routes: Routes = [
         canActivate: [compraVentaGuard]
     },
     {
+        path: 'antiguedadesRetiradasNd',
+        loadComponent: () => import(/* webpackChunkName: "indice-antiguedades-retiradas-nd" */ './antiguedades/antiguedades-retiradas-nd/indice-antiguedades-retiradas-nd/indice-antiguedades-retiradas-nd').then(m => m.IndiceAntiguedadesRetiradasNd),
+        title: "Antigüedades Retiradas - No Disponibles",
+        canActivate: [compraVentaGuard]
+    },
+    {
+        path: 'antiguedadesRetiradasNd/:id',
+        loadComponent: () => import(/* webpackChunkName: "ver-antiguedad-retirada-nd" */ './antiguedades/antiguedades-retiradas-nd/ver-antiguedad-retirada-nd/ver-antiguedad-retirada-nd').then(m => m.VerAntiguedadRetiradaNd),
+        title: "Ver Antigüedad Retirada - No Disponible",
+        canActivate: [compraVentaGuard]
+    },
+    {
         path: 'antiguedadesAlaVenta',
         loadComponent: () => import(/* webpackChunkName: "indice-antiguedades-venta" */ './antiguedades-venta/indice-antiguedades-venta/indice-antiguedades-venta').then(m => m.IndiceAntiguedadesVenta),
         title: "Antigüedades a la Venta",

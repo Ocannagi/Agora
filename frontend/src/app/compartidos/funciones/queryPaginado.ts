@@ -19,3 +19,16 @@ export function buildQueryPaginadoSearch(paginado: PaginadoRequestSearchDTO): Ht
   });
   return httpParams;
 }
+
+export function buildQueryPaginadoExtra(paginado: PaginadoRequestDTO, extraParams: {[key: string]: any}): HttpParams {
+  let httpParams = new HttpParams();
+  Object.keys(paginado).forEach(key => {
+    const value = paginado[key as keyof PaginadoRequestDTO];
+    httpParams = httpParams.append(`paginado[${key}]`, value);
+  });
+  Object.keys(extraParams).forEach(key => {
+    const value = extraParams[key];
+    httpParams = httpParams.append(`paginado[${key}]`, value);
+  });
+  return httpParams;
+}

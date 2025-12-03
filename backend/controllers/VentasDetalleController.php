@@ -300,7 +300,21 @@ class VentasDetalleController extends BaseController
         $ventaDetalleDTO->antiguedadAlaVenta->antiguedad = $this->getByIdInterno(
             classDTO: AntiguedadDTO::class,
             linkExterno: $mysqli,
-            query: "ANTIGUEDAD",
+            query: "SELECT antId, antNombre, antDescripcion, antFechaEstado, antTipoEstado
+                        ,perId, perDescripcion
+                        ,scatId, catId, catDescripcion, scatDescripcion
+                        ,usrId, usrNombre, usrApellido, usrEmail, usrTipoUsuario, usrRazonSocialFantasia,usrDescripcion,usrScoring,usrCuitCuil,usrMatricula
+                        ,domId, domCPA, domCalleRuta, domNroKm, domPiso, domDepto
+                        ,locId, locDescripcion, provId, provDescripcion
+                    FROM antiguedad
+                    INNER JOIN periodo ON antPerId = perId
+                    INNER JOIN subcategoria ON antScatId = scatId
+                    INNER JOIN categoria ON scatCatId = catId
+                    INNER JOIN usuario ON antUsrId = usrId
+                    INNER JOIN domicilio ON usrDomicilio = domId
+                    INNER JOIN localidad ON locId = domLocId
+                    INNER JOIN provincia ON provId = locProvId
+                  WHERE antId = %id",
             id: $ventaDetalleDTO->antiguedadAlaVenta->antiguedad->antId
         );
 

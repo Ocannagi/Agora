@@ -23,16 +23,40 @@
     <app-autorizado [esAutorizado]="storeAuth.isCompradorVendedor()">
         <ng-container autorizado>
             <div>
-                <a mat-button routerLink="/antiguedades"><mat-icon >chair</mat-icon> Mis Antigüedades</a>
+                <button mat-button [matMenuTriggerFor]="antiguedadesMenu">
+                    <mat-icon>chair</mat-icon> Antigüedades
+                    <mat-icon>arrow_drop_down</mat-icon>
+                </button>
+                <mat-menu #antiguedadesMenu="matMenu">
+                    <a mat-menu-item routerLink="/antiguedades">
+                        <mat-icon>chair</mat-icon>
+                        <span>Mis Antigüedades</span>
+                    </a>
+                    <a mat-menu-item routerLink="/antiguedadesAlaVenta">
+                        <mat-icon>sell</mat-icon>
+                        <span>Mis Antigüedades en Venta</span>
+                    </a>
+                    <a mat-menu-item routerLink="/antiguedadesRetiradasNd">
+                        <mat-icon>archive</mat-icon>
+                        <span>Antigüedades Retiradas</span>
+                    </a>
+                </mat-menu>
             </div>
             <div>
-                <a mat-button routerLink="/antiguedadesAlaVenta"><mat-icon >sell</mat-icon> Mis Antigüedades en Venta</a>
-            </div>
-            <div>
-                <a mat-button routerLink="/compras"><mat-icon >local_mall</mat-icon>{{storeAuth.isSoporteTecnico()? 'Todas las Compras' : 'Mis Compras'}}</a>
-            </div>
-            <div>
-                <a mat-button routerLink="/ventas"><mat-icon >storefront</mat-icon>{{storeAuth.isSoporteTecnico()? 'Todas las Ventas' : 'Mis Ventas'}}</a>
+                <button mat-button [matMenuTriggerFor]="compraventaMenu">
+                    <mat-icon>storefront</mat-icon> Compraventa
+                    <mat-icon>arrow_drop_down</mat-icon>
+                </button>
+                <mat-menu #compraventaMenu="matMenu">
+                    <a mat-menu-item routerLink="/compras">
+                        <mat-icon>local_mall</mat-icon>
+                        <span>{{storeAuth.isSoporteTecnico() ? 'Todas las Compras' : 'Mis Compras'}}</span>
+                    </a>
+                    <a mat-menu-item routerLink="/ventas">
+                        <mat-icon>storefront</mat-icon>
+                        <span>{{storeAuth.isSoporteTecnico() ? 'Todas las Ventas' : 'Mis Ventas'}}</span>
+                    </a>
+                </mat-menu>
             </div>
         </ng-container>
     </app-autorizado>

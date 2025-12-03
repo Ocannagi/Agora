@@ -17,8 +17,8 @@ import { normalizarUrlImagen } from '../compartidos/funciones/normalizarUrlImage
   providedIn: 'root'
 })
 export class AntiguedadesService implements IServicePaginado<AntiguedadIndiceDTO> {
-  private http = inject(HttpClient);
-  private urlBase = environment.apiURL + '/Antiguedades';
+  protected http = inject(HttpClient);
+  protected urlBase = environment.apiURL + '/Antiguedades';
 
   readonly postError = signal<string | null>(null);
   readonly patchError = signal<string | null>(null);

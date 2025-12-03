@@ -124,6 +124,17 @@ class AntiguedadesController extends BaseController
     private function getAntiguedadesByFiltros(mysqli $mysqli, ?int $scatId, ?int $catId, ?int $perId, ?int $usrId, ?string $antNombre, ?string $antDescripcion, ?string $antTipoEstado, ?array $arrayAntTipoEstado): ?array
     {
         $this->securityService->requireLogin(tipoUsurio: null);
+        $inicioWhere = "";
+
+        if($antTipoEstado === null && $arrayAntTipoEstado === null) {
+            $inicioWhere = " WHERE antTipoEstado <>'RN'";
+        } else if($antTipoEstado !== null) {
+            $inicioWhere = " WHERE antTipoEstado = '$antTipoEstado'";
+        } else if($arrayAntTipoEstado !== null) {
+            $estadosFormateados = array_map(fn($e) => "'" . $mysqli->real_escape_string($e) . "'", $arrayAntTipoEstado);
+            $estadosString = implode(", ", $estadosFormateados);
+            $inicioWhere = " WHERE antTipoEstado IN ($estadosString)";
+        }
 
         $query = "SELECT antId, antNombre, antDescripcion, antFechaEstado, antTipoEstado
                         ,perId, perDescripcion
@@ -138,8 +149,8 @@ class AntiguedadesController extends BaseController
                     INNER JOIN usuario ON antUsrId = usrId
                     INNER JOIN domicilio ON usrDomicilio = domId
                     INNER JOIN localidad ON locId = domLocId
-                    INNER JOIN provincia ON provId = locProvId
-                  WHERE antTipoEstado <>'RN'";
+                    INNER JOIN provincia ON provId = locProvId" . $inicioWhere;
+        
         if ($scatId != null) {
             $query .= " AND scatId = $scatId";
         }
@@ -160,16 +171,6 @@ class AntiguedadesController extends BaseController
             $antDescripcion = $mysqli->real_escape_string($antDescripcion);
             $query .= " AND antDescripcion LIKE '%$antDescripcion%'";
         }
-        if ($antTipoEstado != null) {
-            $query .= " AND antTipoEstado = '$antTipoEstado'";
-        }
-        if ($arrayAntTipoEstado != null && is_array($arrayAntTipoEstado) && count($arrayAntTipoEstado) > 0) {
-            $estadosFormateados = array_map(function($estado) use ($mysqli) {
-                return "'" . $mysqli->real_escape_string($estado) . "'";
-            }, $arrayAntTipoEstado);
-            $estadosString = implode(", ", $estadosFormateados);
-            $query .= " AND antTipoEstado IN ($estadosString)";
-        }
 
         $arrayAntiguedadesDTO = $this->getInterno(query: $query, classDTO: AntiguedadDTO::class, linkExterno: $mysqli);
         foreach ($arrayAntiguedadesDTO as $antiguedadDTO) {
@@ -184,6 +185,12 @@ class AntiguedadesController extends BaseController
     public function getAntiguedadesPaginado($paginado)
     {
         $mysqli = $this->dbConnection->conectarBD();
+        $inicioWhere = " WHERE antTipoEstado <>'RN'";
+
+        $clauseAntTipoEstado = $this->obtenerAntTipoEstado($paginado);
+        if(Input::esNotNullVacioBlanco($clauseAntTipoEstado)) {
+            $inicioWhere = " WHERE antTipoEstado = '{$mysqli->real_escape_string($clauseAntTipoEstado)}'";
+        }
         
         try {
             $claimDTO = $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::compradorVendedorToArray());
@@ -202,7 +209,7 @@ class AntiguedadesController extends BaseController
                     INNER JOIN domicilio ON usrDomicilio = domId
                     INNER JOIN localidad ON locId = domLocId
                     INNER JOIN provincia ON provId = locProvId
-                  WHERE antTipoEstado <>'RN'";
+                    " . $inicioWhere;
                   
 
             $queryFiltro = "";
@@ -233,6 +240,14 @@ class AntiguedadesController extends BaseController
                 $mysqli->close(); // Cerrar la conexión a la base de datos
             }
         }
+    }
+
+    private function obtenerAntTipoEstado($paginado): string
+    {
+        if (array_key_exists('antTipoEstado', $paginado)) {
+            return $paginado['antTipoEstado'];
+        }
+        return ''; // Valor por defecto
     }
 
     public function getAntiguedades()
@@ -285,6 +300,7 @@ class AntiguedadesController extends BaseController
             settype($id, 'integer');
             $this->securityService->requireLogin(tipoUsurio: null);
 
+            // No se filtra por antTipoEstado para permitir obtener antigüedades retiradas también.
             $query = "SELECT antId, antNombre, antDescripcion, antFechaEstado, antTipoEstado
                         ,perId, perDescripcion
                         ,scatId, catId, catDescripcion, scatDescripcion
@@ -299,8 +315,7 @@ class AntiguedadesController extends BaseController
                     INNER JOIN domicilio ON usrDomicilio = domId
                     INNER JOIN localidad ON locId = domLocId
                     INNER JOIN provincia ON provId = locProvId
-                  WHERE antTipoEstado <>'RN'
-                  AND antId = $id";
+                  WHERE antId = $id";
 
             $antiguedadDTO = $this->getByIdInterno(query: $query, classDTO: "AntiguedadDTO");
             $antiguedadDTO->imagenes = $this->getInterno(query: "SELECT imaId, imaUrl, imaAntId, imaOrden, imaNombreArchivo FROM imagenantiguedad WHERE imaAntId = $id ORDER BY imaOrden", classDTO: "ImagenAntiguedadDTO");

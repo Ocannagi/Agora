@@ -1,0 +1,44 @@
+<h2 style="margin-top: 40px;">{{titulo()}} - {{tipoEstadoKey()}}</h2>
+
+<app-mostrar-errores [errores]="errores()"></app-mostrar-errores>
+
+@if(esCargando()) {
+    <app-cargando/>
+} @else {
+    <div class="form-grid">
+        <mat-form-field appearance="fill">
+            <mat-label>Período</mat-label>
+            <input matInput [value]="periodoDescripcion()" readonly>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Categoría</mat-label>
+            <input matInput [value]="categoriaDescripcion()" readonly>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Subcategoría</mat-label>
+            <input matInput [value]="subcategoriaDescripcion()" readonly>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="col-span-2">
+            <mat-label>Nombre de la antigüedad</mat-label>
+            <textarea matInput [value]="antNombre()" readonly></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="col-span-2">
+            <mat-label>Descripción de la antigüedad</mat-label>
+            <textarea matInput [value]="antDescripcion()" rows="5" readonly></textarea>
+        </mat-form-field>
+
+        <app-lista-imagenes-dto [arrayImagenes]="imagenes()" [disabled]="true"/>
+    </div>
+
+    <div class="contenedor-botones">
+        <button type="button" mat-stroked-button (click)="onVolver()">Volver</button>
+        <button type="button" mat-flat-button [swal]="{title: '¿Está seguro?', text: 'La antigüedad volverá al Agora', showCancelButton: true}"
+                (confirm)="convertToRD()">Devolver al Ágora</button>
+    </div>
+}
+
+<app-mostrar-errores [errores]="errores()"></app-mostrar-errores>

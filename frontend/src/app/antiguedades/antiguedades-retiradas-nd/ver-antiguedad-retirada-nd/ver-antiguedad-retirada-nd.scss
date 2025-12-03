@@ -1,0 +1,48 @@
+:host ::ng-deep .mat-mdc-input-element:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+mat-form-field {
+    width: 100%;
+    max-width: 500px;
+    display: block;
+    margin-top: 1rem;
+}
+
+.contenedor-botones {
+    margin-top: 0.7rem;
+    display: flex;
+    justify-content: flex-start;
+    gap: 0.5rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-grid mat-form-field {
+  max-width: 600px;
+}
+
+.form-grid app-lista-imagenes-dto {
+  display: block;
+  max-width: 600px;
+}
+
+/* Estilos para campos readonly */
+mat-form-field {
+  pointer-events: none;
+  
+  textarea {
+    resize: none;
+  }
+}
