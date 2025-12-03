@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 30-11-2025 a las 22:01:29
+-- Tiempo de generación: 03-12-2025 a las 21:07:58
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -27,6 +27,8 @@ USE `agora`;
 
 --
 -- Estructura de tabla para la tabla `antiguedad`
+--
+-- Creación: 09-11-2025 a las 18:18:01
 --
 
 DROP TABLE IF EXISTS `antiguedad`;
@@ -59,17 +61,24 @@ CREATE TABLE `antiguedad` (
 --
 
 INSERT INTO `antiguedad` (`antId`, `antScatId`, `antPerId`, `antNombre`, `antDescripcion`, `antUsrId`, `antFechaInsert`, `antTipoEstado`, `antFechaEstado`) VALUES
-(1, 7, 2, 'Vitrina doble puerta', 'Vitrina Barroca circa 1656. Hermosos detalles en oro. Madera maciza de ébano. Dos puertas.', 5, '2025-05-24 19:41:04', 'VE', '2025-11-03 15:01:51'),
-(2, 3, 1, 'Ángel de Mármol', 'Hermosa escultura renacentista de un ángel. Mármol. Circa 1486.', 2, '2025-05-24 19:51:02', 'RD', '2025-05-24 19:51:02'),
-(3, 8, 4, 'Mesa redonda medieval', 'Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C. Excelente estado.', 5, '2025-06-01 21:37:12', 'VE', '2025-11-03 14:58:17'),
+(1, 7, 2, 'Vitrina doble puerta', 'Vitrina Barroca circa 1656. Hermosos detalles en oro. Madera maciza de ébano. Dos puertas.', 1, '2025-05-24 19:41:04', 'VE', '2025-11-29 22:41:11'),
+(2, 3, 1, 'Ángel de Mármol', 'Hermosa escultura renacentista de un ángel. Mármol. Circa 1486.', 3, '2025-05-24 19:51:02', 'RD', '2025-05-24 19:51:02'),
+(3, 8, 4, 'Mesa redonda medieval', 'Mesa redonda del Rey Arturo. Ébano. Circa 520 D.C. Excelente estado.', 15, '2025-06-01 21:37:12', 'RD', '2025-11-23 14:32:28'),
 (4, 6, 2, 'Armario de estilo Barroco', 'Armario Barroco. Es una preciosura', 5, '2025-06-16 15:24:14', 'VE', '2025-11-03 15:00:48'),
-(5, 8, 2, 'Mesita ratona otomana', 'Prueba con mesa de vidrio editada 3', 5, '2025-10-24 00:06:14', 'VE', '2025-11-03 15:01:18'),
-(6, 5, 3, 'Cuadro de Machu Pichu', 'Machu Pichu Pop Art y colorido. Qué más querés', 1, '2025-10-27 15:39:10', 'CO', '2025-11-30 17:09:47');
+(5, 8, 2, 'Mesita ratona otomana', 'Prueba con mesa de vidrio editada 3', 2, '2025-10-24 00:06:14', 'VE', '2025-12-03 15:03:10'),
+(6, 5, 3, 'Cuadro de Machu Pichu', 'Machu Pichu Pop Art y colorido. Qué más querés', 1, '2025-10-27 15:39:10', 'VE', '2025-11-29 22:40:59'),
+(7, 1, 4, 'Silla medieval siglo XIII', 'Auténtica silla del siglo XIII en su estado original. Cuidado excelente', 5, '2025-11-09 16:07:34', 'VE', '2025-12-03 15:04:43'),
+(8, 11, 4, 'Jarra medieval de oro.', 'Acompañada con la copa. En perfecto estado de conservación.', 1, '2025-12-03 14:14:45', 'VE', '2025-12-03 14:15:07'),
+(9, 13, 4, 'Cofre siglo XIII', 'Cofre del imperio carolingio.', 2, '2025-12-03 15:02:21', 'VE', '2025-12-03 15:02:57'),
+(10, 14, 1, 'Anillo de Gaunt', 'Perteneció a Voldemort. Ex Horrcrux', 16, '2025-12-03 15:21:20', 'VE', '2025-12-03 15:21:31'),
+(11, 14, 1, 'Piedra de la Resurrección', 'Usar con cuidado.', 16, '2025-12-03 15:23:05', 'VE', '2025-12-03 15:23:17');
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `antiguedadalaventa`
+--
+-- Creación: 09-11-2025 a las 18:18:01
 --
 
 DROP TABLE IF EXISTS `antiguedadalaventa`;
@@ -107,16 +116,28 @@ INSERT INTO `antiguedadalaventa` (`aavId`, `aavAntId`, `aavUsrIdVendedor`, `aavD
 (3, 1, 4, 4, 1600342.23, NULL, '2025-10-27 15:33:36', NULL, 1),
 (4, 6, 4, 4, 5698895.35, NULL, '2025-10-27 20:47:57', NULL, 1),
 (5, 5, 1, 13, 500523.18, NULL, '2025-10-27 22:51:07', NULL, 1),
-(6, 3, 5, 1, 800000000.23, NULL, '2025-11-03 14:58:17', NULL, 0),
-(7, 4, 5, 1, 5987345.00, NULL, '2025-11-03 15:00:48', NULL, 0),
-(8, 5, 5, 1, 675987.00, NULL, '2025-11-03 15:01:18', NULL, 0),
-(9, 1, 5, 1, 987543.00, NULL, '2025-11-03 15:01:51', NULL, 0),
-(10, 6, 2, 2, 6325589.00, NULL, '2025-11-03 15:32:36', NULL, 1);
+(6, 3, 5, 1, 800000000.23, NULL, '2025-11-03 14:58:17', NULL, 1),
+(7, 4, 5, 1, 5987345.89, NULL, '2025-11-03 15:00:48', NULL, 0),
+(8, 5, 5, 1, 675987.00, NULL, '2025-11-03 15:01:18', NULL, 1),
+(9, 1, 5, 1, 987543.00, NULL, '2025-11-03 15:01:51', NULL, 1),
+(10, 6, 2, 2, 6325589.00, NULL, '2025-11-03 15:32:36', NULL, 1),
+(11, 7, 2, 2, 7063363.61, NULL, '2025-11-09 16:26:56', NULL, 1),
+(12, 6, 5, 1, 9333564.00, NULL, '2025-11-23 14:33:24', NULL, 1),
+(13, 6, 1, 1, 19000000.00, NULL, '2025-11-29 22:40:59', NULL, 0),
+(14, 1, 1, 15, 8000000.00, NULL, '2025-11-29 22:41:11', NULL, 0),
+(15, 8, 1, 1, 8000000.00, NULL, '2025-12-03 14:15:07', NULL, 0),
+(16, 9, 2, 2, 9000000.00, NULL, '2025-12-03 15:02:57', NULL, 0),
+(17, 5, 2, 2, 1200000.00, NULL, '2025-12-03 15:03:10', NULL, 0),
+(18, 7, 5, 1, 3500000.00, NULL, '2025-12-03 15:04:43', NULL, 0),
+(19, 10, 16, 20, 6000000.00, NULL, '2025-12-03 15:21:31', NULL, 0),
+(20, 11, 16, 20, 7000000.00, NULL, '2025-12-03 15:23:17', NULL, 0);
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `categoria`
+--
+-- Creación: 09-11-2025 a las 18:18:01
 --
 
 DROP TABLE IF EXISTS `categoria`;
@@ -137,12 +158,19 @@ CREATE TABLE `categoria` (
 INSERT INTO `categoria` (`catId`, `catDescripcion`, `catFechaBaja`) VALUES
 (1, 'Pinturas', NULL),
 (2, 'Esculturas', NULL),
-(3, 'Muebles', NULL);
+(3, 'Muebles', NULL),
+(4, 'Decoración', NULL),
+(5, 'Vitral', NULL),
+(6, 'Orfebrería', NULL),
+(7, 'Vehículos', '2025-11-30 20:33:25'),
+(8, 'Vehículo', NULL);
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `compraventa`
+--
+-- Creación: 09-11-2025 a las 18:18:01
 --
 
 DROP TABLE IF EXISTS `compraventa`;
@@ -173,12 +201,18 @@ INSERT INTO `compraventa` (`covId`, `covUsrComprador`, `covDomDestino`, `covFech
 (1, 5, 1, '2025-09-11 18:23:58', 'MP', NULL),
 (3, 5, 1, '2025-11-02 18:05:58', 'TC', NULL),
 (4, 2, 2, '2025-11-03 12:04:16', 'MP', NULL),
-(5, 1, 1, '2025-11-30 17:09:47', 'TC', NULL);
+(5, 5, 1, '2025-11-09 16:35:17', 'TB', NULL),
+(6, 5, 1, '2025-11-21 17:18:56', 'TC', NULL),
+(7, 15, 19, '2025-11-23 14:06:16', 'TC', NULL),
+(8, 2, 2, '2025-11-23 14:35:15', 'TC', NULL),
+(9, 1, 14, '2025-11-29 22:40:06', 'TC', NULL);
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `compraventadetalle`
+--
+-- Creación: 09-11-2025 a las 18:18:01
 --
 
 DROP TABLE IF EXISTS `compraventadetalle`;
@@ -208,12 +242,19 @@ INSERT INTO `compraventadetalle` (`cvdId`, `cvdCovId`, `cvdAavId`, `cvdFechaEntr
 (4, 3, 5, '2025-11-12', NULL, NULL),
 (5, 3, 3, '2025-11-03', '2025-11-03', NULL),
 (6, 4, 4, '2025-11-04', NULL, NULL),
-(7, 5, 10, '2025-12-01', NULL, NULL);
+(7, 5, 11, '2025-11-10', NULL, NULL),
+(8, 6, 10, '2025-11-22', NULL, NULL),
+(9, 7, 6, '2025-11-24', NULL, NULL),
+(10, 8, 8, '2025-11-24', NULL, NULL),
+(11, 9, 12, '2025-12-09', NULL, NULL),
+(12, 9, 9, '2025-12-09', NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `domicilio`
+--
+-- Creación: 09-11-2025 a las 18:18:01
 --
 
 DROP TABLE IF EXISTS `domicilio`;
@@ -249,12 +290,19 @@ INSERT INTO `domicilio` (`domId`, `domLocId`, `domCPA`, `domCalleRuta`, `domNroK
 (8, 10, 'M1234KKK', 'Siempre Viva', 999, '5', 'G', '2025-10-14 00:04:39', NULL),
 (13, 1, 'C1406DEH', '4', 12, '9', 'A', '2025-10-20 01:01:43', NULL),
 (14, 33, 'E2822FZH', 'Sarmiento', 310, '1', 'E', '2025-11-03 00:17:29', NULL),
-(15, 17, 'M5602CLJ', 'Perú', 788, NULL, NULL, '2025-11-03 00:42:28', NULL);
+(15, 17, 'M5602CLJ', 'Perú', 788, NULL, NULL, '2025-11-03 00:42:28', NULL),
+(16, 33, 'V2823GLG', 'Av Entre Ríos', 3, NULL, NULL, '2025-11-21 13:57:47', NULL),
+(17, 29, 'P6453GHY', 'Av Santa Fe', 63, NULL, NULL, '2025-11-21 15:20:04', NULL),
+(18, 9, 'T6596FTR', 'La Sierra', 9659, NULL, NULL, '2025-11-21 15:31:53', NULL),
+(19, 28, 'L6664TYD', 'Jorge Newbery', 47, NULL, NULL, '2025-11-23 13:44:48', NULL),
+(20, 28, 'H6463HHH', 'Jorge Newbery', 6593, NULL, NULL, '2025-11-23 14:28:02', NULL);
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `imagenantiguedad`
+--
+-- Creación: 09-11-2025 a las 18:18:01
 --
 
 DROP TABLE IF EXISTS `imagenantiguedad`;
@@ -285,13 +333,23 @@ INSERT INTO `imagenantiguedad` (`imaId`, `imaAntId`, `imaUrl`, `imaNombreArchivo
 (14, 5, '/storage/imagenesAntiguedad/antId5_1761503766_mesa_en_angulo.jpeg', 'mesa_en_angulo.jpg', '2025-10-26 15:36:06', 3),
 (15, 5, '/storage/imagenesAntiguedad/antId5_1761503766_mesa_arriba.jpeg', 'mesa_arriba.jpg', '2025-10-26 15:36:06', 2),
 (18, 1, '/storage/imagenesAntiguedad/antId1_1761570676_vitrina.jpeg', 'vitrina.jpg', '2025-10-27 10:11:16', 1),
-(19, 6, '/storage/imagenesAntiguedad/antId6_1761590350_machuPichuPopArt.jpeg', 'machuPichuPopArt.jpg', '2025-10-27 15:39:10', 1),
-(20, 6, '/storage/imagenesAntiguedad/antId6_1761590350_rizky-irawan-macchu-picchu.jpeg', 'rizky-irawan-macchu-picchu.jpg', '2025-10-27 15:39:10', 2);
+(19, 6, '/storage/imagenesAntiguedad/antId6_1761590350_machuPichuPopArt.jpeg', 'machuPichuPopArt.jpg', '2025-10-27 15:39:10', 2),
+(20, 6, '/storage/imagenesAntiguedad/antId6_1761590350_rizky-irawan-macchu-picchu.jpeg', 'rizky-irawan-macchu-picchu.jpg', '2025-10-27 15:39:10', 1),
+(63, 7, '/storage/imagenesAntiguedad/antId7_1762715254_Silla.jpeg', 'Silla.jfif', '2025-11-09 16:07:34', 1),
+(64, 8, '/storage/imagenesAntiguedad/antId8_1764782085_Recipiente.jpeg', 'Recipiente.jpg', '2025-12-03 14:14:45', 1),
+(65, 9, '/storage/imagenesAntiguedad/antId9_1764784941_Cofre.jpeg', 'Cofre.jfif', '2025-12-03 15:02:21', 1),
+(66, 9, '/storage/imagenesAntiguedad/antId9_1764784941_Cofre 2.jpeg', 'Cofre 2.jfif', '2025-12-03 15:02:21', 2),
+(67, 9, '/storage/imagenesAntiguedad/antId9_1764784941_Cofre 3.jpeg', 'Cofre 3.jfif', '2025-12-03 15:02:21', 3),
+(68, 10, '/storage/imagenesAntiguedad/antId10_1764786080_Anillo.jpeg', 'Anillo.jfif', '2025-12-03 15:21:20', 1),
+(69, 10, '/storage/imagenesAntiguedad/antId10_1764786080_Anillo 2.jpeg', 'Anillo 2.jfif', '2025-12-03 15:21:20', 2),
+(70, 11, '/storage/imagenesAntiguedad/antId11_1764786185_Piedra.jpeg', 'Piedra.jfif', '2025-12-03 15:23:05', 1);
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `localidad`
+--
+-- Creación: 09-11-2025 a las 18:18:01
 --
 
 DROP TABLE IF EXISTS `localidad`;
@@ -349,12 +407,15 @@ INSERT INTO `localidad` (`locId`, `locProvId`, `locDescripcion`, `locFechaInsert
 (33, 8, 'Gualeguaychú', '2025-05-07 22:48:02', NULL),
 (34, 8, 'Gualeguay', '2025-05-07 22:48:02', NULL),
 (35, 8, 'Villa Paranacito', '2025-05-07 22:48:02', NULL),
-(36, 1, 'Caballito', '2025-05-10 23:19:45', NULL);
+(36, 1, 'Caballito', '2025-05-10 23:19:45', NULL),
+(38, 8, 'Villa Elisa', '2025-12-01 23:16:27', NULL);
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `periodo`
+--
+-- Creación: 09-11-2025 a las 18:18:01
 --
 
 DROP TABLE IF EXISTS `periodo`;
@@ -384,6 +445,8 @@ INSERT INTO `periodo` (`perId`, `perDescripcion`, `perFechaBaja`) VALUES
 
 --
 -- Estructura de tabla para la tabla `provincia`
+--
+-- Creación: 09-11-2025 a las 18:18:01
 --
 
 DROP TABLE IF EXISTS `provincia`;
@@ -431,6 +494,8 @@ INSERT INTO `provincia` (`provId`, `provDescripcion`) VALUES
 --
 -- Estructura de tabla para la tabla `subcategoria`
 --
+-- Creación: 09-11-2025 a las 18:18:01
+--
 
 DROP TABLE IF EXISTS `subcategoria`;
 CREATE TABLE `subcategoria` (
@@ -455,15 +520,23 @@ INSERT INTO `subcategoria` (`scatId`, `scatCatId`, `scatDescripcion`, `scatFecha
 (4, 2, 'Animales', NULL),
 (3, 2, 'Personas', NULL),
 (6, 3, 'Armarios', NULL),
+(10, 3, 'Escritorio', NULL),
 (2, 3, 'Escritorios', NULL),
 (8, 3, 'Mesas', NULL),
 (1, 3, 'Sillas', NULL),
-(7, 3, 'Vitrina', NULL);
+(9, 3, 'Sillón', '2025-12-01 22:58:51'),
+(7, 3, 'Vitrina', NULL),
+(14, 6, 'Anillos', NULL),
+(11, 6, 'Brazaletes', NULL),
+(13, 6, 'Contenedores', NULL),
+(12, 6, 'Vajilla', NULL);
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `tasaciondigital`
+--
+-- Creación: 09-11-2025 a las 18:18:01
 --
 
 DROP TABLE IF EXISTS `tasaciondigital`;
@@ -503,6 +576,8 @@ INSERT INTO `tasaciondigital` (`tadId`, `tadUsrTasId`, `tadUsrPropId`, `tadAntId
 --
 -- Estructura de tabla para la tabla `tasacioninsitu`
 --
+-- Creación: 09-11-2025 a las 18:18:01
+--
 
 DROP TABLE IF EXISTS `tasacioninsitu`;
 CREATE TABLE `tasacioninsitu` (
@@ -538,6 +613,8 @@ INSERT INTO `tasacioninsitu` (`tisId`, `tisTadId`, `tisDomTasId`, `tisFechaTasIn
 --
 -- Estructura de tabla para la tabla `tipoestado`
 --
+-- Creación: 09-11-2025 a las 18:18:01
+--
 
 DROP TABLE IF EXISTS `tipoestado`;
 CREATE TABLE `tipoestado` (
@@ -566,6 +643,8 @@ INSERT INTO `tipoestado` (`tteTipoEstado`, `tteTipoEstadoDescripcion`) VALUES
 --
 -- Estructura de tabla para la tabla `tipomediopago`
 --
+-- Creación: 09-11-2025 a las 18:18:01
+--
 
 DROP TABLE IF EXISTS `tipomediopago`;
 CREATE TABLE `tipomediopago` (
@@ -590,6 +669,8 @@ INSERT INTO `tipomediopago` (`tmpTipoMedioPago`, `tmpDescripcion`) VALUES
 
 --
 -- Estructura de tabla para la tabla `tipousuario`
+--
+-- Creación: 09-11-2025 a las 18:18:01
 --
 
 DROP TABLE IF EXISTS `tipousuario`;
@@ -619,6 +700,9 @@ INSERT INTO `tipousuario` (`ttuTipoUsuario`, `ttuDescripcion`, `ttuRequiereMatri
 --
 -- Estructura de tabla para la tabla `tokens`
 --
+-- Creación: 09-11-2025 a las 18:18:01
+-- Última actualización: 03-12-2025 a las 20:01:20
+--
 
 DROP TABLE IF EXISTS `tokens`;
 CREATE TABLE `tokens` (
@@ -635,12 +719,16 @@ CREATE TABLE `tokens` (
 --
 
 INSERT INTO `tokens` (`tokToken`, `tokFechaInsert`) VALUES
-('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MiwidXNyTm9tYnJlIjoiQ3Jpc3RpYW4gSmF2aWVyIiwidXNyVGlwb1VzdWFyaW8iOiJVRyIsImV4cCI6MTc2NDUzNzAwN30.vBGyC7KnaHxu5Y33KYocLqdEm9cIlRophuUVijfuIjKFqEQiD4cfX-qhXGlj4GloFUTIfIcFnHsmYb0684hs6A', '2025-11-30 17:10:07');
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MiwidXNyTm9tYnJlIjoiQ3Jpc3RpYW4gSmF2aWVyIiwidXNyVGlwb1VzdWFyaW8iOiJVRyIsImV4cCI6MTc2NDc5MjY0MH0.f0BYi6UpzCHKA95cMF_tDE1rkpV28YD7W4LEXq0mk3W0OJkHJ1HfE5CFFitZYwql-8n1afyBG5CsWvCWCF1S4w', '2025-12-03 16:10:40'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MiwidXNyTm9tYnJlIjoiQ3Jpc3RpYW4gSmF2aWVyIiwidXNyVGlwb1VzdWFyaW8iOiJVRyIsImV4cCI6MTc2NDc5NDk3OX0.IyW15-Kbx8DvD_83ylQCt8pNWreTx1nxori8TLnDz6XjOk85FDW_sTdRD7Jlo9zNIK_yytXS-MvSne4m50ZR2w', '2025-12-03 16:49:39'),
+('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1c3JJZCI6MiwidXNyTm9tYnJlIjoiQ3Jpc3RpYW4gSmF2aWVyIiwidXNyVGlwb1VzdWFyaW8iOiJVRyIsImV4cCI6MTc2NDc5NTY4MH0.kfPfdPJF3jIWmQSEhon4Wvo0L5xXo8hyLpiYM1dDf4ct67Ul-u40fmhSDV0HIIQ4_-cd6iwTBLO8Bb6rqZc8IQ', '2025-12-03 17:01:20');
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `usuario`
+--
+-- Creación: 09-11-2025 a las 18:18:01
 --
 
 DROP TABLE IF EXISTS `usuario`;
@@ -676,18 +764,28 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`usrId`, `usrDni`, `usrApellido`, `usrNombre`, `usrRazonSocialFantasia`, `usrCuitCuil`, `usrTipoUsuario`, `usrMatricula`, `usrDomicilio`, `usrFechaNacimiento`, `usrDescripcion`, `usrScoring`, `usrEmail`, `usrPassword`, `usrFechaInsert`, `usrFechaBaja`) VALUES
-(1, '33698895', 'Gómez Ivaldi', 'Nicolás Alejandro', NULL, NULL, 'ST', NULL, 1, '1988-03-29', 'Soy uno de los creadores de esta WebApi.', 0, 'nicoivaldi@agora.com', '$2y$10$jA79h6pSsRRhYnxts.57ru4ILsQwMYyXt5pEbuDyHoOyw0/OHR.Yi', '2024-07-07 18:38:07', NULL),
-(2, '33286958', 'Sosa Leonetti', 'Cristian Javier', NULL, NULL, 'UG', NULL, 2, '1988-02-08', NULL, 0, 'sleonetti@gmail.com', '$2y$10$HjR2rlPfne0GyNXGJ41jU.EiCfvVpMpQ5cOvRbitoynkYeMaEGnM.', '2024-07-08 14:42:43', NULL),
+(1, '33698895', 'Gómez Ivaldi', 'Nicolás Alejandro', NULL, NULL, 'ST', NULL, 1, '1988-03-29', 'Soy uno de los creadores de esta WebApi AAABQ.', 10, 'nicoivaldi@agora.com', '$2y$10$jRJuAvMQzoUc2rD17t6a9ep5JFmtLQiI3.STCxisNYwZB00u8.MOq', '2024-07-07 18:38:07', NULL),
+(2, '33286958', 'Sosa Leonetti', 'Cristian Javier', NULL, NULL, 'UG', NULL, 2, '1988-02-08', NULL, 0, 'sleonetti@gmail.com', '$2y$10$zM6Js72a4xzwhGzjX9qRTuGmWKRayq8iinMy8Sqvw96UZ0DYNd1aW', '2024-07-08 14:42:43', NULL),
 (3, '29741295', 'Galíndez', 'Gustavo', 'Tasaciones Galíndez Jumbo SH', '30708772964', 'UT', '123456', 3, '1984-01-01', 'Tasamos el valor de sus afectos al mejor precio de Mercado.', 50, 'gusgalindez@tasgalindez.com', '$2y$10$U9YS.OMtjMhnOzAUWovHv.uQo38bb3dva9qDUmq48w5fBZW0NVsyq', '2024-07-10 16:18:01', NULL),
 (4, '27965368', 'Rolón', 'Karina', 'Paraíso Antigüedades SA', '30123456781', 'UA', '95874L', 4, '1982-06-12', 'Compra y Venta de antigüedades. Tasamos.', 60, 'krolon@paraiso.com', '$2y$10$Os4S45NKUqrBnLYDqALpYewr8CBMbKx8n4dNm9FTLhg7ySVxgcTx2', '2024-07-10 16:18:01', NULL),
 (5, '13355922', 'Recondo', 'Adriana Mariel', NULL, NULL, 'UG', NULL, 1, '1959-07-09', NULL, 0, 'recondomariel@uol.com', '$2y$10$n6.BF3HUDCMABqY7iRHOOuhPw..8nlE.cws7vSjmyIRNuYee1iXZu', '2025-06-01 21:32:15', NULL),
 (7, '40526987', 'Casado', 'Manuel', NULL, NULL, 'UG', NULL, 3, '2002-02-14', 'Prueba QA', 0, 'mcasado@gmail.com', '$2y$10$sFyDIh548JJGZo9HS7c8pOTEOPatGXr6s6we7GiYQfstuQQNIJjv6', '2025-10-14 00:00:58', NULL),
-(8, '54808315', 'Cualquiera', 'Tomás', 'SoyCoto', '30548083156', 'UT', 'lalalalalalalallawqw', 8, '1997-04-25', 'Tasador QA', 0, 'cualquiera@gmail.com', '$2y$10$m84itGDq78nLDedWrQ5ziOcZzWx4owEfYHcK/tKI9DPGgL.Xxu/g.', '2025-10-14 00:06:56', NULL);
+(8, '54808315', 'Granger', 'Hermione', 'Joyerías El Tasador', '30548083156', 'UT', '13546436', 8, '1997-04-25', 'Tasador QA', 0, 'hermione@eltasador.com', '$2y$10$jx00Q8m5cbvHbODCJr9Lp.mILpNvT.ZfCWPqQl2.lKcA1jZgYxsSK', '2025-10-14 00:06:56', NULL),
+(9, '14248569', 'Sosa', 'Vicente', 'La Juvenil', '30332696595', 'UG', NULL, 16, '1961-06-03', 'Coleccionista', 0, 'vicentesosa@gmail.com', '$2y$10$LNCSYDBYiHD5tnsV9NDO5OKMu38teFQfTE4.rclATQzOxPrB6A/66', '2025-11-21 13:58:30', NULL),
+(10, '65986569', 'Laguna', 'Antonio', 'La Vieja Casona', '30653298656', 'UA', '653616', 17, '1982-09-09', 'Venta de antigüedades renacentistas', 0, 'alaguna@laviejacasona.com', '$2y$10$F34HPzXWlZXgPrjIENRiQ.ZuTQP0NPkMS5e1z/K3eiVz7SP8uKVm2', '2025-11-21 15:20:04', NULL),
+(11, '43635632', 'Gaucho', 'Guillermo', 'Tratoría SRL', '30569832655', 'UG', NULL, 18, '1980-01-01', 'Tu restaurante', 0, 'ggaucho@tratoria.com', '$2y$10$gYHoTwDNeouRjUGkMY4dQu2O8agUD8ekUypw9sHaWuU1cmYoEHC4S', '2025-11-21 15:31:53', NULL),
+(12, '46336314', 'Saavedra', 'Cornelio', NULL, NULL, 'UG', NULL, 19, '2000-02-07', 'Presidente de la primera junta de Gobierno.', 0, 'saavedracorneio@gmail.com', '$2y$10$qzQvPhqAa06KYX12nzLStOX9enI87N4jN4d47aMC3b6TXc4qUFH9i', '2025-11-23 13:45:06', NULL),
+(13, '33569851', 'San Martín', 'José Francisco', NULL, NULL, 'UG', NULL, 19, '2000-02-07', 'Libertador de Argentina, Chile y Perú.', 0, 'sanmartin@quienmas.com', '$2y$10$r22vcxBWG/yJPYErEKK8I.69Q258jmjRMEi1XUH/9g1uOs.VHtzc2', '2025-11-23 13:45:58', NULL),
+(14, '33569850', 'De Arco', 'Juana', NULL, NULL, 'UG', NULL, 19, '2000-02-07', 'Quemada en la hoguera', 0, 'juanadearco@hotmail.com', '$2y$10$uY3zmeppHUSHCevsLWraGOs2yyXRlO04nIlXnp8zOuse7nH7LjnAq', '2025-11-23 13:58:37', NULL),
+(15, '33569849', 'Weasley', 'Ronald', NULL, NULL, 'UG', NULL, 19, '2000-02-07', 'Pelirrojo', 0, 'rweasley@howarts.com', '$2y$10$IXgBgA7WyTSS9YsSUrm0BOzEuAQVgUdOQ4vJAZkjZv9UJAvRDbrJG', '2025-11-23 14:03:50', NULL),
+(16, '33659569', 'Potter', 'Harry', NULL, NULL, 'UG', NULL, 20, '1991-02-15', 'Auror', 0, 'harrypotter@ministeriodemagia.com', '$2y$10$k4bzgNgjmqBiU9nr0p8WH.2EAJZs5.Jxwkirxopag0w64NqK9jYky', '2025-11-23 14:28:03', NULL);
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `usuariodomicilio`
+--
+-- Creación: 09-11-2025 a las 18:18:01
 --
 
 DROP TABLE IF EXISTS `usuariodomicilio`;
@@ -720,12 +818,23 @@ INSERT INTO `usuariodomicilio` (`udomId`, `udomUsr`, `udomDom`, `udomFechaInsert
 (7, 4, 5, '2025-07-28 20:16:24', NULL),
 (8, 1, 13, '2025-10-20 01:01:43', NULL),
 (9, 1, 14, '2025-11-03 00:17:29', NULL),
-(10, 1, 15, '2025-11-03 00:42:28', NULL);
+(10, 1, 15, '2025-11-03 00:42:28', NULL),
+(11, 9, 16, '2025-11-21 13:58:30', NULL),
+(12, 10, 17, '2025-11-21 15:20:04', NULL),
+(13, 11, 18, '2025-11-21 15:31:53', NULL),
+(14, 12, 19, '2025-11-23 13:45:06', NULL),
+(15, 13, 19, '2025-11-23 13:45:58', NULL),
+(16, 14, 19, '2025-11-23 13:58:37', NULL),
+(17, 15, 19, '2025-11-23 14:03:50', NULL),
+(18, 16, 20, '2025-11-23 14:28:03', NULL),
+(19, 8, 8, '2025-12-03 15:14:15', NULL);
 
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `usuariotasadorhabilidad`
+--
+-- Creación: 09-11-2025 a las 18:18:01
 --
 
 DROP TABLE IF EXISTS `usuariotasadorhabilidad`;
@@ -916,49 +1025,49 @@ ALTER TABLE `usuariotasadorhabilidad`
 -- AUTO_INCREMENT de la tabla `antiguedad`
 --
 ALTER TABLE `antiguedad`
-  MODIFY `antId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `antId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `antiguedadalaventa`
 --
 ALTER TABLE `antiguedadalaventa`
-  MODIFY `aavId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `aavId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `categoria`
 --
 ALTER TABLE `categoria`
-  MODIFY `catId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `catId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `compraventa`
 --
 ALTER TABLE `compraventa`
-  MODIFY `covId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `covId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `compraventadetalle`
 --
 ALTER TABLE `compraventadetalle`
-  MODIFY `cvdId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `cvdId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `domicilio`
 --
 ALTER TABLE `domicilio`
-  MODIFY `domId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `domId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `imagenantiguedad`
 --
 ALTER TABLE `imagenantiguedad`
-  MODIFY `imaId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `imaId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
 
 --
 -- AUTO_INCREMENT de la tabla `localidad`
 --
 ALTER TABLE `localidad`
-  MODIFY `locId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `locId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT de la tabla `periodo`
@@ -976,7 +1085,7 @@ ALTER TABLE `provincia`
 -- AUTO_INCREMENT de la tabla `subcategoria`
 --
 ALTER TABLE `subcategoria`
-  MODIFY `scatId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `scatId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de la tabla `tasaciondigital`
@@ -994,13 +1103,13 @@ ALTER TABLE `tasacioninsitu`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `usrId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `usrId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `usuariodomicilio`
 --
 ALTER TABLE `usuariodomicilio`
-  MODIFY `udomId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `udomId` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT de la tabla `usuariotasadorhabilidad`
