@@ -147,6 +147,60 @@ export const routes: Routes = [
         canActivate: [compraVentaGuard]
     },
     {
+        path: 'categorias',
+        loadComponent: () => import(/* webpackChunkName: "indice-categorias" */ './categorias/indice-categorias/indice-categorias').then(m => m.IndiceCategorias),
+        title: "Ver Categorias",
+        canActivate: [soporteGuard]
+    },
+        {
+        path: 'categorias/crear',
+        loadComponent: () => import(/* webpackChunkName: "ver-categorias" */ './categorias/crear-editar-categoria/crear-editar-categoria').then(m => m.CrearEditarCategoria),
+        title: "Crear Categoria",
+        canActivate: [soporteGuard]
+    },
+        {
+        path: 'categorias/editar/:id',
+        loadComponent: () => import(/* webpackChunkName: "crear-categoria" */ './categorias/crear-editar-categoria/crear-editar-categoria').then(m => m.CrearEditarCategoria),
+        title: "Editar Categoria",
+        canActivate: [soporteGuard]
+    },
+    {
+        path: 'subcategorias',
+        loadComponent: () => import(/* webpackChunkName: "indice-subcategorias" */ './subcategorias/indice-subcategorias/indice-subcategorias').then(m => m.IndiceSubcategorias),
+        title: "Ver Subcategorias",
+        canActivate: [soporteGuard]
+    },
+    {
+        path: 'subcategorias/crear',
+        loadComponent: () => import(/* webpackChunkName: "crear-subcategoria" */ './subcategorias/crear-editar-subcategoria/crear-editar-subcategoria').then(m => m.CrearEditarSubcategoria),
+        title: "Crear Subcategoria",
+        canActivate: [soporteGuard]
+    },
+            {
+        path: 'subcategorias/editar/:id',
+        loadComponent: () => import(/* webpackChunkName: "crear-subcategoria" */ './subcategorias/crear-editar-subcategoria/crear-editar-subcategoria').then(m => m.CrearEditarSubcategoria),
+        title: "Editar Subcategoria",
+        canActivate: [soporteGuard]
+    },
+    {
+        path: 'localidades',
+        loadComponent: () => import(/* webpackChunkName: "indice-localidades" */ './localidades/indice-localidades/indice-localidades').then(m => m.IndiceLocalidades),
+        title: "Ver Localidades",
+        canActivate: [soporteGuard]
+    },
+            {
+        path: 'localidades/crear',
+        loadComponent: () => import(/* webpackChunkName: "crear-localidades" */ './localidades/crear-editar-localidad/crear-editar-localidad').then(m => m.CrearEditarLocalidad),
+        title: "Crear Localidades",
+        canActivate: [soporteGuard]
+    },
+            {
+        path: 'localidades/editar/:id',
+        loadComponent: () => import(/* webpackChunkName: "editar-localidades" */ './localidades/crear-editar-localidad/crear-editar-localidad').then(m => m.CrearEditarLocalidad),
+        title: "Editar Localidades",
+        canActivate: [soporteGuard]
+    },
+    {
         path: '**', //Wild card : Atrapa cualquier ruta de tu dominio. SIEMPRE DEBE IR AL FINAL, ya que el buscador de rutas es secuencial, empieza en el index 0 de este array de rutes y devuelve la primera coincidencia
         redirectTo: '',
         title: 'Error 404'

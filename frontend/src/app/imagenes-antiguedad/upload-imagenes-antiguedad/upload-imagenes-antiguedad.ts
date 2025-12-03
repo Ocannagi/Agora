@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, effect, signal, computed, input } from '@angular/core';
 import { model } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,7 +10,7 @@ import { MAX_IMG_ANTIGUEDAD } from '../feautures';
 @Component({
   selector: 'app-upload-imagenes-antiguedad',
   standalone: true,
-  imports: [CommonModule, DragDropModule, MatIconModule, MatButtonModule, MostrarErrores, ListaImagenesFile],
+  imports: [DragDropModule, MatIconModule, MatButtonModule, MostrarErrores, ListaImagenesFile],
   templateUrl: './upload-imagenes-antiguedad.html',
   styleUrl: './upload-imagenes-antiguedad.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

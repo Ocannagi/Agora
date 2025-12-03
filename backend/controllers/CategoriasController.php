@@ -9,6 +9,8 @@ class CategoriasController extends BaseController
     private ValidacionServiceBase $categoriasValidacionService;
     private ISecurity $securityService;
 
+    use traitGetPaginado;
+
     private static $instancia = null; // La única instancia de la clase
 
     /** El orden de las dependencias debe ser el mismo que en inyectarDependencias en api.php  */
@@ -30,6 +32,43 @@ class CategoriasController extends BaseController
 
     // Método para evitar la clonación del objeto
     private function __clone() {}
+
+
+
+    public function getCategoriasPaginado($paginado)
+    {
+        $mysqli = $this->dbConnection->conectarBD();
+        $query = "SELECT catId, catDescripcion FROM categoria WHERE catFechaBaja is NULL";
+        
+        try {
+            $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::soporteTecnicoToArray());
+            
+            $this->getPaginado($paginado, $mysqli, "categoria", "catFechaBaja is NULL", "obtener el total de categorias para paginado", $query, CategoriaMinDTO::class);
+           
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
+                $mysqli->close(); // Cerrar la conexión a la base de datos
+            }
+        }
+    }
+
+
+
+
+
+
+
+
 
     /** SECCION DE MÉTODOS CON getCategoriasByParams */
 

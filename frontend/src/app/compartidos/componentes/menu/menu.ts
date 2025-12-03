@@ -33,9 +33,9 @@ export class Menu {
 
   protected onSearch(): void {
     const keyWord = this.searchCtrl.value.trim();
-    if(!keyWord || keyWord.length === 0) {
+    /* if(!keyWord || keyWord.length === 0) {
       return;
-    }
+    } */
 
     if (keyWord !== this.#storeSearch.paginadoRequest.searchWord()) {
       this.#storeSearch.setSearchWord(keyWord);

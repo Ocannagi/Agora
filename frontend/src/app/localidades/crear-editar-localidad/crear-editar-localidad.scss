@@ -1,0 +1,27 @@
+.crear-localidad-wrapper {
+  padding: 1rem;
+
+  h2 {
+    margin-bottom: 1rem;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    mat-form-field {
+      max-width: 600px;
+    }
+
+    app-autocompletar-provincias {
+      max-width: 400px;
+    }
+  }
+
+  .contenedor-botones {
+    display: flex;
+    gap: 0.5rem;
+  }
+}

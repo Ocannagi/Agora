@@ -64,7 +64,28 @@
     <app-autorizado [esAutorizado]="storeAuth.isSoporteTecnico()">
         <ng-container autorizado>
             <div>
-                <a mat-button routerLink="/usuarios"><mat-icon>people</mat-icon>Usuarios</a>
+                <button mat-button [matMenuTriggerFor]="soporteMenu">
+                    <mat-icon>support_agent</mat-icon> Soporte
+                    <mat-icon class="menu-arrow">arrow_drop_down</mat-icon>
+                </button>
+                <mat-menu #soporteMenu="matMenu">
+                    <button mat-menu-item routerLink="/usuarios" type="button">
+                        <mat-icon>people</mat-icon>
+                        <span>Usuarios</span>
+                    </button>
+                    <button mat-menu-item routerLink="/localidades" type="button">
+                        <mat-icon>place</mat-icon>
+                        <span>Localidades</span>
+                    </button>
+                    <button mat-menu-item routerLink="/categorias" type="button">
+                        <mat-icon>category</mat-icon>
+                        <span>Categorías</span>
+                    </button>
+                    <button mat-menu-item routerLink="/subcategorias" type="button">
+                        <mat-icon>subdirectory_arrow_right</mat-icon>
+                        <span>Subcategorías</span>
+                    </button>
+                </mat-menu>
             </div>
         </ng-container>
     </app-autorizado>

@@ -233,15 +233,21 @@ class AntiguedadesAlaVentaController extends BaseController
                       LEFT JOIN periodo ON antPerId = perId
                       LEFT JOIN usuario ON antUsrId = usrId"; // <-- sin WHERE aquí
             
-            $whereClause= "((antDescripcion LIKE '%{$searchWord}%')
+            $whereClause= "
+                    aavFechaRetiro IS NULL AND aavHayVenta = FALSE
+                    AND aavUsrIdVendedor <> $usrId";
+
+            if(Input::esNotNullVacioBlanco($searchWord)){
+                $whereClause .= "
+                    AND
+                    ((antDescripcion LIKE '%{$searchWord}%')
                     OR (antNombre LIKE '%{$searchWord}%')
                     OR (scatDescripcion LIKE '%{$searchWord}%') 
                     OR (catDescripcion LIKE '%{$searchWord}%') 
                     OR (perDescripcion LIKE '%{$searchWord}%') 
                     OR (usrApellido LIKE '%{$searchWord}%') 
-                    OR (usrRazonSocialFantasia LIKE '%{$searchWord}%')) 
-                    AND aavFechaRetiro IS NULL AND aavHayVenta = FALSE
-                    AND aavUsrIdVendedor <> $usrId";
+                    OR (usrRazonSocialFantasia LIKE '%{$searchWord}%')) ";
+            }
 
             // armar la query completa con un único WHERE
             $query = $query . $queryBase . " WHERE " . $whereClause;

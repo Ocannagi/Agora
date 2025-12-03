@@ -118,11 +118,12 @@ export const SearchWordStore = signalStore(
 
             effect(() => {
                 const valueSearch = store.resourcePaginadoSearch.value();
-                store.setTotalRegistros(valueSearch?.totalRegistros ?? 0);
-                store.setArrayEntidad(valueSearch?.arrayEntidad ?? []);
-                store.setPagina(valueSearch?.paginaActual ?? 1);
-                store.setRegistrosPorPagina(valueSearch?.registrosPorPagina ?? 5);
-
+                
+                if (valueSearch) {
+                    store.setTotalRegistros(valueSearch.totalRegistros);
+                    store.setArrayEntidad(valueSearch.arrayEntidad);
+                    // Removidas las líneas que sobrescribían pagina y registrosPorPagina
+                }
             });
 
         },

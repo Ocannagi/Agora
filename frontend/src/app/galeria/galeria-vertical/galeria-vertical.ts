@@ -32,7 +32,9 @@ export class GaleriaVertical {
   trackById = (_: number, aav: AntiguedadALaVentaDTO) => aav.aavId;
 
   onPage(ev: PageEvent): void {
+    console.log('Estoy cambiando de página', ev);
     this.storeSearch.setPageEvent(ev);
+    this.storeSearch.reloadResourcePaginadoSearch();
   }
 
   portadaUrl(aav: AntiguedadALaVentaDTO): string | null {

@@ -1,4 +1,5 @@
 import { IAutocompletarDTO } from "../../compartidos/modelo/IAutocompletarDTO";
+import { IIndiceEntidadDTO } from "../../compartidos/modelo/IIndiceEntidadDTO";
 
 export interface CategoriaDTO {
   catId: number;
@@ -10,3 +11,10 @@ export interface CategoriaCreacionDTO {
 }
 
 export interface CategoriaAutocompletarDTO extends IAutocompletarDTO {}
+
+export interface CategoriaMinDTO {
+  catId: number;
+  catDescripcion: string;
+}
+
+export interface CategoriaIndiceDTO extends IIndiceEntidadDTO, CategoriaMinDTO {}

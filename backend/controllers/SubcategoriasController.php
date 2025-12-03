@@ -8,7 +8,7 @@ class SubcategoriasController extends BaseController
 {
     private ValidacionServiceBase $subcategoriasValidacionService;
     private ISecurity $securityService;
-
+ use traitGetPaginado;
     private static $instancia = null; // La única instancia de la clase
 
     /** El orden de las dependencias debe ser el mismo que en inyectarDependencias en api.php  */
@@ -30,6 +30,37 @@ class SubcategoriasController extends BaseController
 
     // Método para evitar la clonación del objeto
     private function __clone() {}
+
+public function getSubcategoriasPaginado($paginado)
+    {
+        $mysqli = $this->dbConnection->conectarBD();
+        $query = "SELECT scatId, scatCatId, catDescripcion, scatDescripcion FROM subcategoria INNER JOIN categoria ON subcategoria.scatCatId = categoria.catId WHERE scatFechaBaja is NULL ORDER BY scatId ASC";
+        
+        try {
+            $this->securityService->requireLogin(tipoUsurio: TipoUsuarioEnum::soporteTecnicoToArray());
+            
+            $this->getPaginado($paginado, $mysqli, "subcategoria", "scatFechaBaja is NULL", "obtener el total de subcategorias para paginado", $query, SubcategoriaDTO::class);
+           
+        } catch (\Throwable $th) {
+            if ($th instanceof mysqli_sql_exception) {
+                Output::outputError(500, "Error en la base de datos: " . $th->getMessage());
+            } elseif ($th instanceof InvalidArgumentException) {
+                Output::outputError(400, $th->getMessage());
+            } elseif ($th instanceof CustomException) {
+                Output::outputError($th->getCode(), "Error personalizado: " . $th->getMessage());
+            } else {
+                Output::outputError(500, "Error inesperado: " . $th->getMessage() . ". Trace: " . $th->getTraceAsString());
+            }
+        } finally {
+            if (isset($mysqli) && $mysqli instanceof mysqli) { // Verificar si la conexión fue establecida
+                $mysqli->close(); // Cerrar la conexión a la base de datos
+            }
+        }
+    }
+
+
+
+
 
     /** SECCION DE MÉTODOS CON getSubcategoriasByParams */
 

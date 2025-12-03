@@ -72,7 +72,7 @@ export class AntiguedadesVentaService implements IServicePaginado<AntiguedadALaV
       params: () => paginado(),
       stream: (options) => {
         const params = buildQueryPaginadoSearch(options.params);
-        const searchWord = options.params.searchWord.trim();
+        /* const searchWord = options.params.searchWord.trim();
         if (searchWord.length === 0) {
           return of({
             totalRegistros: 0,
@@ -80,7 +80,7 @@ export class AntiguedadesVentaService implements IServicePaginado<AntiguedadALaV
             registrosPorPagina: 5,
             arrayEntidad: []
           });
-        }
+        } */
         return this.http.get<PaginadoResponseDTO<AntiguedadALaVentaDTO>>(this.urlBase, { params }).pipe(
           map(response => {
             const indiceResponse: PaginadoResponseDTO<AntiguedadALaVentaDTO> = {

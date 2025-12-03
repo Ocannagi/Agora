@@ -1,0 +1,35 @@
+<div class="crear-subcategoria-wrapper">
+  <h2>{{ titulo() }}</h2>
+
+  <app-mostrar-errores [errores]="errores()"></app-mostrar-errores>
+
+  @if (isLoading()) {
+    <app-cargando />
+  } @else {
+    <form [formGroup]="formSubcategoria" (ngSubmit)="onSubmit()">
+      <div class="form-grid">
+         <app-autocompletar-categorias
+          (idCat)="onCategoriaSeleccionada($event)"
+          [keywordExterno]="categoriaKeyword()"
+        />
+ 
+        <mat-form-field appearance="fill">
+          <mat-label>Descripción</mat-label>
+          <input matInput formControlName="scatDescripcion" />
+          <mat-error>{{ obtenerErrorCampo('scatDescripcion') }}</mat-error>
+        </mat-form-field>
+
+
+      </div>
+
+      <div class="contenedor-botones">
+        <button type="submit" mat-flat-button color="primary" [disabled]="formSubcategoria.invalid">
+          Guardar cambios
+        </button>
+        <button type="button" mat-stroked-button (click)="cancelar()">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  }
+</div>

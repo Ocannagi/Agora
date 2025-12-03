@@ -1,0 +1,24 @@
+<div class="crear-categoria-wrapper">
+  <h2>{{ titulo() }}</h2>
+
+<app-mostrar-errores [errores]="errores()"></app-mostrar-errores>
+
+  @if (isLoading()) {
+    <app-cargando />
+  } @else {
+    <form [formGroup]="formCategoria" (ngSubmit)="onSubmit()" aria-label="Formulario crear/editar categoría" novalidate>
+      <div class="form-grid">
+        <mat-form-field appearance="fill">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="catDescripcion" aria-label="Nombre de la categoría" />
+          <mat-error>{{ obtenerErrorCampo('catDescripcion') }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="contenedor-botones" role="group" aria-label="Acciones">
+        <button type="submit" mat-flat-button color="primary" [disabled]="formCategoria.invalid" aria-label="Guardar cambios">Guardar cambios</button>
+        <button type="button" mat-stroked-button (click)="cancelar()" aria-label="Cancelar">Cancelar</button>
+      </div>
+    </form>
+  }
+</div>

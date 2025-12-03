@@ -1,0 +1,35 @@
+<div class="crear-localidad-wrapper">
+  <h2>{{ titulo() }}</h2>
+
+  <app-mostrar-errores [errores]="errores()"></app-mostrar-errores>
+
+  @if (isLoading()) {
+    <app-cargando />
+  } @else {
+    <form [formGroup]="formLocalidad" (ngSubmit)="onSubmit()">
+      <div class="form-grid">
+  
+        <app-autocompletar-provincias
+          (idProv)="onProvinciaSeleccionada($event)"
+          [keywordExterno]="provinciaKeyword()"
+        />
+  
+        <mat-form-field appearance="fill">
+          <mat-label>Descripción</mat-label>
+          <input matInput formControlName="locDescripcion" />
+          <mat-error>{{ obtenerErrorCampo('locDescripcion') }}</mat-error>
+        </mat-form-field>
+
+      </div>
+
+      <div class="contenedor-botones">
+        <button type="submit" mat-flat-button color="primary" [disabled]="formLocalidad.invalid">
+          Guardar cambios
+        </button>
+        <button type="button" mat-stroked-button (click)="cancelar()">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  }
+</div>

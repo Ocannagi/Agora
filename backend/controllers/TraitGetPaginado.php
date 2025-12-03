@@ -73,9 +73,9 @@ trait TraitGetPaginado
     public function validatePaginadoSearch(mixed $paginado) : void
     {
         if (is_array($paginado)) {
-            if (!array_key_exists('searchWord', $paginado) || !Input::esNotNullVacioBlanco($paginado['searchWord'])) {
+      /*       if (!array_key_exists('searchWord', $paginado) || !Input::esNotNullVacioBlanco($paginado['searchWord'])) {
                 throw new InvalidArgumentException("El parámetro 'searchWord' es obligatorio y no puede estar vacío.");
-            }
+            } */
             if (!array_key_exists('pagina', $paginado) || !Input::esNotNullVacioBlanco($paginado['pagina'])) {
                 throw new InvalidArgumentException("El parámetro 'pagina' es obligatorio y no puede estar vacío.");
             }
